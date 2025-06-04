@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EverythingB2C</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="./Kichen Page/Kechen2.css">
+  <link rel="stylesheet" href="./Footer.css">
+  <link rel="stylesheet" href="./Header.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+
+  <!-- Header -->
+  <div id="header-0"></div>
+
+  <!-- Products -->
+  <div class="products"></div>
+
+  <!-- Footer -->
+  <div id="Footer-container0"></div>
+
+  <!-- Load Header -->
+  <script>
+    fetch('header.html')
+      .then(response => response.text())
+      .then(html => {
+        const container = document.getElementById('header-0');
+
+        // Create temp div
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+
+        // Load only non-script content
+        const scripts = tempDiv.querySelectorAll('script');
+        const nonScriptContent = [...tempDiv.childNodes].filter(node => node.nodeName !== 'SCRIPT');
+        container.innerHTML = '';
+        nonScriptContent.forEach(node => container.appendChild(node));
+
+        // Load and run header scripts
+        scripts.forEach(script => {
+          const newScript = document.createElement('script');
+          if (script.src) {
+            newScript.src = script.src;
+          } else {
+            newScript.textContent = script.textContent;
+          }
+          document.body.appendChild(newScript);
+        });
+      });
+  </script>
+
+  <!-- Load Footer -->
+  <script>
+    fetch('Footer.html')
+      .then(response => response.text())
+      .then(html => {
+        const container = document.getElementById('Footer-container0');
+
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+
+        const scripts = tempDiv.querySelectorAll('script');
+        const nonScriptContent = [...tempDiv.childNodes].filter(node => node.nodeName !== 'SCRIPT');
+        container.innerHTML = '';
+        nonScriptContent.forEach(node => container.appendChild(node));
+
+        scripts.forEach(script => {
+          const newScript = document.createElement('script');
+          if (script.src) {
+            newScript.src = script.src;
+          } else {
+            newScript.textContent = script.textContent;
+          }
+          document.body.appendChild(newScript);
+        });
+      });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Popup Editor - Design & Customize</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- External Editor CSS -->
+    <link href="./asset/style/pop.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="editor-container">
+                    <div class="editor-header">
+                        <h1><i class="bi bi-palette2"></i> Multi-Popup Editor</h1>
+                        <p>Design multiple popups and apply them across your pages</p>
+                    </div>
+                    
+                    <div class="row g-0">
+                        <!-- Editor Panel -->
+                        <div class="col-lg-6">
+                            <div class="p-4">
+                                <h3 class="section-title"><i class="bi bi-gear-fill"></i> Popup Management</h3>
+                                
+                                <!-- Popup Selector -->
+                                <div class="mb-4">
+                                    <h5 class="text-primary mb-3">Select or Create Popup</h5>
+                                    <div class="input-group mb-3">
+                                        <select class="form-select" id="popupSelector" onchange="loadPopupConfig()">
+                                            <option value="">Select a popup</option>
+                                        </select>
+                                        <button class="btn btn-primary-custom" onclick="addNewPopup()">
+                                            <i class="bi bi-plus-circle"></i> New Popup
+                                        </button>
+                                        <button class="btn btn-danger" onclick="deletePopup()" id="deletePopupBtn" disabled>
+                                            <i class="bi bi-trash"></i> Delete
+                                        </button>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Popup Name</label>
+                                        <input type="text" class="form-control" id="popupName" placeholder="e.g., Welcome Popup">
+                                    </div>
+                                </div>
+                                
+                                <!-- Content Settings -->
+                                <div class="mb-4">
+                                    <h5 class="text-primary mb-3">Content Settings</h5>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Logo URL</label>
+                                        <input type="url" class="form-control" id="logoUrl" placeholder="https://example.com/logo.png">
+                                        <small class="text-muted">Leave empty to show placeholder</small>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Header Message</label>
+                                        <textarea class="form-control" id="headerMessage" rows="3">We deliver orders in Maharashtra, Gujarat, Bangalore, and Hyderabad only. Please enter your pincode to check delivery availability.</textarea>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Placeholder Text</label>
+                                        <input type="text" class="form-control" id="placeholderText" value="Enter your pincode">
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Button Text</label>
+                                        <input type="text" class="form-control" id="buttonText" value="Start Shopping">
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Check Button Text</label>
+                                        <input type="text" class="form-control" id="checkButtonText" value="Check">
+                                    </div>
+                                </div>
+                                
+                                <!-- Style Settings -->
+                                <div class="mb-4">
+                                    <h5 class="text-primary mb-3">Style Settings</h5>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Primary Color</label>
+                                            <input type="color" class="color-input" id="primaryColor" value="#28a745">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Primary Dark Color</label>
+                                            <input type="color" class="color-input" id="primaryDarkColor" value="#093b15">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Background Color</label>
+                                            <input type="color" class="color-input" id="backgroundColor" value="#ffffff">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Text Color</label>
+                                            <input type="color" class="color-input" id="textColor" value="#222222">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Border Radius (px)</label>
+                                        <input type="range" class="form-range" id="borderRadius" min="0" max="30" value="12">
+                                        <small class="text-muted">Current: <span id="borderRadiusValue">12</span>px</small>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Popup Width (px)</label>
+                                        <input type="range" class="form-range" id="popupWidth" min="300" max="600" value="400">
+                                        <small class="text-muted">Current: <span id="popupWidthValue">400</span>px</small>
+                                    </div>
+                                </div>
+                                
+                                <!-- Behavior Settings -->
+                                <div class="mb-4">
+                                    <h5 class="text-primary mb-3">Behavior Settings</h5>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Show Delay (seconds)</label>
+                                        <input type="number" class="form-control" id="showDelay" value="5" min="0" max="60">
+                                    </div>
+                                    
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="autoShow" checked>
+                                        <label class="form-check-label" for="autoShow">
+                                            Auto show popup on page load
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <!-- Action Buttons -->
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-primary-custom btn-custom" onclick="generateCode()">
+                                        <i class="bi bi-code-slash"></i> Generate Code
+                                    </button>
+                                    <button class="btn btn-secondary-custom btn-custom" onclick="resetToDefault()">
+                                        <i class="bi bi-arrow-clockwise"></i> Reset to Default
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Preview Panel -->
+                        <div class="col-lg-6">
+                            <div class="p-4">
+                                <h3 class="section-title"><i class="bi bi-eye-fill"></i> Live Preview</h3>
+                                
+                                <div class="preview-container">
+                                    <div class="preview-label" id="previewLabel">Live Preview</div>
+                                    <div class="popup-overlay-preview">
+                                        <div class="popup-preview" id="popupPreview">
+                                            <div class="popup-close-preview" id="closePreview">×</div>
+                                            <div class="popup-avatar-preview" id="avatarPreview">
+                                                <div class="logo-placeholder">LOGO</div>
+                                            </div>
+                                            <div class="popup-header-preview" id="headerPreview">
+                                                We deliver orders in Maharashtra, Gujarat, Bangalore, and Hyderabad only.<br>
+                                                Please enter your pincode to check delivery availability.
+                                            </div>
+                                            <div class="popup-pincode-preview">
+                                                <input type="text" id="pincodePreview" placeholder="Enter your pincode">
+                                                <button id="checkBtnPreview">Check</button>
+                                            </div>
+                                            <div class="popup-btn-preview">
+                                                <button id="mainBtnPreview">Start Shopping</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Generated Code -->
+                                <div class="mt-4">
+                                    <h5 class="text-primary mb-3">Generated Code (All Popups)</h5>
+                                    <div class="position-relative">
+                                        <button class="copy-btn" onclick="copyCode('htmlCode')">Copy HTML</button>
+                                        <div class="code-container" id="htmlCode">
+                                            Click "Generate Code" to see the HTML code
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="position-relative mt-3">
+                                        <button class="copy-btn" onclick="copyCode('cssCode')">Copy CSS</button>
+                                        <div class="code-container" id="cssCode">
+                                            Click "Generate Code" to see the CSS code
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="position-relative mt-3">
+                                        <button class="copy-btn" onclick="copyCode('jsCode')">Copy JS</button>
+                                        <div class="code-container" id="jsCode">
+                                            Click "Generate Code" to see the JavaScript code
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Instructions -->
+                                <div class="alert alert-success mt-4">
+                                    <h6><i class="bi bi-info-circle-fill"></i> How to Use:</h6>
+                                    <ol class="mb-0">
+                                        <li>Create or select a popup using the editor</li>
+                                        <li>Customize its settings</li>
+                                        <li>Click "Generate Code" to create code for all popups</li>
+                                        <li>Save CSS as popup.css and JS as popup.js</li>
+                                        <li>Include popup.css in the head and popup.js in the body of each page</li>
+                                        <li>Add the HTML snippet to the body of each page</li>
+                                        <li>Update the generated files to apply changes across all pages</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    
+    <script>
+        // Store popup configurations
+        let popups = [];
+        let currentPopupId = null;
+
+        // Generate UUID for new popups
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        // Add new popup configuration
+        function addNewPopup() {
+            const newPopup = {
+                id: generateUUID(),
+                name: `Popup ${popups.length + 1}`,
+                logoUrl: '',
+                headerMessage: 'We deliver orders in Maharashtra, Gujarat, Bangalore, and Hyderabad only.\nPlease enter your pincode to check delivery availability.',
+                placeholderText: 'Enter your pincode',
+                buttonText: 'Start Shopping',
+                checkButtonText: 'Check',
+                primaryColor: '#28a745',
+                primaryDarkColor: '#093b15',
+                backgroundColor: '#ffffff',
+                textColor: '#222222',
+                borderRadius: '12',
+                popupWidth: '400',
+                showDelay: '5',
+                autoShow: true
+            };
+            popups.push(newPopup);
+            updatePopupSelector();
+            document.getElementById('popupSelector').value = newPopup.id;
+            loadPopupConfig();
+        }
+
+        // Update popup selector dropdown
+        function updatePopupSelector() {
+            const selector = document.getElementById('popupSelector');
+            selector.innerHTML = '<option value="">Select a popup</option>';
+            popups.forEach(popup => {
+                const option = document.createElement('option');
+                option.value = popup.id;
+                option.textContent = popup.name;
+                selector.appendChild(option);
+            });
+            document.getElementById('deletePopupBtn').disabled = popups.length === 0;
+        }
+
+        // Load selected popup configuration
+        function loadPopupConfig() {
+            const selector = document.getElementById('popupSelector');
+            currentPopupId = selector.value;
+            const popup = popups.find(p => p.id === currentPopupId);
+            if (popup) {
+                document.getElementById('popupName').value = popup.name;
+                document.getElementById('logoUrl').value = popup.logoUrl;
+                document.getElementById('headerMessage').value = popup.headerMessage;
+                document.getElementById('placeholderText').value = popup.placeholderText;
+                document.getElementById('buttonText').value = popup.buttonText;
+                document.getElementById('checkButtonText').value = popup.checkButtonText;
+                document.getElementById('primaryColor').value = popup.primaryColor;
+                document.getElementById('primaryDarkColor').value = popup.primaryDarkColor;
+                document.getElementById('backgroundColor').value = popup.backgroundColor;
+                document.getElementById('textColor').value = popup.textColor;
+                document.getElementById('borderRadius').value = popup.borderRadius;
+                document.getElementById('popupWidth').value = popup.popupWidth;
+                document.getElementById('showDelay').value = popup.showDelay;
+                document.getElementById('autoShow').checked = popup.autoShow;
+                document.getElementById('previewLabel').textContent = `Live Preview: ${popup.name}`;
+                updatePreview();
+            } else {
+                resetToDefault();
+                document.getElementById('previewLabel').textContent = 'Live Preview';
+            }
+        }
+
+        // Delete selected popup
+        function deletePopup() {
+            if (!currentPopupId) return;
+            popups = popups.filter(p => p.id !== currentPopupId);
+            currentPopupId = null;
+            updatePopupSelector();
+            document.getElementById('popupSelector').value = '';
+            resetToDefault();
+        }
+
+        // Update preview in real-time
+        function updatePreview() {
+            const popup = popups.find(p => p.id === currentPopupId);
+            if (!popup) return;
+
+            popup.logoUrl = document.getElementById('logoUrl').value;
+            popup.headerMessage = document.getElementById('headerMessage').value;
+            popup.placeholderText = document.getElementById('placeholderText').value;
+            popup.buttonText = document.getElementById('buttonText').value;
+            popup.checkButtonText = document.getElementById('checkButtonText').value;
+            popup.primaryColor = document.getElementById('primaryColor').value;
+            popup.primaryDarkColor = document.getElementById('primaryDarkColor').value;
+            popup.backgroundColor = document.getElementById('backgroundColor').value;
+            popup.textColor = document.getElementById('textColor').value;
+            popup.borderRadius = document.getElementById('borderRadius').value;
+            popup.popupWidth = document.getElementById('popupWidth').value;
+            popup.showDelay = document.getElementById('showDelay').value;
+            popup.autoShow = document.getElementById('autoShow').checked;
+            popup.name = document.getElementById('popupName').value || `Popup ${popups.indexOf(popup) + 1}`;
+
+            const avatarPreview = document.getElementById('avatarPreview');
+            if (popup.logoUrl) {
+                avatarPreview.innerHTML = `<img src="${popup.logoUrl}" alt="Logo" style="max-width: 200px; border-radius: 8px;">`;
+            } else {
+                avatarPreview.innerHTML = '<div class="logo-placeholder">LOGO</div>';
+            }
+            
+            document.getElementById('headerPreview').innerHTML = popup.headerMessage.replace(/\n/g, '<br>');
+            document.getElementById('pincodePreview').placeholder = popup.placeholderText;
+            document.getElementById('checkBtnPreview').textContent = popup.checkButtonText;
+            document.getElementById('mainBtnPreview').textContent = popup.buttonText;
+            
+            const popupPreview = document.getElementById('popupPreview');
+            popupPreview.style.backgroundColor = popup.backgroundColor;
+            popupPreview.style.color = popup.textColor;
+            popupPreview.style.borderRadius = popup.borderRadius + 'px';
+            popupPreview.style.width = popup.popupWidth + 'px';
+            
+            document.getElementById('closePreview').style.backgroundColor = popup.primaryColor;
+            document.getElementById('checkBtnPreview').style.backgroundColor = popup.primaryColor;
+            document.getElementById('mainBtnPreview').style.backgroundColor = popup.primaryColor;
+            
+            document.getElementById('borderRadiusValue').textContent = popup.borderRadius;
+            document.getElementById('popupWidthValue').textContent = popup.popupWidth;
+
+            updatePopupSelector();
+        }
+        
+        // Generate code for all popups
+        function generateCode() {
+            let htmlCode = '<!-- Popup HTML (Include in body of each page) -->\n';
+            let cssCode = '/* popup.css (Save as separate file and include in head) */\n';
+            let jsCode = '/* popup.js (Save as separate file and include in page) */\n';
+            
+            popups.forEach((popup, index) => {
+                const popupId = `popup_${index + 1}`;
+                
+                // Generate HTML for each popup
+                htmlCode += `
+<div class="popup-overlay" id="popupOverlay_${popupId}"></div>
+<div class="popup" id="popupForm_${popupId}" style="display: none;">
+    <div class="popup-close" onclick="closePopup('${popupId}')">×</div>
+    <div class="popup-avatar">
+        ${popup.logoUrl ? `<img src="${popup.logoUrl}" alt="Logo">` : '<div class="logo-placeholder">LOGO</div>'}
+    </div>
+    <div class="popup-header">
+        ${popup.headerMessage.replace(/\n/g, '<br>')}
+    </div>
+    <div class="popup-pincode">
+        <input type="text" id="pin_${popupId}" placeholder="${popup.placeholderText}">
+        <button class="popup-check-btn" data-popup-id="${popupId}">${popup.checkButtonText}</button>
+    </div>
+    <div class="popup-btn">
+        <button data-popup-id="${popupId}">${popup.buttonText}</button>
+    </div>
+</div>\n`;
+
+                // Generate CSS for each popup
+                cssCode += `
+/* Styles for ${popup.name} */
+.popup-overlay#popupOverlay_${popupId} {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    z-index: ${1000 + index * 2};
+}
+
+.popup#popupForm_${popupId} {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: ${popup.popupWidth}px;
+    background: ${popup.backgroundColor};
+    z-index: ${1001 + index * 2};
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-radius: ${popup.borderRadius}px;
+    text-align: center;
+}
+
+.popup#popupForm_${popupId} .popup-close {
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    width: 40px;
+    height: 40px;
+    background: ${popup.primaryColor};
+    color: #fff;
+    font-size: 25px;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 50%;
+    cursor: pointer;
+    line-height: 40px;
+    transition: background-color 0.3s;
+}
+
+.popup#popupForm_${popupId} .popup-close:hover {
+    background: ${popup.primaryDarkColor};
+}
+
+.popup#popupForm_${popupId} .popup-avatar {
+    margin: 10px 0;
+}
+
+.popup#popupForm_${popupId} .popup-avatar img {
+    max-width: 240px;
+    border-radius: 10px;
+}
+
+.popup#popupForm_${popupId} .logo-placeholder {
+    width: 240px;
+    height: 120px;
+    background: linear-gradient(45deg, ${popup.primaryColor}, #20c997);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0 auto;
+}
+
+.popup#popupForm_${popupId} .popup-header {
+    font-size: 15px;
+    color: ${popup.textColor};
+    margin: 15px 0;
+    font-weight: 600;
+}
+
+.popup#popupForm_${popupId} .popup-pincode {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 20px;
+}
+
+.popup#popupForm_${popupId} .popup-pincode input {
+    padding: 10px;
+    font-size: 16px;
+    width: 170px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+.popup#popupForm_${popupId} .popup-check-btn {
+    padding: 10px 16px;
+    background-color: ${popup.primaryColor};
+    color: #fff;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.popup#popupForm_${popupId} .popup-check-btn:hover {
+    background-color: ${popup.primaryDarkColor};
+}
+
+.popup#popupForm_${popupId} .popup-btn button {
+    padding: 10px 20px;
+    background: ${popup.primaryColor};
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.popup#popupForm_${popupId} .popup-btn button:hover {
+    background-color: ${popup.primaryDarkColor};
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .popup#popupForm_${popupId} {
+        width: 90%;
+        max-width: 400px;
+    }
+    
+    .popup#popupForm_${popupId} .popup-pincode {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .popup#popupForm_${popupId} .popup-pincode input {
+        width: 100%;
+    }
+}\n`;
+
+                // Generate JS for each popup
+                if (popup.autoShow) {
+                    jsCode += `
+// Show ${popup.name} after delay
+window.addEventListener('load', function () {
+    setTimeout(function () {
+        showPopup('${popupId}');
+    }, ${popup.showDelay * 1000}); // ${popup.showDelay} seconds
+});\n`;
+                }
+            });
+
+            // Add shared JS functions
+            jsCode += `
+function showPopup(popupId) {
+    const overlay = document.getElementById("popupOverlay_" + popupId);
+    const popup = document.getElementById("popupForm_" + popupId);
+    if (overlay && popup) {
+        popup.style.display = "block";
+        overlay.style.display = "block";
+    }
+}
+
+function closePopup(popupId) {
+    const overlay = document.getElementById("popupOverlay_" + popupId);
+    const popup = document.getElementById("popupForm_" + popupId);
+    if (overlay && popup) {
+        popup.style.display = "none";
+        overlay.style.display = "none";
+    }
+}
+
+// Close popups when clicking overlay
+document.querySelectorAll(".popup-overlay").forEach(overlay => {
+    overlay.addEventListener("click", function() {
+        const popupId = this.id.replace("popupOverlay_", "");
+        closePopup(popupId);
+    });
+});
+
+// Handle pincode check
+document.querySelectorAll(".popup-check-btn").forEach(btn => {
+    btn.addEventListener("click", function() {
+        const popupId = this.getAttribute("data-popup-id");
+        const pincode = document.getElementById("pin_" + popupId).value;
+        if (pincode) {
+            // Add your pincode validation logic here
+            alert("Checking pincode: " + pincode + " for popup " + popupId);
+        } else {
+            alert("Please enter a pincode for popup " + popupId);
+        }
+    });
+});
+
+// Handle start shopping button
+document.querySelectorAll(".popup-btn button").forEach(btn => {
+    btn.addEventListener("click", function() {
+        const popupId = this.getAttribute("data-popup-id");
+        // Add your shopping logic here
+        alert("Starting shopping for popup " + popupId + "!");
+        closePopup(popupId);
+    });
+});`;
+
+            // Display generated code
+            document.getElementById('htmlCode').textContent = htmlCode;
+            document.getElementById('cssCode').textContent = cssCode;
+            document.getElementById('jsCode').textContent = jsCode;
+        }
+        
+        // Copy code to clipboard
+        function copyCode(elementId) {
+            const element = document.getElementById(elementId);
+            const text = element.textContent;
+            
+            navigator.clipboard.writeText(text).then(function() {
+                const btn = element.parentElement.querySelector('.copy-btn');
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                btn.style.background = '#28a745';
+                
+                setTimeout(function() {
+                    btn.textContent = originalText;
+                    btn.style.background = '#28a745';
+                }, 2000);
+            }).catch(function(err) {
+                console.error('Failed to copy: ', err);
+                alert('Failed to copy code. Please select and copy manually.');
+            });
+        }
+        
+        // Reset to default values
+        function resetToDefault() {
+            if (currentPopupId) {
+                const popup = popups.find(p => p.id === currentPopupId);
+                if (popup) {
+                    popup.logoUrl = '';
+                    popup.headerMessage = 'We deliver orders in Maharashtra, Gujarat, Bangalore, and Hyderabad only.\nPlease enter your pincode to check delivery availability.';
+                    popup.placeholderText = 'Enter your pincode';
+                    popup.buttonText = 'Start Shopping';
+                    popup.checkButtonText = 'Check';
+                    popup.primaryColor = '#28a745';
+                    popup.primaryDarkColor = '#093b15';
+                    popup.backgroundColor = '#ffffff';
+                    popup.textColor = '#222222';
+                    popup.borderRadius = '12';
+                    popup.popupWidth = '400';
+                    popup.showDelay = '5';
+                    popup.autoShow = true;
+                    popup.name = `Popup ${popups.indexOf(popup) + 1}`;
+                }
+            }
+            document.getElementById('popupName').value = '';
+            document.getElementById('logoUrl').value = '';
+            document.getElementById('headerMessage').value = 'We deliver orders in Maharashtra, Gujarat, Bangalore, and Hyderabad only.\nPlease enter your pincode to check delivery availability.';
+            document.getElementById('placeholderText').value = 'Enter your pincode';
+            document.getElementById('buttonText').value = 'Start Shopping';
+            document.getElementById('checkButtonText').value = 'Check';
+            document.getElementById('primaryColor').value = '#28a745';
+            document.getElementById('primaryDarkColor').value = '#093b15';
+            document.getElementById('backgroundColor').value = '#ffffff';
+            document.getElementById('textColor').value = '#222222';
+            document.getElementById('borderRadius').value = '12';
+            document.getElementById('popupWidth').value = '400';
+            document.getElementById('showDelay').value = '5';
+            document.getElementById('autoShow').checked = true;
+            document.getElementById('previewLabel').textContent = 'Live Preview';
+            updatePreview();
+        }
+        
+        // Add event listeners for real-time preview
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = ['popupName', 'logoUrl', 'headerMessage', 'placeholderText', 'buttonText', 
+                           'checkButtonText', 'primaryColor', 'primaryDarkColor', 'backgroundColor', 
+                           'textColor', 'borderRadius', 'popupWidth', 'showDelay', 'autoShow'];
+            
+            inputs.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('input', updatePreview);
+                }
+            });
+            
+            // Initialize with one popup
+            addNewPopup();
+        });
+    </script>
+</body>
+</html>

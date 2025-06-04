@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Product Card Generator</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; font-weight: bold; }
+    input[type="text"], input[type="number"] {
+      width: 100%; padding: 8px; margin-top: 5px;
+    }
+    .output-code { white-space: pre-wrap; background: #f4f4f4; padding: 10px; border: 1px solid #ccc; margin-top: 20px; }
+    .preview-wrapper { margin-top: 30px; }
+    button.copy-btn { margin-top: 10px; padding: 8px 16px; background: black; color: white; border: none; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <h1>🛍️ Product Card Generator</h1>
+
+  <form id="cardForm">
+    <div class="form-group">
+      <label for="title">Product Title:</label>
+      <input type="text" id="title" required />
+    </div>
+    <div class="form-group">
+      <label for="image">Image Path (e.g., assets/P1.webp):</label>
+      <input type="text" id="image" required />
+    </div>
+    <div class="form-group">
+      <label for="mrp">MRP (₹):</label>
+      <input type="number" id="mrp" required />
+    </div>
+    <div class="form-group">
+      <label for="pay">Pay Price (₹):</label>
+      <input type="number" id="pay" required />
+    </div>
+    <button type="submit">Generate Card</button>
+  </form>
+
+  <div class="preview-wrapper">
+    <h2>Live Preview</h2>
+    <section id="product">
+      <!-- Generated card will go here -->
+    </section>
+  </div>
+
+  <div>
+    <h2>Generated HTML Code</h2>
+    <pre class="output-code" id="outputCode"></pre>
+    <button class="copy-btn" onclick="copyCode()">Copy Code</button>
+  </div>
+
+  <script>
+    const form = document.getElementById("cardForm");
+    const preview = document.getElementById("product");
+    const output = document.getElementById("outputCode");
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const title = document.getElementById("title").value;
+      const image = document.getElementById("image").value;
+      const mrp = parseFloat(document.getElementById("mrp").value);
+      const pay = parseFloat(document.getElementById("pay").value);
+
+      const discountAmount = mrp - pay;
+      const discountPercent = ((discountAmount / mrp) * 100).toFixed(0);
+      const discountText = `SAVE ₹${discountAmount} (${discountPercent}% OFF)`;
+
+      const cardHTML = `
+<div class="card">
+  <div class="discount-banner">${discountText}</div>
+  <div class="product-image">
+    <img src="${image}" alt="${title}">
+  </div>
+  <div class="product-details">
+    <h3>${title}</h3>
+    <div class="price-buttons">
+      <button class="mrp">MRP ₹${mrp}</button>
+      <button class="pay">PAY ₹${pay}</button>
+      <label class="wishlist">
+        <input type="checkbox" class="heart-checkbox">
+        <span class="heart-icon">🤍</span>
+      </label>
+    </div>
+    <div class="cart-actions">
+      <button class="add-to-cart">ADD TO CART</button>
+      <input type="number" class="quantity-input" value="1" min="1">
+    </div>
+  </div>
+</div>`;
+
+      preview.innerHTML = cardHTML;
+      output.textContent = cardHTML.trim();
+    });
+
+    function copyCode() {
+      const code = document.getElementById("outputCode").innerText;
+      navigator.clipboard.writeText(code)
+        .then(() => alert("Code copied to clipboard!"))
+        .catch(() => alert("Failed to copy."));
+    }
+  </script>
+
+</body>
+</html>
+
+
+
+< Card Page backup>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Product Card Generator</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; font-weight: bold; }
+    input[type="text"], input[type="number"] {
+      width: 100%; padding: 8px; margin-top: 5px;
+    }
+    .output-code { white-space: pre-wrap; background: #f4f4f4; padding: 10px; border: 1px solid #ccc; margin-top: 20px; }
+    .preview-wrapper { margin-top: 30px; }
+    button.copy-btn { margin-top: 10px; padding: 8px 16px; background: black; color: white; border: none; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <h1>🛍️ Product Card Generator</h1>
+
+  <form id="cardForm">
+    <div class="form-group">
+      <label for="title">Product Title:</label>
+      <input type="text" id="title" required />
+    </div>
+    <div class="form-group">
+      <label for="image">Image Path (e.g., assets/P1.webp):</label>
+      <input type="text" id="image" required />
+    </div>
+    <div class="form-group">
+      <label for="mrp">MRP (₹):</label>
+      <input type="number" id="mrp" required />
+    </div>
+    <div class="form-group">
+      <label for="pay">Pay Price (₹):</label>
+      <input type="number" id="pay" required />
+    </div>
+    <button type="submit">Generate Card</button>
+  </form>
+
+  <div class="preview-wrapper">
+    <h2>Live Preview</h2>
+    <section id="product">
+      <!-- Generated card will go here -->
+    </section>
+  </div>
+
+  <div>
+    <h2>Generated HTML Code</h2>
+    <pre class="output-code" id="outputCode"></pre>
+    <button class="copy-btn" onclick="copyCode()">Copy Code</button>
+  </div>
+<script>
+  const form = document.getElementById("cardForm");
+  const preview = document.getElementById("product");
+  const output = document.getElementById("outputCode");
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const title = document.getElementById("title").value;
+    const image = document.getElementById("image").value;
+    const mrp = parseFloat(document.getElementById("mrp").value);
+    const pay = parseFloat(document.getElementById("pay").value);
+
+    const discountAmount = mrp - pay;
+    const discountPercent = ((discountAmount / mrp) * 100).toFixed(0);
+
+    const cardHTML = `
+<div class="card">
+  <div class="discount-banner">SAVE ₹${discountAmount} (${discountPercent}% OFF)</div>
+  <div class="product-image">
+    <img src="${image}" alt="${title}">
+  </div>
+  <div class="product-details">
+    <h3>${title}</h3>
+    <div class="price-buttons">
+      <button class="mrp" data-mrp="${mrp}">MRP ₹${mrp}</button>
+      <button class="pay">PAY ₹${pay}</button>
+      <label class="wishlist">
+        <input type="checkbox" class="heart-checkbox">
+        <span class="heart-icon">🤍</span>
+      </label>
+    </div>
+    <div class="cart-actions">
+      <button class="add-to-cart">ADD TO CART</button>
+      <input type="number" class="quantity-input" value="1" min="1">
+    </div>
+  </div>
+</div>`;
+
+    // Inject card into preview & code box
+    preview.innerHTML = cardHTML;
+    output.textContent = cardHTML.trim();
+
+    bindQuantityHandlers();
+  });
+
+  function bindQuantityHandlers() {
+    document.querySelectorAll(".card").forEach(card => {
+      const qtyInput = card.querySelector(".quantity-input");
+      const payButton = card.querySelector(".pay");
+      const mrpButton = card.querySelector(".mrp");
+
+      if (!qtyInput || !payButton || !mrpButton) return;
+
+      // Parse the numeric PAY amount out of the button text
+      const basePay = parseFloat(
+        payButton.textContent.replace(/[^\d.]/g, "")
+      );
+
+      qtyInput.addEventListener("input", () => {
+        const qty = Math.max(parseInt(qtyInput.value, 10) || 1, 1);
+        payButton.textContent = `PAY ₹${qty * basePay}`;
+      });
+    });
+  }
+
+  function copyCode() {
+    const code = output.innerText;
+    navigator.clipboard.writeText(code)
+      .then(() => alert("Code copied to clipboard!"))
+      .catch(() => alert("Failed to copy."));
+  }
+</script>
+
+</body>
+</html>
+
+
+
+
+
+/*------------ Nav Bar css csss ---------------------------------------------------------------------------------------------------*/
+
+
+
+
+.logo-wrapper {
+  max-height: 75px;
+}
+
+.logo {
+  height: auto;
+  max-height: 75px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+
+/*------------ Top Header csss ---------------------------------------------------------------------------------------------------*/
+
+
+
+.header2{
+  background-color: #16BAE4;
+  height: 35px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0 20px;
+  box-shadow: 0 0 3px #000;
+}
+.header2 a:hover{
+  text-decoration: underline;
+  color: #000;
+}
+
+/* Icon styling */
+.header2 .mobile-support-cart i {
+  font-size: 18px;
+  color: #fff;
+  margin-right: -10px;
+  margin-top: 3px;
+  margin-left: 5px;
+}
+
+/* Text (e.g., "Support") spacing */
+.header2 .mobile-support-cart span {
+ 
+padding-right: 20px;
+  font-weight: 500;
+  color: #fff;
+}
+
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  font-size: 13px;
+  padding: 0 4px; /* Adjust spacing around text */
+}
+
+.nav-links span {
+  color: white;
+  font-size: 13px;
+  padding: 0 2px; /* Tight space around '|' */
+}
+
+
+/* Nav Bar 1st Css */
+
+.logo {
+  height: 75px;
+  width: auto;
+  cursor: pointer;
+}
+
+.navbar:first-of-type {
+  position: relative;
+  z-index: 1050; /* Ensure first navbar is above second */
+}
+
+.navbar .dropdown-menu {
+  position: absolute;
+  z-index: 1060; /* Dropdown above both navbars */
+}
+
+.navbar form .btn-primary {
+  background-color: #0288d1;
+  border: none;
+}
+
+.navbar form .form-control {
+  border-left: none;
+}
+
+.badge {
+  font-size: 0.6rem;
+}
+
+
+/* Mobile All button styling */
+.dropdown-mobile .btn {
+  background-color: #99d052;  
+  color: #fff;                /* White text */
+  border: none;               
+}
+
+.dropdown-mobile .btn:hover {
+  background-color: #88be45;  
+}
+
+/* Custom border-radius on 3 sides */
+.dropdown-desktop .btn,
+.dropdown-mobile .btn,
+.input-group .btn,
+.input-group .form-control {
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6; /* no rounding */
+}
+
+
+/* navbar.css */
+
+.navbar {
+  background-color: #fff;
+  border-bottom: 1px solid #dee2e6;
+  padding: 0.5rem 1rem;
+}
+
+.navbar .logo {
+  max-height: 75px;
+}
+
+.input-group .dropdown-toggle {
+  background-color: #99d052;
+  border: 1px solid #ced4da;
+}
+
+.dropdown-menu .dropdown-item:hover {
+  background-color: #3faee1;
+  color: white;
+}
+
+@media (max-width: 991.98px) {
+  .dropdown-desktop {
+    display: none !important;
+  }
+}
+
+@media (min-width: 992px) {
+  .dropdown-mobile {
+    display: none !important;
+  }
+}
+@media (max-width: 991.98px) {
+  .navbar .logo-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+}
+
+
+/*--------------------------------------2nd navbar-----------------------------------------------------*/
+.category-scroll-container {
+  display: flex;            /* ensure flex layout */
+  gap: 10px;                /* add gap between items */
+  background-color:#9FBF1C;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+scroll-behavior: smooth;
+overflow-x: auto;
+
+  /* Keep these overrides */
+  border-bottom: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.category-item {
+  flex: 0 0 auto;
+  width: 70px;
+  text-align: center;
+
+  /* Remove text decoration */
+  text-decoration: none !important;
+
+  /* Keep other overrides */
+  outline: none !important;
+  box-shadow: none !important;
+  border-bottom: none !important;
+}
+
+.category-img {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+}
+
+.category-label {
+  font-size: 9px;
+  font-weight: bold;
+  color: #333;
+  text-decoration: none !important;
+}
+
+/* Hide scroll on desktop */
+@media (min-width: 992px) {
+  .category-scroll-container {
+    display: none !important;
+  }
+}
+
+/* Tab view styles with same gap */
+.tab-view {
+  display: flex;
+  gap: 10px;       /* same gap as category */
+}
+
+.tab-item {
+  /* Example tab item style */
+  padding: 8px 16px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  cursor: pointer;
+
+  /* To keep consistent no decoration */
+  text-decoration: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  border-bottom: none !important;
+}
+
+.scroll-wrapper {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+.category-item {
+  flex: 0 0 auto;
+  min-width: 70px; /* Adjust as needed */
+}
+
+
+.quantity-input {
+  width: 50px;
+  padding: 6px 10px;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  border-radius: 10px;
+  text-align: center;
+}
+
+
+.second-navbar {
+  position: relative;
+  z-index: 1000;
+}
+
+.navbar-nav {
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  background: #EEEEEE;
+ box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding-left: 0;
+  padding-right: 0;
+  margin-bottom: 0px;
+box-shadow: #000;
+
+
+}
+.navbar-nav a:hover{
+  text-decoration: underline;
+  color: rgb(230, 22, 22);
+ transform: scale(1.05);
+ 
+}
+
+
+/* Hide second navbar by default */
+.second-navbar {
+  display: none;
+}
+
+/* Show only on large screens (desktop and up) */
+@media (min-width: 992px) {
+  .second-navbar {
+    display: block;
+  }
+
+  .category-navbar {
+    position: sticky;
+    top: 0;
+    z-index: 900; /* Keeps it below primary nav (z-index ~1050) */
+    background-color: #ffffff;
+    border-top: 1px solid #e0e0e0;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    padding: 0; /* Remove default padding */
+  }
+
+  .category-navbar .navbar-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem; /* Better spacing between items */
+  }
+
+  .category-navbar .nav-link {
+    padding: 0.75rem 1rem;
+    font-weight:  bold;
+    font-size: 13px;
+    color: #222;
+    transition: color 0.2s ease-in-out, text-decoration 0.2s;
+    white-space: nowrap;
+    position: relative;
+  }
+
+  .category-navbar .nav-link:hover {
+    
+    text-decoration: underline;
+    color: red;
+  }
+
+  /* Optional pipe separator */
+  .category-navbar .nav-item:not(:last-child)::after {
+    content: "|";
+    position: absolute;
+    right: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #ccc;
+    font-size: 14px;
+    font-weight: normal;
+  }
+}
+
+.nav-btn.prev,
+.nav-btn.next {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}

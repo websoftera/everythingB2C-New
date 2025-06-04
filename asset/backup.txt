@@ -1,0 +1,274 @@
+
+.hero-slider-section {
+    padding: 0;
+    margin-bottom: 0px;
+    margin-top: -40px;
+    
+}
+
+.carousel {
+    position: relative;
+    width: 100%;
+    height: 380px;
+    overflow: hidden;
+    background-color: #f0f2f5;
+    padding-top: 40px;
+}
+
+.carousel-inner {
+    height: 100%;
+}
+
+.carousel-item {
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    text-align: center;
+    color: #fff;
+}
+
+.carousel-item {
+    display: none; /* hide all slides */
+}
+
+
+
+.carousel-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    /* Optional overlay styling */
+}
+
+/* Background images */
+.hero-slide-1 {
+    background-image: url('../images/slide.webp');
+}
+
+.hero-slide-2 {
+    background-image: url('../images/slide_2.webp');
+}
+
+/* ==== Responsive adjustments ==== */
+@media (max-width: 768px) {
+    .carousel {
+        height: 120px;
+        padding-top: 20px;
+    }
+    .carousel-item {
+        font-size: 1rem;
+        padding: 20px;
+        flex-direction: column;
+    }
+   /*  .carousel-item::before {
+        
+    }*/
+}
+
+@media (max-width: 480px) {
+    .carousel {
+        padding-top: 10px;
+        height: 120px;
+    }
+    .carousel-item {
+        font-size: 0.9rem;
+        padding: 10px;
+        flex-direction: column;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!--hero section-->
+ <section class="hero-slider-section">
+    <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="1500">
+        <div class="carousel-inner">
+            <div class="carousel-item active hero-slide hero-slide-1">
+                <div class="carousel-caption d-block text-start">
+                    <!-- Optional caption content -->
+                </div>
+            </div>
+
+            <div class="carousel-item hero-slide hero-slide-2">
+                <div class="carousel-caption d-block text-end">
+                    <!-- Optional caption content -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Arrows removed -->
+    </div>
+</section>
+
+
+
+
+card section 
+
+
+
+
+<div class="card">
+      <div class="discount-banner">SAVE ₹200 ( 50% OFF )</div>
+      <div class="product-image">
+        <img src="./asset/Products Offering Discount Images/P1.webp" alt="JK Sparkle">
+      </div>
+      <div class="product-details">
+        <h3>JK SPARKLE</h3>
+        <div class="price-buttons">
+          <button class="mrp">MRP ₹ 400</button>
+          <button class="pay">PAY ₹ 200</button>
+          <label class="wishlist">
+            <input type="checkbox" class="heart-checkbox">
+            <span class="heart-icon">🤍</span>
+          </label>
+        </div>
+        <div class="cart-actions">
+          <button class="add-to-cart">ADD TO CART</button>
+          <input type="number" class="quantity-input" value="1" min="1">
+        </div>
+      </div>
+    </div>
+
+
+
+
+js ------------------------> 
+
+
+
+  <script>
+  const toggleBtn = document.getElementById('navbarToggle');
+  const closeBtn = document.getElementById('closeBtn');
+  const navbar = document.getElementById('navbarSupportedContent');
+
+  toggleBtn.addEventListener('click', () => {
+    navbar.classList.add('show');
+    toggleBtn.style.display = 'none';
+    closeBtn.style.display = 'block';
+  });
+
+  closeBtn.addEventListener('click', () => {
+    navbar.classList.remove('show');
+    closeBtn.style.display = 'none';
+    toggleBtn.style.display = 'block';
+  });
+</script>
+
+
+btn ------------------------------------->
+<section class="header0">
+  <h5 class="header-title">Products You Might Also Like</h5>
+  <a href="#"><button class="P-Button">View All<span> &gt;</span> </button></a>
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+.category-section {
+  padding: 10px;
+  width: auto;
+}
+
+.category-wrapper {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.category-container {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 10px 0;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+}
+
+.category-container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
+.category-card {
+  text-align: center;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+/* Add this for image container */
+.category-card img {
+  width: 190;
+  max-width: 400px; /* controls max size */
+  height: 270px;
+  object-fit: cover;
+  border: 6px solid #c0baba; /* black border */
+  
+  display: block;
+  margin: 0 auto;
+}
+
+
+
+
+/* Show nav buttons only on small screens (mobile/tablet) */
+@media (max-width: 768px) {
+  .nav-btn1 {
+    display: block;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: white;
+    border: 1px solid #aaa;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10;
+    
+  }
+  .nav-btn1 {
+  display: none;
+}
+
+  .mobile-prev-btn {
+    left: 5px;
+  }
+
+  .mobile-next-btn {
+    right: 5px;
+  }
+}
+

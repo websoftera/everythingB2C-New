@@ -1,0 +1,422 @@
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+
+.logo-wrapper {
+  max-height: 75px;
+}
+
+.logo {
+  height: auto;
+  max-height: 75px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+
+/*------------ Top Header csss ---------------------------------------------------------------------------------------------------*/
+
+
+
+.header2{
+  background-color: #16BAE4;
+  height: 35px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0 20px;
+  box-shadow: 0 0 3px #000;
+}
+.header2 a:hover{
+  text-decoration: underline;
+  color: #000;
+}
+
+/* Icon styling */
+.header2 .mobile-support-cart i {
+  font-size: 18px;
+  color: #fff;
+  margin-right: -10px;
+  margin-top: 3px;
+  margin-left: 5px;
+}
+
+/* Text (e.g., "Support") spacing */
+.header2 .mobile-support-cart span {
+ 
+padding-right: 20px;
+  font-weight: 500;
+  color: #fff;
+}
+
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  font-size: 13px;
+  padding: 0 4px; /* Adjust spacing around text */
+}
+
+.nav-links span {
+  color: white;
+  font-size: 13px;
+  padding: 0 2px; /* Tight space around '|' */
+}
+
+
+
+
+
+
+
+
+
+
+/*---------------------------------------------------------------------------------------------------------------*/
+
+/*-------------------------------------footer seaction --------------------------------------*/
+.footer-column ul li a {
+  color: white;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-column ul li a:hover {
+  color: #ccc; /* Optional: subtle hover color change */
+  text-decoration: none;
+}
+
+.desktop-footer {
+  background-color: #223459;
+  color: white;
+  padding: 40px 30px 20px;
+  font-family: Arial, sans-serif;
+}
+
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+  gap: 40px;
+ 
+}
+
+.footer-column {
+  flex: 1;
+  min-width: 180px;
+}
+
+.footer-column h3 {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: white;
+}
+
+.footer-column ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-column ul li {
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #ccc;
+  cursor: pointer;
+}
+
+.footer-column ul li:hover {
+  text-decoration: underline;
+  color: white;
+}
+
+.footer-column.social .icons i {
+  font-size: 16px;
+  margin-right: 12px;
+  color: #ccc;
+  cursor: pointer;
+}
+
+.footer-column.social .icons i:hover {
+  color: white;
+}
+
+.footer-bottom {
+  text-align: center;
+  margin-top: 0px;
+  font-size: 14px;
+  color: #ccc;
+}
+
+/* RESPONSIVE STYLES */
+@media (max-width: 1024px) {
+  .desktop-footer {
+    padding: 20px 30px;
+
+  }
+  
+  .footer-container {
+    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 30px;
+  }
+  
+  .footer-column {
+    min-width: 100%;
+    flex: none;
+  }
+  
+  .footer-column h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+  }
+  
+  .footer-column ul li {
+    font-size: 16px;
+  }
+  
+  .footer-column.social .icons i {
+    font-size: 20px;
+    margin-right: 15px;
+  }
+  
+  .footer-bottom {
+    font-size: 16px;
+    margin-top: 20px;
+  }
+}
+
+
+
+/* Scroll to Top Button */
+.scroll-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #9acd32;
+  color: white;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 18px;
+  z-index: 1000;
+  transition: opacity 0.3s;
+}
+
+.scroll-to-top:hover {
+  opacity: 0.85;
+}
+
+
+
+
+/*--------------------------*/
+
+
+
+/*--------------------------------------2nd navbar-----------------------------------------------------*/
+.category-scroll-container {
+  display: flex;            /* ensure flex layout */
+  gap: 10px;                /* add gap between items */
+  background-color:#9FBF1C;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+scroll-behavior: smooth;
+overflow-x: auto;
+
+  /* Keep these overrides */
+  border-bottom: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.category-item {
+  flex: 0 0 auto;
+  width: 70px;
+  text-align: center;
+
+  /* Remove text decoration */
+  text-decoration: none !important;
+
+  /* Keep other overrides */
+  outline: none !important;
+  box-shadow: none !important;
+  border-bottom: none !important;
+}
+
+.category-img {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+}
+
+.category-label {
+  font-size: 9px;
+  font-weight: bold;
+  color: #333;
+  text-decoration: none !important;
+}
+
+/* Hide scroll on desktop */
+@media (min-width: 992px) {
+  .category-scroll-container {
+    display: none !important;
+  }
+}
+
+/* Tab view styles with same gap */
+.tab-view {
+  display: flex;
+  gap: 10px;       /* same gap as category */
+}
+
+.tab-item {
+  /* Example tab item style */
+  padding: 8px 16px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  cursor: pointer;
+
+  /* To keep consistent no decoration */
+  text-decoration: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  border-bottom: none !important;
+}
+
+.scroll-wrapper {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+.category-item {
+  flex: 0 0 auto;
+  min-width: 70px; /* Adjust as needed */
+}
+
+
+.quantity-input {
+  width: 50px;
+  padding: 6px 10px;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  border-radius: 10px;
+  text-align: center;
+}
+
+
+.second-navbar {
+  position: relative;
+  z-index: 1000;
+}
+
+.navbar-nav {
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  background: #EEEEEE;
+ box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding-left: 0;
+  padding-right: 0;
+  margin-bottom: 0px;
+box-shadow: #000;
+
+
+}
+.navbar-nav a:hover{
+  text-decoration: underline;
+  color: rgb(230, 22, 22);
+ transform: scale(1.05);
+ 
+}
+
+
+/* Hide second navbar by default */
+.second-navbar {
+  display: none;
+}
+
+/* Show only on large screens (desktop and up) */
+@media (min-width: 992px) {
+  .second-navbar {
+    display: block;
+  }
+
+  .category-navbar {
+    position: sticky;
+    top: 0;
+    z-index: 900; /* Keeps it below primary nav (z-index ~1050) */
+    background-color: #ffffff;
+    border-top: 1px solid #e0e0e0;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    padding: 0; /* Remove default padding */
+  }
+
+  .category-navbar .navbar-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem; /* Better spacing between items */
+  }
+
+  .category-navbar .nav-link {
+    padding: 0.75rem 1rem;
+    font-weight:  bold;
+    font-size: 13px;
+    color: #222;
+    transition: color 0.2s ease-in-out, text-decoration 0.2s;
+    white-space: nowrap;
+    position: relative;
+  }
+
+  .category-navbar .nav-link:hover {
+    
+    text-decoration: underline;
+    color: rgb(4, 238, 255);
+  }
+
+  /* Optional pipe separator */
+  .category-navbar .nav-item:not(:last-child)::after {
+    content: "|";
+    position: absolute;
+    right: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #ccc;
+    font-size: 14px;
+    font-weight: normal;
+  }
+}
+
+.nav-btn.prev,
+.nav-btn.next {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Hide scrollbar for WebKit browsers */
+.category-scroll-container::-webkit-scrollbar,
+.scroll-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for Firefox */
+.category-scroll-container,
+.scroll-wrapper {
+  scrollbar-width: none;       /* Firefox */
+  -ms-overflow-style: none;    /* Internet Explorer 10+ */
+}
+
+
+
+
+

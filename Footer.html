@@ -1,0 +1,218 @@
+
+      
+      
+              
+
+<footer class="Footer-container0"> 
+ 
+<link rel="stylesheet" href="./Footer.css">
+<link rel="stylesheet" href="./Header.css">
+<!---Footer Section ------------------------->
+
+<footer class="desktop-footer">
+  <div class="footer-container">
+    <!-- Product Categories -->
+    <div class="footer-column">
+      <h3>PRODUCT CATEGORIES</h3>
+      <ul>
+        <li><a href="#">SCHOOL STATIONERY</a></li>
+        <li><a href="#">OFFICE STATIONERY</a></li>
+        <li><a href="#">CLEANING & HOUSEHOLD</a></li>
+        <li><a href="#">PERSONAL CARE</a></li>
+        <li><a href="#">DIAPERS & WIPES</a></li>
+        <li><a href="#">HOME & GARDEN</a></li>
+        <li><a href="#">KITCHEN</a></li>
+        <li><a href="#">OTHER</a></li>
+      </ul>
+    </div>
+
+    <!-- Our Policy -->
+    <div class="footer-column">
+      <h3>OUR POLICY</h3>
+      <ul>
+        <li><a href="Privacy  page.html">PRIVACY POLICY</a></li>
+        <li><a href="Refund page.html">REFUND AND RETURNS POLICY</a></li>
+      </ul>
+    </div>
+
+    <!-- Important Links -->
+    <div class="footer-column">
+      <h3>IMPORTANT LINKS</h3>
+      <ul>
+        <li><a href="shop.html">SHOP</a></li>
+        <li><a href="my-account.html">MY ACCOUNT</a></li>
+        <li><a href="cart.html">CART</a></li>
+        <li><a href="checkout.html">CHECKOUT</a></li>
+      </ul>
+    </div>
+
+    <!-- Social Icons -->
+    <div class="footer-column social">
+      <h3>FOLLOW US</h3>
+      <div class="icons">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-skype"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-youtube"></i></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Bottom -->
+  <div class="footer-bottom">
+    <p>© 2025 EverythingB2C - <strong>All Rights Reserved</strong></p>
+  </div>
+</footer>
+
+
+<!--- ------------------->
+
+<script>
+  const container = document.querySelector('.category-container');
+  const nextBtn1 = document.querySelector('.mobile-next-btn');
+  const prevBtn1 = document.querySelector('.mobile-prev-btn');
+
+  nextBtn1.addEventListener('click', () => {
+    container.scrollBy({ left: container.offsetWidth, behavior: 'smooth' });
+  });
+
+  prevBtn1.addEventListener('click', () => {
+    container.scrollBy({ left: -container.offsetWidth, behavior: 'smooth' });
+  });
+</script>
+
+<!----------------------------------->
+
+<script>
+  document.querySelectorAll('.card').forEach(card => {
+    const mrpButton = card.querySelector('.mrp');
+    const payButton = card.querySelector('.pay');
+    const qtyInput = card.querySelector('.quantity-input');
+
+    // Get MRP value from data attribute
+    const baseMRP = parseInt(mrpButton.getAttribute('data-mrp'));
+
+    qtyInput.addEventListener('input', () => {
+      const quantity = parseInt(qtyInput.value) || 1;
+      const total = baseMRP * quantity;
+
+      // Update the PAY button
+      payButton.textContent = `PAY ₹${total}`;
+    });
+  });
+</script>
+
+
+<!-------------------------------------------------------------------------------------------->
+<script>
+  // Handle checkbox toggle and store in localStorage
+  document.querySelectorAll('.heart-checkbox').forEach(cb => {
+    cb.addEventListener('change', function () {
+      const card = this.closest('.card');
+      const product = {
+        id: card.getAttribute('data-id'),
+        html: card.outerHTML
+      };
+
+      let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+
+      if (this.checked) {
+        if (!wishlist.find(item => item.id === product.id)) {
+          wishlist.push(product);
+        }
+      } else {
+        wishlist = wishlist.filter(item => item.id !== product.id);
+      }
+
+      localStorage.setItem('wishlist', JSON.stringify(wishlist));
+
+      // Optional: Update icon
+      const label = this.nextElementSibling;
+      label.textContent = this.checked ? '❤️' : '🤍';
+    });
+  });
+
+  // Function to render wishlist items (e.g., on a wishlist page)
+  function renderWishlist() {
+    const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+    const container = document.getElementById('wishlist-container');
+
+    if (container) {
+      container.innerHTML = wishlist.map(item => item.html).join('');
+    }
+  }
+
+  // Call renderWishlist if on wishlist page
+  document.addEventListener('DOMContentLoaded', renderWishlist);
+</script>
+
+<!-----------------------------------Mobile menu auto scroll ----------------------------------------------------------------->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const scrollContainer = document.querySelector(".scroll-wrapper");
+
+    if (window.innerWidth < 992 && scrollContainer) {
+      // Clone all items to create infinite effect
+      const items = scrollContainer.children;
+      const clone = scrollContainer.innerHTML;
+      scrollContainer.innerHTML += clone;
+
+      let scrollPos = 0;
+      const scrollStep = 150; // px
+      const interval = 2000;
+
+      setInterval(() => {
+        scrollPos += scrollStep;
+        scrollContainer.scrollTo({ left: scrollPos, behavior: "smooth" });
+
+        // If we've scrolled past the original content
+        if (scrollPos >= scrollContainer.scrollWidth / 2) {
+          // Reset scroll position without animation
+          scrollContainer.scrollTo({ left: 0, behavior: "auto" });
+          scrollPos = 0;
+        }
+      }, interval);
+    }
+  });
+</script>
+
+
+
+    <script>
+    
+  window.addEventListener('load', function() {
+    fetch('/popup.html')  // Correct path to your popup file here
+      .then(response => response.text())
+      .then(html => {
+        // Append popup HTML to body
+        document.body.insertAdjacentHTML('beforeend', html);
+
+        // Now show the popup after 5 seconds
+        setTimeout(() => {
+          document.getElementById("popupForm").style.display = "block";
+          document.getElementById("popupOverlay").style.display = "block";
+        }, 5000);
+
+        // Define close function after popup is added
+        window.closeLoginForm = function () {
+          document.getElementById("popupForm").style.display = "none";
+          document.getElementById("popupOverlay").style.display = "none";
+        }
+      })
+      .catch(error => {
+        console.error('Error loading popup:', error);
+      });
+  });
+</script>
+
+
+
+
+
+
+
+
+
+ </footer>
+

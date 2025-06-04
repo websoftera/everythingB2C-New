@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Product Card Generator</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; font-weight: bold; }
+    input[type="text"], input[type="number"] {
+      width: 100%; padding: 8px; margin-top: 5px;
+    }
+    .output-code { white-space: pre-wrap; background: #f4f4f4; padding: 10px; border: 1px solid #ccc; margin-top: 20px; }
+    .preview-wrapper { margin-top: 30px; }
+    button.copy-btn { margin-top: 10px; padding: 8px 16px; background: black; color: white; border: none; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <h1>🛍️ Product Card Generator</h1>
+
+  <form id="cardForm">
+    <div class="form-group">
+      <label for="title">Product Title:</label>
+      <input type="text" id="title" required />
+    </div>
+    <div class="form-group">
+      <label for="image">Image Path (e.g., assets/P1.webp):</label>
+      <input type="text" id="image" required />
+    </div>
+    <div class="form-group">
+      <label for="mrp">MRP (₹):</label>
+      <input type="number" id="mrp" required />
+    </div>
+    <div class="form-group">
+      <label for="pay">Pay Price (₹):</label>
+      <input type="number" id="pay" required />
+    </div>
+    <button type="submit">Generate Card</button>
+  </form>
+
+  <div class="preview-wrapper">
+    <h2>Live Preview</h2>
+    <section id="product">
+      <!-- Generated card will go here -->
+    </section>
+  </div>
+
+  <div>
+    <h2>Generated HTML Code</h2>
+    <pre class="output-code" id="outputCode"></pre>
+    <button class="copy-btn" onclick="copyCode()">Copy Code</button>
+  </div>
+
+<script>
+  const form = document.getElementById("cardForm");
+  const preview = document.getElementById("product");
+  const output = document.getElementById("outputCode");
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const title = document.getElementById("title").value;
+    const image = document.getElementById("image").value;
+    const mrp = parseFloat(document.getElementById("mrp").value);
+    const pay = parseFloat(document.getElementById("pay").value);
+
+    const discountAmount = mrp - pay;
+    const discountPercent = ((discountAmount / mrp) * 100).toFixed(0);
+    const uniqueId = `prod-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+
+    const cardHTML = `
+<div class="card" data-id="${uniqueId}">
+  <div class="discount-banner">SAVE ₹${discountAmount} (${discountPercent}% OFF)</div>
+  <div class="product-image">
+    <img src="${image}" alt="${title}">
+  </div>
+  <div class="product-details">
+    <h3>${title}</h3>
+    <div class="price-buttons">
+      <button class="mrp" data-mrp="${mrp}">MRP ₹${mrp}</button>
+      <button class="pay" data-pay="${pay}">PAY ₹${pay}</button>
+      <label class="wishlist">
+        <input type="checkbox" class="heart-checkbox">
+        <span class="heart-icon">🤍</span>
+      </label>
+    </div>
+    <div class="cart-actions">
+      <button class="add-to-cart">ADD TO CART</button>
+      <input type="number" class="quantity-input" value="1" min="1">
+    </div>
+  </div>
+</div>`;
+
+    preview.innerHTML = cardHTML;
+    output.textContent = cardHTML.trim();
+
+    bindQuantityHandlers();
+  });
+
+  function bindQuantityHandlers() {
+    document.querySelectorAll(".card").forEach(card => {
+      const qtyInput = card.querySelector(".quantity-input");
+      const payButton = card.querySelector(".pay");
+
+      if (!qtyInput || !payButton) return;
+
+      const basePay = parseFloat(payButton.dataset.pay);
+
+      qtyInput.addEventListener("input", () => {
+        const qty = Math.max(parseInt(qtyInput.value, 10) || 1, 1);
+        payButton.textContent = `PAY ₹${qty * basePay}`;
+      });
+    });
+  }
+
+  function copyCode() {
+    const code = output.innerText;
+    navigator.clipboard.writeText(code)
+      .then(() => alert("Code copied to clipboard!"))
+      .catch(() => alert("Failed to copy."));
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1099 @@
+<!doctype html>
+<html lang="en">
+  <head>
+     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>EverythingB2C</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+  
+    <link rel="stylesheet" href="./asset/style/style.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  
+  <!-- Bootstrap Icons (optional for icons) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Bootstrap CSS -->
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+ <!-- Bootstrap Bundle JS (includes Popper) -->
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</head>
+  <body>
+    
+
+<section class="header2">
+  <div class="nav-links">
+    <a href="index.html">HOME</a><span>|</span>
+    <a href="wishlist.html">WISHLIST</a><span>|</span>
+    <a href="#">MY ACCOUNT</a><span>|</span>
+    <a href="#">LOGIN</a>
+  </div>
+<!-- Support & Cart icons for mobile only -->
+<div class="mobile-support-cart d-flex d-md-none">
+
+   <a href="cart.html" class="text-decoration-none text-dark">
+      <i class="bi bi-headset"></i>
+   </a>
+  <span></span>
+  <a href="cart.html" class="text-decoration-none text-dark">
+     <i class="bi bi-cart position-relative"></i>
+  </a>
+ 
+</div>
+
+</section>
+
+
+<!-- NAVBAR START -->
+<nav class="navbar navbar-expand-lg">
+  <div class="container-fluid d-flex align-items-center justify-content-between">
+    
+    <!-- Logo -->
+    <div class="logo-wrapper d-flex align-items-center">
+  <a href="index.html">
+    <img src="./Kichen Page/page2/logo.webp" alt="Logo" class="img-fluid logo" />
+  </a>
+</div>
+
+    <!-- Search Form -->
+    <form class="d-flex flex-grow-1 mx-4" role="search">
+     <div class="input-group w-100 flex-wrap">
+
+
+        <!-- DESKTOP Dropdown -->
+        <div class="dropdown-desktop">
+          <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+            All 
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">Packing Material</a></li>
+            <li><a class="dropdown-item" href="Kichen1.html">Kitchen</a></li>
+            <li><a class="dropdown-item" href="Other1.html">Other</a></li>
+            <li><a class="dropdown-item" href="#">All</a></li>
+            
+          </ul>
+        </div>
+
+        <!-- MOBILE Dropdown -->
+<div class="dropdown-mobile">
+  <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+    All
+  </button>
+  <ul class="dropdown-menu">
+    <li><a class="dropdown-item" href="#">Packing Material</a></li>
+    <li><a class="dropdown-item" href="Kichen1.html">Kitchen</a></li>
+    <li><a class="dropdown-item" href="#">Other</a></li>
+    <li><a class="dropdown-item" href="#">All</a></li>
+  </ul>
+</div>
+
+
+
+        <!-- Search Box -->
+        <input class="form-control" type="search" placeholder="Search for Products" aria-label="Search">
+        <button class="btn btn-primary" type="submit">
+          <i class="bi bi-search"></i>
+        </button>
+      </div>
+    </form>
+
+    <!-- Support & Cart -->
+   <div class="d-none d-lg-flex align-items-center">
+
+      <i class="bi bi-headset fs-4 me-2"></i>
+      <span class="me-4 fw-semibold">Customer Support</span>
+      
+<a href="cart.html" class="text-decoration-none text-dark">
+  <i class="bi bi-cart fs-4 position-relative"></i>
+  <span class="me-4 fw-semibold">Cart</span>
+
+</a>
+
+      
+    </div>
+  </div>
+</nav>
+
+
+<!-- CATEGORY SCROLL - ONLY MOBILE -->
+<div class="category-scroll-container d-block d-lg-none py-2 px-2">
+  <div class="scroll-wrapper d-flex flex-nowrap overflow-auto">
+    
+    <a href="#" class="category-item text-center mx-2">
+      <img src="./img/image_1.webp" alt="Stationery" class="category-img mb-1">
+      <div class="category-label">SCHOOL STATIONERY</div>
+    </a>
+
+    <a href="#" class="category-item text-center mx-2">
+      <img src="./img/image_2.webp" alt="Kitchen" class="category-img mb-1">
+      <div class="category-label">OFFICE STATIONERY</div>
+    </a>
+
+    <a href="#" class="category-item text-center mx-2">
+      <img src="./img/image_4.webp" alt="Cleaning" class="category-img mb-1">
+      <div class="category-label">CLEANING - HOUSEHOLD</div>
+    </a>
+
+        <a href="Personal Care.html" class="category-item text-center mx-2">
+      <img src="./img/image_1.webp" alt="Stationery" class="category-img mb-1">
+      <div class="category-label">PERSONAL CARE</div>
+    </a>
+
+    <a href="Diapers & Wipes.html" class="category-item text-center mx-2">
+      <img src="./img/image_2.webp" alt="Kitchen" class="category-img mb-1">
+      <div class="category-label">DIAPERS & WIPES</div>
+    </a>
+
+    <a href="Home & Gardan.html" class="category-item text-center mx-2">
+      <img src="./img/image_4.webp" alt="Cleaning" class="category-img mb-1">
+      <div class="category-label">HOME & GARDEN</div>
+    </a>
+
+        <a href="Kichen1.html" class="category-item text-center mx-2">
+      <img src="./img/image_1.webp" alt="Stationery" class="category-img mb-1">
+      <div class="category-label">KITCHEN</div>
+    </a>
+
+
+    <a href="Other1.html" class="category-item text-center mx-2">
+      <img src="./img/image_4.webp" alt="Cleaning" class="category-img mb-1">
+      <div class="category-label">OTHER</div>
+    </a>
+
+    <!-- Add more if needed -->
+
+  </div>
+</div>
+
+
+
+
+
+<div class="second-navbar d-none d-lg-block">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top w-100 category-navbar">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+
+      <!-- Navbar Content -->
+      <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
+        <ul class="navbar-nav category-list mb-2 mb-lg-0 d-flex align-items-center">
+          <li class="nav-item d-flex align-items-center">
+            <a class="nav-link" href="#">SCHOOL STATIONERY</a><span class="separator">|</span>
+          </li>
+          <li class="nav-item d-flex align-items-center">
+            <a class="nav-link" href="#">OFFICE STATIONERY</a><span class="separator">|</span>
+          </li>
+          <li class="nav-item d-flex align-items-center">
+            <a class="nav-link" href="#">CLEANING & HOUSEHOLD</a><span class="separator">|</span>
+          </li>
+          <li class="nav-item d-flex align-items-center">
+            <a class="nav-link" href="Personal Care.html">PERSONAL CARE</a><span class="separator">|</span>
+          </li>
+          <li class="nav-item d-flex align-items-center">
+            <a class="nav-link" href="Diapers & Wipes.html">DIAPERS & WIPES</a><span class="separator">|</span>
+          </li>
+          <li class="nav-item d-flex align-items-center">
+            <a class="nav-link" href="Home & Gardan.html">HOME & GARDEN</a><span class="separator">|</span>
+          </li>
+          <li class="nav-item d-flex align-items-center">
+            <a class="nav-link" href="Kichen1.html">KITCHEN</a><span class="separator">|</span>
+          </li>
+          <li class="nav-item d-flex align-items-center">
+            <a class="nav-link" href="Other1.html">OTHER</a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </nav>
+</div>
+
+
+
+    <!--hero section-->
+ <section class="hero-slider-section">
+    <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="1500">
+        <div class="carousel-inner">
+            <div class="carousel-item active hero-slide hero-slide-1">
+                <div class="carousel-caption d-block text-start">
+                    <!-- Optional caption content -->
+                </div>
+            </div>
+
+            <div class="carousel-item hero-slide hero-slide-2">
+                <div class="carousel-caption d-block text-end">
+                    <!-- Optional caption content -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Arrows removed -->
+    </div>
+</section>
+
+
+
+
+    <section>
+        <div class="container">
+            <h5 class="button">HOW WE WORK</h5>
+        </div>
+    </section>
+
+    <section>
+        <div class="process-container">
+            <div class="step">
+                <img src="./asset/images/work-1.webp" alt="Online Shopping">
+                <p>ONLINE SHOPPING</p>
+            </div>
+            <div class="arrow">
+                <img src="./asset/images/work-progress.webp" alt="Arrow">
+            </div>
+
+            <div class="step">
+                <img src="./asset/images/work-2.webp" alt="Warehouse">
+                <p>WAREHOUSE</p>
+            </div>
+            <div class="arrow">
+                <img src="./asset/images/work-progress.webp" alt="Arrow">
+            </div>
+
+            <div class="step">
+                <img src="./asset/images/work-3.webp" alt="Shipping">
+                <p>SHIPPING</p>
+            </div>
+            <div class="arrow">
+                <img src="./asset/images/work-progress.webp" alt="Arrow">
+            </div>
+
+            <div class="step">
+                <img src="./asset/images/work-01.webp" alt="Home Delivery">
+                <p>HOME DELIVERY</p>
+            </div>
+        </div>
+    </section>
+
+   
+
+
+
+ 
+
+<section class="header1" >
+    
+    <h5>Product Categories</h5>
+  
+</section> 
+
+<section class="category-section">
+  <div class="category-wrapper">
+    <div class="carousel-dots"></div>
+
+    <button class="nav-btn mobile-prev-btn">&#10094;</button>
+
+    <div class="category-container">
+      <div class="category-card">
+        <img src="./Home page/Product Categories images/KITCHEN.webp" alt="Packing Material" />
+        <p>PACKING MATERIAL <span>(6)</span></p>
+      </div>
+      <div class="category-card">
+        <img src="./Home page/Product Categories images/KITCHEN.webp" alt="Kitchen" />
+        <p>KITCHEN <span>(12)</span></p>
+      </div>
+      <!-- Add more cards here -->
+    </div>
+
+    <button class="nav-btn mobile-next-btn">&#10095;</button>
+  </div>
+</section>
+
+<!---------------------------------------------------------------------------------------------------------------------------->
+
+
+<section class="header0">
+  <h5 class="header-title"> Products Offering Discount</h5>
+  <a href="#"><button class="P-Button">View All<span> &gt;</span> </button></a>
+</section>
+
+<div class="product-carousel-wrapper">
+  <button class="nav-btn prev">&#10094;</button>
+
+  <section id="product">
+
+<div class="card" data-id="prod-1748499735007-6971">
+  <div class="discount-banner">SAVE ₹40 (9% OFF)</div>
+  <div class="product-image">
+    <img src="./Home page/Products Offering Discount Images/P1.webp" alt="JK LEDGER Paper 80 GSM | 500 Sheets">
+  </div>
+  <div class="product-details">
+    <h3>JK LEDGER Paper 80 GSM | 500 Sheets</h3>
+       <div class="price-buttons">
+      <button class="mrp" data-mrp="450">MRP ₹450</button>
+      <button class="pay" data-pay="410">PAY ₹410</button>
+      <label class="wishlist">
+        <input type="checkbox" class="heart-checkbox">
+        <span class="heart-icon">🤍</span>
+      </label>
+    </div>
+    <div class="cart-actions">
+      <button class="add-to-cart">ADD TO CART</button>
+      <input type="number" class="quantity-input" value="1" min="1">
+    </div>
+  </div>
+</div>
+
+
+
+
+  <!-- Repeat `.card` for other products -->
+ <div class="card" data-id="prod-1748499860486-5112">
+  <div class="discount-banner">SAVE ₹200 (50% OFF)</div>
+  <div class="product-image">
+    <img src="./Home page/Products Offering Discount Images/P2.webp" alt="JK Sparkle">
+  </div>
+  <div class="product-details">
+    <h3>JK Sparkle</h3>
+       <div class="price-buttons">
+      <button class="mrp" data-mrp="400">MRP ₹400</button>
+      <button class="pay" data-pay="200">PAY ₹200</button>
+      <label class="wishlist">
+        <input type="checkbox" class="heart-checkbox">
+        <span class="heart-icon">🤍</span>
+      </label>
+    </div>
+    <div class="cart-actions">
+      <button class="add-to-cart">ADD TO CART</button>
+      <input type="number" class="quantity-input" value="1" min="1">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+<div class="card" data-id="prod-1748499960469-7936">
+  <div class="discount-banner">SAVE ₹20 (6% OFF)</div>
+  <div class="product-image">
+    <img src="./Home page/Products Offering Discount Images/P3.webp" alt="JK COPIER A4 Size Paper.webp">
+  </div>
+  <div class="product-details">
+    <h3>JK COPIER A4 Size Paper</h3>
+       <div class="price-buttons">
+      <button class="mrp" data-mrp="310">MRP ₹310</button>
+      <button class="pay" data-pay="290">PAY ₹290</button>
+      <label class="wishlist">
+        <input type="checkbox" class="heart-checkbox">
+        <span class="heart-icon">🤍</span>
+      </label>
+    </div>
+    <div class="cart-actions">
+      <button class="add-to-cart">ADD TO CART</button>
+      <input type="number" class="quantity-input" value="1" min="1">
+    </div>
+  </div>
+</div>
+
+
+  <div class="card" data-id="prod-1748500054489-6031">
+  <div class="discount-banner">SAVE ₹132 (29% OFF)</div>
+  <div class="product-image">
+    <img src="./Home page/Products Offering Discount Images/P4.webp" alt="JK Cedar A4 Size Paper.webp">
+  </div>
+  <div class="product-details">
+    <h3>JK Cedar A4 Size Paper</h3>
+       <div class="price-buttons">
+      <button class="mrp" data-mrp="450">MRP ₹450</button>
+      <button class="pay" data-pay="318">PAY ₹318</button>
+      <label class="wishlist">
+        <input type="checkbox" class="heart-checkbox">
+        <span class="heart-icon">🤍</span>
+      </label>
+    </div>
+    <div class="cart-actions">
+      <button class="add-to-cart">ADD TO CART</button>
+      <input type="number" class="quantity-input" value="1" min="1">
+    </div>
+  </div>
+</div>
+
+
+
+
+ <div class="card" data-id="prod-1748500183093-4509">
+  <div class="discount-banner">SAVE ₹10 (3% OFF)</div>
+  <div class="product-image">
+    <img src="./Home page/Products Offering Discount Images/P5.webp" alt="JK Easy A4 Size Paper.webp">
+  </div>
+  <div class="product-details">
+    <h3>JK Easy A4 Size Paper</h3>
+       <div class="price-buttons">
+      <button class="mrp" data-mrp="290">MRP ₹290</button>
+      <button class="pay" data-pay="280">PAY ₹280</button>
+      <label class="wishlist">
+        <input type="checkbox" class="heart-checkbox">
+        <span class="heart-icon">🤍</span>
+      </label>
+    </div>
+    <div class="cart-actions">
+      <button class="add-to-cart">ADD TO CART</button>
+      <input type="number" class="quantity-input" value="1" min="1">
+    </div>
+  </div>
+</div>
+
+
+
+<div class="card" data-id="prod-1748500281116-2776">
+  <div class="discount-banner">SAVE ₹111 (34% OFF)</div>
+  <div class="product-image">
+    <img src="./Home page/Products Offering Discount Images/P6.webp" alt="TNPL A4 Size Paper">
+  </div>
+  <div class="product-details">
+    <h3>TNPL A4 Size Paper</h3>
+       <div class="price-buttons">
+      <button class="mrp" data-mrp="329">MRP ₹329</button>
+      <button class="pay" data-pay="218">PAY ₹218</button>
+      <label class="wishlist">
+        <input type="checkbox" class="heart-checkbox">
+        <span class="heart-icon">🤍</span>
+      </label>
+    </div>
+    <div class="cart-actions">
+      <button class="add-to-cart">ADD TO CART</button>
+      <input type="number" class="quantity-input" value="1" min="1">
+    </div>
+  </div>
+</div>
+
+
+
+<div class="card" data-id="prod-1748500378406-1232">
+  <div class="discount-banner">SAVE ₹5 (10% OFF)</div>
+  <div class="product-image">
+    <img src="./Home page/Products Offering Discount Images/P7.webp" alt="Apsara Platinum Pencil">
+  </div>
+  <div class="product-details">
+    <h3>Apsara Platinum Pencil</h3>
+       <div class="price-buttons">
+      <button class="mrp" data-mrp="50">MRP ₹50</button>
+      <button class="pay" data-pay="45">PAY ₹45</button>
+      <label class="wishlist">
+        <input type="checkbox" class="heart-checkbox">
+        <span class="heart-icon">🤍</span>
+      </label>
+    </div>
+    <div class="cart-actions">
+      <button class="add-to-cart">ADD TO CART</button>
+      <input type="number" class="quantity-input" value="1" min="1">
+    </div>
+  </div>
+</div>
+
+
+
+<div class="card" data-id="prod-1748500467408-8955">
+  <div class="discount-banner">SAVE ₹5 (5% OFF)</div>
+  <div class="product-image">
+    <img src="./Home page/Products Offering Discount Images/P8.webp" alt="Apsara Long Point Sharpener">
+  </div>
+  <div class="product-details">
+    <h3>Apsara Long Point Sharpener</h3>
+       <div class="price-buttons">
+      <button class="mrp" data-mrp="100">MRP ₹100</button>
+      <button class="pay" data-pay="95">PAY ₹95</button>
+      <label class="wishlist">
+        <input type="checkbox" class="heart-checkbox">
+        <span class="heart-icon">🤍</span>
+      </label>
+    </div>
+    <div class="cart-actions">
+      <button class="add-to-cart">ADD TO CART</button>
+      <input type="number" class="quantity-input" value="1" min="1">
+    </div>
+  </div>
+</div>
+
+  <button class="nav-btn next">&#10095;</button>
+</div>
+ 
+<!-------------------------------------------------------------------------------------------------------------------------------------->
+
+<section class="header0">
+  <h5 class="header-title">Products You Might Also Like</h5>
+  <a href="#"><button class="P-Button">View All<span> &gt;</span> </button></a>
+</section>
+
+<div class="product-carousel-wrapper">
+  <!-- Previous button -->
+  <button class="nav-btn prev second-prev">&#10094;</button>
+
+  <!-- Scrollable container -->
+  <div id="product2" class="product-row">
+
+  
+    
+
+
+  <!-- Repeat `.card` for other products -->
+  <div class="card" data-id="prod-1748500655871-1148">
+  <div class="discount-banner">SAVE ₹200 (50% OFF)</div>
+  <div class="product-image">
+    <img src="./Home page/Products You Might Also Like/p0.webp" alt="JK Sparkle">
+  </div>
+  <div class="product-details">
+    <h3>JK Sparkle</h3>
+       <div class="price-buttons">
+      <button class="mrp" data-mrp="400">MRP ₹400</button>
+      <button class="pay" data-pay="200">PAY ₹200</button>
+      <label class="wishlist">
+        <input type="checkbox" class="heart-checkbox">
+        <span class="heart-icon">🤍</span>
+      </label>
+    </div>
+    <div class="cart-actions">
+      <button class="add-to-cart">ADD TO CART</button>
+      <input type="number" class="quantity-input" value="1" min="1">
+    </div>
+  </div>
+</div>
+
+
+
+
+<div class="card" data-id="prod-1748500734833-2110">
+  <div class="discount-banner">SAVE ₹20 (11% OFF)</div>
+  <div class="product-image">
+    <img src="./Home page/Products You Might Also Like/p1.webp" alt="Sudarshan Big Register 2Q">
+  </div>
+  <div class="product-details">
+    <h3>Sudarshan Big Register 2Q</h3>
+       <div class="price-buttons">
+      <button class="mrp" data-mrp="180">MRP ₹180</button>
+      <button class="pay" data-pay="160">PAY ₹160</button>
+      <label class="wishlist">
+        <input type="checkbox" class="heart-checkbox">
+        <span class="heart-icon">🤍</span>
+      </label>
+    </div>
+    <div class="cart-actions">
+      <button class="add-to-cart">ADD TO CART</button>
+      <input type="number" class="quantity-input" value="1" min="1">
+    </div>
+  </div>
+</div>
+
+<div class="card" data-id="prod-1748500795892-7500">
+  <div class="discount-banner">SAVE ₹5 (10% OFF)</div>
+  <div class="product-image">
+    <img src="./Home page/Products You Might Also Like/p2.webp" alt="Rorito Charmer Ball Pen">
+  </div>
+  <div class="product-details">
+    <h3>Rorito Charmer Ball Pen</h3>
+       <div class="price-buttons">
+      <button class="mrp" data-mrp="50">MRP ₹50</button>
+      <button class="pay" data-pay="45">PAY ₹45</button>
+      <label class="wishlist">
+        <input type="checkbox" class="heart-checkbox">
+        <span class="heart-icon">🤍</span>
+      </label>
+    </div>
+    <div class="cart-actions">
+      <button class="add-to-cart">ADD TO CART</button>
+      <input type="number" class="quantity-input" value="1" min="1">
+    </div>
+  </div>
+</div>
+
+
+
+<div class="card" data-id="prod-1748500918745-369">
+  <div class="discount-banner">SAVE ₹18 (1% OFF)</div>
+  <div class="product-image">
+    <img src="./Home page/Products You Might Also Like/p3.webp" alt="R02 SA">
+  </div>
+  <div class="product-details">
+    <h3>R02 SA</h3>
+       <div class="price-buttons">
+      <button class="mrp" data-mrp="1688">MRP ₹1688</button>
+      <button class="pay" data-pay="1670">PAY ₹1670</button>
+      <label class="wishlist">
+        <input type="checkbox" class="heart-checkbox">
+        <span class="heart-icon">🤍</span>
+      </label>
+    </div>
+    <div class="cart-actions">
+      <button class="add-to-cart">ADD TO CART</button>
+      <input type="number" class="quantity-input" value="1" min="1">
+    </div>
+  </div>
+</div>
+
+
+<div class="card" data-id="prod-1748500993130-3222">
+  <div class="discount-banner">SAVE ₹13 (1% OFF)</div>
+  <div class="product-image">
+    <img src="./Home page/Products You Might Also Like/p4.webp" alt="R02 ">
+  </div>
+  <div class="product-details">
+    <h3>R02 </h3>
+       <div class="price-buttons">
+      <button class="mrp" data-mrp="1063">MRP ₹1063</button>
+      <button class="pay" data-pay="1050">PAY ₹1050</button>
+      <label class="wishlist">
+        <input type="checkbox" class="heart-checkbox">
+        <span class="heart-icon">🤍</span>
+      </label>
+    </div>
+    <div class="cart-actions">
+      <button class="add-to-cart">ADD TO CART</button>
+      <input type="number" class="quantity-input" value="1" min="1">
+    </div>
+  </div>
+</div>
+
+
+
+
+<div class="card" data-id="prod-1748501145815-8433">
+  <div class="discount-banner">SAVE ₹18 (1% OFF)</div>
+  <div class="product-image">
+    <img src="./Home page/Products You Might Also Like/p5.webp" alt="E02 SA ">
+  </div>
+  <div class="product-details">
+    <h3>E02 SA </h3>
+       <div class="price-buttons">
+      <button class="mrp" data-mrp="1588">MRP ₹1588</button>
+      <button class="pay" data-pay="1570">PAY ₹1570</button>
+      <label class="wishlist">
+        <input type="checkbox" class="heart-checkbox">
+        <span class="heart-icon">🤍</span>
+      </label>
+    </div>
+    <div class="cart-actions">
+      <button class="add-to-cart">ADD TO CART</button>
+      <input type="number" class="quantity-input" value="1" min="1">
+    </div>
+  </div>
+</div>
+
+
+
+<div class="card" data-id="prod-1748501256100-6128">
+  <div class="discount-banner">SAVE ₹13 (1% OFF)</div>
+  <div class="product-image">
+    <img src="./Home page/Products You Might Also Like/p6.webp" alt="E02">
+  </div>
+  <div class="product-details">
+    <h3>E02</h3>
+       <div class="price-buttons">
+      <button class="mrp" data-mrp="963">MRP ₹963</button>
+      <button class="pay" data-pay="950">PAY ₹950</button>
+      <label class="wishlist">
+        <input type="checkbox" class="heart-checkbox">
+        <span class="heart-icon">🤍</span>
+      </label>
+    </div>
+    <div class="cart-actions">
+      <button class="add-to-cart">ADD TO CART</button>
+      <input type="number" class="quantity-input" value="1" min="1">
+    </div>
+  </div>
+</div>
+
+
+<div class="card" data-id="prod-1748501361984-1689">
+  <div class="discount-banner">SAVE ₹25 (2% OFF)</div>
+  <div class="product-image">
+    <img src="./Home page/Products You Might Also Like/p7.webp" alt="R01 SA">
+  </div>
+  <div class="product-details">
+    <h3>R01 SA</h3>
+    <div class="price-buttons">
+      <button class="mrp" data-mrp="1375">MRP ₹1375</button>
+      <button class="pay" data-pay="1350">PAY ₹1350</button>
+      <label class="wishlist">
+        <input type="checkbox" class="heart-checkbox">
+        <span class="heart-icon">🤍</span>
+      </label>
+    </div>
+    <div class="cart-actions">
+      <button class="add-to-cart">ADD TO CART</button>
+      <input type="number" class="quantity-input" value="1" min="1">
+    </div>
+  </div>
+</div>
+
+
+  </div> <!-- END OF .product-row -->
+
+  <!-- Next button -->
+  <button class="nav-btn next second-next">&#10095;</button>
+</div>
+
+
+
+
+<section class="service-section">
+  <div class="features">
+    
+    <div class="feature green">
+      <i class="fas fa-truck"></i>
+      <div class="divider"></div>
+      <span>Free Shipping</span>
+    </div>
+
+    <div class="feature yellow">
+      <i class="fas fa-indian-rupee-sign"></i>
+      <div class="divider"></div>
+      <span>Lower Price</span>
+    </div>
+
+    <div class="feature blue">
+      <i class="fas fa-mobile-alt"></i>
+      <div class="divider"></div>
+      <span>COD Service</span>
+    </div>
+
+    <div class="feature gray">
+      <i class="fas fa-newspaper"></i>
+      <div class="divider"></div>
+      <span>Return Policy</span>
+    </div>
+
+  </div>
+</section>
+
+
+<!-----------------------------wishlist popup----------------------------------------------------------------------->
+
+
+<div id="wishlist-modal" class="wishlist-modal">
+  <div class="wishlist-modal-content">
+    <div id="wishlist-icon" class="wishlist-icon">❤️</div>
+    <div id="wishlist-message" class="wishlist-message">Product name here</div>
+    <div class="wishlist-buttons">
+      <button onclick="location.href='wishlist.html'" class="wishlist-btn">♡ View Wishlist</button>
+      <button onclick="closeWishlistModal()" class="wishlist-btn close">✕ Close</button>
+    </div>
+  </div>
+</div>
+
+<!---------------------------------------------------------------------------------------------------->
+
+
+<!------------------------------------pin code popup call--------------------------------------------------------------->
+
+<link rel="stylesheet" href="./popup/popup.css">
+<div id="popup-container"></div>
+<script>
+  fetch("./popup.html")
+    .then(res => res.text())
+    .then(data => {
+      document.getElementById("popup-container").innerHTML = data;
+    });
+</script>
+<script src="./popup/popup.js"></script> 
+
+
+<!-------------------------------------------------------------------------------------------------------------------------------------->
+
+
+<footer class="desktop-footer">
+  <div class="footer-container">
+    <!-- Product Categories -->
+    <div class="footer-column">
+      <h3>PRODUCT CATEGORIES</h3>
+      <ul>
+        <li><a href="#">SCHOOL STATIONERY</a></li>
+        <li><a href="#">OFFICE STATIONERY</a></li>
+        <li><a href="#">CLEANING & HOUSEHOLD</a></li>
+        <li><a href="#">PERSONAL CARE</a></li>
+        <li><a href="#">DIAPERS & WIPES</a></li>
+        <li><a href="#">HOME & GARDEN</a></li>
+        <li><a href="#">KITCHEN</a></li>
+        <li><a href="#">OTHER</a></li>
+      </ul>
+    </div>
+
+    <!-- Our Policy -->
+    <div class="footer-column">
+      <h3>OUR POLICY</h3>
+      <ul>
+        <li><a href="Privacy  page.html">PRIVACY POLICY</a></li>
+        <li><a href="Refund page.html">REFUND AND RETURNS POLICY</a></li>
+      </ul>
+    </div>
+
+    <!-- Important Links -->
+    <div class="footer-column">
+      <h3>IMPORTANT LINKS</h3>
+      <ul>
+        <li><a href="shop.html">SHOP</a></li>
+        <li><a href="my-account.html">MY ACCOUNT</a></li>
+        <li><a href="cart.html">CART</a></li>
+        <li><a href="checkout.html">CHECKOUT</a></li>
+      </ul>
+    </div>
+
+    <!-- Social Icons -->
+    <div class="footer-column social">
+      <h3>FOLLOW US</h3>
+      <div class="icons">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-skype"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-youtube"></i></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Bottom -->
+  <div class="footer-bottom">
+    <p>© 2025 EverythingB2C - <strong>All Rights Reserved</strong></p>
+  </div>
+</footer>
+
+
+   <!-- Place at the end of <body> -->
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha384-CS9sG4NmB7JLFuEOQkTxkMTfLkZ91fv0NgS0KfhxxMLCQGEZQ3PRAkYgiD9DZwJr"
+    crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+    crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"
+    integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+    crossorigin="anonymous"></script>
+
+<script>
+  const prevBtn = document.querySelector('.nav-btn.prev');
+  const nextBtn = document.querySelector('.nav-btn.next');
+  const productSection = document.getElementById('product');
+     
+  const scrollAmount = 350;
+
+  nextBtn.addEventListener('click', () => {
+    productSection.scrollBy({
+      left: scrollAmount,
+      behavior: 'smooth'
+    });
+  });
+
+  prevBtn.addEventListener('click', () => {
+    productSection.scrollBy({
+      left: -scrollAmount,
+      behavior: 'smooth'
+    });
+  });
+</script>
+
+<!---------------------->
+<script>
+  const productSections = [
+    {
+      container: document.getElementById('product'),
+      nextBtn: document.querySelector('.nav-btn.next'),
+      prevBtn: document.querySelector('.nav-btn.prev'),
+      scrollAmount: 300
+    },
+    {
+      container: document.getElementById('product2'),
+      nextBtn: document.querySelector('.nav-btn.next.second-next'),
+      prevBtn: document.querySelector('.nav-btn.prev.second-prev'),
+      scrollAmount: 260
+    }
+  ];
+
+  productSections.forEach(section => {
+    section.nextBtn.addEventListener('click', () => {
+      section.container.scrollBy({
+        left: section.scrollAmount,
+        behavior: 'smooth'
+      });
+    });
+
+    section.prevBtn.addEventListener('click', () => {
+      section.container.scrollBy({
+        left: -section.scrollAmount,
+        behavior: 'smooth'
+      });
+    });
+  });
+</script>
+<!--------------Card Heart ---------------->
+
+
+
+
+<script>
+  function showWishlistModal(productName, type = 'added') {
+    const modal = document.getElementById('wishlist-modal');
+    const message = document.getElementById('wishlist-message');
+    const icon = document.getElementById('wishlist-icon');
+
+    if (type === 'added') {
+      icon.textContent = '❤️';
+      message.textContent = `${productName} added to wishlist`;
+    } else if (type === 'exists') {
+      icon.textContent = '⚠️';
+      message.textContent = `${productName} is already in wishlist`;
+    } else if (type === 'removed') {
+      icon.textContent = '❌';
+      message.textContent = `${productName} removed from wishlist`;
+    }
+
+    modal.style.display = 'block';
+
+    setTimeout(() => {
+      modal.style.display = 'none';
+    }, 2000);
+  }
+
+  function closeWishlistModal() {
+    document.getElementById('wishlist-modal').style.display = 'none';
+  }
+
+  document.querySelectorAll('.heart-checkbox').forEach(cb => {
+    cb.addEventListener('change', function () {
+      const card = this.closest('.card');
+      const productName = card.querySelector('h3')?.innerText.trim() || 'Item';
+      const productId = card.getAttribute('data-id');
+      const productHTML = card.outerHTML;
+
+      let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+      const index = wishlist.findIndex(item => item.id === productId);
+      const label = this.nextElementSibling;
+
+      if (this.checked) {
+        if (index === -1) {
+          wishlist.push({ id: productId, html: productHTML });
+          showWishlistModal(productName, 'added');
+          label.textContent = '❤️';
+        } else {
+          showWishlistModal(productName, 'exists');
+
+          // prevent toggle if it already exists
+          this.checked = true;
+          label.textContent = '❤️'; // keep red
+        }
+      } else {
+        if (index !== -1) {
+          wishlist.splice(index, 1);
+          showWishlistModal(productName, 'removed');
+        }
+        label.textContent = '🤍';
+      }
+
+      localStorage.setItem('wishlist', JSON.stringify(wishlist));
+    });
+  });
+
+  function renderWishlist() {
+    const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+    const container = document.getElementById('wishlist-container');
+    if (container) {
+      container.innerHTML = wishlist.map(item => item.html).join('');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', renderWishlist);
+  // Initialize checkbox and heart icon on page load
+document.addEventListener('DOMContentLoaded', () => {
+  const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+
+  document.querySelectorAll('.heart-checkbox').forEach(cb => {
+    const card = cb.closest('.card');
+    const productId = card.getAttribute('data-id');
+    const label = cb.nextElementSibling;
+
+    const isInWishlist = wishlist.some(item => item.id === productId);
+
+    if (isInWishlist) {
+      cb.checked = true;
+      label.textContent = '❤️';
+    } else {
+      cb.checked = false;
+      label.textContent = '🤍';
+    }
+  });
+
+  renderWishlist(); // Optional: render on wishlist page
+});
+
+</script>
+ 
+
+<!-----------------card total pay js------------------>
+<script>
+  document.querySelectorAll('.card').forEach(card => {
+    const qtyInput = card.querySelector('.quantity-input');
+    const payButton = card.querySelector('.pay');
+
+    // Get the base pay price (actual price user pays)
+    const unitPay = parseInt(payButton.getAttribute('data-pay')) || 0;
+
+    // Set initial PAY price based on the current quantity
+    const initialQty = parseInt(qtyInput.value) || 1;
+    payButton.textContent = `PAY ₹${unitPay * initialQty}`;
+
+    // Add event listener to update on quantity change
+    qtyInput.addEventListener('input', () => {
+      const qty = parseInt(qtyInput.value) || 1;
+      const total = unitPay * qty;
+      payButton.textContent = `PAY ₹${total}`;
+    });
+  });
+</script>
+
+
+
+<!--------------------------------------------->
+<script>
+  const container = document.querySelector('.category-container');
+  const nextBtn1 = document.querySelector('.mobile-next-btn');
+  const prevBtn1 = document.querySelector('.mobile-prev-btn');
+
+  nextBtn1.addEventListener('click', () => {
+    container.scrollBy({ left: container.offsetWidth, behavior: 'smooth' });
+  });
+
+  prevBtn1.addEventListener('click', () => {
+    container.scrollBy({ left: -container.offsetWidth, behavior: 'smooth' });
+  });
+</script>
+
+<!------------------------------------------------------------------------------------->
+
+<!-----------------------------------Mobile menu auto scroll ----------------------------------------------------------------->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const scrollContainer = document.querySelector(".scroll-wrapper");
+
+    if (window.innerWidth < 992 && scrollContainer) {
+      // Clone all items to create infinite effect
+      const items = scrollContainer.children;
+      const clone = scrollContainer.innerHTML;
+      scrollContainer.innerHTML += clone;
+
+      let scrollPos = 0;
+      const scrollStep = 150; // px
+      const interval = 2000;
+
+      setInterval(() => {
+        scrollPos += scrollStep;
+        scrollContainer.scrollTo({ left: scrollPos, behavior: "smooth" });
+
+        // If we've scrolled past the original content
+        if (scrollPos >= scrollContainer.scrollWidth / 2) {
+          // Reset scroll position without animation
+          scrollContainer.scrollTo({ left: 0, behavior: "auto" });
+          scrollPos = 0;
+        }
+      }, interval);
+    }
+  });
+</script>
+
+  </body>
+</html>
