@@ -595,3 +595,200 @@ box-shadow: #000;
   background-color: transparent !important;
   box-shadow: none !important;
 }
+
+
+....................................................
+
+<div class="product-detail-card" data-id="prod-1750147709789">
+  <div class="product-image-section position-relative">
+    <div class="discount-banner1">SAVE ₹13 (1% OFF)</div>
+    <button class="zoom-icon-btn" onclick="activateZoom()">🔍</button>
+    <div class="img-magnifier-container">
+      <img id="mainImage" src="./asset" alt="E02" />
+    </div>
+    <div class="thumbnail-row">
+      
+    </div>
+  </div>
+
+  <div class="product-info-section">
+    <h2 class="title">E02</h2>
+    <div class="price-buttons1">
+      <button class="mrp" data-mrp="963">MRP ₹963</button>
+      <button class="pay" data-pay="950">PAY ₹950</button>
+      <div class="wishlist-toggle" data-id="prod-1750147709789">
+        <input type="checkbox" class="heart-checkbox" id="wishlist-prod-1750147709789">
+        <label for="wishlist-prod-1750147709789" class="wishlist-label">🤍</label>
+      </div>
+    </div>
+    <div class="cart-controls">
+      <input type="number" class="quantity-input" value="1" min="1">
+      <button class="add-to-cart">ADD TO CART</button>
+    </div>
+    <p><strong>CATEGORY:</strong> industrial safety</p>
+    <div class="product-description">
+      <h4>Product Details</h4>
+      <p>E02 is a sturdy and comfortable industrial safety shoe ideal for everyday use. It features a reinforced toe and slip-resistant sole for reliable protection and stability on the job.</p>
+    </div>
+  </div>
+</div>
+<!--------------------------------- card
+
+
+
+ <div class="product-detail-card">
+  <div class="product-image-section position-relative">
+    <div class="discount-banner1">SAVE ₹40 (9% OFF)</div>
+    <button class="zoom-icon-btn" onclick="activateZoom()">🔍</button>
+    <div class="img-magnifier-container">
+      <img id="mainImage" src="/asset/Products Offering Discount/JK LEDGER Paper.webp" alt="JK LEDGER Paper 80 GSM | 500 Sheets" />
+    </div>
+    <div class="thumbnail-row">
+      <img class="thumbnail" src="/asset/Products Offering Discount/JK LEDGER Paper.webp" alt="Sub 1">
+<img class="thumbnail" src="/asset/Products Offering Discount/JK LEDGER Paper 2nd.webp" alt="Sub 2">
+    </div>
+  </div>
+
+  <div class="product-info-section">
+    <h2 class="title">JK LEDGER Paper 80 GSM | 500 Sheets</h2>
+    <div class="price-buttons1">
+      <button class="mrp" data-mrp="450">MRP ₹450</button>
+      <button class="pay" data-pay="410">PAY ₹410</button>
+      <div class="wishlist-toggle" data-id="prod-1749723820760-943">
+        <input type="checkbox" class="heart-checkbox" id="wishlist-prod-1749723820760-943">
+        <label for="wishlist-prod-1749723820760-943" class="wishlist-label">🤍</label>
+      </div>
+    </div>
+    <div class="cart-controls">
+      <input type="number" class="quantity-input" value="1" min="1">
+      <button class="add-to-cart">ADD TO CART</button>
+    </div>
+    <p><strong>CATEGORY:</strong> Office Stationery, Other, Paper & Notebook, Paper & Notebook, School Stationery</p>
+    <div class="product-description">
+      <h4>Product Details</h4>
+      <p>JK LEDGER Paper is a high-quality, 80 GSM paper ideal for printing and writing. It comes in a pack of 500 sheets, offering smooth texture and durability for everyday use. Perfect for office and academic needs.</p>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+<div class="product-detail-card" data-id="prod-1749791788750">
+  <div class="product-image-section position-relative">
+    <div class="discount-banner1">SAVE ₹50 (13% OFF)</div>
+    <button class="zoom-icon-btn" onclick="activateZoom()">🔍</button>
+    <div class="img-magnifier-container">
+      <img id="mainImage" src="./asset/image/p1" alt="Arman Mulla" />
+    </div>
+    <div class="thumbnail-row">
+      
+    </div>
+  </div>
+
+  <div class="product-info-section">
+    <h2 class="title">Arman Mulla</h2>
+    <div class="price-buttons1">
+      <button class="mrp" data-mrp="400">MRP ₹400</button>
+      <button class="pay" data-pay="350">PAY ₹350</button>
+      <div class="wishlist-toggle" data-id="prod-1749791788750">
+        <input type="checkbox" class="heart-checkbox" id="wishlist-prod-1749791788750">
+        <label for="wishlist-prod-1749791788750" class="wishlist-label">🤍</label>
+      </div>
+    </div>
+    <div class="cart-controls">
+      <input type="number" class="quantity-input" value="1" min="1">
+      <button class="add-to-cart">ADD TO CART</button>
+    </div>
+    <p><strong>CATEGORY:</strong> Hero</p>
+    <div class="product-description">
+      <h4>Product Details</h4>
+      <p>Men are brave </p>
+    </div>
+  </div>
+</div>
+
+
+
+
+// deatil card zoom effect js ---------------------> 
+
+<script>
+function activateZoom() {
+  magnify("mainImage", 2); // Zoom level
+  document.querySelector(".zoom-btn").style.display = "none";
+}
+
+function magnify(imgID, zoom) {
+  let img = document.getElementById(imgID);
+  if (!img || document.querySelector(".img-magnifier-glass")) return;
+
+  let glass = document.createElement("DIV");
+  glass.setAttribute("class", "img-magnifier-glass");
+
+  let closeBtn = document.createElement("div");
+  closeBtn.innerHTML = "&times;";
+  closeBtn.classList.add("zoom-close-btn");
+  closeBtn.onclick = () => {
+    glass.remove();
+    document.querySelector(".zoom-btn").style.display = "block";
+  };
+  glass.appendChild(closeBtn);
+
+  img.parentElement.appendChild(glass);
+
+  glass.style.backgroundImage = `url('${img.src}')`;
+  glass.style.backgroundRepeat = "no-repeat";
+  glass.style.backgroundSize = `${img.width * zoom}px ${img.height * zoom}px`;
+  glass.style.display = "block";
+
+  const w = glass.offsetWidth / 2;
+  const h = glass.offsetHeight / 2;
+
+  function moveMagnifier(e) {
+    e.preventDefault();
+    const pos = getCursorPos(e);
+    let x = pos.x;
+    let y = pos.y;
+
+    if (x > img.width - w / zoom) x = img.width - w / zoom;
+    if (x < w / zoom) x = w / zoom;
+    if (y > img.height - h / zoom) y = img.height - h / zoom;
+    if (y < h / zoom) y = h / zoom;
+
+    glass.style.left = (x - w) + "px";
+    glass.style.top = (y - h) + "px";
+    glass.style.backgroundPosition = `-${(x * zoom - w)}px -${(y * zoom - h)}px`;
+  }
+
+  function getCursorPos(e) {
+    const a = img.getBoundingClientRect();
+    return {
+      x: e.clientX - a.left,
+      y: e.clientY - a.top
+    };
+  }
+
+  img.addEventListener("mousemove", moveMagnifier);
+  glass.addEventListener("mousemove", moveMagnifier);
+}
+</script>
+
+<!-------------------------------------------------------->
+   
+<script>
+  const mainImage = document.getElementById('mainImage');
+  const thumbnails = document.querySelectorAll('.thumbnail');
+
+  thumbnails.forEach(thumb => {
+    thumb.addEventListener('click', () => {
+      // Swap src between clicked thumbnail and main image
+      const tempSrc = mainImage.src;
+      mainImage.src = thumb.src;
+      thumb.src = tempSrc;
+    });
+  });
+</script>
+
