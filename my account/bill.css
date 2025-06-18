@@ -1,0 +1,672 @@
+/* Google Font Import - Poppins */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
+
+/* Universal Reset and Font */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Root variables for sidebar theme */
+:root{
+    /* ===== Colors ===== */
+    --body-color: #E4E9F7;
+    --sidebar-color: #FFF;
+    --primary-color: #0087be;
+    --primary-color-light: #F6F5FF;
+    --toggle-color: #DDD;
+    --text-color: #707070;
+    /* ====== Transition ====== */
+    --tran-03: all 0.2s ease;
+    --tran-04: all 0.3s ease;
+    --tran-05: all 0.3s ease;
+}
+
+body{
+    min-height: 100vh;
+    background-color: var(--body-color);
+    transition: var(--tran-05);
+    display: flex; /* Use flexbox for overall layout */
+    flex-direction: column; /* Stack header, main-layout-container, footer vertically */
+    padding: 0;
+}
+
+::selection{
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+body.dark{
+    --body-color: #18191a;
+    --sidebar-color: #242526;
+    --primary-color: #3a3b3c;
+    --primary-color-light: #3a3b3c;
+    --toggle-color: #fff;
+    --text-color: #ccc;
+}
+
+/* NEW: Main Layout Container to hold sidebar and home content */
+.main-layout-container {
+    display: flex; /* Arrange sidebar and home horizontally */
+    flex: 1; /* Allow this container to grow and take all available vertical space between header and footer */
+    width: 100%; /* Ensure it spans full width */
+}
+
+/* ===== Sidebar ===== */
+.sidebar{
+    /* REMOVED: position: absolute; top: 0; */
+    /* These properties were causing the sidebar to overlap the header and be out of flow. */
+    height: 100%; /* Take full height of its flex parent (.main-layout-container) */
+    width: 250px;
+    padding: 10px 17px;
+    background: var(--sidebar-color);
+    transition: var(--tran-05);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    /* Added subtle shadow for visual separation */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+.sidebar .menu ul {
+    padding-left: 0; /* This will remove the default left padding from the ul */
+}
+.sidebar.close{
+    width: 88px;
+}
+
+/* ===== Reusable code - Here ===== */
+.sidebar li{
+    height: 50px;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    margin-top: 10px; /* This is causing the margin. */
+}
+.sidebar .menu ul {
+    padding-left: 0; /* This will remove the default left padding from the ul */
+}
+
+/* FIX: Remove margin-top from the first list item in the menu-links */
+.sidebar .menu-links li:first-child {
+    margin-top: 0;
+}
+
+
+.sidebar header .image,
+.sidebar .icon{
+    min-width: 60px;
+    border-radius: 6px;
+}
+.sidebar .icon{
+    min-width: 60px;
+    border-radius: 6px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+.sidebar .text,
+.sidebar .icon{
+    color: var(--text-color);
+    transition: var(--tran-03);
+}
+.sidebar .text{
+    font-size: 15px;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 1;
+}
+.sidebar.close .text{
+    opacity: 0;
+}
+/* =========================== */
+.sidebar header{
+    position: relative;
+}
+.sidebar header .image-text{
+    display: flex;
+    align-items: center;
+}
+.sidebar header .logo-text{
+    display: flex;
+    flex-direction: column;
+}
+header .image-text .name {
+    margin-top: 2px;
+    font-size: 18px;
+    font-weight: 600;
+}
+header .image-text .profession{
+    font-size: 16px;
+    margin-top: -2px;
+    display: block;
+}
+.sidebar header .image{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.sidebar header .image img{
+    width: 40px;
+    border-radius: 6px;
+}
+.sidebar header .toggle{
+    position: absolute;
+    top: 50%;
+    right: -25px;
+    transform: translateY(-50%) rotate(180deg);
+    height: 25px;
+    width: 25px;
+    background-color: var(--primary-color);
+    color: var(--sidebar-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    cursor: pointer;
+    transition: var(--tran-05);
+}
+body.dark .sidebar header .toggle{
+    color: var(--text-color);
+}
+.sidebar.close .toggle{
+    transform: translateY(-50%) rotate(0deg);
+}
+.sidebar .menu{
+    margin-top: 40px;
+}
+.sidebar li.search-box{
+    border-radius: 6px;
+    background-color: var(--primary-color-light);
+    cursor: pointer;
+    transition: var(--tran-05);
+}
+.sidebar li.search-box input{
+    height: 100%;
+    width: 100%;
+    outline: none;
+    border: none;
+    background-color: var(--primary-color-light);
+    color: var(--text-color);
+    border-radius: 6px;
+    font-size: 17px;
+    font-weight: 500;
+    transition: var(--tran-05);
+}
+.sidebar li a{
+    list-style: none;
+    height: 100%;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: var(--tran-03);
+}
+.sidebar li a:hover{
+    background-color: var(--primary-color);
+}
+.sidebar li a:hover .icon,
+.sidebar li a:hover .text,
+.sidebar li a.active-link .icon, /* Added active-link styling */
+.sidebar li a.active-link .text{ /* Added active-link styling */
+    color: var(--sidebar-color);
+}
+/* Style for active link */
+.sidebar li a.active-link {
+    background-color: var(--primary-color);
+}
+body.dark .sidebar li a:hover .icon,
+body.dark .sidebar li a:hover .text,
+body.dark .sidebar li a.active-link .icon, /* Added active-link styling for dark mode */
+body.dark .sidebar li a.active-link .text{ /* Added active-link styling for dark mode */
+    color: var(--text-color);
+}
+
+.sidebar .menu-bar{
+    height: calc(100% - 55px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow-y: scroll;
+}
+.menu-bar::-webkit-scrollbar{
+    display: none;
+}
+.sidebar .menu-bar .mode{
+    border-radius: 6px;
+    background-color: var(--primary-color-light);
+    position: relative;
+    transition: var(--tran-05);
+}
+.menu-bar .mode .sun-moon{
+    height: 50px;
+    width: 60px;
+}
+.mode .sun-moon i{
+    position: absolute;
+}
+.mode .sun-moon i.sun{
+    opacity: 0;
+}
+body.dark .mode .sun-moon i.sun{
+    opacity: 1;
+}
+body.dark .mode .sun-moon i.moon{
+    opacity: 0;
+}
+.menu-bar .bottom-content .toggle-switch{
+    position: absolute;
+    right: 0;
+    height: 100%;
+    min-width: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.toggle-switch .switch{
+    position: relative;
+    height: 22px;
+    width: 40px;
+    border-radius: 25px;
+    background-color: var(--toggle-color);
+    transition: var(--tran-05);
+}
+.switch::before{
+    content: '';
+    position: absolute;
+    height: 15px;
+    width: 15px;
+    border-radius: 50%;
+    top: 50%;
+    left: 5px;
+    transform: translateY(-50%);
+    background-color: var(--sidebar-color);
+    transition: var(--tran-04);
+}
+body.dark .switch::before{
+    left: 20px;
+}
+
+/* ===== HOME / Main Content Area (where your form will be) ===== */
+.home{
+    flex: 1;
+    background-color: var(--body-color);
+    transition: var(--tran-05);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.home .text{
+    font-size: 30px;
+    font-weight: 500;
+    color: var(--text-color);
+    padding: 12px 0;
+    text-align: center;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+/* New wrapper for your form to control its width within the home section */
+.form-container-wrapper {
+    width: 100%;
+    max-width: 700px; /* Max width for your form card */
+    display: flex;
+    justify-content: center; /* Center the form card */
+    padding-bottom: 30px; /* Space at the bottom */
+}
+
+
+/* Form Container */
+.container {
+    width: 100%; /* Take full width of its parent (.form-container-wrapper) */
+    background-color: var(--sidebar-color); /* Use sidebar's background color for consistency */
+    padding: 25px 30px;
+    border-radius: 5px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    height: auto;
+    min-height: fit-content;
+}
+
+/* Title */
+.container .title {
+    font-size: 25px;
+    font-weight: 500;
+    position: relative;
+    text-align: center;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    color: var(--text-color); /* Use sidebar's text color */
+    padding-bottom: 10px;
+}
+
+/* Underline for Title */
+.container .title::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 0;
+    height: 3px;
+    width: 50px;
+    border-radius: 5px;
+    background-color: var(--primary-color); /* Use sidebar's primary color */
+}
+
+/* Form Content */
+.content form .user-details {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin: 20px 0 12px 0;
+}
+
+/* Input Boxes */
+form .user-details .input-box {
+    margin-bottom: 15px;
+    width: calc(100% / 2 - 10px);
+}
+
+form .user-details .input-box.full-width {
+    width: 100%;
+}
+
+form .input-box span.details {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 5px;
+    color: var(--text-color); /* Use sidebar's text color */
+}
+
+/* Required field indicator */
+span.details .required {
+    color: red;
+    margin-left: 2px;
+}
+
+/* Styling for both inputs and selects */
+.user-details .input-box input,
+.user-details .input-box select {
+    height: 45px;
+    width: 100%;
+    outline: none;
+    font-size: 16px;
+    border-radius: 5px;
+    padding-left: 15px;
+    border: 1px solid #ccc;
+    border-bottom-width: 2px;
+    transition: all 0.3s ease;
+    background-color: var(--primary-color-light); /* Use sidebar's light primary color */
+    color: var(--text-color); /* Use sidebar's text color */
+}
+
+/* Input Focus/Hover Effect */
+.user-details .input-box input:focus,
+.user-details .input-box select:focus {
+    border-color: #0087be; /* Specific hover/focus color */
+}
+
+.user-details .input-box input:hover:not(:focus):not(:active),
+.user-details .input-box select:hover:not(:focus):not(:active) {
+    border-color: #0087be; /* Specific hover color */
+}
+
+/* Specific styling for SELECT elements */
+.user-details .input-box select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007bff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13.6-6.4H18.2c-7.9%200-14.7%205.2-16.3%2012.9-.6%202.9-.6%206.1%200%209.1l128%20128c5%205%2011.8%207.8%2019.2%207.8s14.2-2.8%2019.2-7.8l128-128c5.8-5.7%205.8-15.1-.1-20.8z%22%2F%3E%3C%2Fsvg%3E');
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 12px;
+    padding-right: 30px;
+}
+
+/* Submit Button */
+form .button {
+    height: 45px;
+    margin: 35px 0;
+}
+
+form .button input {
+    height: 100%;
+    width: 100%;
+    border-radius: 5px;
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    cursor: pointer;
+    background: var(--primary-color); /* Use sidebar's primary color */
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+}
+
+/* Hover Effect for Button */
+form .button input:hover {
+    background: #0087be; /* Darker blue on hover */
+}
+
+/*---------------------------------------- Responsive Media Queries----------------------------------------------------- */
+
+@media print {
+    @page {
+        size: A4;
+        margin: 2cm;
+        print-color-adjust: exact;
+    }
+
+    .sidebar,
+    .toggle,
+    .main-button {
+        display: none !important;
+    }
+
+    .home {
+        left: 0 !important;
+        width: 100% !important;
+        padding: 20px !important;
+    }
+
+    .form-container-wrapper,
+    .process-container {
+        box-shadow: none !important;
+        border: 1px solid #ccc;
+        page-break-inside: avoid;
+    }
+}
+
+/* Media Query for Tablet and Mobile */
+@media (max-width: 768px) {
+    /* Ensure body remains column layout for header/main/footer stacking */
+    body {
+        flex-direction: column;
+    }
+
+    /* Stack sidebar and home vertically on smaller screens */
+    .main-layout-container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative; /* Ensure it behaves as part of document flow */
+        padding: 10px;
+        box-shadow: none;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+        overflow-x: auto;
+        overflow-y: hidden;
+    }
+
+    .sidebar.close {
+        width: 100%;
+    }
+
+    .sidebar header {
+        display: none;
+    }
+
+    .sidebar .menu-bar {
+        height: auto;
+        flex-direction: row;
+        overflow-y: hidden;
+    }
+
+    .sidebar .menu {
+        margin-top: 0;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+    }
+
+    .sidebar li {
+        margin: 5px;
+        width: 60px;
+        height: 60px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .sidebar li a {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        text-decoration: none;
+    }
+
+    .sidebar li .text {
+        display: none;
+    }
+
+    .sidebar li .icon {
+        font-size: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+    }
+
+    .sidebar li.search-box {
+        display: none;
+    }
+
+    .sidebar .bottom-content {
+        display: none;
+    }
+
+    .home {
+        width: 100%;
+        padding: 15px;
+        min-height: auto;
+    }
+
+    .form-container-wrapper {
+        padding-bottom: 15px;
+    }
+
+    .container {
+        padding: 20px;
+    }
+
+    form .user-details .input-box {
+        width: 100%;
+    }
+}
+
+/* Further narrow screens */
+@media (max-width: 480px) {
+    .container {
+        padding: 15px;
+    }
+
+    .home .text {
+        font-size: 24px;
+        padding: 8px 0;
+    }
+
+    .home {
+        position: relative !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        padding: 15px;
+        margin-top: 0;
+    }
+
+    .form-container-wrapper {
+        width: 95% !important;
+        margin: 0 auto;
+        padding: 0px;
+    }
+
+    .container {
+        padding: 15px;
+    }
+
+    form .user-details {
+        flex-direction: column;
+    }
+
+    form .user-details .input-box {
+        width: 100%;
+        margin-bottom: 15px;
+    }
+
+    .process-container {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .step {
+        width: 100%;
+    }
+
+    .sidebar .menu {
+        flex-wrap: wrap !important;
+    }
+
+    .sidebar li {
+        margin: 5px !important;
+    }
+
+    .sidebar .text {
+        font-size: 12px !important;
+    }
+
+    .sidebar .icon {
+        min-width: 35px !important;
+        font-size: 20px !important;
+    }
+
+    .container .title {
+        font-size: 20px;
+    }
+
+    form .button input {
+        padding: 10px 20px;
+    }
+}

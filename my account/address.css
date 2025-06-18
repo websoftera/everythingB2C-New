@@ -1,0 +1,921 @@
+/* Google Font Import - Poppins */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
+
+/* Universal Reset and Font */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Root variables for sidebar theme */
+:root {
+    /* ===== Colors ===== */
+    --body-color: #E4E9F7;
+    --sidebar-color: #FFF;
+    --primary-color: #0087be;
+    --primary-color-light: #F6F5FF;
+    --toggle-color: #DDD;
+    --text-color: #707070;
+    /* ====== Transition ====== */
+    --tran-03: all 0.2s ease;
+    --tran-04: all 0.3s ease;
+    --tran-05: all 0.3s ease;
+}
+
+body {
+    min-height: 100vh;
+    background-color: var(--body-color);
+    transition: var(--tran-05);
+    display: flex; /* Make body a flex container */
+    flex-direction: column; /* Stack header, app-container, and footer vertically */
+    padding: 0;
+}
+
+::selection {
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+body.dark {
+    --body-color: #18191a;
+    --sidebar-color: #242526;
+    --primary-color: #3a3b3c;
+    --primary-color-light: #3a3b3c;
+    --toggle-color: #fff;
+    --text-color: #ccc;
+}
+
+
+#main-header,
+#main-footer {
+    width: 100%;
+    z-index: 10; /* Ensure header/footer are above other content if anything else is positioned */
+}
+
+.app-container {
+    display: flex; /* Use flexbox to arrange sidebar and home side-by-side */
+    flex: 1; /* Allows this container to grow and fill available vertical space */
+    width: 100%;
+    overflow: hidden; /* Prevent horizontal scroll from internal elements if any */
+    position: relative; /* Needed for the absolute positioning of the sidebar inside it */
+}
+
+/* ===== Sidebar ===== */
+.sidebar {
+    /* Changed from fixed to absolute within .app-container */
+    position: absolute; /* Positioned relative to .app-container */
+    top: 0; /* Align to the top of .app-container */
+    left: 0; /* Align to the left of .app-container */
+    height: 100%; /* Take full height of .app-container */
+    width: 250px;
+    padding: 10px 17px;
+    background: var(--sidebar-color);
+    transition: var(--tran-05);
+    z-index: 100; /* Ensure sidebar is above home content */
+    display: flex;
+    flex-direction: column;
+}
+.sidebar .menu ul {
+    padding-left: 0; /* This will remove the default left padding from the ul */
+}
+
+.sidebar.close {
+    width: 88px;
+}
+
+/* ===== Reusable code - Here ===== */
+.sidebar li {
+    height: 50px;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.sidebar header .image,
+.sidebar .icon {
+    min-width: 60px;
+    border-radius: 6px;
+}
+
+.sidebar .icon {
+    min-width: 60px;
+    border-radius: 6px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.sidebar .text,
+.sidebar .icon {
+    color: var(--text-color);
+    transition: var(--tran-03);
+}
+
+.sidebar .text {
+    font-size: 15px;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 1;
+}
+
+.sidebar.close .text {
+    opacity: 0;
+}
+
+/* =========================== */
+.sidebar header {
+    position: relative;
+}
+
+.sidebar header .image-text {
+    display: flex;
+    align-items: center;
+}
+
+.sidebar header .logo-text {
+    display: flex;
+    flex-direction: column;
+}
+
+header .image-text .name {
+    margin-top: 2px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+header .image-text .profession {
+    font-size: 16px;
+    margin-top: -2px;
+    display: block;
+}
+
+.sidebar header .image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar header .image img {
+    width: 40px;
+    border-radius: 6px;
+}
+
+.sidebar header .toggle {
+    position: absolute;
+    top: 50%;
+    right: -25px;
+    transform: translateY(-50%) rotate(180deg);
+    height: 25px;
+    width: 25px;
+    background-color: var(--primary-color);
+    color: var(--sidebar-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    cursor: pointer;
+    transition: var(--tran-05);
+}
+
+body.dark .sidebar header .toggle {
+    color: var(--text-color);
+}
+
+.sidebar.close .toggle {
+    transform: translateY(-50%) rotate(0deg);
+}
+
+.sidebar .menu {
+    margin-top: 40px;
+}
+
+.sidebar li.search-box {
+    border-radius: 6px;
+    background-color: var(--primary-color-light);
+    cursor: pointer;
+    transition: var(--tran-05);
+}
+
+.sidebar li.search-box input {
+    height: 100%;
+    width: 100%;
+    outline: none;
+    border: none;
+    background-color: var(--primary-color-light);
+    color: var(--text-color);
+    border-radius: 6px;
+    font-size: 17px;
+    font-weight: 500;
+    transition: var(--tran-05);
+}
+
+.sidebar li a {
+    list-style: none;
+    height: 100%;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: var(--tran-03);
+}
+
+.sidebar li a:hover {
+    background-color: var(--primary-color);
+}
+
+.sidebar li a:hover .icon,
+.sidebar li a:hover .text,
+.sidebar li a.active-link .icon,
+.sidebar li a.active-link .text {
+    color: var(--sidebar-color);
+}
+
+/* Style for active link */
+.sidebar li a.active-link {
+    background-color: var(--primary-color);
+}
+
+body.dark .sidebar li a:hover .icon,
+body.dark .sidebar li a:hover .text,
+body.dark .sidebar li a.active-link .icon,
+body.dark .sidebar li a.active-link .text {
+    color: var(--text-color);
+}
+
+.sidebar .menu-bar {
+    height: calc(100% - 55px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow-y: scroll;
+}
+
+.menu-bar::-webkit-scrollbar {
+    display: none;
+}
+
+.sidebar .menu-bar .mode {
+    border-radius: 6px;
+    background-color: var(--primary-color-light);
+    position: relative;
+    transition: var(--tran-05);
+}
+
+.menu-bar .mode .sun-moon {
+    height: 50px;
+    width: 60px;
+}
+
+.mode .sun-moon i {
+    position: absolute;
+}
+
+.mode .sun-moon i.sun {
+    opacity: 0;
+}
+
+body.dark .mode .sun-moon i.sun {
+    opacity: 1;
+}
+
+body.dark .mode .sun-moon i.moon {
+    opacity: 0;
+}
+
+.menu-bar .bottom-content .toggle-switch {
+    position: absolute;
+    right: 0;
+    height: 100%;
+    min-width: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.toggle-switch .switch {
+    position: relative;
+    height: 22px;
+    width: 40px;
+    border-radius: 25px;
+    background-color: var(--toggle-color);
+    transition: var(--tran-05);
+}
+
+.switch::before {
+    content: '';
+    position: absolute;
+    height: 15px;
+    width: 15px;
+    border-radius: 50%;
+    top: 50%;
+    left: 5px;
+    transform: translateY(-50%);
+    background-color: var(--sidebar-color);
+    transition: var(--tran-04);
+}
+
+body.dark .switch::before {
+    left: 20px;
+}
+
+/* ===== HOME / Main Content Area (where your form will be) ===== */
+.home {
+    /* Adjusted positioning relative to .app-container */
+    margin-left: 250px; /* Shift home content right by sidebar width */
+    width: calc(100% - 250px); /* Take remaining width */
+    background-color: var(--body-color);
+    transition: var(--tran-05);
+    min-height: 100vh; /* Ensure it takes full viewport height minus header/footer */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+    flex-grow: 1;
+}
+
+.sidebar.close ~ .home {
+    margin-left: 88px; /* Adjust margin when sidebar is closed */
+    width: calc(100% - 88px);
+}
+
+.home .text {
+    font-size: 30px;
+    font-weight: 500;
+    color: var(--text-color);
+    padding: 12px 0;
+    text-align: center;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+/* New wrapper for your form to control its width within the home section */
+.form-container-wrapper {
+    width: 100%;
+    max-width: 700px;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 30px;
+}
+
+/* Form Container */
+.container {
+    width: 100%;
+    background-color: var(--sidebar-color);
+    padding: 25px 30px;
+    border-radius: 5px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    height: auto;
+    min-height: fit-content;
+}
+
+/* Title */
+.container .title {
+    font-size: 25px;
+    font-weight: 500;
+    position: relative;
+    text-align: center;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    color: var(--text-color);
+    padding-bottom: 10px;
+}
+
+/* Underline for Title */
+.container .title::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 0;
+    height: 3px;
+    width: 50px;
+    border-radius: 5px;
+    background-color: var(--primary-color);
+}
+
+/* Form Content */
+.content form .user-details {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin: 20px 0 12px 0;
+}
+
+/* Input Boxes */
+form .user-details .input-box {
+    margin-bottom: 15px;
+    width: calc(100% / 2 - 10px); /* Default to 2 columns for inputs */
+}
+
+form .user-details .input-box.full-width {
+    width: 100%;
+}
+
+form .input-box span.details {
+    display: block; /* Already block, as you have it */
+    font-weight: 500;
+    margin-bottom: 5px;
+    color: var(--text-color);
+}
+
+/* Required field indicator */
+span.details .required {
+    color: red;
+    margin-left: 2px;
+}
+
+/* Styling for both inputs and selects */
+.user-details .input-box input,
+.user-details .input-box select {
+    height: 45px;
+    width: 100%;
+    outline: none;
+    font-size: 16px;
+    border-radius: 5px;
+    padding-left: 15px;
+    border: 1px solid #ccc;
+    border-bottom-width: 2px;
+    transition: all 0.3s ease;
+    background-color: var(--primary-color-light);
+    color: var(--text-color);
+}
+
+/* Input Focus/Hover Effect */
+.user-details .input-box input:focus,
+.user-details .input-box select:focus {
+    border-color: #0087be;
+}
+
+.user-details .input-box input:hover:not(:focus):not(:active),
+.user-details .input-box select:hover:not(:focus):not(:active) {
+    border-color: #0087be;
+}
+
+/* Specific styling for SELECT elements */
+.user-details .input-box select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007bff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13.6-6.4H18.2c-7.9%200-14.7%205.2-16.3%2012.9-.6%202.9-.6%206.1%200%209.1l128%20128c5%205%2011.8%207.8%2019.2%207.8s14.2-2.8%2019.2-7.8l128-128c5.8-5.7%205.8-15.1-.1-20.8z%22%2F%3E%3C%2Fsvg%3E');
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 12px;
+    padding-right: 30px;
+}
+
+/* Submit Button */
+form .button {
+    height: 45px;
+    margin: 35px 0;
+}
+
+form .button input {
+    height: 100%;
+    width: 100%;
+    border-radius: 5px;
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    cursor: pointer;
+    background: var(--primary-color);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+}
+
+/* Hover Effect for Button */
+form .button input:hover {
+    background: #0087be;
+}
+
+/* === "How We Work" Section Styles (Added/Adjusted based on previous discussion) === */
+.main-button {
+    /* For the "HOW WE WORK" button */
+    width: 300px;
+    background-color: #11b1f0;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    margin: 20px auto;
+}
+
+.main-button:hover {
+    background-color: #0f9cd5;
+}
+
+.process-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+    max-width: 1100px;
+    /* Adjust max-width for the overall section */
+    margin: 20px auto;
+    /* Center the process container */
+}
+
+.step {
+    text-align: center;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    /* Default: 2 columns on large screens */
+    flex: 1 1 calc(50% - 20px);
+    /* Roughly 50% width minus gap */
+    max-width: calc(50% - 20px);
+    box-sizing: border-box;
+}
+
+.step img {
+    width: 100%;
+    max-height: 250px;
+    /* Increased max-height for larger images */
+    object-fit: contain;
+    border-radius: 10px;
+    padding: 10px;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.step p {
+    margin-top: 10px;
+    font-weight: bold;
+    background-color: #eee;
+    padding: 10px 18px;
+    border-radius: 25px;
+    font-size: 16px;
+    display: inline-block;
+}
+
+.arrow {
+    /* Add this class to your arrow div */
+    display: flex;
+    /* Ensure arrow itself is a flex item */
+    align-items: center;
+    /* Vertically center the arrow image */
+    justify-content: center;
+    /* Horizontally center if needed */
+}
+
+.arrow img {
+    width: 40px;
+    height: auto;
+    transition: transform 0.3s ease;
+}
+
+/* ========================================= */
+/* RESPONSIVE MEDIA QUERIES            */
+/* ========================================= */
+
+/* Media Query for Print */
+@media print {
+
+    @page {
+        size: A4;
+        margin: 2cm;
+        print-color-adjust: exact;
+    }
+
+    .sidebar,
+    .toggle,
+    .main-button,
+    #main-header,
+    #main-footer { /* Hide header and footer in print as well */
+        display: none !important;
+    }
+
+    .home {
+        left: 0 !important;
+        width: 100% !important;
+        padding: 20px !important;
+        margin-left: 0 !important; /* Remove margin-left in print */
+    }
+
+    .form-container-wrapper,
+    .process-container {
+        box-shadow: none !important;
+        border: 1px solid #ccc;
+        page-break-inside: avoid;
+    }
+}
+
+/* Media Query for Tablet and Mobile (768px and below) */
+@media (max-width: 768px) {
+
+    /* 1. Body/Overall Layout Adjustment */
+    body {
+        flex-direction: column; /* Stack header, app-container, and footer vertically */
+    }
+
+    .app-container {
+        flex-direction: column; /* Stack sidebar (now horizontal) and home vertically */
+        position: static; /* Remove positioning as it's no longer needed for sidebar context */
+    }
+
+    /* 2. Sidebar Transformation (Top Horizontal Nav) */
+    .sidebar {
+        position: relative; /* Change from absolute to relative to flow with content */
+        top: 0;
+        left: 0;
+        width: 100%; /* Make sidebar full width */
+        height: auto; /* Allow height to adjust to content */
+        padding: 10px 0; /* Adjust padding for a more compact top bar */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+        border-bottom: none; /* Remove previous border-bottom if any */
+        flex-direction: row; /* Ensure it overrides the column direction */
+        justify-content: space-around; /* Distribute items */
+        align-items: center;
+        overflow-x: auto; /* Allow horizontal scrolling if many icons */
+        overflow-y: hidden; /* Hide vertical scrollbar */
+    }
+
+    /* .sidebar.close is not needed on mobile as sidebar is always "horizontal" */
+    .sidebar.close {
+        width: 100%; /* Remains full width */
+    }
+
+    /* Hide text elements, image, profession, search, and bottom content */
+    .sidebar header,
+    .sidebar .text,
+    .sidebar .search-box,
+    .sidebar .bottom-content,
+    .sidebar header .toggle {
+        /* Hide the toggle button as well */
+        display: none;
+    }
+
+    /* Make the menu bar and menu horizontal */
+    .sidebar .menu-bar {
+        height: auto;
+        flex-direction: row;
+        /* Arrange menu items horizontally */
+        overflow-y: hidden;
+        /* Hide vertical scrollbar */
+        overflow-x: auto;
+        /* Allow horizontal scrolling if many icons */
+        width: 100%;
+        /* Ensure menu bar takes full width */
+    }
+
+    .sidebar .menu {
+        margin-top: 0;
+        display: flex;
+        flex-direction: row;
+        /* Ensure menu items are in a row */
+        flex-wrap: nowrap;
+        /* Prevent wrapping, allow horizontal scroll */
+        width: 100%;
+        /* Take full width for distribution */
+        justify-content: space-around;
+        /* Spread icons out */
+        padding: 0 10px;
+        /* Some padding on the sides */
+    }
+
+    .sidebar li {
+        margin: 0;
+        /* Remove vertical margin */
+        height: auto;
+        min-width: 60px;
+        /* Give icons some space */
+        justify-content: center;
+        /* Center the icon */
+        flex-shrink: 0;
+        /* Prevent icons from shrinking too much */
+    }
+
+    .sidebar li .icon {
+        min-width: 40px;
+        /* Adjusted icon clickable area */
+        height: 40px;
+        font-size: 24px;
+        /* Larger icons for touch targets */
+        margin: auto;
+        /* Center icon within its li */
+    }
+
+    /* Specific styling for active link on horizontal bar */
+    .sidebar li a {
+        padding: 5px;
+        /* Adjust padding for better clickable area */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* 3. Main Content Area Adjustment */
+    .home {
+        position: relative;
+        /* Ensure it flows normally */
+        left: 0;
+        /* No left offset */
+        margin-left: 0; /* Remove fixed margin-left on mobile */
+        width: 100%;
+        /* Occupy full width */
+        padding: 20px 15px;
+        /* Adjust overall padding for the form content */
+        min-height: auto;
+        /* Allow height to adjust */
+        flex-grow: 1;
+        /* Allow home section to take available vertical space */
+        display: flex;
+        /* Keep flex for centering/stacking content */
+        flex-direction: column;
+        align-items: center;
+        /* Center form horizontally */
+        justify-content: flex-start;
+        /* Align form to the top of its section */
+        margin-top: 0;
+        /* Remove any previous top margin */
+    }
+
+    /* Remove any conflicts from sidebar.close on the home section */
+    .sidebar.close ~ .home {
+        left: 0;
+        width: 100%;
+        margin-left: 0; /* Remove margin-left when sidebar is closed on mobile */
+    }
+
+    .home .text {
+        font-size: 28px;
+        padding: 10px 0;
+        text-align: center;
+        /* Center the main title */
+        margin-bottom: 20px;
+    }
+
+    .form-container-wrapper {
+        width: 100%;
+        max-width: 500px;
+        /* Control form width on larger mobile devices */
+        padding-bottom: 20px;
+        justify-content: center;
+        /* Ensure the container within is centered */
+    }
+
+    /* 4. Form Element Adjustments */
+    .container {
+        padding: 25px 20px;
+        /* Adjust form card padding */
+        box-shadow: none;
+        /* Often good to remove shadows on mobile for performance/cleaner look */
+        width: 100%;
+        /* Ensure it takes full width of its wrapper */
+    }
+
+    .container .title {
+        font-size: 24px;
+        margin-bottom: 20px;
+        text-align: center;
+        /* Center the form title */
+    }
+
+    .container .title::before {
+        left: 50%;
+        /* Center the underline */
+        transform: translateX(-50%);
+        width: 50px;
+    }
+
+    form .user-details .input-box {
+        width: 100%;
+        /* Stack all input boxes vertically */
+        margin-bottom: 15px;
+    }
+
+    form .user-details .input-box.full-width {
+        width: 100%;
+        /* Ensure full-width inputs are also 100% */
+    }
+
+    .password-fields-group .input-box {
+        /* Apply if you have this group */
+        width: 100%;
+        /* Ensure password fields also stack */
+    }
+
+    .section-title {
+        /* Apply if you have this class */
+        font-size: 20px;
+        margin-top: 25px;
+        margin-bottom: 15px;
+        text-align: left;
+        /* Keep section titles left aligned */
+    }
+
+    .section-title::before {
+        /* Apply if you have this class */
+        left: 0;
+        transform: translateX(0);
+    }
+
+    .input-description {
+        /* Apply if you have this class */
+        font-size: 13px;
+        margin-top: 5px;
+    }
+
+    form .button {
+        margin: 30px 0;
+    }
+
+    /* Process container adjustments */
+    .process-container {
+        flex-direction: column;
+        /* Stack process steps vertically */
+        gap: 15px;
+        padding: 15px;
+    }
+
+    .step {
+        flex: 1 1 100%;
+        /* Each step takes full width */
+        max-width: 100%;
+        padding: 10px;
+    }
+}
+
+/* Further refinements for very small screens (e.g., iPhone 5/SE, 480px and below) */
+@media (max-width: 480px) {
+    .sidebar {
+        padding: 5px 0;
+        /* More compact top bar */
+    }
+
+    .sidebar .menu {
+        padding: 0 5px;
+        flex-wrap: wrap;
+        /* Allow icons to wrap into multiple rows if needed */
+        justify-content: center;
+        /* Center items when wrapped */
+    }
+
+    .sidebar li {
+        margin: 5px;
+        /* Add some margin between wrapped icons */
+        min-width: 50px;
+        /* Slightly smaller min-width for icons */
+    }
+
+    .sidebar li .icon {
+        min-width: 35px;
+        height: 35px;
+        font-size: 22px;
+    }
+
+    .home {
+        padding: 15px 10px;
+    }
+
+    .home .text {
+        font-size: 24px;
+        margin-bottom: 15px;
+    }
+
+    .container {
+        padding: 20px 15px;
+    }
+
+    .container .title {
+        font-size: 22px;
+        margin-bottom: 15px;
+    }
+
+    form .user-details .input-box {
+        margin-bottom: 12px;
+    }
+
+    /* Ensure process container also wraps correctly on smallest screens */
+    .process-container {
+        padding: 10px;
+        gap: 10px;
+    }
+
+    .step {
+        padding: 8px;
+    }
+}
