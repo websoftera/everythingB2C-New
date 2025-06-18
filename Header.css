@@ -173,6 +173,15 @@ body {
 
 
 /*---------------------------------------------------------------------------------------------------------------*/
+.cart-icon-wrapper {
+  display: inline-block;
+}
+
+#cart-count {
+  font-size: 12px;
+  padding: 3px 6px;
+  display: none; /* Hide when count is 0 */
+}
 
 /*-------------------------------------footer seaction --------------------------------------*/
 .footer-column ul li a {
@@ -1577,6 +1586,43 @@ box-shadow: #000;
   font-weight: bold;
   font-size: 14px;
 }
+.discount-banner1 {
+  background-color: #28a745;
+  color: white;
+  text-align: center;
+  width: 100%;
+  padding: 6px 10px;
+  font-weight: bold;
+  font-size: 14px;
+
+}
+@media (min-width: 546px){
+  .discount-banner1{
+      background-color: #28a745;
+  color: white;
+  text-align: center;
+  width: 100%;
+  padding: 6px 10px;
+  font-weight: bold;
+  font-size: 14px;
+
+  }
+}
+
+@media (min-width: 996px){
+  .discount-banner1{
+      background-color: #28a745;
+  color: white;
+  text-align: center;
+  width: 100%;
+  padding: 6px 10px;
+  font-weight: bold;
+  font-size: 14px;
+
+
+  }
+}
+
 
 .product-image {
   text-align: center;
@@ -1804,3 +1850,7 @@ input[type="checkbox"]:checked + .heart-icon {
   from { opacity: 0; transform: scale(0.95); }
   to   { opacity: 1; transform: scale(1); }
 }
+
+
+/*-------------------------------------------------------------*/
+
