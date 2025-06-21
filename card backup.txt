@@ -599,36 +599,37 @@ box-shadow: #000;
 
 ....................................................
 
-<div class="product-detail-card" data-id="prod-1750147709789">
+<div class="product-detail-card" data-id="prod-1750242943823">
   <div class="product-image-section position-relative">
-    <div class="discount-banner1">SAVE ₹13 (1% OFF)</div>
+    <div class="discount-banner1">SAVE ₹2 (8% OFF)</div>
     <button class="zoom-icon-btn" onclick="activateZoom()">🔍</button>
     <div class="img-magnifier-container">
-      <img id="mainImage" src="./asset" alt="E02" />
+      <img id="mainImage" src="a" alt="Kiwi Dranex Drain Cleaner" />
     </div>
     <div class="thumbnail-row">
-      
+      <img class="thumbnail" src="." alt="Sub 1">
+<img class="thumbnail" src="." alt="Sub 2">
     </div>
   </div>
 
   <div class="product-info-section">
-    <h2 class="title">E02</h2>
+    <h2 class="title">Kiwi Dranex Drain Cleaner</h2>
     <div class="price-buttons1">
-      <button class="mrp" data-mrp="963">MRP ₹963</button>
-      <button class="pay" data-pay="950">PAY ₹950</button>
-      <div class="wishlist-toggle" data-id="prod-1750147709789">
-        <input type="checkbox" class="heart-checkbox" id="wishlist-prod-1750147709789">
-        <label for="wishlist-prod-1750147709789" class="wishlist-label">🤍</label>
+      <button class="mrp" data-mrp="25">MRP ₹25</button>
+      <button class="pay" data-pay="23">PAY ₹23</button>
+      <div class="wishlist-toggle" data-id="prod-1750242943823">
+        <input type="checkbox" class="heart-checkbox" id="wishlist-prod-1750242943823">
+        <label for="wishlist-prod-1750242943823" class="wishlist-label">🤍</label>
       </div>
     </div>
     <div class="cart-controls">
       <input type="number" class="quantity-input" value="1" min="1">
       <button class="add-to-cart">ADD TO CART</button>
     </div>
-    <p><strong>CATEGORY:</strong> industrial safety</p>
+    <p><strong>CATEGORY:</strong> Cleaning & Household, Kitchen</p>
     <div class="product-description">
       <h4>Product Details</h4>
-      <p>E02 is a sturdy and comfortable industrial safety shoe ideal for everyday use. It features a reinforced toe and slip-resistant sole for reliable protection and stability on the job.</p>
+      <p>Kiwi Dranex Drain Cleaner effectively clears clogged drains and prevents foul odours. Its powerful formula dissolves grease, hair, and food particles for smooth water flow.</p>
     </div>
   </div>
 </div>

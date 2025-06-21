@@ -10,7 +10,7 @@
 
 <!-- YOUR custom CSS *after* bootstrap -->
 <link rel="stylesheet" href="./asset/style/cart.css">
-
+<link rel="stylesheet" href="./asset/style/style.css">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   
@@ -20,196 +20,37 @@
    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
  <!-- Bootstrap Bundle JS (includes Popper) -->
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
+<script src="./Header.js"></script>
 </head>
   <body>
-    
+     <link rel="stylesheet" href="./Header.css">
+<div id="header-0"></div>
 
-<section class="header2">
-  <div class="nav-links">
-    <a href="index.html">HOME</a><span>|</span>
-    <a href="wishlist.html">WISHLIST</a><span>|</span>
-    <a href="#">MY ACCOUNT</a><span>|</span>
-    <a href="#">LOGIN</a>
-  </div>
-<!-- Support & Cart icons for mobile only -->
-<div class="mobile-support-cart d-flex d-md-none">
 
-   <a href="cart.html" class="text-decoration-none text-dark">
-      <i class="bi bi-headset"></i>
-   </a>
-  <span></span>
-  <a href="cart.html" class="text-decoration-none text-dark">
-     <i class="bi bi-cart position-relative"></i>
-  </a>
- 
-</div>
 
+
+    <!--hero section-->
+ <section class="hero-slider-section">
+    <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="1500">
+        <div class="carousel-inner">
+            <div class="carousel-item active hero-slide hero-slide-1">
+                <div class="carousel-caption d-block text-start">
+                    <!-- Optional caption content -->
+                </div>
+            </div>
+
+            <div class="carousel-item hero-slide hero-slide-2">
+                <div class="carousel-caption d-block text-end">
+                    <!-- Optional caption content -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Arrows removed -->
+    </div>
 </section>
 
 
-<!-- NAVBAR START -->
-<nav class="navbar navbar-expand-lg">
-  <div class="container-fluid d-flex align-items-center justify-content-between">
-    
-    <!-- Logo -->
-    <div class="logo-wrapper d-flex align-items-center">
-  <a href="index.html">
-    <img src="./Kichen Page/page2/logo.webp" alt="Logo" class="img-fluid logo" />
-  </a>
-</div>
-
-    <!-- Search Form -->
-    <form class="d-flex flex-grow-1 mx-4" role="search">
-     <div class="input-group w-100 flex-wrap">
-
-
-        <!-- DESKTOP Dropdown -->
-        <div class="dropdown-desktop">
-          <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
-            All 
-          </button>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Packing Material</a></li>
-            <li><a class="dropdown-item" href="Kichen1.html">Kitchen</a></li>
-            <li><a class="dropdown-item" href="Other1.html">Other</a></li>
-            <li><a class="dropdown-item" href="#">All</a></li>
-            
-          </ul>
-        </div>
-
-        <!-- MOBILE Dropdown -->
-<div class="dropdown-mobile">
-  <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
-    All
-  </button>
-  <ul class="dropdown-menu">
-    <li><a class="dropdown-item" href="#">Packing Material</a></li>
-    <li><a class="dropdown-item" href="Kichen1.html">Kitchen</a></li>
-    <li><a class="dropdown-item" href="#">Other</a></li>
-    <li><a class="dropdown-item" href="#">All</a></li>
-  </ul>
-</div>
-
-
-
-        <!-- Search Box -->
-        <input class="form-control" type="search" placeholder="Search for Products" aria-label="Search">
-        <button class="btn btn-primary" type="submit">
-          <i class="bi bi-search"></i>
-        </button>
-      </div>
-    </form>
-
-    <!-- Support & Cart -->
-   <div class="d-none d-lg-flex align-items-center">
-
-      <i class="bi bi-headset fs-4 me-2"></i>
-      <span class="me-4 fw-semibold">Customer Support</span>
-      
-<a href="cart.html" class="text-decoration-none text-dark">
-  <i class="bi bi-cart fs-4 position-relative"></i>
-  <span class="me-4 fw-semibold">Cart</span>
-
-</a>
-
-      
-    </div>
-  </div>
-</nav>
-
-
-<!-- CATEGORY SCROLL - ONLY MOBILE -->
-<div class="category-scroll-container d-block d-lg-none py-2 px-2">
-  <div class="scroll-wrapper d-flex flex-nowrap overflow-auto">
-    
-    <a href="#" class="category-item text-center mx-2">
-      <img src="./img/image_1.webp" alt="Stationery" class="category-img mb-1">
-      <div class="category-label">SCHOOL STATIONERY</div>
-    </a>
-
-    <a href="#" class="category-item text-center mx-2">
-      <img src="./img/image_2.webp" alt="Kitchen" class="category-img mb-1">
-      <div class="category-label">OFFICE STATIONERY</div>
-    </a>
-
-    <a href="#" class="category-item text-center mx-2">
-      <img src="./img/image_4.webp" alt="Cleaning" class="category-img mb-1">
-      <div class="category-label">CLEANING - HOUSEHOLD</div>
-    </a>
-
-        <a href="Personal Care.html" class="category-item text-center mx-2">
-      <img src="./img/image_1.webp" alt="Stationery" class="category-img mb-1">
-      <div class="category-label">PERSONAL CARE</div>
-    </a>
-
-    <a href="Diapers & Wipes.html" class="category-item text-center mx-2">
-      <img src="./img/image_2.webp" alt="Kitchen" class="category-img mb-1">
-      <div class="category-label">DIAPERS & WIPES</div>
-    </a>
-
-    <a href="Home & Gardan.html" class="category-item text-center mx-2">
-      <img src="./img/image_4.webp" alt="Cleaning" class="category-img mb-1">
-      <div class="category-label">HOME & GARDEN</div>
-    </a>
-
-        <a href="Kichen1.html" class="category-item text-center mx-2">
-      <img src="./img/image_1.webp" alt="Stationery" class="category-img mb-1">
-      <div class="category-label">KITCHEN</div>
-    </a>
-
-
-    <a href="Other1.html" class="category-item text-center mx-2">
-      <img src="./img/image_4.webp" alt="Cleaning" class="category-img mb-1">
-      <div class="category-label">OTHER</div>
-    </a>
-
-    <!-- Add more if needed -->
-
-  </div>
-</div>
-
-
-
-
-
-<div class="second-navbar d-none d-lg-block">
-  <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top w-100 category-navbar">
-    <div class="container-fluid d-flex justify-content-between align-items-center">
-
-      <!-- Navbar Content -->
-      <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
-        <ul class="navbar-nav category-list mb-2 mb-lg-0 d-flex align-items-center">
-          <li class="nav-item d-flex align-items-center">
-            <a class="nav-link" href="#">SCHOOL STATIONERY</a><span class="separator">|</span>
-          </li>
-          <li class="nav-item d-flex align-items-center">
-            <a class="nav-link" href="#">OFFICE STATIONERY</a><span class="separator">|</span>
-          </li>
-          <li class="nav-item d-flex align-items-center">
-            <a class="nav-link" href="#">CLEANING & HOUSEHOLD</a><span class="separator">|</span>
-          </li>
-          <li class="nav-item d-flex align-items-center">
-            <a class="nav-link" href="Personal Care.html">PERSONAL CARE</a><span class="separator">|</span>
-          </li>
-          <li class="nav-item d-flex align-items-center">
-            <a class="nav-link" href="Diapers & Wipes.html">DIAPERS & WIPES</a><span class="separator">|</span>
-          </li>
-          <li class="nav-item d-flex align-items-center">
-            <a class="nav-link" href="Home & Gardan.html">HOME & GARDEN</a><span class="separator">|</span>
-          </li>
-          <li class="nav-item d-flex align-items-center">
-            <a class="nav-link" href="Kichen1.html">KITCHEN</a><span class="separator">|</span>
-          </li>
-          <li class="nav-item d-flex align-items-center">
-            <a class="nav-link" href="Other1.html">OTHER</a>
-          </li>
-        </ul>
-      </div>
-
-    </div>
-  </nav>
-</div>
 
 
 <h2 class="my">My Cart 🛍️</h2>
@@ -363,78 +204,21 @@
 </script>
 
 
-<!------------------------------------pin code popup call--------------------------------------------------------------->
+    <section class="gap"></section>
 
-<link rel="stylesheet" href="./popup/popup.css">
-<div id="popup-container"></div>
-<script>
-  fetch("./popup.html")
-    .then(res => res.text())
-    .then(data => {
-      document.getElementById("popup-container").innerHTML = data;
-    });
-</script>
-<script src="./popup/popup.js"></script> 
+<!--------------------------------------Fooer Call-------------------------------------------------------->
+        <!-- header area -->
+    <div id="Footer-container0"></div>
 
-
-<!---Footer Section ------------------------->
-
-<footer class="desktop-footer">
-  <div class="footer-container">
-    <!-- Product Categories -->
-    <div class="footer-column">
-      <h3>PRODUCT CATEGORIES</h3>
-      <ul>
-        <li><a href="#">SCHOOL STATIONERY</a></li>
-        <li><a href="#">OFFICE STATIONERY</a></li>
-        <li><a href="#">CLEANING & HOUSEHOLD</a></li>
-        <li><a href="#">PERSONAL CARE</a></li>
-        <li><a href="#">DIAPERS & WIPES</a></li>
-        <li><a href="#">HOME & GARDEN</a></li>
-        <li><a href="#">KITCHEN</a></li>
-        <li><a href="#">OTHER</a></li>
-      </ul>
-    </div>
-
-    <!-- Our Policy -->
-    <div class="footer-column">
-      <h3>OUR POLICY</h3>
-      <ul>
-        <li><a href="Privacy  page.html">PRIVACY POLICY</a></li>
-        <li><a href="Refund page.html">REFUND AND RETURNS POLICY</a></li>
-      </ul>
-    </div>
-
-    <!-- Important Links -->
-    <div class="footer-column">
-      <h3>IMPORTANT LINKS</h3>
-      <ul>
-        <li><a href="shop.html">SHOP</a></li>
-        <li><a href="my-account.html">MY ACCOUNT</a></li>
-        <li><a href="cart.html">CART</a></li>
-        <li><a href="checkout.html">CHECKOUT</a></li>
-      </ul>
-    </div>
-
-    <!-- Social Icons -->
-    <div class="footer-column social">
-      <h3>FOLLOW US</h3>
-      <div class="icons">
-        <a href="#"><i class="fab fa-facebook-f"></i></a>
-        <a href="#"><i class="fab fa-twitter"></i></a>
-        <a href="#"><i class="fab fa-skype"></i></a>
-        <a href="#"><i class="fab fa-instagram"></i></a>
-        <a href="#"><i class="fab fa-youtube"></i></a>
-      </div>
-    </div>
-  </div>
-
-  <!-- Footer Bottom -->
-  <div class="footer-bottom">
-    <p>© 2025 EverythingB2C - <strong>All Rights Reserved</strong></p>
-  </div>
-</footer>
-
+  <script>
+    // JavaScript to load the header
+    fetch('../Footer.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('Footer-container0').innerHTML = data;
+      });
+  </script>
+ 
 
 
 <!--- ------------------->

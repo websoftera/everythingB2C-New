@@ -21,7 +21,11 @@
 
 </head>
   <body>
-  
+    <!-- header area -->
+ <script src="Header.js" defer></script>
+ <link rel="stylesheet" href="./Header.css">
+<div id="header-0"></div>
+    
 
 
 <!-- NAVBAR START -->
@@ -429,87 +433,20 @@
 
 
 
-<!--- ------------------->
-<script>
-  const container = document.querySelector('.category-container');
-  const nextBtn1 = document.querySelector('.mobile-next-btn');
-  const prevBtn1 = document.querySelector('.mobile-prev-btn');
 
-  nextBtn1.addEventListener('click', () => {
-    container.scrollBy({ left: container.offsetWidth, behavior: 'smooth' });
-  });
+<!---Footer Section ------------------------->
 
-  prevBtn1.addEventListener('click', () => {
-    container.scrollBy({ left: -container.offsetWidth, behavior: 'smooth' });
-  });
-</script>
+<!-- header area -->
+    <div id="Footer-container0"></div>
 
-<!----------------------------------->
-
-<script>
-  document.querySelectorAll('.card').forEach(card => {
-    const mrpButton = card.querySelector('.mrp');
-    const payButton = card.querySelector('.pay');
-    const qtyInput = card.querySelector('.quantity-input');
-
-    // Get MRP value from data attribute
-    const baseMRP = parseInt(mrpButton.getAttribute('data-mrp'));
-
-    qtyInput.addEventListener('input', () => {
-      const quantity = parseInt(qtyInput.value) || 1;
-      const total = baseMRP * quantity;
-
-      // Update the PAY button
-      payButton.textContent = `PAY ₹${total}`;
-    });
-  });
-</script>
-
-
-<!-------------------------------------------------------------------------------------------->
-<script>
-  // Handle checkbox toggle and store in localStorage
-  document.querySelectorAll('.heart-checkbox').forEach(cb => {
-    cb.addEventListener('change', function () {
-      const card = this.closest('.card');
-      const product = {
-        id: card.getAttribute('data-id'),
-        html: card.outerHTML
-      };
-
-      let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
-
-      if (this.checked) {
-        if (!wishlist.find(item => item.id === product.id)) {
-          wishlist.push(product);
-        }
-      } else {
-        wishlist = wishlist.filter(item => item.id !== product.id);
-      }
-
-      localStorage.setItem('wishlist', JSON.stringify(wishlist));
-
-      // Optional: Update icon
-      const label = this.nextElementSibling;
-      label.textContent = this.checked ? '❤️' : '🤍';
-    });
-  });
-
-  // Function to render wishlist items (e.g., on a wishlist page)
-  function renderWishlist() {
-    const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
-    const container = document.getElementById('wishlist-container');
-
-    if (container) {
-      container.innerHTML = wishlist.map(item => item.html).join('');
-    }
-  }
-
-  // Call renderWishlist if on wishlist page
-  document.addEventListener('DOMContentLoaded', renderWishlist);
-</script>
-
-<!----------------------------------------------------------------------------------------------------------->
-
+  <script>
+    // JavaScript to load the header
+    fetch('Footer.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('Footer-container0').innerHTML = data;
+      });
+  </script>
+ 
   </body>
 </html>
