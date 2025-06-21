@@ -1,0 +1,743 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+/* Global resets */
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --linear-grad: linear-gradient(to right, #16BAE4); /* Consistent green for overlay */
+    --grad-clr1: #0087be; /* Primary blue for links, highlights, and main buttons */
+    --grad-clr2: #0087be; /* Primary blue for main buttons (can be same as grad-clr1 for solid fill) */
+    --input-bg: #f3f3f3; /* Light grey for input backgrounds */
+    --text-color: #333; /* Dark grey for general text */
+    --placeholder-color: #888; /* Lighter grey for placeholders and subtle text */
+    --input-underline-color: #0087be; /* Blue for input focus underline */
+
+    /* Custom colors based on design images */
+    --login-heading-color: #0087be; /* Darker blue for login/register main headings */
+    --overlay-text-color: #ffffff; /* White for overlay text */
+
+    /* Define Custom Class Names as Variables (for maintainability, not directly used in styling) */
+    --custom-section-wrapper-class: site-wrapper;
+    --custom-container-class: main-container;
+    --custom-form-container-class: form-panel;
+    --custom-sign-up-container-class: register-panel;
+    --custom-sign-in-container-class: login-panel;
+    --custom-social-container-class: social-links-wrapper;
+    --custom-social-link-base: social-link;
+    --custom-social-google-class: google-icon;
+    --custom-social-facebook-class: facebook-icon;
+    --custom-social-twitter-class: twitter-icon;
+    --custom-infield-class: input-group;
+    --custom-forgot-class: password-forgot;
+    --custom-overlay-container-class: overlay-sections-container;
+    --custom-overlay-class: overlay-background;
+    --custom-overlay-panel-class: overlay-content;
+    --custom-overlay-left-class: overlay-left-side;
+    --custom-overlay-right-class: overlay-right-side;
+    --custom-ghost-button-class: transparent-btn;
+    --custom-right-panel-active-class: right-panel-active-toggle;
+}
+
+/* Applying styles using CSS variables for custom class names */
+
+/* Section Wrapper - A wrapper around the main-container */
+.site-wrapper {
+    min-height: 100vh;
+    background: #f6f5f7; /* Light background for the whole page */
+    display: grid;
+    place-content: center; /* Centers the main-container horizontally and vertically */
+    font-family: 'Poppins', sans-serif;
+    padding: 20px; /* Padding around the container */
+    position: relative;
+    z-index: 1;
+}
+
+/* Main Container - The central white box holding forms and overlay */
+.main-container {
+    position: relative;
+    width: 850px; /* Desktop width */
+    height: 500px; /* Desktop height */
+    background-color: #fff; /* White background */
+    box-shadow: 20px 30px 55px rgba(85, 85, 85, 0.47); /* Soft shadow as seen in images */
+    border-radius: 30px; /* Rounded corners */
+    overflow: hidden; /* Crucial for clipping the sliding parts */
+    transition: all 0.3s ease; /* Smooth transition for potential changes */
+    z-index: 2; /* Ensures it's above the site-wrapper background */
+}
+
+/* Form Panel - General styles for both login and register forms */
+.main-container .form-panel {
+    position: absolute; /* Allows precise positioning for sliding effect */
+    width: 60%; /* Occupies 60% of the main-container width */
+    height: 100%;
+    padding: 0 40px; /* Internal padding */
+    transition: all 0.6s ease-in-out; /* Smooth transition for sliding */
+    display: flex; /* Use flexbox to center content vertically and horizontally */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center; /* Centers text within forms */
+    background-color: #fff; /* Ensure white background for forms */
+}
+
+/* Register Panel (Sign-Up Container) initial state */
+.main-container .register-panel {
+    left: 0;
+    opacity: 0; /* Hidden by default */
+    z-index: 1; /* Below login panel by default */
+}
+
+/* Login Panel (Sign-In Container) initial state */
+.main-container .login-panel {
+    left: 0;
+    z-index: 2; /* Above register panel by default */
+}
+
+/* Form element directly inside form panels */
+.main-container form {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 50px; /* Padding inside the form */
+    max-width: 400px; /* Constrain form content width */
+    margin: 0 auto; /* Center form horizontally within its panel */
+    width: 100%; /* Make form take full width of its panel */
+}
+
+/* H1 for main forms (Create Account, Login) */
+.main-container h1 {
+    color: var(--login-heading-color); /* Blue heading color */
+    margin-bottom: 10px;
+    font-size: 35px;
+}
+
+/* Social Links Wrapper */
+.main-container .social-links-wrapper {
+    margin: 10px 0;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+/* Individual Social Links */
+.main-container .social-links-wrapper a {
+    border: 1px solid #ddd; /* Light grey border */
+    border-radius: 50%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 5px;
+    height: 40px;
+    width: 40px;
+    color: var(--text-color);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+/* Social Links Hover Effect */
+.main-container .social-links-wrapper a:hover {
+    background-color: var(--grad-clr1); /* Blue background on hover */
+    color: #fff; /* White icon on hover */
+    border-color: var(--grad-clr1); /* Blue border on hover */
+}
+
+/* "OR USE YOUR ACCOUNT" text */
+.main-container span {
+    font-size: 12px;
+    margin-bottom: 5px;
+    color: var(--placeholder-color);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Input Group (for email, password fields) */
+.main-container .input-group {
+    position: relative;
+    margin: 8px 0;
+    width: 100%;
+    background-color: var(--input-bg);
+    border-radius: 5px;
+    height: 45px;
+    display: flex;
+    align-items: center; /* Vertically align icon and input */
+    padding: 0 15px;
+    overflow: hidden;
+}
+
+/* Input field inside input group */
+.main-container .input-group input {
+    flex-grow: 1; /* Input takes remaining space */
+    padding: 10px 0;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    height: 100%;
+    color: var(--text-color);
+    z-index: 1;
+}
+
+/* Input placeholder styling */
+.main-container .input-group input::placeholder {
+    color: var(--placeholder-color);
+    font-weight: 300;
+}
+
+/* Icon inside input group */
+.main-container .input-group i {
+    color: var(--placeholder-color);
+    font-size: 16px;
+    margin-right: 15px;
+    z-index: 1;
+    transition: color 0.3s ease;
+}
+
+/* Underline effect for input group */
+.main-container .input-group::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--input-underline-color);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-out;
+}
+
+/* Input group focus within (underline appears) */
+.main-container .input-group:focus-within::after {
+    transform: translateX(0);
+}
+
+/* Input group focus within (icon color changes) */
+.main-container .input-group:focus-within i {
+    color: var(--text-color);
+}
+
+/* Input focus placeholder color */
+.main-container .input-group input:focus::placeholder {
+    color: var(--text-color);
+}
+
+/* General anchor tags (used for Forgot Password) */
+.main-container a {
+    color: var(--text-color);
+    font-size: 14px;
+    text-decoration: none;
+    margin: 15px 0;
+}
+
+/* Forgot Password Link styling */
+.main-container .password-forgot {
+    padding-bottom: 3px;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.3s ease;
+    color: var(--grad-clr1); /* Blue color */
+    font-size: 12px;
+}
+
+/* Forgot Password Link hover */
+.main-container .password-forgot:hover {
+    border-color: var(--grad-clr1); /* Blue underline on hover */
+}
+
+/* Main Action Buttons (Login, Register inside forms) */
+.main-container button {
+    border-radius: 20px;
+    border: 1px solid var(--grad-clr1); /* Blue border */
+    background: var(--grad-clr2); /* Blue background */
+    color: #fff; /* White text */
+    font-size: 12px;
+    font-weight: bold;
+    padding: 12px 45px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: transform 80ms ease-in, background 0.3s ease, color 0.3s ease;
+}
+
+/* Button active state */
+.main-container button:active {
+    transform: scale(0.95); /* Slight scale down on click */
+}
+
+/* Form panel button specific margin (e.g., Login/Register inside forms) */
+.main-container .form-panel button {
+    margin-top: 17px;
+}
+
+/* Form panel button hover (white with blue text) */
+.main-container .form-panel button:hover {
+    background: #fff;
+    color: var(--grad-clr1);
+}
+
+/* Overlay Sections Container (Desktop specific - the green sliding panel) */
+.main-container .overlay-sections-container {
+    position: absolute;
+    top: 0;
+    left: 60%; /* Starts at 60% to cover the right 40% of the main container */
+    width: 40%; /* Occupies 40% width */
+    height: 100%;
+    overflow: hidden;
+    transition: transform 0.6s ease-in-out; /* Smooth sliding transition */
+    z-index: 9; /* Ensure it's above the form panels during transition */
+}
+
+/* Overlay Background (Actual green background within the overlay container) */
+.main-container .overlay-background {
+    position: relative;
+    background: var(--linear-grad); /* Green gradient */
+    color: #fff;
+    left: -150%; /* Starts off-screen to the left for initial position */
+    height: 100%;
+    width: 250%; /* Large width to ensure full coverage during slide */
+    transition: transform 0.6s ease-in-out; /* Smooth sliding transition */
+}
+
+/* Overlay Panel / Content (Text and buttons within the overlay) */
+.main-container .overlay-content {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 0 40px;
+    text-align: center;
+    height: 100%;
+    width: 340px; /* Fixed width for content */
+    transition: transform 0.6s ease-in-out; /* Smooth content sliding */
+}
+
+/* H1 within overlay content */
+.main-container .overlay-content h1 {
+    color: var(--overlay-text-color); /* White heading */
+    margin-bottom: 10px;
+    font-size: 30px;
+    line-height: 1.2;
+}
+
+/* Paragraph within overlay content */
+.main-container p {
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 20px;
+    letter-spacing: 0.5px;
+    margin: 20px 0 30px;
+    color: var(--overlay-text-color); /* White paragraph text */
+}
+
+/* Overlay Left Side (for "Welcome Back!" content) */
+.main-container .overlay-left-side {
+    right: 60%; /* Positioned to the right of the overlay's starting point */
+    transform: translateX(-12%); /* Small adjustment for initial view */
+}
+
+/* Overlay Right Side (for "Login For Existing Customers!" content) */
+.main-container .overlay-right-side {
+    right: 0; /* Positioned at the right edge of the overlay container */
+    transform: translateX(0%); /* No initial transform */
+}
+
+/* Transparent Button (on overlay - Desktop specific button styling) */
+.main-container .transparent-btn {
+    background-color: transparent; /* Transparent background */
+    border: 1px solid var(--overlay-text-color); /* White border */
+    color: var(--overlay-text-color); /* White text */
+    font-weight: bold;
+    border-radius: 20px;
+    padding: 12px 45px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    /* transition properties are inherited from general button rule */
+}
+
+/* Transparent Button hover (solid white background, blue text) */
+.main-container .transparent-btn:hover {
+    background-color: var(--overlay-text-color);
+    color: var(--grad-clr1);
+}
+
+/* --- DESKTOP SLIDING ANIMATION RULES (triggered by right-panel-active-toggle class) --- */
+.main-container.right-panel-active-toggle .overlay-sections-container {
+    transform: translateX(-150%); /* Moves the entire overlay container to the left */
+}
+
+.main-container.right-panel-active-toggle .overlay-background {
+    transform: translateX(50%); /* Moves the green background within the overlay */
+}
+
+.main-container.right-panel-active-toggle .overlay-left-side {
+    transform: translateX(25%); /* Slides "Welcome Back!" content into view */
+}
+
+.main-container.right-panel-active-toggle .overlay-right-side {
+    transform: translateX(35%); /* Slides "Login For Existing Customers!" content out of view */
+}
+
+.main-container.right-panel-active-toggle .login-panel {
+    transform: translateX(100%); /* Slides Login panel out to the right */
+    opacity: 0; /* Fades out Login panel */
+}
+
+.main-container.right-panel-active-toggle .register-panel {
+    transform: translateX(70%); /* Slides Register panel into view from the right */
+    opacity: 1; /* Fades in Register panel */
+    z-index: 5; /* Brings Register panel to front */
+    animation: show 0.6s; /* Animation for the Register panel appearance */
+}
+
+/* Keyframe animation for showing the register panel */
+@keyframes show {
+    0%,
+    49.99% {
+        opacity: 0;
+        z-index: 1;
+    }
+    50%,
+    100% {
+        opacity: 1;
+        z-index: 5;
+    }
+}
+
+/* GLOBAL RULE: Hide mobile toggle links by default (desktop view) */
+.mobile-toggle-link {
+  display: none; /* Hidden by default on all screen sizes */
+  /* Common link styles, similar to password-forgot */
+  color: var(--grad-clr1);
+  font-size: 12px;
+  text-decoration: underline;
+  margin-top: 15px; /* Adjust margin as needed */
+  cursor: pointer;
+  padding-bottom: 3px;
+  border-bottom: 2px solid transparent;
+  transition: border-color 0.3s ease, color 0.3s ease;
+}
+
+.mobile-toggle-link:hover {
+  color: var(--text-color);
+  border-color: var(--grad-clr1);
+}
+
+
+/* --- MEDIA QUERY FOR MOBILE & TABLET SPECIFIC BEHAVIOR (Max-width: 900px) --- */
+@media (max-width: 900px) {
+  /* Main container adjustments for stacking content vertically and centering */
+  .main-container {
+    width: 95%; /* Occupy nearly full width on mobile */
+    max-width: 450px; /* Constrain max width for larger phones/small tablets */
+    height: auto; /* Height adapts to content */
+    min-height: 550px; /* Ensure sufficient height for content */
+    flex-direction: column; /* Stack children vertically */
+    border-radius: 20px;
+    margin: 20px 10px; /* Center the container horizontally */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* Keep a subtle shadow */
+    overflow: hidden; /* Important for containing content */
+    display: flex; /* Ensure flex properties apply */
+    justify-content: center; /* Center content vertically */
+    align-items: center; /* Center content horizontally */
+  }
+
+  /* Adjust form panels for full width and correct positioning */
+  .main-container .form-panel {
+    position: relative !important; /* Override absolute positioning from desktop */
+    width: 100% !important; /* Take full width */
+    height: auto !important; /* Height adapts to content */
+    padding: 40px 0px; /* Add internal padding */
+    transform: none !important; /* Disable any transforms */
+    z-index: auto !important; /* Reset z-index */
+    animation: none !important; /* Disable animations */
+    display: flex; /* Use flexbox for internal centering */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center; /* Center text within forms */
+  }
+
+  /* Hide the desktop overlay and its original buttons entirely on small screens */
+  .main-container .overlay-sections-container,
+  .main-container .overlay-background,
+  .main-container .transparent-btn /* Hide desktop transparent buttons */ {
+    display: none !important; /* Ensure these elements are completely hidden */
+    position: absolute;
+    width: 0 !important;
+    height: 0 !important;
+    padding: 0;
+    transform: none !important;
+    opacity: 0 !important;
+    z-index: -1 !important;
+    animation: none !important;
+  }
+
+  /* === Crucial Logic for Mobile Form Switching === */
+  /* By default, hide the register panel and show the login panel on mobile */
+  /* This ensures the login page is visible initially on mobile as per requirement */
+  .main-container .register-panel {
+    display: none !important; /* Ensures the register form is hidden by default */
+  }
+
+  .main-container .login-panel {
+    display: flex !important; /* Ensures the login form is shown by default */
+  }
+
+  /* When 'right-panel-active-toggle' class is on main-container (triggered by mobile links) */
+  .main-container.right-panel-active-toggle .login-panel {
+    display: none !important; /* Hide login form */
+  }
+
+  .main-container.right-panel-active-toggle .register-panel {
+    display: flex !important; /* Show register form */
+  }
+
+  /* Make mobile toggle links visible ONLY on mobile/tablet */
+  .mobile-toggle-link {
+    display: block !important; /* Override the global display: none */
+  }
+
+  /* Inner form element adjustments for mobile styling consistency */
+  .main-container .password-forgot {
+    font-size: 11px;
+    margin: 10px 0;
+  }
+
+  .main-container h1 {
+    font-size: 28px; /* Slightly adjust heading size for mobile */
+  }
+
+  /* Adjusted input-group for mobile to fix alignment */
+  .main-container .input-group {
+    height: 45px; /* Maintain height for consistent input size */
+    margin: 10px 0; /* Slightly increase margin for spacing */
+    padding: 0 15px; /* Ensure padding is consistent */
+  }
+
+  .main-container .input-group input {
+    /* Adjusted padding to ensure placeholder aligns correctly vertically */
+    padding: 12px 0; /* This padding value should center the text vertically within 45px height */
+    font-size: 14px; /* Ensure a readable font size */
+  }
+
+  .main-container span {
+    font-size: 10px; /* Adjust "or use your account" text size */
+  }
+
+  .main-container .social-links-wrapper {
+    margin-bottom: 10px; /* Adjust margin for social links */
+  }
+
+  .main-container form {
+    padding: 0 15px; /* Adjust inner form padding for mobile */
+  }
+}
+
+.chatbot-box {
+  width: 200%;
+  max-width: 460px;
+  height: 430px;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 20px;
+
+  overflow: hidden;
+  font-family: 'Poppins', sans-serif;
+}
+
+.chatbot-header {
+  background: #0087be;
+  color: #fff;
+  padding: 15px 20px;
+  font-weight: 600;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chatbot-body {
+  flex-grow: 1;
+  padding: 15px;
+  overflow-y: auto;
+  background: #f5f7fa;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bot-message,
+.user-message {
+  padding: 10px 15px;
+  border-radius: 18px;
+  max-width: 75%;
+  font-size: 14px;
+  line-height: 1.4;
+  word-wrap: break-word;
+  position: relative;
+}
+
+.bot-message {
+  background-color: #0087be;
+  color: #fff;
+  align-self: flex-start;
+}
+
+.user-message {
+  background-color: #e0f0ff;
+  color: #333;
+  align-self: flex-end;
+}
+
+.chatbot-input {
+  display: flex;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+  background: white;
+}
+
+.chatbot-input input {
+  flex: 1;
+  padding: 10px 15px;
+  border: none;
+  outline: none;
+  background: #f3f3f3;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.chatbot-input button {
+  background: #0087be;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin-left: 10px;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.chatbot-input button:hover {
+  background: #0070a1;
+}
+
+
+
+/* Make textarea look like inputs */
+.input-group.textarea-group {
+  height: auto;
+  padding: 15px;
+  align-items: flex-start;
+}
+
+.input-group.textarea-group textarea {
+  flex-grow: 1;
+  width: 100%;
+  height: 100px;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: vertical;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  color: var(--text-color);
+}
+
+.input-group.textarea-group textarea::placeholder {
+  color: var(--placeholder-color);
+  font-weight: 300;
+}
+
+/* Improve overall button appearance on hover */
+.main-container .form-panel button {
+  margin-top: 20px;
+  font-size: 14px;
+  padding: 14px 50px;
+  box-shadow: 0 4px 10px rgba(0, 135, 190, 0.3);
+}
+
+.main-container .form-panel button:hover {
+  background: #fff;
+  color: var(--grad-clr1);
+  box-shadow: 0 6px 15px rgba(0, 135, 190, 0.5);
+}
+
+/* Smooth interaction focus styles */
+.input-group input:focus,
+.input-group textarea:focus {
+  background-color: #eef9ff;
+}
+
+/* Responsive improvement for textarea */
+@media (max-width: 600px) {
+  .input-group.textarea-group textarea {
+    height: 80px;
+  }
+}
+
+
+
+
+
+/* Chat input field */
+.chatbot-input {
+  display: flex;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+  background: white;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Input styling */
+.chatbot-input input {
+  flex: 1;
+  padding: 12px 16px;
+  border: none;
+  outline: none;
+  background: #f3f3f3;
+  border-radius: 15px;
+  font-size: 14px;
+  color: #333;
+  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Send button */
+.chatbot-input .send-btn {
+  background-color: #16BAE4; /* Orange color like your sample */
+  border: none;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: white;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s;
+}
+
+.chatbot-input .send-btn:hover {
+  background-color: #16BAE4;
+}
+
+.chatbot-input .send-btn i {
+  margin: 0;
+}
+
+.Contact1{
+    margin-bottom: 20px;
+    
+}
+
+.send-btn{
+    margin-bottom: 20px;
+    background:#16BAE4;
+}

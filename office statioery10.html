@@ -18,12 +18,14 @@
    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
  <!-- Bootstrap Bundle JS (includes Popper) -->
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="Header.js" defer></script>
+
 </head>
   <body>
-  
+    <!-- header area -->
+ <script src="Header.js" defer></script>
  <link rel="stylesheet" href="./Header.css">
 <div id="header-0"></div>
+    
 
 <!---------------------Product section ------------------------------------------------------------------------------------------------------>
 
@@ -385,289 +387,20 @@ Blue Ink – Pack of 10</h3>
 
 
 <!---Footer Section ------------------------->
+<!---Footer Section ------------------------->
 
+<!-- header area -->
+    <div id="Footer-container0"></div>
 
-<div id="cart-modal" style="display:none;" class="cart-modal">
-  <div class="cart-modal-content">
-    <div id="cart-icon" class="cart-icon">🛒</div>
-    <p id="cart-message" class="cart-message">Item added to cart</p>
-    <div class="cart-buttons">
-      <button class="cart-btn view" onclick="location.href='Cart.html'">🛍️ View Cart</button>
-      <button class="cart-btn close" onclick="closeCartModal()">❌ Close</button>
-    </div>
-  </div>
-</div>
-
-
-   <!-- Place at the end of <body> -->
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"
-    integrity="sha384-CS9sG4NmB7JLFuEOQkTxkMTfLkZ91fv0NgS0KfhxxMLCQGEZQ3PRAkYgiD9DZwJr"
-    crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-    crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"
-    integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
-    crossorigin="anonymous"></script>
-
-
-
-<!--- ------------------->
-<script>
-  const container = document.querySelector('.category-container');
-  const nextBtn1 = document.querySelector('.mobile-next-btn');
-  const prevBtn1 = document.querySelector('.mobile-prev-btn');
-
-  nextBtn1.addEventListener('click', () => {
-    container.scrollBy({ left: container.offsetWidth, behavior: 'smooth' });
-  });
-
-  prevBtn1.addEventListener('click', () => {
-    container.scrollBy({ left: -container.offsetWidth, behavior: 'smooth' });
-  });
-</script>
-
-<!----------------------------------->
-
-<script>
-  document.querySelectorAll('.card').forEach(card => {
-    const qtyInput = card.querySelector('.quantity-input');
-    const payButton = card.querySelector('.pay');
-
-    // Get the base pay price (actual price user pays)
-    const unitPay = parseInt(payButton.getAttribute('data-pay')) || 0;
-
-    // Set initial PAY price based on the current quantity
-    const initialQty = parseInt(qtyInput.value) || 1;
-    payButton.textContent = `PAY ₹${unitPay * initialQty}`;
-
-    // Add event listener to update on quantity change
-    qtyInput.addEventListener('input', () => {
-      const qty = parseInt(qtyInput.value) || 1;
-      const total = unitPay * qty;
-      payButton.textContent = `PAY ₹${total}`;
-    });
-  });
-</script>
-
-<!-------------------------------------------------------------------------------------------->
-
-<script>
-  function showWishlistModal(productName, type = 'added') {
-    const modal = document.getElementById('wishlist-modal');
-    const message = document.getElementById('wishlist-message');
-    const icon = document.getElementById('wishlist-icon');
-
-    if (type === 'added') {
-      icon.textContent = '❤️';
-      message.textContent = `${productName} added to wishlist`;
-    } else if (type === 'exists') {
-      icon.textContent = '⚠️';
-      message.textContent = `${productName} is already in wishlist`;
-    } else if (type === 'removed') {
-      icon.textContent = '❌';
-      message.textContent = `${productName} removed from wishlist`;
-    }
-
-    modal.style.display = 'block';
-
-    setTimeout(() => {
-      modal.style.display = 'none';
-    }, 5000);
-  }
-
-  function closeWishlistModal() {
-    document.getElementById('wishlist-modal').style.display = 'none';
-  }
-
-  document.querySelectorAll('.heart-checkbox').forEach(cb => {
-    cb.addEventListener('change', function () {
-      const card = this.closest('.card');
-      const productName = card.querySelector('h3')?.innerText.trim() || 'Item';
-      const productId = card.getAttribute('data-id');
-      const productHTML = card.outerHTML;
-
-      let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
-      const index = wishlist.findIndex(item => item.id === productId);
-      const label = this.nextElementSibling;
-
-      if (this.checked) {
-        if (index === -1) {
-          wishlist.push({ id: productId, html: productHTML });
-          showWishlistModal(productName, 'added');
-          label.textContent = '❤️';
-        } else {
-          showWishlistModal(productName, 'exists');
-
-          // prevent toggle if it already exists
-          this.checked = true;
-          label.textContent = '❤️'; // keep red
-        }
-      } else {
-        if (index !== -1) {
-          wishlist.splice(index, 1);
-          showWishlistModal(productName, 'removed');
-        }
-        label.textContent = '🤍';
-      }
-
-      localStorage.setItem('wishlist', JSON.stringify(wishlist));
-    });
-  });
-
-  function renderWishlist() {
-    const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
-    const container = document.getElementById('wishlist-container');
-    if (container) {
-      container.innerHTML = wishlist.map(item => item.html).join('');
-    }
-  }
-
-  document.addEventListener('DOMContentLoaded', renderWishlist);
-  // Initialize checkbox and heart icon on page load
-document.addEventListener('DOMContentLoaded', () => {
-  const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
-
-  document.querySelectorAll('.heart-checkbox').forEach(cb => {
-    const card = cb.closest('.card');
-    const productId = card.getAttribute('data-id');
-    const label = cb.nextElementSibling;
-
-    const isInWishlist = wishlist.some(item => item.id === productId);
-
-    if (isInWishlist) {
-      cb.checked = true;
-      label.textContent = '❤️';
-    } else {
-      cb.checked = false;
-      label.textContent = '🤍';
-    }
-  });
-
-  renderWishlist(); // Optional: render on wishlist page
-});
-
-</script>
-<!------------------------------------------Cart page------------------------------------------------------------------->
-<script>
-
-  
-  // Show modal with product add/update status
-  function showCartModal(productName, type = 'added') {
-    const modal = document.getElementById('cart-modal');
-    const message = document.getElementById('cart-message');
-    const icon = document.getElementById('cart-icon');
-    if (!modal || !message || !icon) return;
-
-    if (type === 'added') {
-      icon.textContent = '✅';
-      message.textContent = `${productName} added to cart`;
-    } else if (type === 'exists') {
-      icon.textContent = '⚠️';
-      message.textContent = `${productName} is already in cart, quantity updated`;
-    }
-
-    modal.style.display = 'flex';
-
-    setTimeout(() => {
-      modal.style.display = 'none';
-    }, 2000);
-  }
-
-  // Close modal manually
-  function closeCartModal() {
-    const modal = document.getElementById('cart-modal');
-    if (modal) modal.style.display = 'none';
-  }
-
-  // Handle adding product to cart
-  function handleAddToCart(button) {
-    const card = button.closest('.card');
-    if (!card) return;
-
-    const productName = card.querySelector('h3')?.innerText.trim() || 'Item';
-    const productId = card.getAttribute('data-id');
-    const imgSrc = card.querySelector('img')?.getAttribute('src') || '';
-    const qtyInput = card.querySelector('.quantity-input');
-    const payBtn = card.querySelector('.pay');    // The pay button element
-    const mrpBtn = card.querySelector('.mrp');    // The mrp button element
-
-    // Safely parse quantity, minimum 1
-    let qty = parseInt(qtyInput?.value, 10);
-    if (isNaN(qty) || qty < 1) qty = 1;
-
-    // Safely parse pay and mrp prices from data attributes
-    // IMPORTANT: you must add data-pay and data-mrp attributes on these buttons!
-    const pay = parseFloat(payBtn?.dataset.pay) || 0;
-    const mrp = parseFloat(mrpBtn?.dataset.mrp) || 0;
-
-    // Create product object
-    const product = {
-      id: productId,
-      title: productName,
-      image: imgSrc,
-      qty: qty,
-      pay: pay,
-      mrp: mrp
-    };
-
-    // Load cart from localStorage or initialize empty
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    const existingIndex = cart.findIndex(item => item.id === productId);
-
-    if (existingIndex !== -1) {
-      // If product exists, increase quantity
-      cart[existingIndex].qty += qty;
-      showCartModal(productName, 'exists');
-    } else {
-      // Add new product to cart
-      cart.push(product);
-      showCartModal(productName, 'added');
-    }
-
-    // Save updated cart
-    localStorage.setItem('cart', JSON.stringify(cart));
-  }
-
-  // Render cart items inside a container element
-  function renderCart() {
-    const cart = JSON.parse(localStorage.getItem('cart')) || [];
-    const container = document.getElementById('cart-container');
-    if (!container) return;
-
-    container.innerHTML = cart.map(item => `
-      <div class="card" data-id="${item.id}">
-        <img src="${item.image}" alt="${item.title}" />
-        <h3>${item.title}</h3>
-        <p>MRP: ₹${item.mrp}</p>
-        <p>Pay: ₹${item.pay}</p>
-        <p>Quantity: ${item.qty}</p>
-      </div>
-    `).join('');
-  }
-
-  // Initialize event listeners when DOM loads
-  document.addEventListener('DOMContentLoaded', () => {
-    // Add click listeners to all "Add to Cart" buttons
-    document.querySelectorAll('.add-to-cart').forEach(btn => {
-      btn.addEventListener('click', () => handleAddToCart(btn));
-    });
-
-    renderCart();
-  });
-</script>
-
-
-<!-----------------------------------------picode pop up js----------------------------------------------------------------->
-
-
-
-
-
-
-<!------------------------------------pin code popup call--------------------------------------------------------------->
-
-
+  <script>
+    // JavaScript to load the header
+    fetch('Footer.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('Footer-container0').innerHTML = data;
+      });
+  </script>
+ 
 
   </body>
 </html>
