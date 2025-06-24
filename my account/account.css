@@ -415,7 +415,7 @@ body.dark .home .text{
     }
     .sidebar li .icon {
         min-width: 35px;
-        height: 35px;
+        
         font-size: 20px;
     }
 }
