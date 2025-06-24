@@ -1,9 +1,15 @@
 <?php
-// Database configuration
+// Local Use Database configuration
+// define('DB_HOST', 'localhost');
+// define('DB_USER', 'root');
+// define('DB_PASS', '');
+// define('DB_NAME', 'everythingb2c');
+
+// Production Use Database configuration
 define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'everythingb2c');
+define('DB_USER', 'u141519101_everythingb2c1');
+define('DB_PASS', 'EveryThing@b2c#2025');
+define('DB_NAME', 'u141519101_everythingb2c1');
 
 // Create connection
 try {
