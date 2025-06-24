@@ -490,3 +490,139 @@ a:hover {
     font-size: 0.95rem;
   }
 }
+
+
+/*----------------------------------------------------- Hero Slider Section-------------------------------------------------- */
+
+.hero-slider-section {
+    padding: 0;
+    margin-bottom: 0px;
+    margin-top: -40px;
+}
+
+.carousel {
+    position: relative;
+    width: 100%;
+    height: 380px;
+    overflow: hidden;
+    background-color: #f0f2f5;
+    padding-top: 40px;
+}
+
+.carousel-inner {
+    height: 100%;
+}
+
+.carousel-item {
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    text-align: center;
+    color: #fff;
+    /* No display:none here! Bootstrap manages this. */
+}
+
+.carousel-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    
+}
+/* Desktop styles (unchanged) */
+.hero-slide-1 {
+    background-image: url('../images/slide.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.hero-slide-2 {
+    background-image: url('../images/slide_2.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* ===== Tablet & Mobile (≤768px) ===== */
+@media (max-width: 768px) {
+    .carousel {
+        height: 350px; /* Increased height to show full image */
+        padding-top: 20px;
+    }
+
+    .carousel-item {
+        font-size: 1rem;
+        padding: 20px;
+        flex-direction: column;
+    }
+
+
+    
+.hero-slider-section {
+    padding: 0;
+    margin-bottom: 0px;
+    margin-top: 10px;
+}
+
+    .hero-slide-1,
+    .hero-slide-2 {
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+}
+@media (max-width: 768px) {
+  .carousel {
+    height: auto; /* Let content define height */
+    padding: 0;   /* Remove top/bottom padding */
+    margin: 0;    /* Remove extra space if any */
+  }
+
+  .carousel-item {
+    padding: 0;
+    margin: 0;
+    font-size: 1rem;
+    flex-direction: column;
+  }
+
+  .hero-slide-1,
+  .hero-slide-2 {
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: auto;
+    aspect-ratio: 3 / 1; /* Maintain proportional size */
+  }
+}
+
+@media (max-width: 480px) {
+  .carousel {
+    height: auto;
+    padding: 0;
+  }
+
+  .carousel-item {
+    padding: 0;
+    margin: 0;
+    font-size: 0.9rem;
+    flex-direction: column;
+  }
+
+  .hero-slide-1,
+  .hero-slide-2 {
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: auto;
+    aspect-ratio: 3 / 1;
+  }
+}
