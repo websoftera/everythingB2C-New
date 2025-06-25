@@ -16,8 +16,8 @@
 
 <script src="../detail.js" defer></script>
 <link rel="stylesheet" href="../deatil.css">
-
-<base href="/" />
+<meta charset="UTF-8">
+<base href="../" />
 
     </head>
 <!-- header area -->
@@ -32,7 +32,7 @@
     <div class="discount-banner1">SAVE ₹40 (7% OFF)</div>
     <button class="zoom-icon-btn" onclick="activateZoom()">🔍</button>
     <div class="img-magnifier-container">
-      <img id="mainImage" src="/asset/household and cleaning/page6/Ariel Washing Powder.webp" alt="Ariel Washing Powder 3 kg" />
+      <img id="mainImage" src="./asset/household and cleaning/page6/Ariel Washing Powder.webp" alt="Ariel Washing Powder 3 kg" />
     </div>
     <div class="thumbnail-row">
       
@@ -184,7 +184,7 @@
 
   <script>
     // JavaScript to load the header
-    fetch('../Footer.html')
+    fetch('Footer.html')
       .then(response => response.text())
       .then(data => {
         document.getElementById('Footer-container0').innerHTML = data;

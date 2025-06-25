@@ -1,0 +1,439 @@
+/* Google Font Import - Poppins */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+:root{
+    /* ===== Colors ===== */
+    --body-color: #E4E9F7;
+    --sidebar-color: #FFF;
+    --primary-color: #0087be;
+    --primary-color-light: #F6F5FF;
+    --toggle-color: #DDD;
+    --text-color: #707070;
+    /* ====== Transition ====== */
+    --tran-03: all 0.2s ease;
+    --tran-03: all 0.3s ease;
+    --tran-04: all 0.3s ease;
+    --tran-05: all 0.3s ease;
+}
+body{
+    min-height: 100vh;
+    background-color: var(--body-color);
+    transition: var(--tran-05);
+    display: flex; /* Use flexbox for overall page layout */
+    flex-direction: column; /* Stack header, main-wrapper, footer vertically */
+}
+::selection{
+    background-color: var(--primary-color);
+    color: #fff;
+}
+body.dark{
+    --body-color: #18191a;
+    --sidebar-color: #242526;
+    --primary-color: #3a3b3c;
+    --primary-color-light: #3a3b3c;
+    --toggle-color: #fff;
+    --text-color: #ccc;
+}
+
+/* Ensure header and footer containers take full width if they exist as separate elements */
+#header-container, #footer-container {
+    width: 100%;
+}
+
+/* Main Wrapper for Sidebar and Content */
+.main-wrapper {
+    display: flex; /* This will arrange sidebar and home section side-by-side */
+    flex: 1; /* Allow main-wrapper to take up available space */
+    width: 100%;
+}
+
+/* ===== Sidebar ===== */
+.sidebar{
+    position: sticky; /* Keeps sidebar in view while scrolling content */
+    top: 0; /* Aligns sidebar to the top of its containing block (main-wrapper) */
+    left: 0;
+    height: 100vh; /* Make sidebar fill the viewport height, or adjust as needed */
+    width: 250px;
+    padding: 10px 14px;
+    background: var(--sidebar-color);
+    transition: var(--tran-05);
+    z-index: 100; 
+    flex-shrink: 0; /* Prevent sidebar from shrinking */
+    overflow-y: auto; /* Enable scrolling for sidebar content if it exceeds height */
+}
+.sidebar .menu ul {
+    padding-left: 0; /* This will remove the default left padding from the ul */
+}
+.sidebar.close{
+    width: 88px;
+}
+/* ===== Reusable code - Here ===== */
+.sidebar li{
+    height: 50px;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+.sidebar header .image,
+.sidebar .icon{
+    min-width: 60px;
+    border-radius: 6px;
+}
+.sidebar .icon{
+    min-width: 60px;
+    border-radius: 6px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+.sidebar .text,
+.sidebar .icon{
+    color: var(--text-color);
+    transition: var(--tran-03);
+}
+.sidebar .text{
+    font-size: 17px;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 1;
+}
+.sidebar.close .text{
+    opacity: 0;
+}
+/* =========================== */
+.sidebar header{
+    position: relative;
+}
+.sidebar header .image-text{
+    display: flex;
+    align-items: center;
+}
+.sidebar header .logo-text{
+    display: flex;
+    flex-direction: column;
+}
+header .image-text .name {
+    margin-top: 2px;
+    font-size: 18px;
+    font-weight: 600;
+}
+header .image-text .profession{
+    font-size: 16px;
+    margin-top: -2px;
+    display: block;
+}
+.sidebar header .image{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.sidebar header .image img{
+    width: 40px;
+    border-radius: 6px;
+}
+.sidebar header .toggle{
+    position: absolute;
+    top: 50%;
+    right: -25px;
+    transform: translateY(-50%) rotate(180deg);
+    height: 25px;
+    width: 25px;
+    background-color: var(--primary-color);
+    color: var(--sidebar-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    cursor: pointer;
+    transition: var(--tran-05);
+}
+body.dark .sidebar header .toggle{
+    color: var(--text-color);
+}
+.sidebar.close .toggle{
+    transform: translateY(-50%) rotate(0deg);
+}
+.sidebar .menu{
+    margin-top: 40px;
+}
+.sidebar li.search-box{
+    border-radius: 6px;
+    background-color: var(--primary-color-light);
+    cursor: pointer;
+    transition: var(--tran-05);
+}
+.sidebar li.search-box input{
+    height: 100%;
+    width: 100%;
+    outline: none;
+    border: none;
+    background-color: var(--primary-color-light);
+    color: var(--text-color);
+    border-radius: 6px;
+    font-size: 17px;
+    font-weight: 500;
+    transition: var(--tran-05);
+}
+.sidebar li a{
+    list-style: none;
+    height: 100%;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: var(--tran-03);
+}
+.sidebar li a:hover{
+    background-color: var(--primary-color);
+}
+.sidebar li a:hover .icon,
+.sidebar li a:hover .text{
+    color: var(--sidebar-color);
+}
+body.dark .sidebar li a:hover .icon,
+body.dark .sidebar li a:hover .text{
+    color: var(--text-color);
+}
+.sidebar .menu-bar{
+    height: calc(100% - 55px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow-y: scroll;
+}
+.menu-bar::-webkit-scrollbar{
+    display: none;
+}
+.sidebar .menu-bar .mode{
+    border-radius: 6px;
+    background-color: var(--primary-color-light);
+    position: relative;
+    transition: var(--tran-05);
+}
+.menu-bar .mode .sun-moon{
+    height: 50px;
+    width: 60px;
+}
+.mode .sun-moon i{
+    position: absolute;
+}
+.mode .sun-moon i.sun{
+    opacity: 0;
+}
+body.dark .mode .sun-moon i.sun{
+    opacity: 1;
+}
+body.dark .mode .sun-moon i.moon{
+    opacity: 0;
+}
+.menu-bar .bottom-content .toggle-switch{
+    position: absolute;
+    right: 0;
+    height: 100%;
+    min-width: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.toggle-switch .switch{
+    position: relative;
+    height: 22px;
+    width: 40px;
+    border-radius: 25px;
+    background-color: var(--toggle-color);
+    transition: var(--tran-05);
+}
+.switch::before{
+    content: '';
+    position: absolute;
+    height: 15px;
+    width: 15px;
+    border-radius: 50%;
+    top: 50%;
+    left: 5px;
+    transform: translateY(-50%);
+    background-color: var(--sidebar-color);
+    transition: var(--tran-04);
+}
+body.dark .switch::before{
+    left: 20px;
+}
+
+/* Home section styling */
+.home{
+    flex: 1; /* Allow home section to take up remaining space */
+    background-color: var(--body-color);
+    transition: var(--tran-05);
+    padding: 12px 60px; /* Adjust padding as needed */
+    overflow-y: auto; /* Enable scrolling for content within home section */
+}
+.home .text{
+    font-size: 30px;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+/* When sidebar is closed */
+.sidebar.close + .home { /* Selects the .home element directly following .sidebar.close */
+    width: calc(100% - 88px); /* Adjust width of home section */
+}
+body.dark .home .text{
+    color: var(--text-color);
+}
+
+/* Media Queries for Responsiveness */
+
+/* Large screens / Desktops (e.g., 1201px and above) - no specific media query needed as base styles apply */
+
+/* Medium to Large Desktops (1200px and below) */
+@media (max-width: 1200px) {
+    .home {
+        padding: 12px 30px; /* Reduce padding for slightly smaller screens */
+    }
+}
+
+/* Tablets and Smaller Desktops (768px and below) */
+@media (max-width: 768px) {
+    body {
+        flex-direction: column; /* Stack header, main-wrapper, footer vertically */
+    }
+    .main-wrapper {
+        flex-direction: column; /* Stack sidebar and home vertically */
+        min-height: auto; /* Allow main-wrapper to adjust height based on content */
+    }
+    .sidebar {
+        width: 100%;
+        height: auto; /* Allow sidebar height to be determined by content or fixed */
+        position: relative; /* Sidebar no longer fixed on top, flows with document */
+        padding: 10px;
+        box-shadow: none;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: row; /* Arrange sidebar items horizontally */
+        justify-content: space-around; /* Distribute items evenly */
+        align-items: center;
+        overflow-x: auto; /* Enable horizontal scrolling for sidebar if too many items */
+        overflow-y: hidden; /* Hide vertical overflow */
+        height: 60px; /* Give a fixed height for horizontal mobile sidebar for consistent look */
+        top: auto; /* Reset sticky top */
+    }
+    .sidebar.close {
+        width: 100%; /* Ensure full width even if toggle is present in JS */
+    }
+    .sidebar header {
+        display: none; /* Hide header on mobile for a cleaner horizontal nav */
+    }
+    .sidebar .menu-bar {
+        height: auto;
+        flex-direction: row; /* Arrange menu items horizontally */
+        overflow-y: hidden;
+        width: 100%;
+        justify-content: space-around; /* Distribute menu items */
+    }
+    .sidebar .menu {
+        margin-top: 0;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap; /* Prevent wrapping for horizontal scroll */
+        justify-content: space-around;
+        width: 100%;
+    }
+    .sidebar li {
+        margin: 0 5px; /* Adjust spacing for horizontal list items */
+        height: auto;
+        min-width: fit-content;
+        justify-content: center;
+        flex-shrink: 0; /* Prevent list items from shrinking too much */
+        padding: 5px 0; /* Add vertical padding for touch targets */
+    }
+    .sidebar li .text {
+        display: none; /* Hide text on mobile for compact sidebar icons */
+    }
+    .sidebar li .icon {
+        min-width: 40px;
+        height: 40px;
+        font-size: 24px;
+        margin: 0; /* Remove any default margins */
+    }
+    .sidebar li.search-box {
+        display: none; /* Hide search box on small screens for simplicity */
+    }
+    .sidebar .bottom-content {
+        display: none; /* Hide bottom content (logout, dark mode) on mobile */
+    }
+    .sidebar header .toggle {
+        display: none; /* Hide toggle button as sidebar is always open/horizontal */
+    }
+
+    .home {
+        width: 100%;
+        padding: 15px; /* Adjust padding for mobile */
+        min-height: auto; /* Allow height to adjust to content */
+        margin-left: 0; /* Remove left margin for mobile */
+        padding-top: 20px; /* Add some top padding to separate from sidebar */
+        order: 2; /* Ensure home section appears after sidebar when stacked */
+    }
+    /* No need for .sidebar.close ~ .home specific styles on mobile as layout changes */
+
+    /* Adjustments for content within .home, assuming these elements are inside */
+    .form-container-wrapper { 
+        padding-bottom: 15px;
+    }
+    .container { 
+        padding: 20px; /* Adjust form padding for mobile */
+    }
+    form .user-details .input-box { 
+        width: 100%; /* Stack all input boxes vertically on small screens */
+    }
+}
+
+/* Small Mobile Screens (480px and below) */
+@media (max-width: 480px) {
+    .container {
+        padding: 15px; /* Further reduce padding for very small screens */
+    }
+    .home .text {
+        font-size: 24px;
+        padding: 8px 0;
+    }
+    .sidebar {
+        height: 50px; /* Slightly smaller height for very small mobile sidebar */
+    }
+    .sidebar li .icon {
+        min-width: 35px;
+        height: 35px;
+        font-size: 20px;
+    }
+}
+
+/* Extra small mobile screens (320px and below) */
+@media (max-width: 320px) {
+    .home {
+        padding: 10px; /* Even smaller padding for tiny screens */
+    }
+    .home .text {
+        font-size: 20px;
+    }
+    .sidebar {
+        height: 45px; /* Slightly adjust sidebar height for very small screens */
+    }
+    .sidebar li .icon {
+        min-width: 30px;
+        height: 30px;
+        font-size: 18px;
+    }
+}

@@ -1,0 +1,706 @@
+/* Google Font Import - Poppins */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
+
+/* Universal Reset and Font */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Root variables for sidebar theme */
+:root{
+    /* ===== Colors ===== */
+    --body-color: #E4E9F7;
+    --sidebar-color: #FFF;
+    --primary-color: #0087be;
+    --primary-color-light: #F6F5FF;
+    --toggle-color: #DDD;
+    --text-color: #707070;
+    /* ====== Transition ====== */
+    --tran-03: all 0.2s ease;
+    --tran-04: all 0.3s ease;
+    --tran-05: all 0.3s ease;
+}
+
+/* Define header/footer heights directly as these will push other elements */
+/* These are estimates; adjust them based on your actual header/footer content */
+:root {
+    --header-height: 70px;
+    --footer-height: 120px;
+}
+
+body{
+    min-height: 100vh;
+    background-color: var(--body-color);
+    transition: var(--tran-05);
+    display: flex; /* Use flexbox for overall layout */
+    flex-direction: column; /* Stack header, app-container, footer vertically */
+    padding: 0;
+}
+
+::selection{
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+body.dark{
+    --body-color: #18191a;
+    --sidebar-color: #242526;
+    --primary-color: #3a3b3c;
+    --primary-color-light: #3a3b3c;
+    --toggle-color: #fff;
+    --text-color: #ccc;
+}
+
+/* Styles for your dynamically loaded Header and Footer */
+/* Ensure these IDs exist in your Header.html and Footer.html if they wrap content,
+   or style directly the elements within them if they contain no wrapper */
+#main-header, #main-footer {
+    width: 100%;
+    /* You might want to add specific styling here if your header/footer are bare HTML */
+    /* Example: background-color: #fff; padding: 10px; */
+}
+
+/* === NEW: Main application container for Sidebar and Home Content === */
+.app-container {
+    display: flex; /* Use flexbox to arrange sidebar and home side-by-side */
+    flex: 1; /* Allows this container to grow and fill available vertical space */
+    width: 100%;
+    overflow: hidden; /* Prevent horizontal scroll from internal elements */
+}
+
+/* ===== Sidebar ===== */
+/* ===== Sidebar ===== */
+.sidebar {
+    width: 250px;
+    padding: 10px 17px;
+    background: var(--sidebar-color);
+    transition: var(--tran-05);
+    z-index: 100;
+    flex-shrink: 0; /* Prevent sidebar from shrinking when content grows */
+    overflow-y: auto; /* Allow sidebar to scroll if its content is too long */
+    overflow-x: hidden; /* ADD THIS LINE to prevent horizontal scrolling */
+}
+.sidebar .menu ul {
+    padding-left: 0; /* This will remove the default left padding from the ul */
+}
+.sidebar.close {
+    width: 88px;
+}
+
+/* ===== Reusable code - Here ===== */
+.sidebar li{
+    height: 50px;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+.sidebar header .image,
+.sidebar .icon{
+    min-width: 60px;
+    border-radius: 6px;
+}
+.sidebar .icon{
+    min-width: 60px;
+    border-radius: 6px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+.sidebar .text,
+.sidebar .icon{
+    color: var(--text-color);
+    transition: var(--tran-03);
+}
+.sidebar .text{
+    font-size: 15px;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 1;
+}
+.sidebar.close .text{
+    opacity: 0;
+}
+/* =========================== */
+.sidebar header{
+    position: relative;
+}
+.sidebar header .image-text{
+    display: flex;
+    align-items: center;
+}
+.sidebar header .logo-text{
+    display: flex;
+    flex-direction: column;
+}
+header .image-text .name {
+    margin-top: 2px;
+    font-size: 18px;
+    font-weight: 600;
+}
+header .image-text .profession{
+    font-size: 16px;
+    margin-top: -2px;
+    display: block;
+}
+.sidebar header .image{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.sidebar header .image img{
+    width: 40px;
+    border-radius: 6px;
+}
+.sidebar header .toggle{
+    position: absolute;
+    top: 50%;
+    right: -25px;
+    transform: translateY(-50%) rotate(180deg);
+    height: 25px;
+    width: 25px;
+    background-color: var(--primary-color);
+    color: var(--sidebar-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    cursor: pointer;
+    transition: var(--tran-05);
+}
+body.dark .sidebar header .toggle{
+    color: var(--text-color);
+}
+.sidebar.close .toggle{
+    transform: translateY(-50%) rotate(0deg);
+}
+.sidebar .menu{
+    margin-top: 40px;
+}
+.sidebar li.search-box{
+    border-radius: 6px;
+    background-color: var(--primary-color-light);
+    cursor: pointer;
+    transition: var(--tran-05);
+}
+.sidebar li.search-box input{
+    height: 100%;
+    width: 100%;
+    outline: none;
+    border: none;
+    background-color: var(--primary-color-light);
+    color: var(--text-color);
+    border-radius: 6px;
+    font-size: 17px;
+    font-weight: 500;
+    transition: var(--tran-05);
+}
+.sidebar li a{
+    list-style: none;
+    height: 100%;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: var(--tran-03);
+}
+.sidebar li a:hover{
+    background-color: var(--primary-color);
+}
+.sidebar li a:hover .icon,
+.sidebar li a:hover .text,
+.sidebar li a.active-link .icon, /* Added active-link styling */
+.sidebar li a.active-link .text{ /* Added active-link styling */
+    color: var(--sidebar-color);
+}
+/* Style for active link */
+.sidebar li a.active-link {
+    background-color: var(--primary-color);
+}
+body.dark .sidebar li a:hover .icon,
+body.dark .sidebar li a:hover .text,
+body.dark .sidebar li a.active-link .icon, /* Added active-link styling for dark mode */
+body.dark .sidebar li a.active-link .text{ /* Added active-link styling for dark mode */
+    color: var(--text-color);
+}
+
+.sidebar .menu-bar{
+    height: calc(100% - 55px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow-y: scroll;
+}
+.menu-bar::-webkit-scrollbar{
+    display: none;
+}
+.sidebar .menu-bar .mode{
+    border-radius: 6px;
+    background-color: var(--primary-color-light);
+    position: relative;
+    transition: var(--tran-05);
+}
+.menu-bar .mode .sun-moon{
+    height: 50px;
+    width: 60px;
+}
+.mode .sun-moon i{
+    position: absolute;
+}
+.mode .sun-moon i.sun{
+    opacity: 0;
+}
+body.dark .mode .sun-moon i.sun{
+    opacity: 1;
+}
+body.dark .mode .sun-moon i.moon{
+    opacity: 0;
+}
+.menu-bar .bottom-content .toggle-switch{
+    position: absolute;
+    right: 0;
+    height: 100%;
+    min-width: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.toggle-switch .switch{
+    position: relative;
+    height: 22px;
+    width: 40px;
+    border-radius: 25px;
+    background-color: var(--toggle-color);
+    transition: var(--tran-05);
+}
+.switch::before{
+    content: '';
+    position: absolute;
+    height: 15px;
+    width: 15px;
+    border-radius: 50%;
+    top: 50%;
+    left: 5px;
+    transform: translateY(-50%);
+    background-color: var(--sidebar-color);
+    transition: var(--tran-04);
+}
+body.dark .switch::before{
+    left: 20px;
+}
+
+/* ===== HOME / Main Content Area (where your form will be) ===== */
+.home {
+    flex: 1; /* Allows the home section to grow and take remaining space */
+    padding: 20px;
+    overflow-y: auto; /* Allow home content to scroll if it's too long */
+    transition: var(--tran-05);
+    display: flex; /* Use flexbox to center content vertically/horizontally */
+    flex-direction: column;
+    align-items: center; /* Center horizontally */
+}
+
+
+
+
+.home .text{
+    font-size: 30px;
+    font-weight: 500;
+    color: var(--text-color);
+    padding: 12px 0;
+    text-align: center;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+/* New wrapper for your form to control its width within the home section */
+.form-container-wrapper {
+    width: 100%;
+    max-width: 700px;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 30px;
+}
+
+/* Form Container */
+.container {
+    width: 100%;
+    background-color: var(--sidebar-color);
+    padding: 25px 30px;
+    border-radius: 5px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    height: auto;
+    min-height: fit-content;
+}
+
+/* Title */
+.container .title {
+    font-size: 25px;
+    font-weight: 500;
+    position: relative;
+    text-align: center;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    color: var(--text-color);
+    padding-bottom: 10px;
+}
+
+/* Underline for Title */
+.container .title::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 0;
+    height: 3px;
+    width: 50px;
+    border-radius: 5px;
+    background-color: var(--primary-color);
+}
+
+/* Form Content */
+.content form .user-details {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin: 20px 0 12px 0;
+}
+
+/* Input Boxes */
+form .user-details .input-box {
+    margin-bottom: 15px;
+    width: calc(100% / 2 - 10px);
+}
+
+form .user-details .input-box.full-width {
+    width: 100%;
+}
+
+form .input-box span.details {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 5px;
+    color: var(--text-color);
+}
+
+/* Required field indicator */
+span.details .required {
+    color: red;
+    margin-left: 2px;
+}
+
+/* Styling for both inputs and selects */
+.user-details .input-box input,
+.user-details .input-box select {
+    height: 45px;
+    width: 100%;
+    outline: none;
+    font-size: 16px;
+    border-radius: 5px;
+    padding-left: 15px;
+    border: 1px solid #ccc;
+    border-bottom-width: 2px;
+    transition: all 0.3s ease;
+    background-color: var(--primary-color-light);
+    color: var(--text-color);
+}
+
+/* Input Focus/Hover Effect */
+.user-details .input-box input:focus,
+.user-details .input-box select:focus {
+    border-color: #0087be;
+}
+
+.user-details .input-box input:hover:not(:focus):not(:active),
+.user-details .input-box select:hover:not(:focus):not(:active) {
+    border-color: #0087be;
+}
+
+/* Specific styling for SELECT elements */
+.user-details .input-box select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007bff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13.6-6.4H18.2c-7.9%200-14.7%205.2-16.3%2012.9-.6%202.9-.6%206.1%200%209.1l128%20128c5%205%2011.8%207.8%2019.2%207.8s14.2-2.8%2019.2-7.8l128-128c5.8-5.7%205.8-15.1-.1-20.8z%22%2F%3E%3C%2Fsvg%3E');
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 12px;
+    padding-right: 30px;
+}
+
+/* Submit Button */
+form .button {
+    height: 45px;
+    margin: 35px 0;
+}
+
+form .button input {
+    height: 100%;
+    width: 100%;
+    border-radius: 5px;
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    cursor: pointer;
+    background: var(--primary-color);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+}
+
+/* Hover Effect for Button */
+form .button input:hover {
+    background: #0087be;
+}
+
+/* New styles for account information form */
+.input-description {
+    font-size: 13px;
+    color: var(--text-color);
+    margin-top: 5px;
+    line-height: 1.4;
+}
+
+.section-title {
+    width: 100%;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-top: 30px;
+    margin-bottom: 15px;
+    position: relative;
+    padding-bottom: 8px;
+}
+
+.section-title::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 2px;
+    width: 30px;
+    border-radius: 5px;
+    background-color: var(--primary-color);
+}
+
+/* New rule to align password fields */
+.password-fields-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    width: 100%;
+}
+
+/* =========================== */
+/* Responsive Media Queries */
+/* =========================== */
+
+@media (max-width: 768px) {
+    /* 1. Body/Overall Layout Adjustment */
+    body {
+        /* On mobile, we want the sidebar and home content to stack vertically */
+        flex-direction: column; /* Revert body to column flow for mobile */
+    }
+
+    /* 2. Sidebar Transformation (Top Horizontal Nav) */
+    .sidebar {
+        width: 100%;
+        height: auto;
+        padding: 10px 0;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        flex-shrink: 0; /* Important: prevent it from shrinking */
+    }
+
+    /* Override the .close class behavior for mobile - it should just always be horizontal */
+    .sidebar.close {
+        width: 100%;
+    }
+
+    /* Hide text elements, image, and profession */
+    .sidebar header,
+    .sidebar .text,
+    .sidebar .search-box,
+    .sidebar .bottom-content {
+        display: none;
+    }
+
+    /* Make the menu bar and menu horizontal */
+    .sidebar .menu-bar {
+        height: auto;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        overflow-y: hidden;
+        overflow-x: auto;
+        width: 100%;
+    }
+
+    .sidebar .menu {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        margin-top: 0;
+        width: 100%;
+        justify-content: space-around;
+        padding: 0 10px;
+    }
+
+    .sidebar li {
+        margin: 0;
+        height: auto;
+        min-width: 60px;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .sidebar li .icon {
+        min-width: 40px;
+        height: 40px;
+        font-size: 24px;
+        margin: auto;
+    }
+
+    /* Remove toggle as it's not needed for a static horizontal menu */
+    .sidebar header .toggle {
+        display: none;
+    }
+
+    /* Specific styling for active link on horizontal bar */
+    .sidebar li a {
+        padding: 5px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* 3. Main Content Area Adjustment */
+    .app-container {
+        flex-direction: column; /* Stack sidebar and home vertically on small screens */
+        flex: 1; /* Still takes available space */
+        overflow: visible; /* Allow content to dictate height, but body scroll will handle */
+    }
+
+    .home {
+        flex: none; /* Don't let it grow when sidebar is also flexed */
+        width: 100%;
+        padding: 20px 15px;
+        min-height: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .home .text {
+        font-size: 28px;
+        padding: 10px 0;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .form-container-wrapper {
+        width: 100%;
+        max-width: 500px;
+        padding-bottom: 20px;
+        justify-content: center;
+    }
+
+    /* 4. Form Element Adjustments */
+    .container {
+        padding: 25px 20px;
+        box-shadow: none;
+        width: 100%;
+    }
+
+    .container .title {
+        font-size: 24px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .container .title::before {
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50px;
+    }
+
+    form .user-details .input-box {
+        width: 100%;
+        margin-bottom: 15px;
+    }
+
+    .password-fields-group .input-box {
+        width: 100%;
+    }
+
+    .section-title {
+        font-size: 20px;
+        margin-top: 25px;
+        margin-bottom: 15px;
+        text-align: left;
+    }
+
+    .section-title::before {
+        left: 0;
+        transform: translateX(0);
+    }
+
+    .input-description {
+        font-size: 13px;
+        margin-top: 5px;
+    }
+
+    form .button {
+        margin: 30px 0;
+    }
+}
+
+/* Further refinements for very small screens (e.g., iPhone 5/SE) */
+@media (max-width: 480px) {
+    .sidebar {
+        padding: 5px 0;
+    }
+
+    .sidebar .menu {
+        padding: 0 5px;
+    }
+
+    .sidebar li .icon {
+        min-width: 35px;
+        height: 35px;
+        font-size: 22px;
+    }
+
+    .home {
+        padding: 15px 10px;
+    }
+
+    .home .text {
+        font-size: 24px;
+        margin-bottom: 15px;
+    }
+
+    .container {
+        padding: 20px 15px;
+    }
+
+    .container .title {
+        font-size: 22px;
+        margin-bottom: 15px;
+    }
+
+    form .user-details .input-box {
+        margin-bottom: 12px;
+    }
+}

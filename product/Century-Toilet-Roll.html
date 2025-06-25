@@ -14,8 +14,8 @@
 
 <script src="../detail.js" defer></script>
 <link rel="stylesheet" href="../deatil.css">
-
-<base href="/" />
+<meta charset="UTF-8">
+<base href="../" />
 
     </head>
 <!-- header area -->
@@ -30,7 +30,7 @@
     <div class="discount-banner1">SAVE ₹25 (10% OFF)</div>
     <button class="zoom-icon-btn" onclick="activateZoom()">🔍</button>
     <div class="img-magnifier-container">
-      <img id="mainImage" src="/asset/household and cleaning/page5/Century Toilet Roll  Pack of 10.webp" alt="Century Toilet Roll | Pack of 10 2 Ply | 300 Pulls / Roll" />
+      <img id="mainImage" src="./asset/household and cleaning/page5/Century Toilet Roll  Pack of 10.webp" alt="Century Toilet Roll | Pack of 10 2 Ply | 300 Pulls / Roll" />
     </div>
     <div class="thumbnail-row">
       
@@ -181,7 +181,7 @@
 
   <script>
     // JavaScript to load the header
-    fetch('../Footer.html')
+    fetch('Footer.html')
       .then(response => response.text())
       .then(data => {
         document.getElementById('Footer-container0').innerHTML = data;
