@@ -24,7 +24,7 @@ body {
 
 .header2{
   background-color: #16BAE4;
-  height: 35px;
+  
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -351,22 +351,6 @@ box-shadow: #000;
     gap: 1rem; /* Better spacing between items */
   }
 
-  .category-navbar .nav-link {
-    padding: 0.75rem 1rem;
-    font-weight:  bold;
-    font-size: 13px;
-    color: #222;
-    transition: color 0.2s ease-in-out, text-decoration 0.2s;
-    white-space: nowrap;
-    position: relative;
-  }
-
-  .category-navbar .nav-link:hover {
-    
-    text-decoration: underline;
-    color: red;
-  }
-
   /* Optional pipe separator */
   .category-navbar .nav-item:not(:last-child)::after {
     content: "|";
@@ -417,4 +401,59 @@ box-shadow: #000;
   cursor: pointer;
   font-size: 20px;
   font-weight: bold;
+}
+
+/* Popup/Toast Notification */
+.toast-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #333;
+    color: #fff;
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    z-index: 1050;
+    font-size: 16px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-20px);
+    transition: all 0.4s ease-in-out;
+}
+
+.toast-notification.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.toast-notification.success {
+    background-color: #28a745;
+}
+
+.toast-notification.error {
+    background-color: #dc3545;
+}
+
+/* Header Search Results Popup */
+#headerSearchResultsPopup {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+  max-height: 350px;
+  overflow-y: auto;
+  border-radius: 0 0 8px 8px;
+  top: 100%;
+  left: 0;
+  right: 0;
+  min-width: 250px;
+  z-index: 9999;
+}
+
+#headerSearchResultsPopup .search-result-item:hover {
+  background: #f5faff;
+}
+
+#headerSearchResultsPopup .search-result-item:last-child {
+  border-bottom: none;
 }

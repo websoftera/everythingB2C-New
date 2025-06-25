@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account - Addresses</title>
+    <link rel="stylesheet" href="mainaddress.css">
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../Header.css">
+    <script> </script>
+</head>
+<body>
+
+    <div id="header-container"></div>
+
+    
+    <div class="app-container">
+        <nav class="sidebar close">
+            <header>
+                <div class="image-text">
+                    <span class="image">
+                        <img src="/site logo.png" alt="logo">
+                    </span>
+                    <div class="text logo-text">
+                        <span class="name">Codinglab</span>
+                        <span class="profession">Web developer</span>
+                    </div>
+                </div>
+                <i class='bx bx-chevron-right toggle'></i>
+            </header>
+            <div class="menu-bar">
+                <div class="menu">
+                    <li class="search-box">
+                        <i class='bx bx-search icon'></i>
+                        <input type="text" placeholder="Search...">
+                    </li>
+                    <ul class="menu-links">
+                        <li class="nav-link">
+                            <a href="myaccount.html">
+                                <i class='bx bx-home-alt icon' ></i>
+                                <span class="text nav-text">Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="nav-link">
+                            <a href="#">
+                                <i class='bx bx-receipt icon'></i>
+                                <span class="text nav-text">Order Information</span>
+                            </a>
+                        </li>
+                        <li class="nav-link">
+                            <a href="account info.html">
+                                <i class='bx bx-shopping-bag icon'></i>
+                                <span class="text nav-text">Account Information </span>
+                            </a>
+                        </li>
+                        <li class="nav-link active">
+                            <a href="mainaddress.html">
+                                <i class='bx bx-package icon'></i>
+                                <span class="text nav-text">Address</span>
+                            </a>
+                        </li>
+                        <li class="nav-link">
+                            <a href="#">
+                                <i class='bx bx-heart icon' ></i>
+                                <span class="text nav-text">Wish List </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="bottom-content">
+                    <li class="">
+                        <a href="#">
+                            <i class='bx bx-log-out icon' ></i>
+                            <span class="text nav-text">Logout</span>
+                        </a>
+                    </li>
+                    <li class="mode">
+                        <div class="sun-moon">
+                            <i class='bx bx-moon icon moon'></i>
+                            <i class='bx bx-sun icon sun'></i>
+                        </div>
+                        <span class="mode-text text">Dark mode</span>
+                        <div class="toggle-switch">
+                            <span class="switch"></span>
+                        </div>
+                    </li>
+                </div>
+            </div>
+        </nav>
+
+        <section class="home">
+            <div class="text">My Addresses</div>
+
+            <div class="address-container">
+                <p class="address-info-text"></p>
+
+                <div class="address-card">
+                    <div class="card-header">
+                        <h2>SHIPPING ADDRESS</h2>
+                        <a href="addform.html" class="add-edit-link">Add</a>
+                    </div>
+                    <div class="card-body">
+                        <p class="no-address"></p>
+                    </div>
+                </div>
+
+                <div class="address-card">
+                    <div class="card-header">
+                        <h2>BILLING ADDRESS</h2>
+                        <a href="bill address.html" class="add-edit-link">Edit</a>
+                    </div>
+                    <div class="card-body">
+                        <p class="address-details"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div id="Footer-container0"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // JavaScript to load the header
+            fetch('../Header.html')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    document.getElementById('header-container').innerHTML = data;
+                })
+                .catch(error => console.error('Error loading header:', error));
+
+            // JavaScript to load the footer
+            fetch('Footer.html')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    document.getElementById('Footer-container0').innerHTML = data;
+                })
+                .catch(error => console.error('Error loading footer:', error));
+
+            // Sidebar JavaScript (as provided in your code)
+            const body = document.querySelector('body'),
+                  sidebar = body.querySelector('nav'), // Assuming 'nav' is your sidebar element
+                  toggle = body.querySelector(".toggle"),
+                  searchBtn = body.querySelector(".search-box"),
+                  modeSwitch = body.querySelector(".toggle-switch"),
+                  modeText = body.querySelector(".mode-text");
+
+            if (toggle) { // Check if toggle exists before adding listener
+                toggle.addEventListener("click", () => {
+                    sidebar.classList.toggle("close");
+                });
+            }
+
+            if (searchBtn) { // Check if searchBtn exists
+                searchBtn.addEventListener("click", () => {
+                    sidebar.classList.remove("close");
+                });
+            }
+
+            if (modeSwitch) { // Check if modeSwitch exists
+                modeSwitch.addEventListener("click", () => {
+                    body.classList.toggle("dark");
+                    if (body.classList.contains("dark")) {
+                        modeText.innerText = "Light mode";
+                    } else {
+                        modeText.innerText = "Dark mode";
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

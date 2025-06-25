@@ -207,18 +207,7 @@
     <section class="gap"></section>
 
 <!--------------------------------------Fooer Call-------------------------------------------------------->
-        <!-- header area -->
-    <div id="Footer-container0"></div>
 
-  <script>
-    // JavaScript to load the header
-    fetch('../Footer.html')
-      .then(response => response.text())
-      .then(data => {
-        document.getElementById('Footer-container0').innerHTML = data;
-      });
-  </script>
- 
 
 
 <!--- ------------------->
@@ -262,11 +251,23 @@
 
 <!-----------------------------wishlist popup----------------------------------------------------------------------->
 
+   
+<!-- header area -->
+    <div id="Footer-container0"></div>
+
+  <script>
+    // JavaScript to load the header
+    fetch('Footer.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('Footer-container0').innerHTML = data;
+      });
+  </script>
 
 
 <!---------------------------------------------------------------------------------------------------->
 
-<!----------------------------------------------------------------------------------------------------------->
+<!-------------------------zzzz---------------------------------------------------------------------------------->
 
   </body>
 </html>

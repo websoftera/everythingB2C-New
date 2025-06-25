@@ -271,7 +271,7 @@
 
 .header2{
   background-color: #16BAE4;
-  height: 35px;
+  
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -561,21 +561,7 @@ box-shadow: #000;
     gap: 1rem; /* Better spacing between items */
   }
 
-  .category-navbar .nav-link {
-    padding: 0.75rem 1rem;
-    font-weight:  bold;
-    font-size: 13px;
-    color: #222;
-    transition: color 0.2s ease-in-out, text-decoration 0.2s;
-    white-space: nowrap;
-    position: relative;
-  }
 
-  .category-navbar .nav-link:hover {
-    
-    text-decoration: underline;
-    color: red;
-  }
 
   /* Optional pipe separator */
   .category-navbar .nav-item:not(:last-child)::after {

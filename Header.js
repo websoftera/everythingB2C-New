@@ -62,7 +62,7 @@ document.querySelectorAll('.card').forEach(card => {
   }
 
   // ========== Load Popup ================================================================================================================================
-  fetch('/popup.html')
+  fetch('popup.html')
     .then(response => response.text())
     .then(html => {
       document.body.insertAdjacentHTML('beforeend', html);
@@ -81,94 +81,21 @@ document.querySelectorAll('.card').forEach(card => {
  
 
 function initWishlistFeature() {
-  const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
-
-  document.querySelectorAll('.heart-checkbox').forEach(cb => {
-    const card = cb.closest('.product-detail-card, .card');
-    const productId = card.getAttribute('data-id');
-    const inWishlist = wishlist.find(item => item.id === productId);
-
-    cb.checked = !!inWishlist;
-
-    const label = cb.nextElementSibling;
-    if (label) label.textContent = inWishlist ? '❤️' : '🤍';
-  });
-
-  document.querySelectorAll('.heart-checkbox').forEach(cb => {
-    cb.addEventListener('change', function () {
-      const card = this.closest('.product-detail-card, .card');
-      const productId = card.getAttribute('data-id');
-      const productName = card.querySelector('.title, h3')?.innerText || 'Product';
-   let htmlToSave = card.outerHTML;
-
-// Check if it's a detailed card
-if (card.classList.contains('product-detail-card')) {
-  const simplifiedCard = card.cloneNode(true);
-
-  // Remove zoom button, thumbnails, and description
-  simplifiedCard.querySelector('.zoom-icon-btn')?.remove();
-  simplifiedCard.querySelector('.thumbnail-row')?.remove();
-  simplifiedCard.querySelector('.product-description')?.remove();
-  simplifiedCard.querySelector('p')?.remove(); // CATEGORY line
-
-  // Optional: You can also resize or add a class here to match .card styling
-  simplifiedCard.className = 'card';
-
-  htmlToSave = simplifiedCard.outerHTML;
-}
-
-const product = {
-  id: productId,
-  html: htmlToSave
-};
-
-      let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
-
-      if (this.checked) {
-        if (!wishlist.find(item => item.id === productId)) {
-          wishlist.push(product);
-        }
-        showWishlistModal(productName, 'added');
-      } else {
-        wishlist = wishlist.filter(item => item.id !== productId);
-        showWishlistModal(productName, 'removed');
-      }
-
-      localStorage.setItem('wishlist', JSON.stringify(wishlist));
-
-      const label = this.nextElementSibling;
-      if (label) label.textContent = this.checked ? '❤️' : '🤍';
+  document.querySelectorAll('.heart-checkbox').forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+      const productId = this.getAttribute('data-product-id');
+      const productName = this.closest('.card')?.querySelector('h3')?.innerText.trim() || 'Product';
+      
+      // Wishlist functionality is now handled by individual pages via AJAX
+      // This prevents conflicts with server-side wishlist management
     });
   });
 }
 
-function showWishlistModal(productName, type = 'added') {
-  const modal = document.getElementById('wishlist-modal');
-  const message = document.getElementById('wishlist-message');
-  const icon = document.getElementById('wishlist-icon');
-
-  if (type === 'added') {
-    icon.textContent = '❤️';
-    message.textContent = `${productName} added to your wishlist!`;
-  } else {
-    icon.textContent = '✖️';
-    message.textContent = `${productName} removed from your wishlist.`;
-  }
-
-  modal.style.display = 'flex';
-  setTimeout(() => {
-    modal.style.display = 'none';
-  }, 2500);
-}
-
-function closeWishlistModal() {
-  document.getElementById('wishlist-modal').style.display = 'none';
-}
-
+// Initialize event listeners when DOM loads
 document.addEventListener('DOMContentLoaded', () => {
-  initWishlistFeature();
+  // Wishlist functionality is now handled by individual pages
 });
-
 
 // cart js ---------------------------------------------------------------------------------------------------------------->//
 
@@ -201,132 +128,14 @@ function closeCartModal() {
   if (modal) modal.style.display = 'none';
 }
 
-// Handle adding product to cart
-function handleAddToCart(button) {
-  const card = button.closest('.card');
-  if (!card) return;
-
-  const productName = card.querySelector('h3')?.innerText.trim() || 'Item';
-  const productId = card.getAttribute('data-id');
-  const imgSrc = card.querySelector('img')?.getAttribute('src') || '';
-  const qtyInput = card.querySelector('.quantity-input');
-  const payBtn = card.querySelector('.pay');
-  const mrpBtn = card.querySelector('.mrp');
-
-  let qty = parseInt(qtyInput?.value, 10);
-  if (isNaN(qty) || qty < 1) qty = 1;
-
-  const pay = parseFloat(payBtn?.dataset.pay) || 0;
-  const mrp = parseFloat(mrpBtn?.dataset.mrp) || 0;
-
-  const product = {
-    id: productId,
-    title: productName,
-    image: imgSrc,
-    qty: qty,
-    pay: pay,
-    mrp: mrp
-  };
-
-  let cart = JSON.parse(localStorage.getItem('cart')) || [];
-  const existingIndex = cart.findIndex(item => item.id === productId);
-
-  if (existingIndex !== -1) {
-    cart[existingIndex].qty += qty;
-    showCartModal(productName, 'exists');
-  } else {
-    cart.push(product);
-    showCartModal(productName, 'added');
-  }
-
-  localStorage.setItem('cart', JSON.stringify(cart));
-
-  // ✅ Change button text and disable it
-  button.textContent = 'Added to Cart';
-  button.disabled = true;
-}
-
-// Render cart items inside a container element
-function renderCart() {
-  const cart = JSON.parse(localStorage.getItem('cart')) || [];
-  const container = document.getElementById('cart-container');
-  if (!container) return;
-
-  container.innerHTML = cart.map(item => `
-    <div class="card" data-id="${item.id}">
-      <img src="${item.image}" alt="${item.title}" />
-      <h3>${item.title}</h3>
-      <p>MRP: ₹${item.mrp}</p>
-      <p>Pay: ₹${item.pay}</p>
-      <p>Quantity: ${item.qty}</p>
-    </div>
-  `).join('');
-}
-
-// Check and mark existing items on page load
-function markExistingCartButtons() {
-  const cart = JSON.parse(localStorage.getItem('cart')) || [];
-
-  document.querySelectorAll('.card').forEach(card => {
-    const productId = card.getAttribute('data-id');
-    const isInCart = cart.some(item => item.id === productId);
-
-    if (isInCart) {
-      const btn = card.querySelector('.add-to-cart');
-      if (btn) {
-        btn.textContent = 'Added to Cart';
-        btn.disabled = true;
-      }
-    }
-  });
-}
-
 // Initialize event listeners when DOM loads
 document.addEventListener('DOMContentLoaded', () => {
-  // Setup Add to Cart buttons
-  document.querySelectorAll('.add-to-cart').forEach(btn => {
-    btn.addEventListener('click', () => handleAddToCart(btn));
-  });
-
-  markExistingCartButtons(); // ✅ make sure buttons reflect cart state
-  renderCart();
+  // Cart functionality is now handled by individual pages
 });
 
   // drop down menu js ---------------------->
   // Example using JS
 
-
-
-  document.addEventListener("DOMContentLoaded", () => {
-  const headerEl = document.getElementById("header-0");
-
-  // Detect how many levels deep the current page is
-  const depth = window.location.pathname.split("/").length - 2;
-  const pathToRoot = "../".repeat(depth); // e.g. "../" or "../../"
-
-  fetch(pathToRoot + "header.html")
-    .then(res => res.text())
-    .then(data => {
-      headerEl.innerHTML = data;
-    })
-    .catch(err => console.error("Header load failed", err));
-
-
-
-    fetch("/header.html")
-
-
-
-// ------------------this js for logo 👇👇.-----------------------------------------------------------------
-    fetch('SiteIcon.html')
-  .then(res => res.text())
-  .then(data => {
-    const frag = document.createRange().createContextualFragment(data);
-    document.head.appendChild(frag);
-  });
-
-
-});
 
 
 // zoom effect js of deatil card 👇👇 ----------------------------------------------------------------------//
@@ -404,5 +213,45 @@ function magnify(imgID, zoom) {
       thumb.src = tempSrc;
     });
   });
+
+
+
+   window.addEventListener('DOMContentLoaded', () => {
+  fetch('Header.html')
+    .then(res => res.text())
+    .then(data => {
+      document.getElementById('header-0').innerHTML = data;
+      initHeaderFeatures();
+    });
+
+  fetch('Footer.html')
+    .then(res => res.text())
+    .then(data => {
+      document.getElementById('footer-0').innerHTML = data;
+    });
+});
+
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+
+  // Correct all PAY buttons dynamically
+  document.querySelectorAll('.pay').forEach(btn => {
+    let amount = parseFloat(btn.getAttribute('data-pay')) || 0;
+    btn.textContent = `PAY \u20B9${amount.toFixed(2)}`;
+  });
+
+  // Correct all MRP buttons dynamically (if similar structure)
+  document.querySelectorAll('.mrp').forEach(btn => {
+    let amount = parseFloat(btn.getAttribute('data-mrp')) || 0;
+    btn.textContent = `MRP \u20B9${amount.toFixed(2)}`;
+  });
+
+});
+
+
+
+
 
 

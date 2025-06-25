@@ -14,8 +14,8 @@
 
 <script src="../detail.js" defer></script>
 <link rel="stylesheet" href="../deatil.css">
-
-<base href="/" />
+<meta charset="UTF-8">
+<base href="../" />
 
     </head>
 <!-- header area -->
@@ -31,10 +31,10 @@
     <div class="discount-banner1">SAVE ₹15 (20% OFF)</div>
     <button class="zoom-icon-btn" onclick="activateZoom()">🔍</button>
     <div class="img-magnifier-container">
-      <img id="mainImage" src="/asset/kitchen/Gala Scrub Pad – Set of 5.webp" alt="Gala Scrub Pad – Set of 5 Size – 3 x 4" />
+      <img id="mainImage" src="./asset/kitchen/Gala Scrub Pad – Set of 5.webp" alt="Gala Scrub Pad – Set of 5 Size – 3 x 4" />
     </div>
     <div class="thumbnail-row">
-      <img class="thumbnail" src="/asset/kitchen/Gala Scrub Pad – Set of 5-2nd.webp" alt="Sub 1">
+      <img class="thumbnail" src="./asset/kitchen/Gala Scrub Pad – Set of 5-2nd.webp" alt="Sub 1">
     </div>
   </div>
 
@@ -185,7 +185,7 @@
 
   <script>
     // JavaScript to load the header
-    fetch('../Footer.html')
+    fetch('Footer.html')
       .then(response => response.text())
       .then(data => {
         document.getElementById('Footer-container0').innerHTML = data;

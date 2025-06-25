@@ -27,7 +27,7 @@ body {
 
 .header2{
   background-color: #16BAE4;
-  height: 35px;
+  
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -228,14 +228,14 @@ body {
   box-shadow: 0 4px 8px rgba(29, 29, 30, 0.5);
 }
 
-.discount-banner {
+/* .discount-banner {
   background-color: #28a745;
   color: white;
   text-align: center;
   padding: 3px;
   font-weight: bold;
   font-size: 14px;
-}
+} */
 
 .product-image {
   text-align: center;
@@ -422,7 +422,7 @@ input[type="checkbox"]:checked + .heart-icon {
 
 .header2{
   background-color: #16BAE4;
-  height: 35px;
+  
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -624,21 +624,7 @@ box-shadow: #000;
     gap: 1rem; /* Better spacing between items */
   }
 
-  .category-navbar .nav-link {
-    padding: 0.75rem 1rem;
-    font-weight:  bold;
-    font-size: 13px;
-    color: #222;
-    transition: color 0.2s ease-in-out, text-decoration 0.2s;
-    white-space: nowrap;
-    position: relative;
-  }
 
-  .category-navbar .nav-link:hover {
-    
-    text-decoration: underline;
-    color: rgb(11, 236, 248);
-  }
 
   /* Optional pipe separator */
   .category-navbar .nav-item:not(:last-child)::after {
@@ -802,7 +788,7 @@ box-shadow: #000;
 
 /* PRICE BUTTONS */
 .price-buttons1 button {
-  height: 35px;
+  
   padding: 0 14px;
   font-size: 13px;
   font-weight: bold;
@@ -941,7 +927,7 @@ flex-direction: row-reverse;
   display: flex;
   justify-content: center;
   gap: 15px;
-  overflow: visible; /* Ensure zoomed thumbnails don’t get clipped */
+  overflow: visible; /* Ensure zoomed thumbnails don't get clipped */
 }
 
 .thumbnail-row img {
@@ -958,20 +944,6 @@ flex-direction: row-reverse;
 }
 
 /*--------------------------------------------*/
-.header1 {
-  background-color: #16BAE4;
-  height: 35px;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  padding: 0 20px;
-  box-shadow: 0 0 3px #000;
-  font-size: 17px;
-  color: white;
-  padding-top: 5px;
-  
-}
-
 
 .img-magnifier-glass {
   position: absolute;

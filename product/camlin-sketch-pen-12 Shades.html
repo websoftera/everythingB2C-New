@@ -14,8 +14,8 @@
 
 <script src="../detail.js" defer></script>
 <link rel="stylesheet" href="../deatil.css">
-
-<base href="/" />
+<meta charset="UTF-8">
+<base href="../" />
 
     </head>
 <!-- header area -->
@@ -30,11 +30,11 @@
     <div class="discount-banner1">SAVE ₹2 (8% OFF)</div>
     <button class="zoom-icon-btn" onclick="activateZoom()">🔍</button>
     <div class="img-magnifier-container">
-      <img id="mainImage" src="/asset/Home And gardan/home.webp" alt="camlin sketch pen 12 Shades" />
+      <img id="mainImage" src="./asset/Home And gardan/home.webp" alt="camlin sketch pen 12 Shades" />
     </div>
     <div class="thumbnail-row">
-      <img class="thumbnail" src="/asset/Home And gardan/home.webp" alt="Sub 1">
-<img class="thumbnail" src="/asset/Home And gardan/home-2nd.webp" alt="Sub 2">
+      <img class="thumbnail" src="./asset/Home And gardan/home.webp" alt="Sub 1">
+<img class="thumbnail" src="./asset/Home And gardan/home-2nd.webp" alt="Sub 2">
     </div>
   </div>
 
@@ -189,7 +189,7 @@
 
   <script>
     // JavaScript to load the header
-    fetch('../Footer.html')
+    fetch('Footer.html')
       .then(response => response.text())
       .then(data => {
         document.getElementById('Footer-container0').innerHTML = data;
