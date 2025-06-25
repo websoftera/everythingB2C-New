@@ -14,8 +14,8 @@
 
 <script src="../detail.js" defer></script>
 <link rel="stylesheet" href="../deatil.css">
-
-<base href="/" />
+<meta charset="UTF-8">
+<base href="../" />
 
     </head>
 <!-- header area -->
@@ -33,7 +33,7 @@
     <div class="discount-banner1">SAVE ₹18 (1% OFF)</div>
     <button class="zoom-icon-btn" onclick="activateZoom()">🔍</button>
     <div class="img-magnifier-container">
-      <img id="mainImage" src="/asset/Products You Might Also Like/E02 SA.webp" alt="E02 SA" />
+      <img id="mainImage" src="./asset/Products You Might Also Like/E02 SA.webp" alt="E02 SA" />
     </div>
     <div class="thumbnail-row">
       
@@ -186,7 +186,7 @@
 
   <script>
     // JavaScript to load the header
-    fetch('../Footer.html')
+    fetch('Footer.html')
       .then(response => response.text())
       .then(data => {
         document.getElementById('Footer-container0').innerHTML = data;

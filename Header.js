@@ -62,7 +62,7 @@ document.querySelectorAll('.card').forEach(card => {
   }
 
   // ========== Load Popup ================================================================================================================================
-  fetch('/popup.html')
+  fetch('popup.html')
     .then(response => response.text())
     .then(html => {
       document.body.insertAdjacentHTML('beforeend', html);
@@ -136,38 +136,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // drop down menu js ---------------------->
   // Example using JS
 
-
-
-  document.addEventListener("DOMContentLoaded", () => {
-  const headerEl = document.getElementById("header-0");
-
-  // Detect how many levels deep the current page is
-  const depth = window.location.pathname.split("/").length - 2;
-  const pathToRoot = "../".repeat(depth); // e.g. "../" or "../../"
-
-  fetch(pathToRoot + "header.html")
-    .then(res => res.text())
-    .then(data => {
-      headerEl.innerHTML = data;
-    })
-    .catch(err => console.error("Header load failed", err));
-
-
-
-    fetch("/header.html")
-
-
-
-// ------------------this js for logo 👇👇.-----------------------------------------------------------------
-    fetch('SiteIcon.html')
-  .then(res => res.text())
-  .then(data => {
-    const frag = document.createRange().createContextualFragment(data);
-    document.head.appendChild(frag);
-  });
-
-
-});
 
 
 // zoom effect js of deatil card 👇👇 ----------------------------------------------------------------------//
@@ -245,5 +213,45 @@ function magnify(imgID, zoom) {
       thumb.src = tempSrc;
     });
   });
+
+
+
+   window.addEventListener('DOMContentLoaded', () => {
+  fetch('Header.html')
+    .then(res => res.text())
+    .then(data => {
+      document.getElementById('header-0').innerHTML = data;
+      initHeaderFeatures();
+    });
+
+  fetch('Footer.html')
+    .then(res => res.text())
+    .then(data => {
+      document.getElementById('footer-0').innerHTML = data;
+    });
+});
+
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+
+  // Correct all PAY buttons dynamically
+  document.querySelectorAll('.pay').forEach(btn => {
+    let amount = parseFloat(btn.getAttribute('data-pay')) || 0;
+    btn.textContent = `PAY \u20B9${amount.toFixed(2)}`;
+  });
+
+  // Correct all MRP buttons dynamically (if similar structure)
+  document.querySelectorAll('.mrp').forEach(btn => {
+    let amount = parseFloat(btn.getAttribute('data-mrp')) || 0;
+    btn.textContent = `MRP \u20B9${amount.toFixed(2)}`;
+  });
+
+});
+
+
+
+
 
 

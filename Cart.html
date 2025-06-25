@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+  <head>
+     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>EverythingB2C</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+<!-- Bootstrap CSS (keep as is) -->
+<link href="…bootstrap.min.css" rel="stylesheet">
+
+<!-- YOUR custom CSS *after* bootstrap -->
+<link rel="stylesheet" href="./asset/style/cart.css">
+<link rel="stylesheet" href="./asset/style/style.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  
+  <!-- Bootstrap Icons (optional for icons) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Bootstrap CSS -->
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+ <!-- Bootstrap Bundle JS (includes Popper) -->
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="./Header.js"></script>
+</head>
+  <body>
+     <link rel="stylesheet" href="./Header.css">
+<div id="header-0"></div>
+
+
+
+
+    <!--hero section-->
+ <section class="hero-slider-section">
+    <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="1500">
+        <div class="carousel-inner">
+            <div class="carousel-item active hero-slide hero-slide-1">
+                <div class="carousel-caption d-block text-start">
+                    <!-- Optional caption content -->
+                </div>
+            </div>
+
+            <div class="carousel-item hero-slide hero-slide-2">
+                <div class="carousel-caption d-block text-end">
+                    <!-- Optional caption content -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Arrows removed -->
+    </div>
+</section>
+
+
+
+
+<h2 class="my">My Cart 🛍️</h2>
+
+<div class="cart-page">
+  <!-- Left: Cart Items -->
+  <div class="cart-items" id="cart-container">
+    <!-- Cart items will be injected here dynamically -->
+  </div>
+
+  <!-- Right: Summary + Shipping -->
+  <div class="cart-summary">
+    <div class="subtotal">Subtotal: <span id="subtotal">₹0.00</span></div>
+    <div class="shipping-section">
+      <h4>Shipping:</h4>
+      <form class="shipping-form">
+        <select>
+          <option>India</option>
+        </select>
+        <select id="state-select">
+          <option value="">State/province</option>
+        </select>
+       <input type="text" id="pincode" placeholder="Zip/postcode" />
+<button type="submit">Estimate Shipping</button>
+<div id="delivery-charges">Delivery Charges: ₹0.00</div>
+<div id="delivery-error" class="delivery-error"></div>
+
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+  const cartContainer = document.getElementById("cart-container");
+  const subtotalSpan = document.getElementById("subtotal");
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  let deliveryCharge = 0;
+
+  const deliveryRates = {
+    "415413": 50,
+    "110001": 30,
+    "600001": 70,
+    "500001": 40,
+    "700001": 35,
+    "380001": 45
+    // Add more here...
+  };
+
+  function getDeliveryCharge(pincode) {
+    return deliveryRates[pincode]; // 🔧 Return undefined if not found
+  }
+
+  function renderCart() {
+    cartContainer.innerHTML = `
+      <div class="cart-header">
+        <div>ITEM</div>
+        <div>PRICE</div>
+        <div>QUANTITY</div>
+        <div>TOTAL</div>
+        <div></div>
+      </div>
+    `;
+
+    let subtotal = 0;
+
+    cart.forEach((item, index) => {
+      const price = parseFloat(item.pay);
+      const total = price * item.qty;
+      subtotal += total;
+
+      const row = document.createElement("div");
+      row.className = "cart-row";
+      row.innerHTML = `
+        <div class="cart-item-title">
+          <img src="${item.image}" class="cart-img" alt="${item.title}">
+          <span>${item.title}</span>
+        </div>
+        <div>${price.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}</div>
+        <div class="qty-control">
+          <button onclick="updateQty(${index}, -1)">−</button>
+          <input type="number" value="${item.qty}" min="1" onchange="changeQty(${index}, this.value)">
+          <button onclick="updateQty(${index}, 1)">+</button>
+        </div>
+        <div>${total.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}</div>
+        <div class="remove-x" onclick="removeItem(${index})">×</div>
+      `;
+      cartContainer.appendChild(row);
+    });
+
+    const finalTotal = subtotal + deliveryCharge;
+    subtotalSpan.textContent = finalTotal.toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }
+
+  function updateQty(index, delta) {
+    cart[index].qty = Math.max(1, cart[index].qty + delta);
+    renderCart();
+  }
+
+  function changeQty(index, value) {
+    const qty = parseInt(value);
+    cart[index].qty = qty > 0 ? qty : 1;
+    renderCart();
+  }
+
+  function removeItem(index) {
+    cart.splice(index, 1);
+    renderCart();
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    renderCart();
+
+    // Fill state dropdown
+    const states = ["Maharashtra"];
+    const stateSelect = document.getElementById("state-select");
+    states.forEach(state => {
+      const option = document.createElement("option");
+      option.value = option.textContent = state;
+      stateSelect.appendChild(option);
+    });
+
+    const pincodeInput = document.getElementById("pincode");
+    const chargeDiv = document.getElementById("delivery-charges");
+    const deliveryError = document.getElementById("delivery-error"); // 🔧 New element for message
+
+    pincodeInput.addEventListener("input", () => {
+      const pincode = pincodeInput.value.trim();
+
+      if (pincode.length === 6 && /^\d{6}$/.test(pincode)) {
+        const charge = getDeliveryCharge(pincode);
+
+        if (charge !== undefined) {
+          deliveryCharge = charge;
+          chargeDiv.textContent = `Delivery Charges: ₹${deliveryCharge.toFixed(2)}`;
+          deliveryError.textContent = "";
+        } else {
+          deliveryCharge = 0;
+          chargeDiv.textContent = "Delivery Charges: ₹0.00";
+          deliveryError.textContent = "🥺 Delivery not available for this pincode.";
+        }
+      } else {
+        deliveryCharge = 0;
+        chargeDiv.textContent = "Delivery Charges: ₹0.00";
+        deliveryError.textContent = "";
+      }
+
+      renderCart();
+    });
+  });
+</script>
+
+
+    <section class="gap"></section>
+
+<!--------------------------------------Fooer Call-------------------------------------------------------->
+
+
+
+<!--- ------------------->
+<script>
+  const container = document.querySelector('.category-container');
+  const nextBtn1 = document.querySelector('.mobile-next-btn');
+  const prevBtn1 = document.querySelector('.mobile-prev-btn');
+
+  nextBtn1.addEventListener('click', () => {
+    container.scrollBy({ left: container.offsetWidth, behavior: 'smooth' });
+  });
+
+  prevBtn1.addEventListener('click', () => {
+    container.scrollBy({ left: -container.offsetWidth, behavior: 'smooth' });
+  });
+</script>
+
+<!-----------------card total pay js------------------>
+<script>
+  document.querySelectorAll('.card').forEach(card => {
+    const qtyInput = card.querySelector('.quantity-input');
+    const payButton = card.querySelector('.pay');
+
+    // Get the base pay price (actual price user pays)
+    const unitPay = parseInt(payButton.getAttribute('data-pay')) || 0;
+
+    // Set initial PAY price based on the current quantity
+    const initialQty = parseInt(qtyInput.value) || 1;
+    payButton.textContent = `PAY ₹${unitPay * initialQty}`;
+
+    // Add event listener to update on quantity change
+    qtyInput.addEventListener('input', () => {
+      const qty = parseInt(qtyInput.value) || 1;
+      const total = unitPay * qty;
+      payButton.textContent = `PAY ₹${total}`;
+    });
+  });
+</script>
+
+
+
+<!-----------------------------wishlist popup----------------------------------------------------------------------->
+
+   
+<!-- header area -->
+    <div id="Footer-container0"></div>
+
+  <script>
+    // JavaScript to load the header
+    fetch('Footer.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('Footer-container0').innerHTML = data;
+      });
+  </script>
+
+
+<!---------------------------------------------------------------------------------------------------->
+
+<!-------------------------zzzz---------------------------------------------------------------------------------->
+
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
