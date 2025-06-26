@@ -444,228 +444,79 @@ body.dark .add-edit-link:hover {
     font-weight: 500;
     color: var(--text-color);
 }
-
-/* --- Media Queries for Responsiveness (Best Fit: With Toggle and Text) --- */
 @media screen and (max-width: 768px) {
+    .app-container {
+        flex-direction: column;
+    }
+
     .sidebar {
-        position: relative; /* Allows content to flow naturally below */
+        position: relative;
         width: 100%;
-        height: auto; /* Adapts to content height */
-        padding: 10px;
-        top: auto; /* Remove fixed top positioning */
-        left: auto; /* Remove fixed left positioning */
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for definition */
+        height: auto;
+        padding: 15px;
+        background-color: var(--sidebar-color); /* Or white/light grey */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        z-index: 1;
     }
 
-    /* Ensure sidebar remains full width even if .close class is present */
-    .sidebar.close {
-        width: 100%;
-    }
-
-    .sidebar header {
-        display: flex;
-        justify-content: space-between; /* Pushes brand/logo and toggle to opposite ends */
-        align-items: center;
-        flex-direction: row; /* Keeps header elements in a single row */
-    }
-
-    /* Hide the image-text (likely a logo/full name) on mobile */
-    .sidebar header .image-text {
+    .sidebar header,
+    .sidebar header .image-text,
+    .sidebar header .toggle,
+    .sidebar li.search-box,
+    .sidebar .menu-bar .mode {
         display: none;
     }
 
-    /* Show the toggle button and position it naturally within the header */
-    .sidebar header .toggle {
-        position: static; /* Remove absolute positioning */
-        transform: none; /* Remove any previous transforms */
-        margin-top: 0; /* Reset margin */
-        right: auto; /* Reset right positioning */
-        display: block; /* Make sure it's visible */
-    }
-
-    /* Show text labels for sidebar items on mobile */
-    .sidebar .text {
-        opacity: 1;
-        text-align: center;
-        display: block; /* Ensure text is displayed */
-        font-size: 12px; /* Slightly smaller font for mobile text labels */
-    }
-
-    /* Ensure text labels remain visible even if the 'close' class is applied on mobile */
-    .sidebar.close .text {
-        opacity: 1;
-        display: block;
-    }
-
-    .sidebar .menu {
-        margin-top: 20px;
+    .sidebar .menu-bar,
+    .sidebar .menu,
+    .sidebar .bottom-content {
         display: flex;
-        flex-wrap: wrap; /* Allows items to wrap to next line if needed */
-        justify-content: center; /* Centers menu items */
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
     }
 
-    .sidebar li {
-        margin: 5px; /* Spacing between menu items */
-        height: auto; /* Allow height to adjust based on icon and text */
-        width: 70px; /* Adjusted width for icon and text to fit well */
+    .sidebar .menu li,
+    .sidebar .bottom-content li {
         display: flex;
-        flex-direction: column; /* Stacks icon above text */
-        align-items: center; /* Centers content horizontally */
-        justify-content: center; /* Centers content vertically */
-        border-radius: 8px;
-        text-align: center;
+        align-items: center;
+        margin: 8px 0;
+        width: 100%;
     }
 
     .sidebar li a {
         display: flex;
         align-items: center;
-        justify-content: center;
-        flex-direction: column; /* Ensures icon and text are stacked within the link */
-        height: 100%;
+        gap: 10px;
+        padding: 8px 12px;
         width: 100%;
-        padding: 5px 0; /* Vertical padding for touch target */
-        border-radius: 8px;
-        text-decoration: none;
+        border-radius: 6px;
+        transition: background 0.2s;
     }
 
-    .sidebar .icon {
-        font-size: 22px;
-        margin: 0 0 5px 0; /* Margin-bottom to separate icon from text */
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    /* Hide the search box on mobile */
-    .sidebar li.search-box {
-        display: none;
-    }
-
-    .sidebar .menu-bar {
-        height: auto; /* Adapts to content */
-        overflow-y: visible; /* No vertical scrollbar needed */
-    }
-
-    .menu-bar::-webkit-scrollbar {
-        display: none; /* Hide scrollbar for webkit browsers */
-    }
-
-    .sidebar .bottom-content {
-        display: flex;
-        justify-content: center; /* Center bottom content items */
-        border-top: 1px solid var(--toggle-color); /* Separator line */
-        margin-top: 20px;
-    }
-
-    /* Hide the first item in bottom content (e.g., user profile/name) on mobile */
-    .bottom-content li:nth-child(1) {
-        display: none;
-    }
-
-    .sidebar .bottom-content li {
-        margin: 0 10px; /* Spacing between bottom content items */
-    }
-
-    /* Show the mode switch on mobile if desired, adjust styling */
-    .sidebar .menu-bar .mode {
-        display: flex; /* Or 'block' based on your layout */
-        align-items: center;
-        justify-content: center;
-        margin-top: 10px; /* Add some space above */
-    }
-
-    .menu-bar .mode .sun-moon {
-        height: auto;
-        width: auto;
-    }
-
-    .mode .sun-moon i {
-        position: static; /* Remove any absolute positioning */
-    }
-
-    .menu-bar .bottom-content .toggle-switch {
-        position: static; /* Remove any absolute positioning */
-        min-width: auto;
-        height: auto;
-        margin-left: 10px; /* Spacing from other bottom content items */
-    }
-
-    .home {
-        position: relative; /* Allows content to flow naturally */
-        top: auto;
-        left: 0;
-        width: 100%;
-        padding: 15px;
-        margin-left: 0; /* Remove any left margin from desktop sidebar */
-        height: auto; /* Allows content to define height */
-    }
-
-    .home .text {
-        font-size: 24px;
-        margin-bottom: 15px;
-        text-align: center;
-    }
-
-    /* Ensure home content takes full width even if sidebar has .close class (which might apply desktop styles) */
-    .sidebar.close ~ .home {
-        left: 0;
-        width: 100%;
-        margin-left: 0;
-    }
-
-    /* General responsive adjustments for address-related elements (assuming they are in .home) */
-    .address-container {
-        padding: 15px;
-    }
-
-    .address-info-text {
-        font-size: 14px;
-        margin-bottom: 20px;
-    }
-
-    .address-card {
-        padding: 20px;
-        margin-bottom: 20px;
-    }
-
-    .card-header {
-        flex-direction: column; /* Stacks header elements */
-        align-items: flex-start;
-    }
-
-    .card-header h2 {
-        font-size: 18px;
-        margin-bottom: 10px;
-    }
-
-    .add-edit-link {
-        padding: 6px 12px;
-        font-size: 14px;
-        width: 100%; /* Makes link full width */
-        text-align: center;
-    }
-
-    .card-body {
-        font-size: 14px;
-    }
-
-    /* Hover and active states for sidebar links on mobile */
     .sidebar li a:hover,
     .sidebar li.active a {
         background-color: var(--primary-color);
+        color: white;
     }
 
-    .sidebar li a:hover .icon,
-    .sidebar li a:hover .text,
-    .sidebar li.active a .icon,
-    .sidebar li.active a .text {
-        color: var(--sidebar-color);
+    .sidebar .icon {
+        font-size: 20px;
     }
 
-    body.dark .sidebar li a:hover .icon,
-    body.dark .sidebar li a:hover .text,
-    body.dark .sidebar li.active a .icon,
-    body.dark .sidebar li.active a .text {
-        color: var(--body-color);
+    .sidebar .text {
+        display: inline;
+        opacity: 1;
+        visibility: visible;
+        font-size: 14px;
+    }
+
+    .home {
+        width: 100%;
+        padding: 15px;
+    }
+
+    .address-container {
+        margin-top: 10px;
     }
 }
