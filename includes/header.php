@@ -19,6 +19,7 @@ if (isLoggedIn()) {
 }
 
 $categories = getAllCategories();
+$categoryTree = buildCategoryTree($categories);
 $currentUser = getCurrentUser();
 
 // Get cart count for header
@@ -64,7 +65,7 @@ if (isLoggedIn()) {
         <a href="index.php">HOME</a><span>|</span>
         <a href="wishlist.php">WISHLIST</a><span>|</span>
         <?php if (isLoggedIn()): ?>
-            <a href="my-account.php">MY ACCOUNT</a><span>|</span>
+            <a href="myaccount.php">MY ACCOUNT</a><span>|</span>
             <a href="logout.php">LOGOUT</a>
         <?php else: ?>
             <a href="login.php">LOGIN</a>
@@ -132,12 +133,18 @@ if (isLoggedIn()) {
 <!-- CATEGORY SCROLL - ONLY MOBILE -->
 <div class="category-scroll-container d-block d-lg-none py-2 px-2">
     <div class="scroll-wrapper d-flex flex-nowrap overflow-auto">
-        <?php foreach ($categories as $cat): ?>
-        <a href="category.php?slug=<?php echo $cat['slug']; ?>" class="category-item text-center mx-2">
-            <img src="./<?php echo $cat['image']; ?>" alt="<?php echo $cat['name']; ?>" class="category-img mb-1">
-            <div class="category-label"><?php echo strtoupper($cat['name']); ?></div>
-        </a>
-        <?php endforeach; ?>
+        <?php function renderMobileCategoryMenu($tree) {
+            foreach ($tree as $cat) {
+                echo '<a href="category.php?slug=' . $cat['slug'] . '" class="category-item text-center mx-2">';
+                echo '<img src="./' . $cat['image'] . '" alt="' . htmlspecialchars($cat['name']) . '" class="category-img mb-1">';
+                echo '<div class="category-label">' . strtoupper($cat['name']) . '</div>';
+                echo '</a>';
+                if (!empty($cat['children'])) {
+                    renderMobileCategoryMenu($cat['children']);
+                }
+            }
+        }
+        renderMobileCategoryMenu($categoryTree); ?>
     </div>
 </div>
 
@@ -147,14 +154,23 @@ if (isLoggedIn()) {
         <div class="container-fluid d-flex justify-content-between align-items-center">
             <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
                 <ul class="navbar-nav category-list mb-2 mb-lg-0 d-flex align-items-center">
-                    <?php foreach ($categories as $index => $cat): ?>
-                        <li class="nav-item d-flex align-items-center">
-                            <a class="nav-link" href="category.php?slug=<?php echo $cat['slug']; ?>"><?php echo strtoupper($cat['name']); ?></a>
-                            <?php if ($index < count($categories) - 1): ?>
-                                <span class="separator">|</span>
-                            <?php endif; ?>
-                        </li>
-                    <?php endforeach; ?>
+                    <?php function renderCategoryMenu($tree) {
+                        foreach ($tree as $cat) {
+                            if (!empty($cat['children'])) {
+                                echo '<li class="nav-item dropdown">';
+                                echo '<a class="nav-link dropdown-toggle" href="category.php?slug=' . $cat['slug'] . '" id="catDropdown' . $cat['id'] . '" role="button" data-bs-toggle="dropdown" aria-expanded="false">' . strtoupper(htmlspecialchars($cat['name'])) . '</a>';
+                                echo '<ul class="dropdown-menu" aria-labelledby="catDropdown' . $cat['id'] . '">';
+                                foreach ($cat['children'] as $subcat) {
+                                    echo '<li><a class="dropdown-item" href="category.php?slug=' . $subcat['slug'] . '">' . htmlspecialchars($subcat['name']) . '</a></li>';
+                                }
+                                echo '</ul>';
+                                echo '</li>';
+                            } else {
+                                echo '<li class="nav-item"><a class="nav-link" href="category.php?slug=' . $cat['slug'] . '">' . strtoupper(htmlspecialchars($cat['name'])) . '</a></li>';
+                            }
+                        }
+                    }
+                    renderCategoryMenu($categoryTree); ?>
                 </ul>
             </div>
         </div>

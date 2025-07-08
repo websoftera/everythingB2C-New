@@ -2,5 +2,6 @@
     "liveServer.settings.port": 5503,
     "background.windowBackgrounds": [
         "c:/Users/Admin/OneDrive/Pictures/Anime/sekiro.jpg"
-    ]
+    ],
+    "workbench.preferredHighContrastLightColorTheme": "Visual Studio Light"
 }

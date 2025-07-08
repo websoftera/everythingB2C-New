@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once 'includes/functions.php';
+require_once 'includes/gst_shipping_functions.php';
 
 $pageTitle = 'Shopping Cart';
 
@@ -10,11 +11,23 @@ if (isLoggedIn()) {
 } else {
     $cartItems = getCartItems();
 }
-$totalAmount = 0;
 
-foreach ($cartItems as $item) {
-    $totalAmount += $item['selling_price'] * $item['quantity'];
+// Determine delivery state for GST calculation
+$delivery_state = 'Maharashtra';
+$delivery_city = null;
+$delivery_pincode = null;
+if (isLoggedIn()) {
+    $addresses = getUserAddresses($_SESSION['user_id']);
+    $defaultAddress = getDefaultAddress($_SESSION['user_id']);
+    if ($defaultAddress && !empty($defaultAddress['state'])) {
+        $delivery_state = $defaultAddress['state'];
+        $delivery_city = $defaultAddress['city'] ?? null;
+        $delivery_pincode = $defaultAddress['pincode'] ?? null;
+    }
+} else if (isset($_POST['delivery_state'])) {
+    $delivery_state = $_POST['delivery_state'];
 }
+$orderTotals = calculateOrderTotal($cartItems, $delivery_state, $delivery_city, $delivery_pincode);
 
 require_once 'includes/header.php';
 ?>
@@ -29,7 +42,7 @@ require_once 'includes/header.php';
 </div>
 
 <div class="container mt-4">
-    <h1>Shopping Cart</h1>
+    <!-- <h1>Shopping Cart</h1> -->
     
     <?php if (empty($cartItems)): ?>
         <div class="text-center py-5">
@@ -77,16 +90,76 @@ require_once 'includes/header.php';
                     <div class="card-body">
                         <div class="d-flex justify-content-between mb-2">
                             <span>Subtotal:</span>
-                            <span><?php echo formatPrice($totalAmount); ?></span>
+                            <span id="cart-subtotal"><?php echo formatPrice($orderTotals['subtotal']); ?></span>
                         </div>
+                        <!-- Delivery State Dropdown (for guests) -->
+                        <?php if (!isLoggedIn()): ?>
+                        <div class="d-flex justify-content-between mb-2 align-items-center">
+                            <label for="delivery_state" style="margin-bottom:0;">Enter Delivery State for GST Calculation:</label>
+                            <form method="post" style="margin-bottom:0;display:inline-block;">
+                                <select name="delivery_state" id="delivery_state" class="form-control" style="max-width:180px;display:inline-block;">
+                                    <?php foreach (getIndianStates() as $state): ?>
+                                        <option value="<?php echo htmlspecialchars($state); ?>" <?php if ($delivery_state == $state) echo 'selected'; ?>><?php echo htmlspecialchars($state); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                            </form>
+                        </div>
+                        <?php endif; ?>
+                        <?php
+                        // Calculate GST percent and type for display
+                        $gst_percent = 0;
+                        $gst_type_label = '';
+                        $seller_state = 'Maharashtra'; // Seller's state for GST comparison
+                        if (!empty($cartItems)) {
+                            $total_gst_rate = 0;
+                            $total_qty = 0;
+                            $sgst_cgst_qty = 0;
+                            $igst_qty = 0;
+                            foreach ($cartItems as $item) {
+                                if (isset($item['gst_rate'])) {
+                                    $total_gst_rate += $item['gst_rate'] * $item['quantity'];
+                                    $total_qty += $item['quantity'];
+                                    // Determine GST type for this item (pass seller_state as billing_state)
+                                    $gst_calc = calculateGST($item['selling_price'], $item['gst_rate'], $item['gst_type'], $delivery_state, $seller_state);
+                                    if ($gst_calc['gst_type'] === 'sgst_cgst') {
+                                        $sgst_cgst_qty += $item['quantity'];
+                                    } else {
+                                        $igst_qty += $item['quantity'];
+                                    }
+                                }
+                            }
+                            if ($total_qty > 0) {
+                                $gst_percent = round($total_gst_rate / $total_qty, 1);
+                                if ($sgst_cgst_qty > 0 && $igst_qty === 0) {
+                                    $gst_type_label = 'GST (SGST+CGST)';
+                                } elseif ($igst_qty > 0 && $sgst_cgst_qty === 0) {
+                                    $gst_type_label = 'IGST';
+                                } elseif ($sgst_cgst_qty > 0 && $igst_qty > 0) {
+                                    $gst_type_label = 'GST/IGST';
+                                }
+                            }
+                        }
+                        ?>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span><?php echo $gst_type_label ?: 'GST'; ?><?php if ($gst_percent > 0): ?> (<?php echo $gst_percent; ?>%)<?php endif; ?>:</span>
+                            <span id="cart-gst"><?php echo formatPrice($orderTotals['gst_amount']); ?></span>
+                        </div>
+                        <?php if ($orderTotals['shipping_charge'] > 0): ?>
                         <div class="d-flex justify-content-between mb-2">
                             <span>Shipping:</span>
-                            <span>Free</span>
+                            <span id="cart-shipping"><?php echo formatPrice($orderTotals['shipping_charge']); ?></span>
                         </div>
+                        <?php else: ?>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Shipping:</span>
+                            <span id="cart-shipping">Free</span>
+                        </div>
+                        <?php endif; ?>
                         <hr>
                         <div class="d-flex justify-content-between mb-3">
                             <strong>Total:</strong>
-                            <strong><?php echo formatPrice($totalAmount); ?></strong>
+                            <strong id="cart-grandtotal"><?php echo formatPrice($orderTotals['total']); ?></strong>
                         </div>
                         <div class="d-grid">
                             <a href="checkout.php" class="btn btn-primary">Proceed to Checkout</a>
@@ -108,10 +181,38 @@ document.addEventListener('DOMContentLoaded', function() {
     // Update quantity
     const quantityInputs = document.querySelectorAll('.quantity-input');
     quantityInputs.forEach(input => {
+        let lastValid = input.value;
+        input.addEventListener('input', function() {
+            if (!/^[1-9][0-9]*$/.test(this.value)) {
+                this.classList.add('is-invalid');
+            } else {
+                this.classList.remove('is-invalid');
+                lastValid = this.value;
+            }
+        });
+        input.addEventListener('blur', function() {
+            if (!/^[1-9][0-9]*$/.test(this.value)) {
+                this.value = lastValid;
+                this.classList.remove('is-invalid');
+            }
+        });
         input.addEventListener('change', function() {
+            if (!/^[1-9][0-9]*$/.test(this.value)) {
+                alert('Please enter a valid quantity (1 or more).');
+                this.value = lastValid;
+                this.classList.remove('is-invalid');
+                return;
+            }
             const cartId = this.getAttribute('data-cart-id');
             const quantity = this.value;
-            
+            const row = this.closest('.row');
+            const priceElem = row.querySelector('p.text-muted');
+            const itemTotalElem = row.querySelector('strong');
+            let unitPrice = 0;
+            if (priceElem) {
+                const match = priceElem.textContent.match(/([\d,.]+)/);
+                if (match) unitPrice = parseFloat(match[1].replace(/,/g, ''));
+            }
             fetch('ajax/update-cart.php', {
                 method: 'POST',
                 headers: {
@@ -125,7 +226,22 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    location.reload();
+                    // Update item total
+                    if (itemTotalElem && unitPrice) {
+                        itemTotalElem.textContent = formatPrice(unitPrice * quantity);
+                    }
+                    // Update order summary
+                    fetch('ajax/get-cart-summary.php')
+                        .then(res => res.json())
+                        .then(summary => {
+                            if (summary.success) {
+                                const totals = summary.totals;
+                                document.getElementById('cart-subtotal').textContent = formatPrice(totals.subtotal);
+                                document.getElementById('cart-shipping').textContent = (totals.total_shipping > 0) ? formatPrice(totals.total_shipping) : 'Free';
+                                document.getElementById('cart-gst').textContent = formatPrice(totals.total_gst);
+                                document.getElementById('cart-grandtotal').textContent = isNaN(totals.grand_total) ? formatPrice(0) : formatPrice(totals.grand_total);
+                            }
+                        });
                 } else {
                     alert('Error: ' + data.message);
                 }
@@ -161,4 +277,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+function formatPrice(amount) {
+    if (isNaN(amount) || amount === null || amount === undefined) return '₹0.00';
+    return '₹' + parseFloat(amount).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+}
 </script> 

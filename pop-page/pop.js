@@ -1,6 +1,10 @@
+console.log('pop.js loaded');
 function showPopup() {
-  document.getElementById("popupOverlay").style.display = "block";
-  document.getElementById("popupForm").style.display = "block";
+  console.log('showPopup called from pop.js');
+  var overlay = document.getElementById("popupOverlay");
+  var form = document.getElementById("popupForm");
+  if (overlay) overlay.style.display = "block";
+  if (form) form.style.display = "block";
 }
 
 function closeLoginForm() {

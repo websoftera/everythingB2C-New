@@ -12,19 +12,9 @@ function getAllCategories() {
 function getCategoryBySlug($slug) {
     global $pdo;
     
-    // Debug: Log what we're searching for
-    error_log("DEBUG: Searching for category with slug: '" . $slug . "'");
-    
     $stmt = $pdo->prepare("SELECT * FROM categories WHERE slug = ?");
     $stmt->execute([$slug]);
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-    // Debug: Log what we found
-    if ($result) {
-        error_log("DEBUG: Found category - ID: " . $result['id'] . ", Name: " . $result['name'] . ", Slug: " . $result['slug']);
-    } else {
-        error_log("DEBUG: No category found for slug: '" . $slug . "'");
-    }
     
     return $result;
 }
@@ -44,9 +34,6 @@ function getProductById($id) {
 function getProductsByCategory($categoryId, $limit = null) {
     global $pdo;
     
-    // Debug: Log what we're searching for
-    error_log("DEBUG: Searching for products with category_id: " . $categoryId);
-    
     $sql = "SELECT p.*, c.name as category_name FROM products p 
             LEFT JOIN categories c ON p.category_id = c.id 
             WHERE p.category_id = ? AND p.is_active = 1 
@@ -56,15 +43,9 @@ function getProductsByCategory($categoryId, $limit = null) {
         $sql .= " LIMIT " . (int)$limit;
     }
     
-    // Debug: Log the SQL query
-    error_log("DEBUG: SQL Query: " . $sql);
-    
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$categoryId]);
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-    // Debug: Log what we found
-    error_log("DEBUG: Found " . count($result) . " products for category_id: " . $categoryId);
     
     return $result;
 }
@@ -202,7 +183,7 @@ function getCartItems($userId = null) {
     if (isLoggedIn() && $userId) {
         // DB cart
         global $pdo;
-        $stmt = $pdo->prepare("SELECT c.*, p.name, p.selling_price, p.mrp, p.main_image, p.stock_quantity FROM cart c JOIN products p ON c.product_id = p.id WHERE c.user_id = ?");
+        $stmt = $pdo->prepare("SELECT c.*, p.name, p.selling_price, p.mrp, p.main_image, p.stock_quantity, p.gst_type, p.gst_rate, p.shipping_charge FROM cart c JOIN products p ON c.product_id = p.id WHERE c.user_id = ?");
         $stmt->execute([$userId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     } else {
@@ -286,11 +267,12 @@ function getSessionCartItems() {
     $items = [];
     if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) return $items;
     foreach ($_SESSION['cart'] as $productId => $qty) {
-        $stmt = $pdo->prepare("SELECT * FROM products WHERE id = ?");
+        $stmt = $pdo->prepare("SELECT id, name, selling_price, mrp, main_image, gst_type, gst_rate, shipping_charge FROM products WHERE id = ?");
         $stmt->execute([$productId]);
         $product = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($product) {
             $product['quantity'] = $qty;
+            $product['product_id'] = $product['id'];
             $items[] = $product;
         }
     }
@@ -367,10 +349,388 @@ function setDefaultAddress($userId, $addressId) {
     $pdo->prepare("UPDATE addresses SET is_default = 1 WHERE user_id = ? AND id = ?")->execute([$userId, $addressId]);
 }
 
+function updateUserAddress($userId, $addressId, $data) {
+    global $pdo;
+    $sql = "UPDATE addresses SET name = ?, phone = ?, pincode = ?, address_line1 = ?, address_line2 = ?, city = ?, state = ?, is_default = ? WHERE user_id = ? AND id = ?";
+    $stmt = $pdo->prepare($sql);
+    return $stmt->execute([
+        $data['name'],
+        $data['phone'],
+        $data['pincode'],
+        $data['address_line1'],
+        $data['address_line2'],
+        $data['city'],
+        $data['state'],
+        !empty($data['is_default']) ? 1 : 0,
+        $userId,
+        $addressId
+    ]);
+}
+
+function deleteUserAddress($userId, $addressId) {
+    global $pdo;
+    $stmt = $pdo->prepare("DELETE FROM addresses WHERE user_id = ? AND id = ?");
+    return $stmt->execute([$userId, $addressId]);
+}
+
 function getDefaultAddress($userId) {
     global $pdo;
     $stmt = $pdo->prepare("SELECT * FROM addresses WHERE user_id = ? AND is_default = 1 LIMIT 1");
     $stmt->execute([$userId]);
     return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+// GST Calculation Functions
+function calculateGSTAmount($price, $gstRate) {
+    return ($price * $gstRate) / 100;
+}
+
+function getGSTBreakdown($price, $gstType, $gstRate) {
+    $gstAmount = calculateGSTAmount($price, $gstRate);
+    
+    if ($gstType === 'sgst_cgst') {
+        $sgstRate = $cgstRate = $gstRate / 2;
+        return [
+            'total_gst' => $gstAmount,
+            'sgst_rate' => $sgstRate,
+            'cgst_rate' => $cgstRate,
+            'sgst_amount' => $gstAmount / 2,
+            'cgst_amount' => $gstAmount / 2,
+            'igst_amount' => 0
+        ];
+    } else {
+        return [
+            'total_gst' => $gstAmount,
+            'sgst_rate' => 0,
+            'cgst_rate' => 0,
+            'sgst_amount' => 0,
+            'cgst_amount' => 0,
+            'igst_amount' => $gstAmount
+        ];
+    }
+}
+
+function calculateCartTotals($cartItems) {
+    $subtotal = 0;
+    $totalGST = 0;
+    $totalShipping = 0;
+    $sgstTotal = 0;
+    $cgstTotal = 0;
+    $igstTotal = 0;
+    
+    foreach ($cartItems as $item) {
+        $itemTotal = $item['selling_price'] * $item['quantity'];
+        $subtotal += $itemTotal;
+        
+        // Calculate GST for this item
+        $gstBreakdown = getGSTBreakdown($itemTotal, $item['gst_type'], $item['gst_rate']);
+        $totalGST += $gstBreakdown['total_gst'];
+        $sgstTotal += $gstBreakdown['sgst_amount'];
+        $cgstTotal += $gstBreakdown['cgst_amount'];
+        $igstTotal += $gstBreakdown['igst_amount'];
+        
+        // Add shipping charge if exists
+        if ($item['shipping_charge'] !== null) {
+            $totalShipping += $item['shipping_charge'];
+        }
+    }
+    
+    $grandTotal = $subtotal + $totalGST + $totalShipping;
+    
+    return [
+        'subtotal' => $subtotal,
+        'total_gst' => $totalGST,
+        'sgst_total' => $sgstTotal,
+        'cgst_total' => $cgstTotal,
+        'igst_total' => $igstTotal,
+        'total_shipping' => $totalShipping,
+        'grand_total' => $grandTotal
+    ];
+}
+
+// Order Management Functions
+function generateTrackingId() {
+    global $pdo;
+    do {
+        $trackingId = 'Everythingb2c' . str_pad(mt_rand(1, 99999999), 8, '0', STR_PAD_LEFT);
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM orders WHERE tracking_id = ?");
+        $stmt->execute([$trackingId]);
+    } while ($stmt->fetchColumn() > 0);
+    return $trackingId;
+}
+
+function generateOrderNumber() {
+    global $pdo;
+    do {
+        $orderNumber = 'ORDER' . date('Ymd') . str_pad(mt_rand(0, 9999), 4, '0', STR_PAD_LEFT);
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM orders WHERE order_number = ?");
+        $stmt->execute([$orderNumber]);
+    } while ($stmt->fetchColumn() > 0);
+    return $orderNumber;
+}
+
+function createOrder($userId, $addressId, $paymentMethod, $gstNumber = null, $companyName = null, $isBusinessPurchase = false) {
+    global $pdo;
+    
+    try {
+        $pdo->beginTransaction();
+        
+        // Get cart items and calculate totals
+        $cartItems = getCartItems($userId);
+        if (empty($cartItems)) {
+            throw new Exception('Cart is empty');
+        }
+        
+        $totals = calculateCartTotals($cartItems);
+        $trackingId = generateTrackingId();
+        $orderNumber = generateOrderNumber();
+        
+        // Create order - using correct column names from the actual table structure
+        $stmt = $pdo->prepare("INSERT INTO orders (user_id, address_id, order_number, tracking_id, total_amount, subtotal, gst_amount, shipping_charge, payment_method, gst_number, company_name, is_business_purchase, order_status_id, payment_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 'pending')");
+        $stmt->execute([
+            $userId,
+            $addressId,
+            $orderNumber,
+            $trackingId,
+            $totals['grand_total'],
+            $totals['subtotal'],
+            $totals['total_gst'],
+            $totals['total_shipping'],
+            $paymentMethod,
+            $gstNumber,
+            $companyName,
+            $isBusinessPurchase ? 1 : 0
+        ]);
+        
+        $orderId = $pdo->lastInsertId();
+        
+        // Add order items
+        foreach ($cartItems as $item) {
+            $stmt = $pdo->prepare("INSERT INTO order_items (order_id, product_id, quantity, price, unit_price, gst_rate, gst_amount) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $gstBreakdown = getGSTBreakdown($item['selling_price'] * $item['quantity'], $item['gst_type'] ?? 'IGST', $item['gst_rate'] ?? 18);
+            $stmt->execute([
+                $orderId,
+                $item['product_id'],
+                $item['quantity'],
+                $item['selling_price'] * $item['quantity'], // Total price for this item
+                $item['selling_price'], // Unit price
+                $item['gst_rate'] ?? 18,
+                $gstBreakdown['total_gst']
+            ]);
+        }
+        
+        // Add initial status history
+        addOrderStatusHistory($orderId, 1, 'Order placed successfully', 'system');
+        
+        // Clear cart
+        $stmt = $pdo->prepare("DELETE FROM cart WHERE user_id = ?");
+        $stmt->execute([$userId]);
+        
+        $pdo->commit();
+        return ['success' => true, 'order_id' => $orderId, 'tracking_id' => $trackingId, 'order_number' => $orderNumber];
+        
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        return ['success' => false, 'message' => $e->getMessage()];
+    }
+}
+
+function addOrderStatusHistory($orderId, $statusId, $description = null, $updatedBy = 'system') {
+    global $pdo;
+    $stmt = $pdo->prepare("INSERT INTO order_status_history (order_id, order_status_id, status_description, updated_by) VALUES (?, ?, ?, ?)");
+    return $stmt->execute([$orderId, $statusId, $description, $updatedBy]);
+}
+
+function updateOrderStatus($orderId, $statusId, $description = null, $externalTrackingId = null, $externalTrackingLink = null, $estimatedDeliveryDate = null) {
+    global $pdo;
+    
+    try {
+        $pdo->beginTransaction();
+        
+        // Update order status
+        $stmt = $pdo->prepare("UPDATE orders SET order_status_id = ?, status_description = ?, external_tracking_id = ?, external_tracking_link = ?, estimated_delivery_date = ? WHERE id = ?");
+        $stmt->execute([$statusId, $description, $externalTrackingId, $externalTrackingLink, $estimatedDeliveryDate, $orderId]);
+        
+        // Add to status history
+        addOrderStatusHistory($orderId, $statusId, $description, 'admin');
+        
+        $pdo->commit();
+        return true;
+        
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        return false;
+    }
+}
+
+function getOrderById($orderId, $userId = null) {
+    global $pdo;
+    $sql = "SELECT o.*, os.name as status_name, os.color as status_color, os.description as status_description,
+                   a.name as address_name, a.phone as address_phone, a.address_line1, a.address_line2, a.city, a.state, a.pincode
+            FROM orders o 
+            LEFT JOIN order_statuses os ON o.order_status_id = os.id
+            LEFT JOIN addresses a ON o.address_id = a.id
+            WHERE o.id = ?";
+    
+    if ($userId) {
+        $sql .= " AND o.user_id = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$orderId, $userId]);
+    } else {
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$orderId]);
+    }
+    
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+function getOrderItems($orderId) {
+    global $pdo;
+    $stmt = $pdo->prepare("SELECT oi.*, p.name, p.main_image, p.slug 
+                          FROM order_items oi 
+                          JOIN products p ON oi.product_id = p.id 
+                          WHERE oi.order_id = ?");
+    $stmt->execute([$orderId]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function getOrderStatusHistory($orderId) {
+    global $pdo;
+    $stmt = $pdo->prepare("SELECT osh.*, os.name as status_name, os.color as status_color 
+                          FROM order_status_history osh 
+                          JOIN order_statuses os ON osh.order_status_id = os.id 
+                          WHERE osh.order_id = ? 
+                          ORDER BY osh.created_at DESC");
+    $stmt->execute([$orderId]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function getUserOrders($userId, $limit = null) {
+    global $pdo;
+    $sql = "SELECT o.*, os.name as status_name, os.color as status_color 
+            FROM orders o 
+            LEFT JOIN order_statuses os ON o.order_status_id = os.id 
+            WHERE o.user_id = ? 
+            ORDER BY o.created_at DESC";
+    
+    if ($limit) {
+        $sql .= " LIMIT " . intval($limit);
+    }
+    
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$userId]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function getAllOrderStatuses() {
+    global $pdo;
+    $stmt = $pdo->query("SELECT * FROM order_statuses ORDER BY sort_order, name");
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function createCustomOrderStatus($name, $description, $color = '#007bff') {
+    global $pdo;
+    $stmt = $pdo->prepare("INSERT INTO order_statuses (name, description, color, is_system, sort_order) VALUES (?, ?, ?, FALSE, (SELECT COALESCE(MAX(sort_order), 0) + 1 FROM order_statuses s))");
+    return $stmt->execute([$name, $description, $color]);
+}
+
+function updateOrderStatusRecord($statusId, $name, $description, $color) {
+    global $pdo;
+    $stmt = $pdo->prepare("UPDATE order_statuses SET name = ?, description = ?, color = ? WHERE id = ? AND is_system = FALSE");
+    return $stmt->execute([$name, $description, $color, $statusId]);
+}
+
+function deleteCustomOrderStatus($statusId) {
+    global $pdo;
+    // Check if status is in use
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM orders WHERE order_status_id = ?");
+    $stmt->execute([$statusId]);
+    if ($stmt->fetchColumn() > 0) {
+        return false; // Status is in use
+    }
+    
+    $stmt = $pdo->prepare("DELETE FROM order_statuses WHERE id = ? AND is_system = FALSE");
+    return $stmt->execute([$statusId]);
+}
+
+// Payment Functions
+function createRazorpayOrder($amount, $currency = 'INR') {
+    // This would integrate with Razorpay API
+    // For now, return a mock response
+    return [
+        'id' => 'order_' . uniqid(),
+        'amount' => $amount * 100, // Razorpay expects amount in paise
+        'currency' => $currency
+    ];
+}
+
+function verifyRazorpayPayment($razorpayOrderId, $razorpayPaymentId, $razorpaySignature) {
+    // This would verify the payment with Razorpay
+    // For now, return true
+    return true;
+}
+
+function updatePaymentStatus($orderId, $paymentStatus, $razorpayOrderId = null, $razorpayPaymentId = null) {
+    global $pdo;
+    $stmt = $pdo->prepare("UPDATE orders SET payment_status = ?, razorpay_order_id = ?, razorpay_payment_id = ? WHERE id = ?");
+    return $stmt->execute([$paymentStatus, $razorpayOrderId, $razorpayPaymentId, $orderId]);
+}
+
+// Helper function to build a nested category tree with level
+function buildCategoryTree(array $categories, $parentId = null, $level = 0) {
+    $branch = [];
+    foreach ($categories as $category) {
+        if ($category['parent_id'] == $parentId) {
+            $category['level'] = $level;
+            $children = buildCategoryTree($categories, $category['id'], $level + 1);
+            if ($children) {
+                $category['children'] = $children;
+            } else {
+                $category['children'] = [];
+            }
+            $branch[] = $category;
+        }
+    }
+    return $branch;
+}
+
+// Helper function to get the full category path (main > sub)
+function getCategoryPath($categoryId, $categories = null) {
+    global $pdo;
+    if ($categories === null) {
+        $categories = getAllCategories();
+    }
+    $catMap = [];
+    foreach ($categories as $cat) {
+        $catMap[$cat['id']] = $cat;
+    }
+    $path = [];
+    $current = $categoryId;
+    while ($current && isset($catMap[$current])) {
+        array_unshift($path, $catMap[$current]);
+        $current = $catMap[$current]['parent_id'];
+    }
+    return $path;
+}
+
+// Merge session cart into user cart after login
+function mergeSessionCartToUserCart($userId) {
+    if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) return;
+    foreach ($_SESSION['cart'] as $productId => $qty) {
+        addToCart($userId, $productId, $qty);
+    }
+    clearSessionCart();
+}
+
+// Clear session cart
+function clearSessionCart() {
+    unset($_SESSION['cart']);
+}
+
+// Clear user's database cart
+function clearUserCart($userId) {
+    global $pdo;
+    $stmt = $pdo->prepare("DELETE FROM cart WHERE user_id = ?");
+    $stmt->execute([$userId]);
 }
 ?> 

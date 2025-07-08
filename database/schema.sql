@@ -1,6 +1,6 @@
 -- Create database
-CREATE DATABASE IF NOT EXISTS everythingb2c;
-USE everythingb2c;
+-- CREATE DATABASE IF NOT EXISTS everythingb2c;
+-- USE everythingb2c;
 
 -- Categories table
 CREATE TABLE categories (
@@ -10,14 +10,21 @@ CREATE TABLE categories (
     image VARCHAR(255),
     description TEXT,
     product_count INT DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    parent_id INT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (parent_id) REFERENCES categories(id) ON DELETE SET NULL
 );
+
+-- If you are running this as a migration on an existing database, use:
+-- ALTER TABLE categories ADD COLUMN parent_id INT DEFAULT NULL;
+-- ALTER TABLE categories ADD CONSTRAINT fk_parent_category FOREIGN KEY (parent_id) REFERENCES categories(id) ON DELETE SET NULL;
 
 -- Products table
 CREATE TABLE products (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     slug VARCHAR(255) UNIQUE NOT NULL,
+    sku VARCHAR(100) UNIQUE NOT NULL,
     description TEXT,
     mrp DECIMAL(10,2) NOT NULL,
     selling_price DECIMAL(10,2) NOT NULL,

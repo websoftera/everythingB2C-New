@@ -927,6 +927,20 @@ input[type="checkbox"]:checked + .heart-icon {
   border-radius: 4px;
   cursor: pointer;
   text-transform: uppercase;
+  max-width: 206px;
+  max-height:30px;
+}
+
+.modern-prices{
+  max-height: 30px !important;
+}
+
+.price-buttons1{
+  max-height: 30px !important;
+}
+
+.place-order-btn{
+  background-color: #99d052 !important;
 }
 
 .quantity-input {

@@ -14,15 +14,10 @@ if (empty($slug)) {
     exit;
 }
 
-// Debug: Show what slug we received
-echo "<!-- DEBUG INFO: Received slug: '" . $slug . "' -->";
-echo "<!-- DEBUG INFO: Raw GET data: " . print_r($_GET, true) . " -->";
-
 // Get category details
 $category = getCategoryBySlug($slug);
 
 if (!$category) {
-    echo "<!-- DEBUG INFO: Category not found for slug: '" . $slug . "' -->";
     header('Location: index.php');
     exit;
 }
@@ -46,12 +41,6 @@ if (isLoggedIn()) {
         $wishlist_ids[] = $item['product_id'];
     }
 }
-
-// Debug: Let's see what we're getting
-echo "<!-- DEBUG INFO: Category ID: " . $category['id'] . " -->";
-echo "<!-- DEBUG INFO: Category Slug: " . $category['slug'] . " -->";
-echo "<!-- DEBUG INFO: Category Name: " . $category['name'] . " -->";
-echo "<!-- DEBUG INFO: Products found: " . count($products) . " -->";
 
 // Pagination
 $itemsPerPage = 12;

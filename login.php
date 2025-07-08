@@ -6,7 +6,7 @@ $pageTitle = 'My Account';
 
 // Redirect if already logged in
 if (isLoggedIn()) {
-    header('Location: my-account.php'); // Should probably go to an account dashboard
+    header('Location: myaccount.php'); // Should probably go to an account dashboard
     exit;
 }
 
@@ -31,8 +31,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($user && password_verify($password, $user['password'])) {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user_name'] = $user['name'];
-                
-                header('Location: index.php');
+                // Merge guest cart into user cart
+                mergeSessionCartToUserCart($user['id']);
+                header('Location: myaccount.php');
                 exit;
             } else {
                 $login_error = 'Invalid email or password';
