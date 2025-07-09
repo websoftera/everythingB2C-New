@@ -89,7 +89,7 @@ require_once 'includes/header.php';
 
 <div class="account-page">
     <div class="container">
-        <h1 class="account-title">My Account</h1>
+        <!-- <h1 class="account-title">My Account</h1> -->
         <div class="row">
             <!-- Login Form -->
             <div class="col-lg-6">
