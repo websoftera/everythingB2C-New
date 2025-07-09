@@ -30,11 +30,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $admin = $stmt->fetch(PDO::FETCH_ASSOC);
                 
                 if (!password_verify($current_password, $admin['password'])) {
-                    $error_message = 'Current password is incorrect.';
+                    $_SESSION['error_message'] = 'Current password is incorrect.';
                 } elseif ($new_password && $new_password !== $confirm_password) {
-                    $error_message = 'New passwords do not match.';
+                    $_SESSION['error_message'] = 'New passwords do not match.';
                 } elseif ($new_password && strlen($new_password) < 6) {
-                    $error_message = 'New password must be at least 6 characters long.';
+                    $_SESSION['error_message'] = 'New password must be at least 6 characters long.';
                 } else {
                     try {
                         if ($new_password) {
@@ -48,17 +48,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         
                         $_SESSION['admin_name'] = $name;
                         $_SESSION['admin_email'] = $email;
-                        $success_message = 'Profile updated successfully!';
+                        $_SESSION['success_message'] = 'Profile updated successfully!';
                     } catch (Exception $e) {
-                        $error_message = 'Error updating profile: ' . $e->getMessage();
+                        $_SESSION['error_message'] = 'Error updating profile: ' . $e->getMessage();
                     }
                 }
+                header('Location: settings.php');
+                exit;
                 break;
                 
             case 'update_site_settings':
                 // This would typically update site settings in a settings table
                 // For now, we'll just show a success message
-                $success_message = 'Site settings updated successfully!';
+                $_SESSION['success_message'] = 'Site settings updated successfully!';
+                header('Location: settings.php');
+                exit;
                 break;
         }
     }
@@ -98,6 +102,12 @@ $admin = $stmt->fetch(PDO::FETCH_ASSOC);
                             <h1 class="h3 mb-0">Settings</h1>
                         </div>
                     </div>
+
+                    <?php
+                    $success_message = isset($_SESSION['success_message']) ? $_SESSION['success_message'] : '';
+                    $error_message = isset($_SESSION['error_message']) ? $_SESSION['error_message'] : '';
+                    unset($_SESSION['success_message'], $_SESSION['error_message']);
+                    ?>
 
                     <?php if ($success_message): ?>
                         <div class="alert alert-success"><?php echo htmlspecialchars($success_message); ?></div>

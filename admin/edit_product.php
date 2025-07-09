@@ -41,7 +41,6 @@ $product = array_merge([
     'selling_price' => 0,
     'category_id' => '',
     'stock_quantity' => 0,
-    'gst_type' => '',
     'gst_rate' => 18.00,
     'shipping_charge' => null,
     'is_active' => 1,
@@ -49,7 +48,8 @@ $product = array_merge([
     'is_discounted' => 0,
     'main_image' => '',
     'category_name' => '',
-    'sku' => ''
+    'sku' => '',
+    'hsn' => ''
 ], $product);
 
 // Get product images
@@ -68,13 +68,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $selling_price = floatval($_POST['selling_price']);
     $category_id = intval($_POST['category_id']);
     $stock_quantity = intval($_POST['stock_quantity']);
-    $gst_type = $_POST['gst_type'];
     $gst_rate = floatval($_POST['gst_rate']);
-    $shipping_charge = !empty($_POST['shipping_charge']) ? floatval($_POST['shipping_charge']) : null;
-    $is_active = isset($_POST['is_active']) ? 1 : 0;
-    $is_featured = isset($_POST['is_featured']) ? 1 : 0;
-    $is_discounted = isset($_POST['is_discounted']) ? 1 : 0;
     $sku = trim($_POST['sku']);
+    $hsn = isset($_POST['hsn']) ? trim($_POST['hsn']) : null;
 
     // Validation
     if (empty($name) || empty($description) || $mrp <= 0 || $selling_price <= 0) {
@@ -83,8 +79,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error_message = 'Selling price cannot be greater than MRP.';
     } elseif ($gst_rate < 0 || $gst_rate > 100) {
         $error_message = 'GST rate must be between 0 and 100.';
-    } elseif ($shipping_charge !== null && $shipping_charge < 0) {
-        $error_message = 'Shipping charge cannot be negative.';
     } else {
         try {
             $pdo->beginTransaction();
@@ -93,8 +87,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $discount_percentage = calculateDiscountPercentage($mrp, $selling_price);
 
             // Update product
-            $stmt = $pdo->prepare("UPDATE products SET name = ?, slug = ?, description = ?, mrp = ?, selling_price = ?, discount_percentage = ?, gst_type = ?, gst_rate = ?, shipping_charge = ?, category_id = ?, stock_quantity = ?, is_active = ?, is_featured = ?, is_discounted = ?, sku = ? WHERE id = ?");
-            $stmt->execute([$name, $slug, $description, $mrp, $selling_price, $discount_percentage, $gst_type, $gst_rate, $shipping_charge, $category_id, $stock_quantity, $is_active, $is_featured, $is_discounted, $sku, $product_id]);
+            $stmt = $pdo->prepare("UPDATE products SET name = ?, slug = ?, description = ?, mrp = ?, selling_price = ?, discount_percentage = ?, gst_rate = ?, category_id = ?, stock_quantity = ?, is_active = ?, is_featured = ?, is_discounted = ?, sku = ?, hsn = ? WHERE id = ?");
+            $stmt->execute([$name, $slug, $description, $mrp, $selling_price, $discount_percentage, $gst_rate, $category_id, $stock_quantity, $is_active, $is_featured, $is_discounted, $sku, $hsn, $product_id]);
 
             // Handle main image upload
             if (isset($_FILES['main_image']) && $_FILES['main_image']['error'] === UPLOAD_ERR_OK) {
@@ -140,20 +134,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             $pdo->commit();
-            $success_message = 'Product updated successfully!';
-            
-            // Refresh product data
-            $stmt = $pdo->prepare("SELECT p.*, c.name as category_name 
-                                   FROM products p 
-                                   LEFT JOIN categories c ON p.category_id = c.id 
-                                   WHERE p.id = ?");
-            $stmt->execute([$product_id]);
-            $product = $stmt->fetch(PDO::FETCH_ASSOC);
-            
-            // Refresh product images
-            $stmt = $pdo->prepare("SELECT * FROM product_images WHERE product_id = ? ORDER BY sort_order, is_main DESC");
-            $stmt->execute([$product_id]);
-            $product_images = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $_SESSION['success_message'] = 'Product updated successfully!';
+            header('Location: edit_product.php?id=' . $product_id);
+            exit;
             
         } catch (Exception $e) {
             $pdo->rollBack();
@@ -261,16 +244,6 @@ function uploadImage($file, $folder) {
                                                     <?php endforeach; ?>
                                                 </select>
                                             </div>
-                                            <div class="col-md-4">
-                                                <label for="gst_type" class="form-label">GST Type *</label>
-                                                <select class="form-control" id="gst_type" name="gst_type" required>
-                                                    <option value="">Select GST Type</option>
-                                                    <option value="sgst_cgst" <?php echo ($product['gst_type'] == 'sgst_cgst') ? 'selected' : ''; ?>>SGST + CGST</option>
-                                                    <option value="igst" <?php echo ($product['gst_type'] == 'igst') ? 'selected' : ''; ?>>IGST</option>
-                                                </select>
-                                                <div class="form-text">SGST+CGST for same state, IGST for different state</div>
-                                                <div class="invalid-feedback">Please select a GST type.</div>
-                                            </div>
                                         </div>
 
                                         <div class="row mb-3">
@@ -309,11 +282,6 @@ function uploadImage($file, $folder) {
                                                     ₹<?php echo number_format(($product['selling_price'] * $product['gst_rate']) / 100, 2); ?>
                                                 </div>
                                                 <div class="form-text">Calculated automatically for reference</div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label for="shipping_charge" class="form-label">Shipping Charge (₹)</label>
-                                                <input type="number" class="form-control" id="shipping_charge" name="shipping_charge" step="0.01" min="0" placeholder="0.00" value="<?php echo $product['shipping_charge'] ? htmlspecialchars($product['shipping_charge']) : ''; ?>">
-                                                <div class="form-text">Leave empty for free shipping or zone-based charges</div>
                                             </div>
                                         </div>
 
@@ -372,6 +340,11 @@ function uploadImage($file, $folder) {
                                                     <label class="form-check-label" for="edit_is_discounted">Discounted</label>
                                                 </div>
                                             </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="hsn" class="form-label">HSN Code</label>
+                                            <input type="text" class="form-control" id="hsn" name="hsn" maxlength="20" value="<?php echo htmlspecialchars($product['hsn'] ?? ''); ?>">
                                         </div>
                                     </div>
 

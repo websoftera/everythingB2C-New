@@ -90,7 +90,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
             }
-
+            // Debug log
+            console.log('Add to Cart clicked:', { productId, quantity, target });
+            // Disable button to prevent double click
+            target.disabled = true;
 
             fetch('ajax/add-to-cart.php', {
                 method: 'POST',
@@ -110,10 +113,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (data.success) {
                     updateCartCount();
                 }
+                // Re-enable button after request
+                target.disabled = false;
             })
             .catch(error => {
                 console.error('Error:', error);
                 showToast('An error occurred.', 'error');
+                // Re-enable button on error
+                target.disabled = false;
             });
         }
 

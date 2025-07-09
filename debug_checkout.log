@@ -53,3 +53,30 @@ Array
 )
 
 
+2025-07-09 12:39:03 [SESSION] status: 2, user_id: 1, isLoggedIn: yes
+2025-07-09 12:39:09 [SESSION] status: 2, user_id: 1, isLoggedIn: yes
+2025-07-09 12:42:26 [SESSION] status: 2, user_id: 1, isLoggedIn: yes
+2025-07-09 12:42:30 [SESSION] status: 2, user_id: 1, isLoggedIn: yes
+2025-07-09 12:42:49 [SESSION] status: 2, user_id: 1, isLoggedIn: yes
+2025-07-09 12:45:00 [SESSION] status: 2, user_id: 1, isLoggedIn: yes
+2025-07-09 12:46:01 [SESSION] status: 2, user_id: 1, isLoggedIn: yes
+2025-07-09 12:47:00 [SESSION] status: 2, user_id: 1, isLoggedIn: yes
+2025-07-09 12:47:00 [SESSION] status: 2, user_id: 1, isLoggedIn: yes
+2025-07-09 12:47:03 [SESSION] status: 2, user_id: 1, isLoggedIn: yes
+2025-07-09 12:47:03 [SESSION] status: 2, user_id: 1, isLoggedIn: yes
+2025-07-09 12:47:26 [SESSION] status: 2, user_id: 1, isLoggedIn: yes
+2025-07-09 12:47:33 [SESSION] status: 2, user_id: 1, isLoggedIn: yes
+2025-07-09 12:47:33 [START] place_order POST
+Array
+(
+    [place_order] => 1
+    [selected_address] => 11
+    [set_default] => 1
+    [address_id] => 11
+    [payment_method] => cod
+)
+
+
+2025-07-09 12:49:13 [SESSION] status: 2, user_id: 1, isLoggedIn: yes
+2025-07-09 12:51:16 [SESSION] status: 2, user_id: 1, isLoggedIn: yes
+2025-07-09 12:51:25 [SESSION] status: 2, user_id: 1, isLoggedIn: yes

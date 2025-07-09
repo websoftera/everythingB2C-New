@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $description = trim($_POST['description']);
                 $parent_id = isset($_POST['parent_id']) && $_POST['parent_id'] !== '' ? intval($_POST['parent_id']) : null;
                 if (empty($name)) {
-                    $error_message = 'Category name is required.';
+                    $_SESSION['error_message'] = 'Category name is required.';
                 } else {
                     try {
                         $pdo->beginTransaction();
@@ -43,12 +43,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
                         
                         $pdo->commit();
-                        $success_message = 'Category added successfully!';
+                        $_SESSION['success_message'] = 'Category added successfully!';
                     } catch (Exception $e) {
                         $pdo->rollBack();
-                        $error_message = 'Error adding category: ' . $e->getMessage();
+                        $_SESSION['error_message'] = 'Error adding category: ' . $e->getMessage();
                     }
                 }
+                header('Location: categories.php');
+                exit;
                 break;
                 
             case 'edit':
@@ -59,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $parent_id = isset($_POST['parent_id']) && $_POST['parent_id'] !== '' ? intval($_POST['parent_id']) : null;
                 
                 if (empty($name)) {
-                    $error_message = 'Category name is required.';
+                    $_SESSION['error_message'] = 'Category name is required.';
                 } else {
                     try {
                         $pdo->beginTransaction();
@@ -78,12 +80,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
                         
                         $pdo->commit();
-                        $success_message = 'Category updated successfully!';
+                        $_SESSION['success_message'] = 'Category updated successfully!';
                     } catch (Exception $e) {
                         $pdo->rollBack();
-                        $error_message = 'Error updating category: ' . $e->getMessage();
+                        $_SESSION['error_message'] = 'Error updating category: ' . $e->getMessage();
                     }
                 }
+                header('Location: categories.php');
+                exit;
                 break;
                 
             case 'delete':
@@ -95,15 +99,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $product_count = $stmt->fetchColumn();
                     
                     if ($product_count > 0) {
-                        $error_message = 'Cannot delete category with existing products.';
+                        $_SESSION['error_message'] = 'Cannot delete category with existing products.';
                     } else {
                         $stmt = $pdo->prepare("DELETE FROM categories WHERE id = ?");
                         $stmt->execute([$id]);
-                        $success_message = 'Category deleted successfully!';
+                        $_SESSION['success_message'] = 'Category deleted successfully!';
                     }
                 } catch (Exception $e) {
-                    $error_message = 'Error deleting category: ' . $e->getMessage();
+                    $_SESSION['error_message'] = 'Error deleting category: ' . $e->getMessage();
                 }
+                header('Location: categories.php');
+                exit;
                 break;
         }
     }

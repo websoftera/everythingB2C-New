@@ -183,7 +183,7 @@ function getCartItems($userId = null) {
     if (isLoggedIn() && $userId) {
         // DB cart
         global $pdo;
-        $stmt = $pdo->prepare("SELECT c.*, p.name, p.selling_price, p.mrp, p.main_image, p.stock_quantity, p.gst_type, p.gst_rate, p.shipping_charge FROM cart c JOIN products p ON c.product_id = p.id WHERE c.user_id = ?");
+        $stmt = $pdo->prepare("SELECT c.*, p.name, p.selling_price, p.mrp, p.main_image, p.stock_quantity, p.gst_type, p.gst_rate, p.shipping_charge, p.hsn FROM cart c JOIN products p ON c.product_id = p.id WHERE c.user_id = ?");
         $stmt->execute([$userId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     } else {
@@ -267,7 +267,7 @@ function getSessionCartItems() {
     $items = [];
     if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) return $items;
     foreach ($_SESSION['cart'] as $productId => $qty) {
-        $stmt = $pdo->prepare("SELECT id, name, selling_price, mrp, main_image, gst_type, gst_rate, shipping_charge FROM products WHERE id = ?");
+        $stmt = $pdo->prepare("SELECT id, name, selling_price, mrp, main_image, gst_type, gst_rate, shipping_charge, hsn FROM products WHERE id = ?");
         $stmt->execute([$productId]);
         $product = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($product) {
@@ -475,60 +475,74 @@ function createOrder($userId, $addressId, $paymentMethod, $gstNumber = null, $co
     try {
         $pdo->beginTransaction();
         
-        // Get cart items and calculate totals
+        // Get cart items and address
         $cartItems = getCartItems($userId);
         if (empty($cartItems)) {
             throw new Exception('Cart is empty');
         }
-        
-        $totals = calculateCartTotals($cartItems);
+        $stmt = $pdo->prepare("SELECT * FROM addresses WHERE id = ? AND user_id = ?");
+        $stmt->execute([$addressId, $userId]);
+        $address = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$address) {
+            throw new Exception('Invalid address');
+        }
+        // Use the same calculation as checkout page
+        require_once __DIR__ . '/gst_shipping_functions.php';
+        $totals = calculateOrderTotal(
+            $cartItems,
+            $address['state'],
+            $address['city'],
+            $address['pincode']
+        );
         $trackingId = generateTrackingId();
         $orderNumber = generateOrderNumber();
-        
-        // Create order - using correct column names from the actual table structure
+        // Insert order with correct totals
         $stmt = $pdo->prepare("INSERT INTO orders (user_id, address_id, order_number, tracking_id, total_amount, subtotal, gst_amount, shipping_charge, payment_method, gst_number, company_name, is_business_purchase, order_status_id, payment_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 'pending')");
         $stmt->execute([
             $userId,
             $addressId,
             $orderNumber,
             $trackingId,
-            $totals['grand_total'],
+            $totals['total'],
             $totals['subtotal'],
-            $totals['total_gst'],
-            $totals['total_shipping'],
+            $totals['gst_amount'],
+            $totals['shipping_charge'],
             $paymentMethod,
             $gstNumber,
             $companyName,
             $isBusinessPurchase ? 1 : 0
         ]);
-        
         $orderId = $pdo->lastInsertId();
-        
-        // Add order items
+        // Add order items (use GST logic from gst_shipping_functions.php)
+        $seller_state = 'Maharashtra';
         foreach ($cartItems as $item) {
-            $stmt = $pdo->prepare("INSERT INTO order_items (order_id, product_id, quantity, price, unit_price, gst_rate, gst_amount) VALUES (?, ?, ?, ?, ?, ?, ?)");
-            $gstBreakdown = getGSTBreakdown($item['selling_price'] * $item['quantity'], $item['gst_type'] ?? 'IGST', $item['gst_rate'] ?? 18);
+            $item_price = isset($item['selling_price']) ? $item['selling_price'] : 0;
+            $item_total = $item_price * $item['quantity'];
+            $gst_calc = function_exists('calculateGST')
+                ? calculateGST($item_price, $item['gst_rate'], $item['gst_type'], $address['state'], $seller_state)
+                : getGSTBreakdown($item_total, $item['gst_type'], $item['gst_rate']);
+            $item_gst = $gst_calc['total_gst'] * $item['quantity'];
+            $stmt = $pdo->prepare("INSERT INTO order_items (order_id, product_id, hsn, quantity, price, unit_price, gst_rate, gst_amount, mrp, selling_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $stmt->execute([
                 $orderId,
                 $item['product_id'],
+                $item['hsn'],
                 $item['quantity'],
-                $item['selling_price'] * $item['quantity'], // Total price for this item
-                $item['selling_price'], // Unit price
-                $item['gst_rate'] ?? 18,
-                $gstBreakdown['total_gst']
+                $item_total,
+                $item_price,
+                $item['gst_rate'],
+                $item_gst,
+                $item['mrp'],
+                $item['selling_price']
             ]);
         }
-        
         // Add initial status history
         addOrderStatusHistory($orderId, 1, 'Order placed successfully', 'system');
-        
         // Clear cart
         $stmt = $pdo->prepare("DELETE FROM cart WHERE user_id = ?");
         $stmt->execute([$userId]);
-        
         $pdo->commit();
         return ['success' => true, 'order_id' => $orderId, 'tracking_id' => $trackingId, 'order_number' => $orderNumber];
-        
     } catch (Exception $e) {
         $pdo->rollBack();
         return ['success' => false, 'message' => $e->getMessage()];
@@ -586,7 +600,7 @@ function getOrderById($orderId, $userId = null) {
 
 function getOrderItems($orderId) {
     global $pdo;
-    $stmt = $pdo->prepare("SELECT oi.*, p.name, p.main_image, p.slug 
+    $stmt = $pdo->prepare("SELECT oi.*, p.name, p.main_image, p.slug, p.sku, oi.hsn 
                           FROM order_items oi 
                           JOIN products p ON oi.product_id = p.id 
                           WHERE oi.order_id = ?");

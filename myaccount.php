@@ -39,33 +39,28 @@ if (isset($_POST['add_address'])) {
     exit;
 }
 
-if (isset($_POST['update_info'])) {
-    $newName = sanitizeInput($_POST['name']);
-    $newPhone = sanitizeInput($_POST['phone']);
-    $stmt = $pdo->prepare("UPDATE users SET name = ?, phone = ? WHERE id = ?");
-    $stmt->execute([$newName, $newPhone, $userId]);
-    header('Location: myaccount.php#profile');
+if (isset($_POST['edit_address'])) {
+    $addressId = intval($_POST['address_id']);
+    $data = [
+        'name' => sanitizeInput($_POST['name']),
+        'phone' => sanitizeInput($_POST['phone']),
+        'pincode' => sanitizeInput($_POST['pincode']),
+        'address_line1' => sanitizeInput($_POST['address_line1']),
+        'address_line2' => sanitizeInput($_POST['address_line2']),
+        'city' => sanitizeInput($_POST['city']),
+        'state' => sanitizeInput($_POST['state']),
+        'is_default' => isset($_POST['is_default']) ? 1 : 0
+    ];
+    updateUserAddress($userId, $addressId, $data);
+    if ($data['is_default']) setDefaultAddress($userId, $addressId);
+    header('Location: myaccount.php#addresses');
     exit;
 }
-if (isset($_POST['change_password'])) {
-    $currentPassword = $_POST['current_password'];
-    $newPassword = $_POST['new_password'];
-    $confirmPassword = $_POST['confirm_password'];
-    $stmt = $pdo->prepare("SELECT password FROM users WHERE id = ?");
-    $stmt->execute([$userId]);
-    $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
-    if ($userRow && password_verify($currentPassword, $userRow['password'])) {
-        if ($newPassword === $confirmPassword && strlen($newPassword) >= 6) {
-            $hashed = password_hash($newPassword, PASSWORD_DEFAULT);
-            $stmt = $pdo->prepare("UPDATE users SET password = ? WHERE id = ?");
-            $stmt->execute([$hashed, $userId]);
-            $password_message = 'Password updated successfully!';
-        } else {
-            $password_message = 'Passwords do not match or are too short (min 6 chars).';
-        }
-    } else {
-        $password_message = 'Current password is incorrect.';
-    }
+if (isset($_POST['delete_address'])) {
+    $addressId = intval($_POST['address_id']);
+    deleteUserAddress($userId, $addressId);
+    header('Location: myaccount.php#addresses');
+    exit;
 }
 ?>
 
@@ -436,7 +431,7 @@ if (isset($_POST['change_password'])) {
                                     <p>Order Status: <span class="badge" style="background-color: <?php echo $order['color'] ?? '#007bff'; ?>; color: #fff;"><?php echo $order['status_name'] ?? ucfirst($order['status']); ?></span></p>
                                 </div>
                                 <div>
-                                    <a href="track_order.php?order_id=<?php echo $order['id']; ?>" class="btn small">Track Order</a>
+                                    <a href="track_order.php?tracking_id=<?php echo urlencode($order['tracking_id']); ?>" class="btn small">Track Order</a>
                                     <a href="download_invoice.php?order_id=<?php echo $order['id']; ?>" class="btn small btn-success" target="_blank">Download Invoice</a>
                                 </div>
                             </div>
@@ -448,19 +443,22 @@ if (isset($_POST['change_password'])) {
                                         <tr>
                                             <th>Product</th>
                                             <th>SKU</th>
+                                            <th>HSN</th>
                                             <th>Qty</th>
                                             <th>Price</th>
                                             <th>Total</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php foreach ($orderItems as $item): ?>
+                                        <?php foreach (
+                                            $orderItems as $item): ?>
                                             <tr>
                                                 <td>
                                                     <img src="<?php echo htmlspecialchars($item['main_image']); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" style="height:32px;width:32px;object-fit:cover;margin-right:8px;">
                                                     <a href="product.php?slug=<?php echo htmlspecialchars($item['slug']); ?>" target="_blank"><?php echo htmlspecialchars($item['name']); ?></a>
                                                 </td>
-                                                <td><?php echo htmlspecialchars($item['product_id']); ?></td>
+                                                <td><?php echo htmlspecialchars($item['sku']); ?></td>
+                                                <td><?php echo htmlspecialchars($item['hsn'] ?? ''); ?></td>
                                                 <td><?php echo $item['quantity']; ?></td>
                                                 <td>₹<?php echo number_format($item['price'], 2); ?></td>
                                                 <td>₹<?php echo number_format($item['price'] * $item['quantity'], 2); ?></td>
@@ -468,6 +466,32 @@ if (isset($_POST['change_password'])) {
                                         <?php endforeach; ?>
                                     </tbody>
                                 </table>
+                                <div class="order-summary-note" style="font-size:0.95em;color:#888;margin-bottom:4px;">
+                                    <i class="fas fa-info-circle" title="Order total includes shipping and taxes as shown below."></i>
+                                    Product totals do not include shipping or taxes. See order summary below.
+                                </div>
+                                <?php 
+                                $total_savings = 0;
+                                foreach ($orderItems as $item) {
+                                    if (isset($item['mrp']) && isset($item['selling_price'])) {
+                                        $total_savings += ($item['mrp'] - $item['selling_price']) * $item['quantity'];
+                                    }
+                                }
+                                ?>
+                                <table class="table table-sm mb-0" style="max-width:350px;float:right;background:#f8f9fa;">
+                                    <tbody>
+                                        <tr><td>Subtotal</td><td class="text-end">₹<?php echo number_format($order['subtotal'], 2); ?></td></tr>
+                                        <?php if (!empty($order['shipping_charge'])): ?>
+                                            <tr><td>Shipping</td><td class="text-end">₹<?php echo number_format($order['shipping_charge'], 2); ?></td></tr>
+                                        <?php endif; ?>
+                                        <?php if (!empty($order['gst_amount'])): ?>
+                                            <tr><td>Taxes (GST)</td><td class="text-end">₹<?php echo number_format($order['gst_amount'], 2); ?></td></tr>
+                                        <?php endif; ?>
+                                        <tr><td class="text-success">Total Savings</td><td class="text-end text-success">₹<?php echo number_format($total_savings, 2); ?></td></tr>
+                                        <tr class="fw-bold"><td>Total Paid</td><td class="text-end">₹<?php echo number_format($order['total_amount'], 2); ?></td></tr>
+                                    </tbody>
+                                </table>
+                                <div style="clear:both;"></div>
                             </div>
                         </div>
                     <?php endforeach; ?>
@@ -538,10 +562,18 @@ if (isset($_POST['change_password'])) {
                                 <p><?php echo htmlspecialchars($address['city'] . ', ' . $address['state'] . ' - ' . $address['pincode']); ?></p>
                                 <div class="address-actions">
                                     <?php if (!$address['is_default']): ?>
-                                        <a href="checkout.php?set_default=<?php echo $address['id']; ?>" class="btn small">Set as Default</a>
+                                        <form method="post" style="display:inline;">
+                                            <input type="hidden" name="set_default" value="1">
+                                            <input type="hidden" name="address_id" value="<?php echo $address['id']; ?>">
+                                            <button type="submit" class="btn small">Set as Default</button>
+                                        </form>
                                     <?php endif; ?>
-                                    <a href="checkout.php?edit_address=<?php echo $address['id']; ?>" class="btn small">Edit</a>
-                                    <a href="checkout.php?delete_address=<?php echo $address['id']; ?>" class="btn small danger" onclick="return confirm('Delete this address?')">Delete</a>
+                                    <button type="button" class="btn small" onclick="handleEditAddressClick(<?php echo $address['id']; ?>)">Edit</button>
+                                    <form method="post" style="display:inline;" onsubmit="return confirm('Delete this address?');">
+                                        <input type="hidden" name="delete_address" value="1">
+                                        <input type="hidden" name="address_id" value="<?php echo $address['id']; ?>">
+                                        <button type="submit" class="btn small danger">Delete</button>
+                                    </form>
                                 </div>
                             </div>
                         <?php endforeach; ?>
@@ -634,6 +666,29 @@ if (isset($_POST['change_password'])) {
     </div>
 </div>
 
+<!-- Edit Address Modal -->
+<div class="modal" id="editAddressModal" tabindex="-1" style="display:none;position:fixed;z-index:9999;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.4);align-items:center;justify-content:center;">
+  <div style="background:#fff;padding:24px;border-radius:8px;max-width:500px;width:100%;position:relative;">
+    <button type="button" onclick="closeEditAddressModal()" style="position:absolute;top:8px;right:8px;font-size:1.2rem;background:none;border:none;">&times;</button>
+    <h5>Edit Address</h5>
+    <form method="post" id="editAddressForm">
+      <input type="hidden" name="edit_address" value="1">
+      <input type="hidden" name="address_id" id="edit_address_id">
+      <div class="mb-2"><input type="text" name="name" id="edit_name" class="form-control" placeholder="Full Name" required></div>
+      <div class="mb-2"><input type="text" name="phone" id="edit_phone" class="form-control" placeholder="Phone Number" required></div>
+      <div class="mb-2"><input type="text" name="pincode" id="edit_pincode" class="form-control" placeholder="PIN Code" required></div>
+      <div class="mb-2"><input type="text" name="address_line1" id="edit_address_line1" class="form-control" placeholder="Address Line 1" required></div>
+      <div class="mb-2"><input type="text" name="address_line2" id="edit_address_line2" class="form-control" placeholder="Address Line 2 (optional)"></div>
+      <div class="mb-2"><input type="text" name="city" id="edit_city" class="form-control" placeholder="City" required></div>
+      <div class="mb-2"><input type="text" name="state" id="edit_state" class="form-control" placeholder="State" required></div>
+      <div class="form-check mb-2">
+        <input class="form-check-input" type="checkbox" name="is_default" id="edit_is_default">
+        <label class="form-check-label" for="edit_is_default">Set as default address</label>
+      </div>
+      <button type="submit" class="btn btn-primary">Update Address</button>
+    </form>
+  </div>
+</div>
 <script>
 function showSection(id) {
     document.querySelectorAll('.account-section').forEach(s => s.style.display = 'none');
@@ -645,6 +700,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const hash = window.location.hash.substring(1);
     if (hash) showSection(hash);
 });
+
+function openEditAddressModal(address) {
+  document.getElementById('edit_address_id').value = address.id;
+  document.getElementById('edit_name').value = address.name;
+  document.getElementById('edit_phone').value = address.phone;
+  document.getElementById('edit_pincode').value = address.pincode;
+  document.getElementById('edit_address_line1').value = address.address_line1;
+  document.getElementById('edit_address_line2').value = address.address_line2;
+  document.getElementById('edit_city').value = address.city;
+  document.getElementById('edit_state').value = address.state;
+  document.getElementById('edit_is_default').checked = address.is_default == 1;
+  document.getElementById('editAddressModal').style.display = 'flex';
+}
+function closeEditAddressModal() {
+  document.getElementById('editAddressModal').style.display = 'none';
+}
+function handleEditAddressClick(addressId) {
+  // You may want to fetch address via AJAX, but since all addresses are loaded, just find in JS
+  var addresses = <?php echo json_encode($userAddresses); ?>;
+  var address = addresses.find(a => a.id == addressId);
+  if (address) openEditAddressModal(address);
+}
+// Close modal on background click
+window.onclick = function(event) {
+  var modal = document.getElementById('editAddressModal');
+  if (event.target === modal) closeEditAddressModal();
+}
 </script>
 
 <?php include 'includes/footer.php'; ?>

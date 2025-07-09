@@ -56,20 +56,30 @@ try {
     echo '<div class="mb-3">';
     echo '<h6>Order Items</h6>';
     // Reuse get_order_items.php logic
-    $stmt = $pdo->prepare("SELECT oi.*, p.name as product_name, p.main_image, p.slug FROM order_items oi LEFT JOIN products p ON oi.product_id = p.id WHERE oi.order_id = ?");
+    $stmt = $pdo->prepare("SELECT oi.*, p.name as product_name, p.main_image, p.slug, p.hsn FROM order_items oi LEFT JOIN products p ON oi.product_id = p.id WHERE oi.order_id = ?");
     $stmt->execute([$order_id]);
     $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $total_savings = 0;
     if (empty($items)) {
         echo '<p class="text-muted">No items found for this order.</p>';
     } else {
         echo '<div class="table-responsive">';
         echo '<table class="table table-sm">';
-        echo '<thead><tr><th>Product</th><th>Price</th><th>Qty</th><th>Total</th></tr></thead>';
+        echo '<thead><tr><th>Product</th><th>HSN</th><th>MRP</th><th>Selling Price</th><th>Qty</th><th>MRP Total</th><th>Selling Total</th><th>Savings</th></tr></thead>';
         echo '<tbody>';
-        $total = 0;
+        $total_mrp = 0;
+        $total_selling = 0;
+        $total_savings = 0;
         foreach ($items as $item) {
-            $item_total = $item['price'] * $item['quantity'];
-            $total += $item_total;
+            $mrp = isset($item['mrp']) ? $item['mrp'] : 0;
+            $selling = isset($item['selling_price']) ? $item['selling_price'] : $item['price'];
+            $qty = $item['quantity'];
+            $mrp_total = $mrp * $qty;
+            $selling_total = $selling * $qty;
+            $item_savings = ($mrp - $selling) * $qty;
+            $total_mrp += $mrp_total;
+            $total_selling += $selling_total;
+            $total_savings += $item_savings;
             echo '<tr>';
             echo '<td>';
             if ($item['main_image']) {
@@ -78,13 +88,21 @@ try {
             echo htmlspecialchars($item['product_name']);
             echo '<br><small class="text-muted">SKU: '.htmlspecialchars($item['slug']).'</small>';
             echo '</td>';
-            echo '<td>₹'.number_format($item['price'],2).'</td>';
-            echo '<td>'.$item['quantity'].'</td>';
-            echo '<td><strong>₹'.number_format($item_total,2).'</strong></td>';
+            echo '<td>' . htmlspecialchars($item['hsn'] ?? '') . '</td>';
+            echo '<td>₹'.number_format($mrp,2).'</td>';
+            echo '<td>₹'.number_format($selling,2).'</td>';
+            echo '<td>'.$qty.'</td>';
+            echo '<td>₹'.number_format($mrp_total,2).'</td>';
+            echo '<td>₹'.number_format($selling_total,2).'</td>';
+            echo '<td class="text-success">₹'.number_format($item_savings,2).'</td>';
             echo '</tr>';
         }
         echo '</tbody>';
-        echo '<tfoot><tr><th colspan="3" class="text-end">Total:</th><th>₹'.number_format($total,2).'</th></tr></tfoot>';
+        echo '<tfoot>';
+        echo '<tr><th colspan="4" class="text-end">Total MRP:</th><th>₹'.number_format($total_mrp,2).'</th><th></th><th></th></tr>';
+        echo '<tr><th colspan="4" class="text-end">Total Selling:</th><th></th><th>₹'.number_format($total_selling,2).'</th><th></th></tr>';
+        echo '<tr><th colspan="4" class="text-end">Total Savings:</th><th></th><th></th><th class="text-success">₹'.number_format($total_savings,2).'</th></tr>';
+        echo '</tfoot>';
         echo '</table>';
         echo '</div>';
     }
@@ -93,6 +111,7 @@ try {
     echo '<div class="mb-3">';
     echo '<h6>Order Summary</h6>';
     echo '<p><strong>Total Amount:</strong> ₹'.number_format($order['total_amount'],2).'</p>';
+    echo '<p class="text-success"><strong>Total Savings:</strong> ₹'.number_format($total_savings,2).'</p>';
     echo '<p><strong>Payment Method:</strong> '.htmlspecialchars($order['payment_method']).'</p>';
     echo '<p><strong>Status:</strong> '.ucfirst($order['status']).'</p>';
     echo '</div>';

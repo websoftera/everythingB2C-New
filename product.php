@@ -77,6 +77,9 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
     <div class="product-info-section modern-info">
         <h2 class="title"><?php echo $product['name']; ?></h2>
         <p><strong>SKU:</strong> <?php echo htmlspecialchars($product['sku']); ?></p>
+        <?php if (!empty($product['hsn'])): ?>
+            <div class="product-hsn"><strong>HSN:</strong> <?php echo htmlspecialchars($product['hsn']); ?></div>
+        <?php endif; ?>
         <div class="price-buttons1 modern-prices">
             <button class="mrp" data-mrp="<?php echo $product['mrp']; ?>">MRP <?php echo formatPrice($product['mrp']); ?></button>
             <button class="pay" data-pay="<?php echo $product['selling_price']; ?>">PAY <?php echo formatPrice($product['selling_price']); ?></button>
@@ -376,5 +379,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <!-- Include CSS and JS -->
 <link rel="stylesheet" href="deatil.css">
-<script src="detail.js" defer></script>
-<script src="popup/popup.js" defer></script> 
+<script src="detail.js" defer></script> 

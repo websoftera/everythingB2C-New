@@ -1,5 +1,13 @@
 <?php
-ob_start(); // Start output buffering to prevent accidental output before JSON
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'domain' => '',
+    'secure' => false,
+    'httponly' => false,
+    'samesite' => 'Lax'
+]);
+ob_start();
 if (session_status() === PHP_SESSION_NONE) session_start();
 require_once 'includes/functions.php';
 require_once 'includes/gst_shipping_functions.php';
@@ -8,146 +16,88 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Force login
 if (!isLoggedIn()) {
-    if (
-        isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
-        strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest'
-    ) {
-        ob_clean();
-        header('Content-Type: application/json');
-        echo json_encode(['success' => false, 'message' => 'Session expired. Please log in again.']);
-        exit;
-    } else {
-        $_SESSION['redirect_after_login'] = 'checkout.php';
-        header('Location: login.php');
-        exit;
-    }
+    $_SESSION['redirect_after_login'] = 'checkout.php';
+    header('Location: login.php');
+    exit;
 }
 
 $userId = $_SESSION['user_id'];
 
-// Handle new address form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_address'])) {
-    $data = [
-        'name' => sanitizeInput($_POST['name']),
-        'phone' => sanitizeInput($_POST['phone']),
-        'pincode' => sanitizeInput($_POST['pincode']),
-        'address_line1' => sanitizeInput($_POST['address_line1']),
-        'address_line2' => sanitizeInput($_POST['address_line2']),
-        'city' => sanitizeInput($_POST['city']),
-        'state' => sanitizeInput($_POST['state']),
-        'is_default' => isset($_POST['is_default']) ? 1 : 0
-    ];
-    addUserAddress($userId, $data);
-    if ($data['is_default']) setDefaultAddress($userId, $pdo->lastInsertId());
-    header('Location: checkout.php');
-    exit;
-}
-
-// Handle edit address form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_address'])) {
-    $addressId = intval($_POST['address_id']);
-    $data = [
-        'name' => sanitizeInput($_POST['name']),
-        'phone' => sanitizeInput($_POST['phone']),
-        'pincode' => sanitizeInput($_POST['pincode']),
-        'address_line1' => sanitizeInput($_POST['address_line1']),
-        'address_line2' => sanitizeInput($_POST['address_line2']),
-        'city' => sanitizeInput($_POST['city']),
-        'state' => sanitizeInput($_POST['state']),
-        'is_default' => isset($_POST['is_default']) ? 1 : 0
-    ];
-    updateUserAddress($userId, $addressId, $data);
-    if ($data['is_default']) setDefaultAddress($userId, $addressId);
-    header('Location: checkout.php');
-    exit;
-}
-
-// Handle delete address
-if (isset($_GET['delete_address'])) {
-    $addressId = intval($_GET['delete_address']);
-    deleteUserAddress($userId, $addressId);
-    header('Location: checkout.php');
-    exit;
-}
-
-// Handle order placement
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
-    file_put_contents('debug_checkout.log', date('Y-m-d H:i:s') . "\n" . print_r($_POST, true) . "\n\n", FILE_APPEND);
-    $addressId = intval($_POST['selected_address']);
-    $paymentMethod = $_POST['payment_method'];
-    $gstNumber = !empty($_POST['gst_number']) ? sanitizeInput($_POST['gst_number']) : null;
-    $companyName = !empty($_POST['company_name']) ? sanitizeInput($_POST['company_name']) : null;
-    $isBusinessPurchase = isset($_POST['is_business']) ? true : false;
-    $cartItems = getCartItems($userId);
-    if (!$addressId) {
-        $error_message = 'Please select a delivery address.';
-    } else {
-        $result = createOrder($userId, $addressId, $paymentMethod, $gstNumber, $companyName, $isBusinessPurchase);
-        if ($result['success']) {
-            $order = getOrderById($result['order_id']);
-            if (
-                isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
-                strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest'
-            ) {
-                // AJAX request: return JSON for Razorpay
-                // Clean output buffer and suppress errors
-                $debug_output = ob_get_contents();
-                if (!empty($debug_output)) {
-                    file_put_contents(__DIR__ . '/ajax_debug.log', date('Y-m-d H:i:s') . "\n" . $debug_output . "\n\n", FILE_APPEND);
-                }
-                ob_clean();
-                error_reporting(0);
-                ini_set('display_errors', 0);
-                header('Content-Type: application/json');
-                echo json_encode([
-                    'success' => true,
-                    'order_id' => $order['id'],
-                    'amount' => (int)round($order['total_amount'] * 100), // in paise
-                    'tracking_id' => $order['tracking_id'] ?? $order['order_number'],
-                    'customer_name' => $user['name'],
-                    'customer_email' => $user['email'],
-                    'customer_phone' => $user['phone'],
-                ]);
-                exit;
-            } else {
-                if ($paymentMethod === 'razorpay') {
-                    $_SESSION['pending_order_id'] = $result['order_id'];
-                    header('Location: process_payment.php?order_id=' . $result['order_id']);
-                    exit;
-                } else {
-                    header('Location: order_success.php?order_id=' . $result['order_id']);
-                    exit;
-                }
-            }
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['set_default']) && isset($_POST['address_id'])) {
+        $addressId = intval($_POST['address_id']);
+        setDefaultAddress($userId, $addressId);
+        header('Location: checkout.php');
+        exit;
+    }
+    if (isset($_POST['add_address'])) {
+        $data = [
+            'name' => sanitizeInput($_POST['name']),
+            'phone' => sanitizeInput($_POST['phone']),
+            'pincode' => sanitizeInput($_POST['pincode']),
+            'address_line1' => sanitizeInput($_POST['address_line1']),
+            'address_line2' => sanitizeInput($_POST['address_line2']),
+            'city' => sanitizeInput($_POST['city']),
+            'state' => sanitizeInput($_POST['state']),
+            'is_default' => isset($_POST['is_default']) ? 1 : 0
+        ];
+        addUserAddress($userId, $data);
+        if ($data['is_default']) setDefaultAddress($userId, $pdo->lastInsertId());
+        header('Location: checkout.php');
+        exit;
+    }
+    if (isset($_POST['edit_address'])) {
+        $addressId = intval($_POST['address_id']);
+        $data = [
+            'name' => sanitizeInput($_POST['name']),
+            'phone' => sanitizeInput($_POST['phone']),
+            'pincode' => sanitizeInput($_POST['pincode']),
+            'address_line1' => sanitizeInput($_POST['address_line1']),
+            'address_line2' => sanitizeInput($_POST['address_line2']),
+            'city' => sanitizeInput($_POST['city']),
+            'state' => sanitizeInput($_POST['state']),
+            'is_default' => isset($_POST['is_default']) ? 1 : 0
+        ];
+        updateUserAddress($userId, $addressId, $data);
+        if ($data['is_default']) setDefaultAddress($userId, $addressId);
+        header('Location: checkout.php');
+        exit;
+    }
+    if (isset($_POST['delete_address'])) {
+        $addressId = intval($_POST['address_id']);
+        deleteUserAddress($userId, $addressId);
+        header('Location: checkout.php');
+        exit;
+    }
+    // === PLACE ORDER HANDLER ===
+    if (isset($_POST['place_order'])) {
+        $selected_address_id = isset($_POST['selected_address']) ? intval($_POST['selected_address']) : 0;
+        $payment_method = isset($_POST['payment_method']) ? $_POST['payment_method'] : '';
+        $gst_number = isset($_POST['gst_number']) ? trim($_POST['gst_number']) : '';
+        if (!$selected_address_id || !$payment_method) {
+            $error_message = 'Please select a delivery address and payment method.';
         } else {
-            if (
-                isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
-                strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest'
-            ) {
-                $debug_output = ob_get_contents();
-                if (!empty($debug_output)) {
-                    file_put_contents(__DIR__ . '/ajax_debug.log', date('Y-m-d H:i:s') . "\n" . $debug_output . "\n\n", FILE_APPEND);
-                }
-                ob_clean();
-                error_reporting(0);
-                ini_set('display_errors', 0);
-                header('Content-Type: application/json');
-                echo json_encode(['success' => false, 'message' => $result['message']]);
-                exit;
+            $cartItems = getCartItems($userId);
+            if (empty($cartItems)) {
+                $error_message = 'Your cart is empty.';
             } else {
-                $error_message = 'Error creating order: ' . $result['message'];
+                $result = createOrder($userId, $selected_address_id, $payment_method, $gst_number);
+                if ($result && !empty($result['success'])) {
+                    $orderPlaced = true;
+                    $placedOrderId = $result['order_id'];
+                    // --- Razorpay redirect logic restored ---
+                    if ($payment_method === 'razorpay') {
+                        header('Location: process_payment.php?order_id=' . $placedOrderId);
+                        exit;
+                    }
+                    // For COD, show thank you modal as before
+                } else {
+                    $error_message = isset($result['message']) ? $result['message'] : 'Order could not be placed.';
+                }
             }
         }
     }
-}
-
-// Handle set default address
-if (isset($_GET['set_default'])) {
-    setDefaultAddress($userId, (int)$_GET['set_default']);
-    header('Location: checkout.php');
-    exit;
 }
 
 $pageTitle = 'Checkout';
@@ -157,7 +107,6 @@ $addresses = getUserAddresses($userId);
 $defaultAddress = getDefaultAddress($userId);
 $cartItems = getCartItems($userId);
 
-// Use selected address or default for GST calculation
 $selectedAddress = $defaultAddress;
 if (isset($_POST['selected_address'])) {
     foreach ($addresses as $addr) {
@@ -171,7 +120,6 @@ $delivery_state = $selectedAddress['state'] ?? 'Maharashtra';
 $delivery_city = $selectedAddress['city'] ?? null;
 $delivery_pincode = $selectedAddress['pincode'] ?? null;
 $orderTotals = calculateOrderTotal($cartItems, $delivery_state, $delivery_city, $delivery_pincode);
-// Patch: Add sgst_total, cgst_total, igst_total, total_gst for template compatibility
 $orderTotals['sgst_total'] = 0;
 $orderTotals['cgst_total'] = 0;
 $orderTotals['igst_total'] = 0;
@@ -184,16 +132,12 @@ if (!empty($orderTotals['gst_breakdown'])) {
         $orderTotals['total_gst'] += $gst['gst_amount'];
     }
 }
-$mrp = 0; $savings = 0; $delivery = 49; $count = 0;
+$mrp = 0; $savings = 0; $count = 0;
 foreach ($cartItems as $item) {
     $mrp += $item['mrp'] * $item['quantity'];
     $savings += ($item['mrp'] - $item['selling_price']) * $item['quantity'];
     $count += $item['quantity'];
 }
-if ($orderTotals['total'] >= 999) {
-    $delivery = 0;
-}
-$pay = $orderTotals['total'] + $delivery;
 ?>
 
 <style>
@@ -202,13 +146,11 @@ $pay = $orderTotals['total'] + $delivery;
     padding-top: 8px;
     border-top: 1px solid #eee;
 }
-
 .address-actions .btn {
     margin-right: 5px;
     font-size: 0.8rem;
     padding: 2px 8px;
 }
-
 .form-check-label {
     cursor: pointer;
     padding: 8px;
@@ -216,36 +158,29 @@ $pay = $orderTotals['total'] + $delivery;
     transition: background-color 0.2s;
     border:1px solid #000;
 }
-
 .form-check-label:hover {
     background-color: #f8f9fa;
 }
-
 .form-check-input:checked + .form-check-label {
     background-color: #e3f2fd;
     border: 1px solid #2196f3;
 }
-
 .modal-dialog {
     max-width: 600px;
 }
-
 .btn-outline-primary {
     border-color: #007bff;
     color: #007bff;
 }
-
 .btn-outline-primary:hover {
     background-color: #007bff;
     border-color: #007bff;
     color: white;
 }
-
 .btn-outline-danger {
     border-color: #dc3545;
     color: #dc3545;
 }
-
 .btn-outline-danger:hover {
     background-color: #dc3545;
     border-color: #dc3545;
@@ -302,171 +237,192 @@ $pay = $orderTotals['total'] + $delivery;
   </div>
 <?php endif; ?>
 
+<!-- === ADDRESS SECTION (OUTSIDE ORDER FORM, RESTORED) === -->
 <div class="container my-5">
   <div class="row g-4">
+    <!-- LEFT COLUMN: Address and GST (no form) -->
     <div class="col-lg-8">
-      <form method="post" id="checkoutForm">
-        <input type="hidden" name="place_order" value="1">
-        <div class="checkout-card mb-4">
-          <div class="card-body">
-            <h5 class="mb-3"><b>1</b> Select a delivery mode</h5>
-            <div class="d-flex align-items-center mb-4">
-              <input type="radio" checked disabled class="me-2">
-              <span style="font-size:1.5rem; margin-right:8px;">🏠</span>
-              <b>Home Delivery</b>
-              <span class="badge bg-light text-primary ms-2">Flat ₹<?php echo $delivery; ?>.00</span>
-            </div>
-            <h6 class="mb-2">Saved addresses</h6>
-            <?php if ($addresses): ?>
-              <?php foreach ($addresses as $addr): ?>
-                <div class="form-check mb-2">
-                  <input class="form-check-input" type="radio" name="selected_address" id="addr<?php echo $addr['id']; ?>" value="<?php echo $addr['id']; ?>" <?php if ($addr['is_default']) echo 'checked'; ?> required>
-                  <label class="form-check-label" for="addr<?php echo $addr['id']; ?>">
-                    <b><?php echo htmlspecialchars($addr['name']); ?></b>, <?php echo htmlspecialchars($addr['address_line1']); ?><?php if ($addr['address_line2']) echo ', ' . htmlspecialchars($addr['address_line2']); ?>, <?php echo htmlspecialchars($addr['city']); ?>, <?php echo htmlspecialchars($addr['state']); ?>, <?php echo htmlspecialchars($addr['pincode']); ?>, Mob: <?php echo htmlspecialchars($addr['phone']); ?>
-                  </label>
-                  <div class="address-actions">
-                    <?php if (!$addr['is_default']): ?>
-                      <a href="?set_default=<?php echo $addr['id']; ?>" class="btn btn-link btn-sm">Set as default</a>
-                    <?php endif; ?>
-                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="editAddress(<?php echo $addr['id']; ?>)">
-                      <i class="fas fa-edit"></i> Edit
-                    </button>
-                    <a href="?delete_address=<?php echo $addr['id']; ?>" class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure you want to delete this address?')">
-                      <i class="fas fa-trash"></i> Delete
-                    </a>
+      <div class="checkout-card mb-4">
+        <div class="card-body">
+          <h5 class="mb-3"><b>1</b> Select a delivery mode</h5>
+          <div class="d-flex align-items-center mb-4">
+            <input type="radio" checked disabled class="me-2">
+            <span style="font-size:1.5rem; margin-right:8px;">🏠</span>
+            <b>Home Delivery</b>
+            <span class="badge bg-light text-primary ms-2">Flat ₹<?php echo $orderTotals['shipping_charge']; ?>.00</span>
+          </div>
+          <h6 class="mb-2">Saved addresses</h6>
+          <?php if ($addresses): ?>
+            <?php foreach ($addresses as $addr): ?>
+              <div class="form-check mb-2">
+                <input class="form-check-input address-radio" type="radio" name="selected_address_left" id="addr<?php echo $addr['id']; ?>" value="<?php echo $addr['id']; ?>" <?php if ($addr['is_default']) echo 'checked'; ?> required>
+                <label class="form-check-label" for="addr<?php echo $addr['id']; ?>">
+                  <b><?php echo htmlspecialchars($addr['name']); ?></b>, <?php echo htmlspecialchars($addr['address_line1']); ?><?php if ($addr['address_line2']) echo ', ' . htmlspecialchars($addr['address_line2']); ?>, <?php echo htmlspecialchars($addr['city']); ?>, <?php echo htmlspecialchars($addr['state']); ?>, <?php echo htmlspecialchars($addr['pincode']); ?>, Mob: <?php echo htmlspecialchars($addr['phone']); ?>
+                </label>
+                <div class="address-actions">
+                  <?php if (!$addr['is_default']): ?>
+                    <form method="post" style="display:inline;">
+                      <input type="hidden" name="set_default" value="1">
+                      <input type="hidden" name="address_id" value="<?php echo $addr['id']; ?>">
+                      <button type="submit" class="btn btn-link btn-sm">Set as default</button>
+                    </form>
+                  <?php endif; ?>
+                  <button type="button" class="btn btn-outline-primary btn-sm" onclick="editAddress(<?php echo $addr['id']; ?>)">
+                    <i class="fas fa-edit"></i> Edit
+                  </button>
+                  <form method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this address?');">
+                    <input type="hidden" name="delete_address" value="<?php echo $addr['id']; ?>">
+                    <button type="submit" class="btn btn-outline-danger btn-sm"><i class="fas fa-trash"></i> Delete</button>
+                  </form>
+                </div>
+              </div>
+            <?php endforeach; ?>
+          <?php else: ?>
+            <div class="alert alert-info">No saved addresses. Please add one below.</div>
+          <?php endif; ?>
+          <!-- Add New Address Form (collapsible, outside order form) -->
+          <div class="mt-3 mb-2">
+            <button type="button" class="btn btn-outline-success" data-bs-toggle="collapse" data-bs-target="#addAddressForm" aria-expanded="false" aria-controls="addAddressForm">
+              + Add New Address
+            </button>
+          </div>
+          <div class="collapse<?php if (!$addresses) echo ' show'; ?> mt-2" id="addAddressForm">
+            <form method="post" id="addAddressFormReal">
+              <input type="hidden" name="add_address" value="1">
+              <div class="row g-2 mt-2">
+                <div class="col-md-6">
+                  <input type="text" name="name" class="form-control" placeholder="Full Name" required>
+                </div>
+                <div class="col-md-6">
+                  <input type="text" name="phone" class="form-control" placeholder="Phone Number" required>
+                </div>
+                <div class="col-md-4">
+                  <input type="text" name="pincode" class="form-control" placeholder="PIN Code" required>
+                </div>
+                <div class="col-md-8">
+                  <input type="text" name="address_line1" class="form-control" placeholder="Address Line 1" required>
+                </div>
+                <div class="col-md-12">
+                  <input type="text" name="address_line2" class="form-control" placeholder="Address Line 2 (optional)">
+                </div>
+                <div class="col-md-6">
+                  <input type="text" name="city" class="form-control" placeholder="City" required>
+                </div>
+                <div class="col-md-6">
+                  <input type="text" name="state" class="form-control" placeholder="State" required>
+                </div>
+                <div class="col-12">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="is_default" id="is_default">
+                    <label class="form-check-label" for="is_default">Set as default address</label>
                   </div>
                 </div>
-              <?php endforeach; ?>
-              <!-- Add New Address Toggle Button -->
-              <button type="button" class="btn btn-outline-success mt-3 mb-2" data-bs-toggle="collapse" data-bs-target="#addAddressForm" aria-expanded="false" aria-controls="addAddressForm">
-                + Add New Address
-              </button>
-            <?php endif; ?>
-            <?php if (!$addresses): ?>
-              <div class="alert alert-info">No saved addresses. Please add one below.</div>
-            <?php endif; ?>
-            <hr>
-          </div>
-        </div>
-        <!-- GST Information Section -->
-        <div class="checkout-card mb-4">
-          <div class="card-body">
-            <h5 class="mb-3"><b>2</b> GST Information (Optional)</h5>
-            <div class="row g-3">
-              <div class="col-md-6">
-                <label for="gst_number" class="form-label">GST Number</label>
-                <input type="text" class="form-control" id="gst_number" name="gst_number" placeholder="Enter GST Number (Optional)" pattern="[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}" title="Please enter a valid GST number">
-                <div class="form-text">Format: 22AAAAA0000A1Z5</div>
-              </div>
-              <div class="col-md-6">
-                <label for="company_name" class="form-label">Company Name</label>
-                <input type="text" class="form-control" id="company_name" name="company_name" placeholder="Enter Company Name (Optional)">
-              </div>
-              <div class="col-12">
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="is_business" name="is_business">
-                  <label class="form-check-label" for="is_business">
-                    This is a business purchase
-                  </label>
+                <div class="col-12">
+                  <button type="submit" class="btn btn-success">Save Address</button>
                 </div>
               </div>
+            </form>
+          </div>
+          <!-- GST Number Input (NEW) -->
+          <div class="mt-4 mb-2">
+            <div class="row align-items-center">
+              <div class="col-md-6">
+                <label for="gst_number_left" class="form-label">GST Number (optional, for business invoice)</label>
+                <input type="text" id="gst_number_left" class="form-control" maxlength="20" pattern="[0-9A-Z]{15}" title="Enter a valid 15-character GSTIN" value="<?php echo isset($_POST['gst_number']) ? htmlspecialchars($_POST['gst_number']) : (isset($_SESSION['gst_number']) ? htmlspecialchars($_SESSION['gst_number']) : ''); ?>" autocomplete="off">
+                <small class="text-muted">If you want a business invoice, enter your 15-digit GSTIN here.</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- RIGHT COLUMN: Bill summary, payment, and Place Order (form) -->
+    <div class="col-lg-4">
+      <form id="checkoutForm" method="post">
+        <!-- Hidden fields for address and GST -->
+        <input type="hidden" name="selected_address" id="selected_address_hidden">
+        <input type="hidden" name="gst_number" id="gst_number_hidden">
+        <div class="checkout-card">
+          <div class="card-body">
+            <h5 class="mb-3">Bill Summary <span class="text-muted" style="font-size:1rem;">(<?php echo $count; ?> products)</span></h5>
+            <!-- Per-product breakdown -->
+            <div class="mb-2">
+              <table class="table table-sm table-bordered" style="background: #fafbfc;">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Qty</th>
+                    <th>MRP</th>
+                    <th>Price</th>
+                    <th>Savings</th>
+                    <th>HSN</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php foreach ($cartItems as $item): ?>
+                    <tr>
+                      <td><?php echo htmlspecialchars($item['name']); ?></td>
+                      <td><?php echo $item['quantity']; ?></td>
+                      <td>₹<?php echo number_format($item['mrp'] * $item['quantity'], 2); ?></td>
+                      <td>₹<?php echo number_format($item['selling_price'] * $item['quantity'], 2); ?></td>
+                      <td class="text-success">₹<?php echo number_format(($item['mrp'] - $item['selling_price']) * $item['quantity'], 2); ?></td>
+                      <td><?php echo htmlspecialchars($item['hsn'] ?? ''); ?></td>
+                    </tr>
+                  <?php endforeach; ?>
+                </tbody>
+              </table>
+            </div>
+            <div class="d-flex justify-content-between mb-2"><span>Total MRP</span><span>₹<?php echo number_format($mrp,2); ?></span></div>
+            <div class="d-flex justify-content-between mb-2"><span>Subtotal</span><span>₹<?php echo number_format($orderTotals['subtotal'],2); ?></span></div>
+            <div class="d-flex justify-content-between mb-2"><span>Delivery charge</span><span id="cart-shipping">₹<?php echo $orderTotals['shipping_charge']; ?></span></div>
+            <div class="d-flex justify-content-between mb-2"><span>Shipping Zone</span><span id="cart-shipping-zone"><?php echo htmlspecialchars($orderTotals['shipping_zone_name'] ?? ''); ?></span></div>
+            <div class="d-flex justify-content-between mb-2 bg-light p-2 rounded"><span class="text-success"><b>Total Savings</b></span><span class="text-success">₹<?php echo number_format($savings,2); ?></span></div>
+            <!-- GST Breakdown -->
+            <div class="border-top pt-2 mt-2" id="gst-breakdown-section">
+              <!-- This content will be fully replaced by JS on address change -->
+              <small class="text-muted">TAX Breakdown:</small>
+              <?php if ($orderTotals['igst_total'] > 0): ?>
+                <div class="d-flex justify-content-between mb-1"><small>IGST (<?php echo number_format($orderTotals['igst_total'] > 0 ? ($orderTotals['igst_total'] / $orderTotals['subtotal']) * 100 : 0, 1); ?>%)</small><small>₹<?php echo number_format($orderTotals['igst_total'],2); ?></small></div>
+              <?php elseif ($orderTotals['sgst_total'] > 0 || $orderTotals['cgst_total'] > 0): ?>
+                <div class="d-flex justify-content-between mb-1"><small>SGST (<?php echo number_format($orderTotals['sgst_total'] > 0 ? ($orderTotals['sgst_total'] / $orderTotals['subtotal']) * 100 : 0, 1); ?>%)</small><small>₹<?php echo number_format($orderTotals['sgst_total'],2); ?></small></div>
+                <div class="d-flex justify-content-between mb-1"><small>CGST (<?php echo number_format($orderTotals['cgst_total'] > 0 ? ($orderTotals['cgst_total'] / $orderTotals['subtotal']) * 100 : 0, 1); ?>%)</small><small>₹<?php echo number_format($orderTotals['cgst_total'],2); ?></small></div>
+              <?php endif; ?>
+              <div class="d-flex justify-content-between"><small><strong>Total GST</strong></small><small><strong>₹<?php echo number_format($orderTotals['total_gst'],2); ?></strong></small></div>
+            </div>
+            <div class="d-flex justify-content-between mb-2 bg-primary bg-opacity-10 p-2 rounded"><span><b>Total Amount to Pay</b></span><span id="order-total-amount"><b>₹<?php echo number_format($orderTotals['total'],2); ?></b></span></div>
+            <!-- Payment Method Section and Place Order Button -->
+            <div class="checkout-card mt-3">
+              <div class="card-body">
+                <h6 class="mb-2">Select Payment Method</h6>
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="radio" name="payment_method" id="cod" value="cod" checked>
+                  <label class="form-check-label" for="cod">
+                    <i class="fas fa-money-bill-wave me-2"></i>
+                    <strong>Cash on Delivery</strong>
+                    <br><small class="text-muted">Pay after you get your order </small>
+                  </label>
+                </div>
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="radio" name="payment_method" id="razorpay" value="razorpay">
+                  <label class="form-check-label" for="razorpay">
+                    <i class="fas fa-credit-card me-2"></i>
+                    <strong>Online Payment</strong>
+                    <br><small class="text-muted">Pay via card, UPI or netbanking</small>
+                  </label>
+                </div>
+                <div class="d-grid mb-3">
+                  <button type="submit" name="place_order" class="place-order-btn btn btn-primary w-100 mt-3" <?php if ($orderTotals['total'] < 150) echo 'disabled'; ?>>
+                    <i class="fas fa-shopping-cart"></i> Place Order
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="text-center mt-3">
+              <a href="cart.php" class="btn btn-outline-secondary">Back to Cart</a>
             </div>
           </div>
         </div>
       </form>
-      <!-- Add New Address Form (completely outside main form) -->
-      <div class="collapse<?php if (!$addresses) echo ' show'; ?>" id="addAddressForm">
-        <form method="post">
-          <input type="hidden" name="add_address" value="1">
-          <div class="row g-2 mt-2">
-            <div class="col-md-6">
-              <input type="text" name="name" class="form-control" placeholder="Full Name" required>
-            </div>
-            <div class="col-md-6">
-              <input type="text" name="phone" class="form-control" placeholder="Phone Number" required>
-            </div>
-            <div class="col-md-4">
-              <input type="text" name="pincode" class="form-control" placeholder="PIN Code" required>
-            </div>
-            <div class="col-md-8">
-              <input type="text" name="address_line1" class="form-control" placeholder="Address Line 1" required>
-            </div>
-            <div class="col-md-12">
-              <input type="text" name="address_line2" class="form-control" placeholder="Address Line 2 (optional)">
-            </div>
-            <div class="col-md-6">
-              <input type="text" name="city" class="form-control" placeholder="City" required>
-            </div>
-            <div class="col-md-6">
-              <input type="text" name="state" class="form-control" placeholder="State" required>
-            </div>
-            <div class="col-12">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" name="is_default" id="is_default">
-                <label class="form-check-label" for="is_default">Set as default address</label>
-              </div>
-            </div>
-            <div class="col-12">
-              <button type="submit" class="btn btn-success">Save Address</button>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
-    <div class="col-lg-4">
-      <div class="checkout-card">
-        <div class="card-body">
-          <h5 class="mb-3">Bill Summary <span class="text-muted" style="font-size:1rem;">(<?php echo $count; ?> products)</span></h5>
-          <div class="d-flex justify-content-between mb-2"><span>MRP</span><span>₹<?php echo number_format($mrp,2); ?></span></div>
-          <div class="d-flex justify-content-between mb-2"><span>Subtotal</span><span>₹<?php echo number_format($orderTotals['subtotal'],2); ?></span></div>
-          <div class="d-flex justify-content-between mb-2"><span>Delivery charge</span><span>₹<?php echo $orderTotals['shipping_charge']; ?></span></div>
-          <div class="d-flex justify-content-between mb-2 bg-light p-2 rounded"><span class="text-success"><b>Total Savings</b></span><span class="text-success">₹<?php echo number_format($savings,2); ?></span></div>
-          <!-- GST Breakdown -->
-          <div class="border-top pt-2 mt-2">
-            <small class="text-muted">GST Breakdown:</small>
-            <?php if ($orderTotals['sgst_total'] > 0 || $orderTotals['cgst_total'] > 0): ?>
-              <div class="d-flex justify-content-between mb-1"><small>SGST (<?php echo number_format($orderTotals['sgst_total'] > 0 ? ($orderTotals['sgst_total'] / $orderTotals['subtotal']) * 100 : 0, 1); ?>%)</small><small>₹<?php echo number_format($orderTotals['sgst_total'],2); ?></small></div>
-              <div class="d-flex justify-content-between mb-1"><small>CGST (<?php echo number_format($orderTotals['cgst_total'] > 0 ? ($orderTotals['cgst_total'] / $orderTotals['subtotal']) * 100 : 0, 1); ?>%)</small><small>₹<?php echo number_format($orderTotals['cgst_total'],2); ?></small></div>
-            <?php endif; ?>
-            <?php if ($orderTotals['igst_total'] > 0): ?>
-              <div class="d-flex justify-content-between mb-1"><small>IGST (<?php echo number_format($orderTotals['igst_total'] > 0 ? ($orderTotals['igst_total'] / $orderTotals['subtotal']) * 100 : 0, 1); ?>%)</small><small>₹<?php echo number_format($orderTotals['igst_total'],2); ?></small></div>
-            <?php endif; ?>
-            <div class="d-flex justify-content-between"><small><strong>Total GST</strong></small><small><strong>₹<?php echo number_format($orderTotals['total_gst'],2); ?></strong></small></div>
-          </div>
-          <div class="d-flex justify-content-between mb-2 bg-primary bg-opacity-10 p-2 rounded"><span><b>Total Amount to Pay</b></span><span id="order-total-amount"><b>₹<?php echo number_format($orderTotals['total'],2); ?></b></span></div>
-          <!-- Payment Method Section -->
-          <div class="checkout-card mb-4">
-            <div class="card-body">
-              <h6 class="mb-2">Select Payment Method</h6>
-              <div class="form-check mb-2">
-                <input class="form-check-input" type="radio" name="payment_method" id="cod" value="cod" checked form="checkoutForm">
-                <label class="form-check-label" for="cod">
-                  <i class="fas fa-money-bill-wave me-2"></i>
-                  <strong>Cash on Delivery</strong>
-                  <br><small class="text-muted">Pay after you get your order </small>
-                </label>
-              </div>
-              <div class="form-check mb-2">
-                <input class="form-check-input" type="radio" name="payment_method" id="razorpay" value="razorpay" form="checkoutForm">
-                <label class="form-check-label" for="razorpay">
-                  <i class="fas fa-credit-card me-2"></i>
-                  <strong>Online Payment</strong>
-                  <br><small class="text-muted">Pay via card, UPI or netbanking</small>
-                </label>
-              </div>
-            </div>
-          </div>
-          <!-- Place Order button -->
-          <div class="d-grid mb-3">
-            <button type="submit" class="place-order-btn btn btn-primary w-100 mt-3" form="checkoutForm" <?php if ($orderTotals['total'] < 150) echo 'disabled'; ?>>
-              <i class="fas fa-shopping-cart"></i> Place Order
-            </button>
-          </div>
-          <div class="text-center mt-3">
-            <a href="cart.php" class="btn btn-outline-secondary">Back to Cart</a>
-          </div>
-        </div>
-      </div>
     </div>
     
     <!-- Edit Address Modal -->
@@ -529,182 +485,209 @@ $pay = $orderTotals['total'] + $delivery;
   </div>
 </div>
 
-<!-- Thank You Modal -->
-<div class="modal fade" id="thankYouModal" tabindex="-1" aria-labelledby="thankYouModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content text-center">
-      <div class="modal-header border-0">
-        <h5 class="modal-title w-100" id="thankYouModalLabel">Thank You!</h5>
-      </div>
-      <div class="modal-body">
-        <i class="fas fa-check-circle text-success" style="font-size: 3rem;"></i>
-        <p class="lead mt-3">Your order has been placed successfully.</p>
-        <div class="d-grid gap-2 mt-4">
-          <a href="myaccount.php" class="btn btn-primary">My Account</a>
-          <a href="index.php" class="btn btn-outline-secondary">Continue Shopping</a>
-        </div>
-      </div>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+// Edit Address Modal logic (fills from PHP array, not AJAX)
+function editAddress(addressId) {
+  var addresses = <?php echo json_encode($addresses); ?>;
+  var address = addresses.find(function(a) { return a.id == addressId; });
+  if (!address) return;
+  document.getElementById('edit_address_id').value = address.id;
+  document.getElementById('edit_name').value = address.name;
+  document.getElementById('edit_phone').value = address.phone;
+  document.getElementById('edit_pincode').value = address.pincode;
+  document.getElementById('edit_address_line1').value = address.address_line1;
+  document.getElementById('edit_address_line2').value = address.address_line2 || '';
+  document.getElementById('edit_city').value = address.city;
+  document.getElementById('edit_state').value = address.state;
+  document.getElementById('edit_is_default').checked = address.is_default == 1;
+  var modal = new bootstrap.Modal(document.getElementById('editAddressModal'));
+  modal.show();
+}
+
+// On form submit, copy selected address and GST number from left to hidden fields in form
+  document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+    var selectedAddress = document.querySelector('input[name="selected_address_left"]:checked');
+    var gstNumber = document.getElementById('gst_number_left').value;
+    document.getElementById('selected_address_hidden').value = selectedAddress ? selectedAddress.value : '';
+    document.getElementById('gst_number_hidden').value = gstNumber;
+
+    // --- Razorpay client-side flow ---
+    var paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+    if (paymentMethod === 'razorpay') {
+      e.preventDefault();
+      // Gather form data
+      var formData = new FormData(this);
+      var data = {};
+      formData.forEach((v, k) => { data[k] = v; });
+      // Create Razorpay order via AJAX
+      fetch('ajax/initiate_razorpay_checkout.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+      .then(res => res.json())
+      .then(function(resp) {
+        if (resp.success) {
+          var options = {
+            key: resp.key_id,
+            amount: resp.amount,
+            currency: resp.currency,
+            name: 'EverythingB2C',
+            description: 'Order Payment',
+            order_id: resp.razorpay_order_id,
+            handler: function(paymentResp) {
+              // On payment success, verify payment and create order
+              fetch('ajax/verify_payment.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  temp_order_id: resp.temp_order_id,
+                  razorpay_payment_id: paymentResp.razorpay_payment_id,
+                  razorpay_order_id: paymentResp.razorpay_order_id,
+                  razorpay_signature: paymentResp.razorpay_signature
+                })
+              })
+              .then(r => r.json())
+              .then(function(vresp) {
+                if (vresp.success) {
+                  document.getElementById('thankYouModal').style.display = 'flex';
+                  // Add event listener for close/redirect
+                  var closeBtn = document.querySelector('#thankYouModal .popup-close');
+                  if (closeBtn) {
+                    closeBtn.onclick = function() { window.location.href = 'index.php'; };
+                  }
+                  // Also handle modal background click (optional)
+                  document.getElementById('thankYouModal').onclick = function(e) {
+                    if (e.target === this) window.location.href = 'index.php';
+                  };
+                } else {
+                  alert('Payment verification failed: ' + (vresp.message || ''));
+                  window.location.reload();
+                }
+              });
+            },
+            prefill: {
+              name: resp.customer_name,
+              email: resp.customer_email,
+              contact: resp.customer_phone
+            },
+            theme: { color: '#3399cc' }
+          };
+          var rzp = new Razorpay(options);
+          rzp.open();
+        } else {
+          alert('Error: ' + (resp.message || 'Could not initiate payment.'));
+        }
+      });
+    }
+  });
+
+// --- Live update shipping zone/charge on address change ---
+const addresses = <?php echo json_encode($addresses); ?>;
+document.querySelectorAll('input[name="selected_address_left"]').forEach(function(radio) {
+  radio.addEventListener('change', function() {
+    const addrId = this.value;
+    const addr = addresses.find(a => a.id == addrId);
+    if (!addr) return;
+    // Prepare data for AJAX
+    const data = {
+      delivery_state: addr.state,
+      delivery_city: addr.city,
+      delivery_pincode: addr.pincode
+    };
+    fetch('ajax/get-cart-summary.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(function(resp) {
+      if (resp && resp.success !== false && resp.totals) {
+        // Update shipping charge
+        document.getElementById('cart-shipping').textContent = '₹' + parseFloat(resp.totals.total_shipping).toFixed(2);
+        // Update shipping zone
+        document.getElementById('cart-shipping-zone').textContent = resp.totals.shipping_zone_name || '';
+        // Update GST breakdown
+        let gstHtml = '<small class="text-muted">TAX Breakdown:</small>';
+        if (resp.totals.igst_total > 0) {
+          gstHtml += `<div class="d-flex justify-content-between mb-1"><small>IGST (${((resp.totals.igst_total/resp.totals.subtotal)*100).toFixed(1)}%)</small><small>₹${parseFloat(resp.totals.igst_total).toFixed(2)}</small></div>`;
+        } else if (resp.totals.sgst_total > 0 || resp.totals.cgst_total > 0) {
+          gstHtml += `<div class="d-flex justify-content-between mb-1"><small>SGST (${((resp.totals.sgst_total/resp.totals.subtotal)*100).toFixed(1)}%)</small><small>₹${parseFloat(resp.totals.sgst_total).toFixed(2)}</small></div>`;
+          gstHtml += `<div class="d-flex justify-content-between mb-1"><small>CGST (${((resp.totals.cgst_total/resp.totals.subtotal)*100).toFixed(1)}%)</small><small>₹${parseFloat(resp.totals.cgst_total).toFixed(2)}</small></div>`;
+        }
+        gstHtml += `<div class="d-flex justify-content-between"><small><strong>Total GST</strong></small><small><strong>₹${parseFloat(resp.totals.total_gst).toFixed(2)}</strong></small></div>`;
+        document.getElementById('gst-breakdown-section').innerHTML = gstHtml;
+        // Update total amount
+        document.getElementById('order-total-amount').innerHTML = '<b>₹' + parseFloat(resp.totals.grand_total).toFixed(2) + '</b>';
+      }
+    });
+  });
+});
+</script>
+
+<!-- Thank You Modal (always present for JS to show) -->
+<div id="thankYouModal" class="popup-overlay" style="display:none;">
+  <div class="popup">
+    <span class="popup-close" onclick="closeThankYouModal()">&times;</span>
+    <i class="fas fa-check-circle text-success" style="font-size: 3rem;"></i>
+    <h3 class="text-success mt-3">Thank You!</h3>
+    <p class="lead">Your order has been placed successfully.</p>
+    <div class="d-grid gap-2 mt-4">
+      <a href="myaccount.php" class="btn btn-primary">Go to My Account</a>
+      <a href="index.php" class="btn btn-outline-secondary">Continue Shopping</a>
     </div>
   </div>
 </div>
-
-<?php include 'includes/footer.php'; ?>
-
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<?php if (!empty($orderPlaced)): ?>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // GST Number validation
-    const gstInput = document.getElementById('gst_number');
-    const companyInput = document.getElementById('company_name');
-    const businessCheckbox = document.getElementById('is_business');
-    const checkoutForm = document.getElementById('checkoutForm');
-    const placeOrderBtn = document.querySelector('button[form="checkoutForm"]');
-
-    // GST number format validation
-    gstInput.addEventListener('input', function() {
-        const value = this.value.toUpperCase();
-        this.value = value;
-        const gstPattern = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
-        if (value.length > 0 && !gstPattern.test(value)) {
-            this.setCustomValidity('Please enter a valid GST number in format: 22AAAAA0000A1Z5');
-        } else {
-            this.setCustomValidity('');
-        }
-    });
-    businessCheckbox.addEventListener('change', function() {
-        if (this.checked) {
-            gstInput.required = true;
-            companyInput.required = true;
-            gstInput.style.borderColor = '#dc3545';
-            companyInput.style.borderColor = '#dc3545';
-        } else {
-            gstInput.required = false;
-            companyInput.required = false;
-            gstInput.style.borderColor = '';
-            companyInput.style.borderColor = '';
-        }
-    });
-
-    // Universal AJAX order placement for both COD and Razorpay
-    checkoutForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
-        // Gather form data
-        const formData = new FormData(checkoutForm);
-        formData.append('place_order', '1');
-        // AJAX to create order
-        fetch('checkout.php', {
-            method: 'POST',
-            headers: { 'X-Requested-With': 'XMLHttpRequest' },
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success && data.order_id) {
-                if (paymentMethod === 'razorpay' && data.amount) {
-                    // Create Razorpay order
-                    fetch('ajax/create_razorpay_order.php', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ order_id: data.order_id, amount: data.amount })
-                    })
-                    .then(response => response.json())
-                    .then(rzpData => {
-                        if (rzpData.success) {
-                            const options = {
-                                key: rzpData.key_id,
-                                amount: rzpData.amount,
-                                currency: rzpData.currency,
-                                name: 'EverythingB2C',
-                                description: 'Order #' + data.tracking_id,
-                                order_id: rzpData.razorpay_order_id,
-                                handler: function(response) {
-                                    // Payment successful, verify
-                                    fetch('ajax/verify_payment.php?order_id=' + data.order_id + '&payment_id=' + response.razorpay_payment_id + '&signature=' + response.razorpay_signature)
-                                        .then(res => {
-                                            // Show thank you modal
-                                            const thankYouModal = new bootstrap.Modal(document.getElementById('thankYouModal'));
-                                            thankYouModal.show();
-                                        })
-                                        .catch(() => {
-                                            alert('Payment verified, but an error occurred. Please check your order in My Account.');
-                                        });
-                                },
-                                prefill: {
-                                    name: data.customer_name || '',
-                                    email: data.customer_email || '',
-                                    contact: data.customer_phone || ''
-                                },
-                                theme: { color: '#3399cc' }
-                            };
-                            const rzp = new Razorpay(options);
-                            rzp.open();
-                        } else {
-                            alert('Error creating Razorpay order: ' + rzpData.message);
-                        }
-                    });
-                } else {
-                    // COD or other payment method: show thank you modal
-                    const thankYouModal = new bootstrap.Modal(document.getElementById('thankYouModal'));
-                    thankYouModal.show();
-                }
-            } else {
-                alert('Error creating order: ' + (data.message || 'Unknown error'));
-                // Optionally fallback to redirect
-                // window.location.href = 'order_success.php?order_id=' + (data.order_id || '');
-            }
-        })
-        .catch(error => {
-            alert('Error processing order: ' + error);
-        });
-    });
-
-    // Address editing functionality
-    function editAddress(addressId) {
-        // Fetch address data via AJAX
-        fetch(`ajax/get_address.php?id=${addressId}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const address = data.address;
-                    
-                    // Populate the edit form
-                    document.getElementById('edit_address_id').value = address.id;
-                    document.getElementById('edit_name').value = address.name;
-                    document.getElementById('edit_phone').value = address.phone;
-                    document.getElementById('edit_pincode').value = address.pincode;
-                    document.getElementById('edit_address_line1').value = address.address_line1;
-                    document.getElementById('edit_address_line2').value = address.address_line2 || '';
-                    document.getElementById('edit_city').value = address.city;
-                    document.getElementById('edit_state').value = address.state;
-                    document.getElementById('edit_is_default').checked = address.is_default == 1;
-                    
-                    // Show the modal
-                    const modal = new bootstrap.Modal(document.getElementById('editAddressModal'));
-                    modal.show();
-                } else {
-                    alert('Error loading address: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error loading address data');
-            });
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('thankYouModal').style.display = 'flex';
+    var closeBtn = document.querySelector('#thankYouModal .popup-close');
+    if (closeBtn) {
+      closeBtn.onclick = function() { window.location.href = 'index.php'; };
     }
-
-    // Minimum order JS check (in case of dynamic total updates in the future)
-    const minOrderAlert = document.getElementById('minOrderAlert');
-    function checkMinOrder() {
-        const total = parseFloat(document.getElementById('order-total-amount')?.textContent?.replace(/[^\d.]/g, '') || '0');
-        if (total < 150) {
-            placeOrderBtn.disabled = true;
-            if (minOrderAlert) minOrderAlert.style.display = '';
-        } else {
-            placeOrderBtn.disabled = false;
-            if (minOrderAlert) minOrderAlert.style.display = 'none';
-        }
-    }
-    checkMinOrder();
-    // If you have dynamic total updates, call checkMinOrder() after update
-});
-</script> 
+    document.getElementById('thankYouModal').onclick = function(e) {
+      if (e.target === this) window.location.href = 'index.php';
+    };
+  });
+</script>
+<?php endif; ?>
+<script>
+function closeThankYouModal() {
+  window.location.href = 'index.php';
+}
+// Prevent form resubmission on reload
+if (window.history.replaceState) {
+  window.history.replaceState(null, null, window.location.href);
+}
+</script>
+<style>
+.popup-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.popup {
+  background: white;
+  padding: 30px 24px 24px 24px;
+  border-radius: 12px;
+  text-align: center;
+  width: 340px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  position: relative;
+}
+.popup-close {
+  position: absolute;
+  top: 10px; right: 15px;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: bold;
+}
+</style>
+<?php include 'includes/footer.php'; ?> 

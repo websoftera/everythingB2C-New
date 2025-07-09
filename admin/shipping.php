@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     try {
                         $stmt = $pdo->prepare("INSERT INTO shipping_zones (name, description) VALUES (?, ?)");
                         $stmt->execute([$name, $description]);
-                        $success_message = 'Shipping zone added successfully!';
+                        header('Location: shipping.php?success=add_zone'); exit;
                     } catch (Exception $e) {
                         $error_message = 'Error adding shipping zone: ' . $e->getMessage();
                     }
@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     try {
                         $stmt = $pdo->prepare("INSERT INTO shipping_zone_locations (zone_id, location_type, location_value) VALUES (?, ?, ?)");
                         $stmt->execute([$zone_id, $location_type, $location_value]);
-                        $success_message = 'Location added to zone successfully!';
+                        header('Location: shipping.php?success=add_location'); exit;
                     } catch (Exception $e) {
                         $error_message = 'Error adding location: ' . $e->getMessage();
                     }
@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     try {
                         $stmt = $pdo->prepare("INSERT INTO shipping_charges (zone_id, charge_type, charge_value, min_order_amount, max_order_amount) VALUES (?, ?, ?, ?, ?)");
                         $stmt->execute([$zone_id, $charge_type, $charge_value, $min_order_amount, $max_order_amount]);
-                        $success_message = 'Shipping charge added successfully!';
+                        header('Location: shipping.php?success=add_charge'); exit;
                     } catch (Exception $e) {
                         $error_message = 'Error adding shipping charge: ' . $e->getMessage();
                     }
@@ -91,10 +91,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt->execute([$zone_id]);
                     
                     $pdo->commit();
-                    $success_message = 'Shipping zone deleted successfully!';
+                    header('Location: shipping.php?success=delete_zone'); exit;
                 } catch (Exception $e) {
                     $pdo->rollBack();
                     $error_message = 'Error deleting shipping zone: ' . $e->getMessage();
+                }
+                break;
+
+            case 'edit_zone':
+                $zone_id = intval($_POST['zone_id']);
+                $name = trim($_POST['name']);
+                $description = trim($_POST['description']);
+                if (empty($name)) {
+                    $error_message = 'Zone name is required.';
+                } else {
+                    try {
+                        $stmt = $pdo->prepare("UPDATE shipping_zones SET name = ?, description = ? WHERE id = ?");
+                        $stmt->execute([$name, $description, $zone_id]);
+                        header('Location: shipping.php?success=edit_zone'); exit;
+                    } catch (Exception $e) {
+                        $error_message = 'Error updating shipping zone: ' . $e->getMessage();
+                    }
+                }
+                break;
+
+            case 'edit_charge':
+                $charge_id = intval($_POST['charge_id']);
+                $charge_type = $_POST['charge_type'];
+                $charge_value = floatval($_POST['charge_value']);
+                $min_order_amount = floatval($_POST['min_order_amount']);
+                $max_order_amount = !empty($_POST['max_order_amount']) ? floatval($_POST['max_order_amount']) : null;
+                try {
+                    $stmt = $pdo->prepare("UPDATE shipping_charges SET charge_type = ?, charge_value = ?, min_order_amount = ?, max_order_amount = ? WHERE id = ?");
+                    $stmt->execute([$charge_type, $charge_value, $min_order_amount, $max_order_amount, $charge_id]);
+                    header('Location: shipping.php?success=edit_charge'); exit;
+                } catch (Exception $e) {
+                    $error_message = 'Error updating shipping charge: ' . $e->getMessage();
+                }
+                break;
+
+            case 'delete_charge':
+                $charge_id = intval($_POST['charge_id']);
+                try {
+                    $stmt = $pdo->prepare("DELETE FROM shipping_charges WHERE id = ?");
+                    $stmt->execute([$charge_id]);
+                    header('Location: shipping.php?success=delete_charge'); exit;
+                } catch (Exception $e) {
+                    $error_message = 'Error deleting shipping charge: ' . $e->getMessage();
                 }
                 break;
         }
@@ -107,6 +150,18 @@ $zones = getAllShippingZones();
 // Get Indian states and cities
 $states = getIndianStates();
 $cities = getCommonCities();
+
+if (isset($_GET['success'])) {
+    switch ($_GET['success']) {
+        case 'add_zone': $success_message = 'Shipping zone added successfully!'; break;
+        case 'edit_zone': $success_message = 'Shipping zone updated successfully!'; break;
+        case 'delete_zone': $success_message = 'Shipping zone deleted successfully!'; break;
+        case 'add_location': $success_message = 'Location added to zone successfully!'; break;
+        case 'add_charge': $success_message = 'Shipping charge added successfully!'; break;
+        case 'edit_charge': $success_message = 'Shipping charge updated successfully!'; break;
+        case 'delete_charge': $success_message = 'Shipping charge deleted successfully!'; break;
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -169,6 +224,7 @@ $cities = getCommonCities();
                                                 <li><a class="dropdown-item" href="#" onclick="addCharge(<?php echo $zone['id']; ?>)">
                                                     <i class="fas fa-plus"></i> Add Charge
                                                 </a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="editZone(<?php echo $zone['id']; ?>, '<?php echo htmlspecialchars(addslashes($zone['name'])); ?>', '<?php echo htmlspecialchars(addslashes($zone['description'])); ?>')"><i class="fas fa-edit"></i> Edit Zone</a></li>
                                                 <li><hr class="dropdown-divider"></li>
                                                 <li><a class="dropdown-item text-danger" href="#" onclick="deleteZone(<?php echo $zone['id']; ?>, '<?php echo htmlspecialchars($zone['name']); ?>')">
                                                     <i class="fas fa-trash"></i> Delete Zone
@@ -209,6 +265,7 @@ $cities = getCommonCities();
                                                             <th>Type</th>
                                                             <th>Value</th>
                                                             <th>Min Order</th>
+                                                            <th>Actions</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -223,6 +280,14 @@ $cities = getCommonCities();
                                                                     <?php endif; ?>
                                                                 </td>
                                                                 <td>₹<?php echo $charge['min_order_amount']; ?></td>
+                                                                <td>
+                                                                    <button class="btn btn-sm btn-outline-primary me-1" onclick="editCharge(<?php echo $charge['id']; ?>, '<?php echo htmlspecialchars($charge['charge_type']); ?>', <?php echo $charge['charge_value']; ?>, <?php echo $charge['min_order_amount']; ?>, <?php echo $charge['max_order_amount']; ?>)"><i class="fas fa-edit"></i></button>
+                                                                    <form method="post" style="display:inline;" onsubmit="return confirm('Delete this charge?');">
+                                                                        <input type="hidden" name="action" value="delete_charge">
+                                                                        <input type="hidden" name="charge_id" value="<?php echo $charge['id']; ?>">
+                                                                        <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                                                                    </form>
+                                                                </td>
                                                             </tr>
                                                         <?php endforeach; ?>
                                                     </tbody>
@@ -370,11 +435,82 @@ $cities = getCommonCities();
         </div>
     </div>
 
+    <!-- Edit Zone Modal -->
+    <div class="modal fade" id="editZoneModal" tabindex="-1" aria-labelledby="editZoneModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="post" id="editZoneForm">
+                    <input type="hidden" name="action" value="edit_zone">
+                    <input type="hidden" name="zone_id" id="edit_zone_id">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editZoneModalLabel">Edit Shipping Zone</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="edit_zone_name" class="form-label">Zone Name</label>
+                            <input type="text" class="form-control" id="edit_zone_name" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_zone_description" class="form-label">Description</label>
+                            <textarea class="form-control" id="edit_zone_description" name="description" rows="2"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Delete Zone Form -->
     <form method="POST" id="deleteZoneForm" style="display: none;">
         <input type="hidden" name="action" value="delete_zone">
         <input type="hidden" name="zone_id" id="delete_zone_id">
     </form>
+
+    <!-- Edit Charge Modal -->
+    <div class="modal fade" id="editChargeModal" tabindex="-1" aria-labelledby="editChargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="post" id="editChargeForm">
+                    <input type="hidden" name="action" value="edit_charge">
+                    <input type="hidden" name="charge_id" id="edit_charge_id">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editChargeModalLabel">Edit Shipping Charge</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="edit_charge_type" class="form-label">Charge Type</label>
+                            <select class="form-control" id="edit_charge_type" name="charge_type" required>
+                                <option value="fixed">Fixed</option>
+                                <option value="percentage">Percentage</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_charge_value" class="form-label">Charge Value</label>
+                            <input type="number" class="form-control" id="edit_charge_value" name="charge_value" step="0.01" min="0" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_min_order_amount" class="form-label">Min Order Amount</label>
+                            <input type="number" class="form-control" id="edit_min_order_amount" name="min_order_amount" step="0.01" min="0">
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_max_order_amount" class="form-label">Max Order Amount</label>
+                            <input type="number" class="form-control" id="edit_max_order_amount" name="max_order_amount" step="0.01" min="0">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/admin.js"></script>
@@ -389,11 +525,29 @@ $cities = getCommonCities();
             new bootstrap.Modal(document.getElementById('addChargeModal')).show();
         }
 
+        function editZone(id, name, description) {
+            document.getElementById('edit_zone_id').value = id;
+            document.getElementById('edit_zone_name').value = name;
+            document.getElementById('edit_zone_description').value = description;
+            var modal = new bootstrap.Modal(document.getElementById('editZoneModal'));
+            modal.show();
+        }
+
         function deleteZone(zoneId, zoneName) {
             if (confirm(`Are you sure you want to delete the shipping zone "${zoneName}"? This will also delete all associated locations and charges.`)) {
                 document.getElementById('delete_zone_id').value = zoneId;
                 document.getElementById('deleteZoneForm').submit();
             }
+        }
+
+        function editCharge(id, type, value, min, max) {
+            document.getElementById('edit_charge_id').value = id;
+            document.getElementById('edit_charge_type').value = type;
+            document.getElementById('edit_charge_value').value = value;
+            document.getElementById('edit_min_order_amount').value = min;
+            document.getElementById('edit_max_order_amount').value = max || '';
+            var modal = new bootstrap.Modal(document.getElementById('editChargeModal'));
+            modal.show();
         }
     </script>
 </body>

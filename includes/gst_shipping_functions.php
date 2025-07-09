@@ -40,40 +40,55 @@ function calculateGST($product_price, $gst_rate, $gst_type, $delivery_state, $bi
 /**
  * Get shipping zone for a given location
  */
-function getShippingZone($state, $city = null, $pincode = null) {
+function getShippingZone($state, $city = null, $pincode = null, $country = null) {
     global $pdo;
-    
-    // First check by pincode (most specific)
+    // Standardize input: trim and lowercase for city, state, country; pincode as string
+    $pincode = $pincode ? trim((string)$pincode) : null;
+    $city = $city ? strtolower(trim($city)) : null;
+    $state = $state ? strtolower(trim($state)) : null;
+    $country = $country ? strtolower(trim($country)) : null;
+    // Priority: pincode > city > state > country
+    // 1. Pincode (exact match, but trim)
     if ($pincode) {
         $stmt = $pdo->prepare("SELECT sz.* FROM shipping_zones sz 
                               JOIN shipping_zone_locations szl ON sz.id = szl.zone_id 
-                              WHERE szl.location_type = 'pincode' AND szl.location_value = ? 
+                              WHERE szl.location_type = 'pincode' AND TRIM(szl.location_value) = ? 
                               AND sz.is_active = 1");
         $stmt->execute([$pincode]);
         $zone = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($zone) return $zone;
     }
-    
-    // Then check by city
+    // 2. City (case-insensitive)
     if ($city) {
         $stmt = $pdo->prepare("SELECT sz.* FROM shipping_zones sz 
                               JOIN shipping_zone_locations szl ON sz.id = szl.zone_id 
-                              WHERE szl.location_type = 'city' AND szl.location_value = ? 
+                              WHERE szl.location_type = 'city' AND LOWER(TRIM(szl.location_value)) = ? 
                               AND sz.is_active = 1");
         $stmt->execute([$city]);
         $zone = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($zone) return $zone;
     }
-    
-    // Finally check by state
-    $stmt = $pdo->prepare("SELECT sz.* FROM shipping_zones sz 
-                          JOIN shipping_zone_locations szl ON sz.id = szl.zone_id 
-                          WHERE szl.location_type = 'state' AND szl.location_value = ? 
-                          AND sz.is_active = 1");
-    $stmt->execute([$state]);
-    $zone = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-    return $zone;
+    // 3. State (case-insensitive)
+    if ($state) {
+        $stmt = $pdo->prepare("SELECT sz.* FROM shipping_zones sz 
+                              JOIN shipping_zone_locations szl ON sz.id = szl.zone_id 
+                              WHERE szl.location_type = 'state' AND LOWER(TRIM(szl.location_value)) = ? 
+                              AND sz.is_active = 1");
+        $stmt->execute([$state]);
+        $zone = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($zone) return $zone;
+    }
+    // 4. Country (case-insensitive)
+    if ($country) {
+        $stmt = $pdo->prepare("SELECT sz.* FROM shipping_zones sz 
+                              JOIN shipping_zone_locations szl ON sz.id = szl.zone_id 
+                              WHERE szl.location_type = 'country' AND LOWER(TRIM(szl.location_value)) = ? 
+                              AND sz.is_active = 1");
+        $stmt->execute([$country]);
+        $zone = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($zone) return $zone;
+    }
+    return null;
 }
 
 /**
@@ -129,18 +144,16 @@ function calculateOrderTotal($cart_items, $delivery_state, $delivery_city = null
     $subtotal = 0;
     $total_gst = 0;
     $gst_breakdown = [];
-    
+    $seller_state = 'Maharashtra'; // Set your seller's state here
     // Calculate subtotal and GST for each item
     foreach ($cart_items as $item) {
         $item_price = isset($item['selling_price']) ? $item['selling_price'] : 0;
         $item_total = $item_price * $item['quantity'];
         $subtotal += $item_total;
-        
-        // Calculate GST for this item
-        $gst_calc = calculateGST($item_price, $item['gst_rate'], $item['gst_type'], $delivery_state);
+        // Calculate GST for this item using seller_state as billing_state
+        $gst_calc = calculateGST($item_price, $item['gst_rate'], $item['gst_type'], $delivery_state, $seller_state);
         $item_gst = $gst_calc['total_gst'] * $item['quantity'];
         $total_gst += $item_gst;
-        
         // Store GST breakdown
         $gst_breakdown[] = [
             'product_id' => $item['product_id'],
@@ -151,12 +164,16 @@ function calculateOrderTotal($cart_items, $delivery_state, $delivery_city = null
             'gst_type' => $gst_calc['gst_type']
         ];
     }
-    
-    // Calculate shipping charge
+    // Calculate shipping charge ONCE for the whole order
     $shipping = calculateShippingCharge($delivery_state, $delivery_city, $delivery_pincode, $subtotal);
-    
     $total = $subtotal + $total_gst + $shipping['charge'];
-    
+    // Calculate totals for each GST type
+    $sgst_total = 0; $cgst_total = 0; $igst_total = 0;
+    foreach ($gst_breakdown as $item) {
+        $sgst_total += $item['sgst'];
+        $cgst_total += $item['cgst'];
+        $igst_total += $item['igst'];
+    }
     return [
         'subtotal' => $subtotal,
         'gst_amount' => $total_gst,
@@ -164,7 +181,10 @@ function calculateOrderTotal($cart_items, $delivery_state, $delivery_city = null
         'total' => $total,
         'gst_breakdown' => $gst_breakdown,
         'shipping_zone_id' => $shipping['zone_id'],
-        'shipping_zone_name' => $shipping['zone_name']
+        'shipping_zone_name' => $shipping['zone_name'],
+        'sgst_total' => $sgst_total,
+        'cgst_total' => $cgst_total,
+        'igst_total' => $igst_total
     ];
 }
 

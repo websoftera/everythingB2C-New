@@ -35,9 +35,12 @@ try {
     }
     if ($ok) {
         echo json_encode(['success' => true]);
+        exit;
     } else {
         echo json_encode(['success' => false, 'message' => 'Failed to save address']);
+        exit;
     }
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    exit;
 } 

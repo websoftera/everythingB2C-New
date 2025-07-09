@@ -147,9 +147,10 @@ require_once 'includes/header.php';
                         </div>
                         <?php if ($orderTotals['shipping_charge'] > 0): ?>
                         <div class="d-flex justify-content-between mb-2">
-                            <span>Shipping:</span>
+                            <span>Delivery charge</span>
                             <span id="cart-shipping"><?php echo formatPrice($orderTotals['shipping_charge']); ?></span>
                         </div>
+                        <div class="d-flex justify-content-between mb-2"><span>Shipping Zone</span><span><?php echo htmlspecialchars($orderTotals['shipping_zone_name'] ?? ''); ?></span></div>
                         <?php else: ?>
                         <div class="d-flex justify-content-between mb-2">
                             <span>Shipping:</span>

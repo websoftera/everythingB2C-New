@@ -28,16 +28,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
     }
     if (updateOrderStatus($orderId, $statusId, $description, $externalTrackingId, $externalTrackingLink, $estimatedDeliveryDate)) {
         if ($updatePaymentStatus) {
-            // Only allow payment status update for COD
             $order = getOrderById($orderId);
             if ($order && $order['payment_method'] === 'cod') {
                 updatePaymentStatus($orderId, $paymentStatus);
             }
         }
-        $success_message = 'Order status updated successfully!';
+        $_SESSION['success_message'] = 'Order status updated successfully!';
     } else {
-        $error_message = 'Error updating order status.';
+        $_SESSION['error_message'] = 'Error updating order status.';
     }
+    header('Location: orders.php');
+    exit;
 }
 
 // Get filter parameters

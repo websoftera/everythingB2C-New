@@ -23,19 +23,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bulk_action'])) {
                 $placeholders = str_repeat('?,', count($selected_products) - 1) . '?';
                 $stmt = $pdo->prepare("DELETE FROM products WHERE id IN ($placeholders)");
                 $stmt->execute($selected_products);
+                $_SESSION['success_message'] = 'Selected products deleted successfully!';
                 break;
             case 'activate':
                 $placeholders = str_repeat('?,', count($selected_products) - 1) . '?';
                 $stmt = $pdo->prepare("UPDATE products SET is_active = 1 WHERE id IN ($placeholders)");
                 $stmt->execute($selected_products);
+                $_SESSION['success_message'] = 'Selected products activated successfully!';
                 break;
             case 'deactivate':
                 $placeholders = str_repeat('?,', count($selected_products) - 1) . '?';
                 $stmt = $pdo->prepare("UPDATE products SET is_active = 0 WHERE id IN ($placeholders)");
                 $stmt->execute($selected_products);
+                $_SESSION['success_message'] = 'Selected products deactivated successfully!';
                 break;
         }
     }
+    header('Location: products.php');
+    exit;
 }
 
 // Get search parameters
@@ -78,7 +83,7 @@ $total_pages = ceil($total_products / $per_page);
 $offset = ($page - 1) * $per_page;
 
 // Get products
-$sql = "SELECT p.*, c.name as category_name 
+$sql = "SELECT p.*, c.name as category_name, p.hsn 
         FROM products p 
         LEFT JOIN categories c ON p.category_id = c.id 
         $where_clause 
@@ -127,17 +132,26 @@ $categories = getAllCategories();
                         </div>
                     </div>
 
-                    <?php if (isset($_SESSION['success_message'])): ?>
+                    <?php 
+                    if (isset($_SESSION['success_message'])) {
+                        $success_message = $_SESSION['success_message'];
+                        unset($_SESSION['success_message']);
+                    }
+                    if (isset($_SESSION['error_message'])) {
+                        $error_message = $_SESSION['error_message'];
+                        unset($_SESSION['error_message']);
+                    }
+                    ?>
+
+                    <?php if (isset($success_message)): ?>
                         <div class="alert alert-success">
-                            <?php echo htmlspecialchars($_SESSION['success_message']); ?>
-                            <?php unset($_SESSION['success_message']); ?>
+                            <?php echo htmlspecialchars($success_message); ?>
                         </div>
                     <?php endif; ?>
 
-                    <?php if (isset($_SESSION['error_message'])): ?>
+                    <?php if (isset($error_message)): ?>
                         <div class="alert alert-danger">
-                            <?php echo htmlspecialchars($_SESSION['error_message']); ?>
-                            <?php unset($_SESSION['error_message']); ?>
+                            <?php echo htmlspecialchars($error_message); ?>
                         </div>
                     <?php endif; ?>
 
@@ -211,6 +225,7 @@ $categories = getAllCategories();
                                                     <th>Image</th>
                                                     <th>Name</th>
                                                     <th>SKU</th>
+                                                    <th>HSN</th>
                                                     <th>Category</th>
                                                     <th>Price</th>
                                                     <th>GST</th>
@@ -248,6 +263,7 @@ $categories = getAllCategories();
                                                             <small class="text-muted"><?php echo htmlspecialchars($product['slug']); ?></small>
                                                         </td>
                                                         <td><?php echo htmlspecialchars($product['sku']); ?></td>
+                                                        <td><?php echo htmlspecialchars($product['hsn'] ?? ''); ?></td>
                                                         <td><?php echo htmlspecialchars($product['category_name'] ?? 'Uncategorized'); ?></td>
                                                         <td>
                                                             <div class="d-flex flex-column">

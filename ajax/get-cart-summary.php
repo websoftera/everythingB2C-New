@@ -47,5 +47,12 @@ echo json_encode([
         'total_shipping' => $totals['shipping_charge'],
         'total_gst' => $totals['gst_amount'],
         'grand_total' => $totals['total'],
+        'sgst_total' => isset($totals['sgst_total']) ? $totals['sgst_total'] : 0,
+        'cgst_total' => isset($totals['cgst_total']) ? $totals['cgst_total'] : 0,
+        'igst_total' => isset($totals['igst_total']) ? $totals['igst_total'] : 0,
+        'delivery_state' => $delivery_state,
+        'shipping_zone_name' => isset($totals['shipping_zone_name']) ? $totals['shipping_zone_name'] : '',
+        'shipping_zone_id' => isset($totals['shipping_zone_id']) ? $totals['shipping_zone_id'] : null,
+        'gst_breakdown' => isset($totals['gst_breakdown']) ? $totals['gst_breakdown'] : [],
     ]
 ]); 

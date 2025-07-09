@@ -26,11 +26,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stock_quantity = intval($_POST['stock_quantity']);
     $gst_type = $_POST['gst_type'];
     $gst_rate = floatval($_POST['gst_rate']);
-    $shipping_charge = !empty($_POST['shipping_charge']) ? floatval($_POST['shipping_charge']) : null;
     $is_active = isset($_POST['is_active']) ? 1 : 0;
     $is_featured = isset($_POST['is_featured']) ? 1 : 0;
     $is_discounted = isset($_POST['is_discounted']) ? 1 : 0;
     $sku = trim($_POST['sku']);
+    $hsn = isset($_POST['hsn']) ? trim($_POST['hsn']) : null;
 
     // Validation
     if (empty($name) || empty($description) || $mrp <= 0 || $selling_price <= 0) {
@@ -39,8 +39,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error_message = 'Selling price cannot be greater than MRP.';
     } elseif ($gst_rate < 0 || $gst_rate > 100) {
         $error_message = 'GST rate must be between 0 and 100.';
-    } elseif ($shipping_charge !== null && $shipping_charge < 0) {
-        $error_message = 'Shipping charge cannot be negative.';
     } else {
         try {
             $pdo->beginTransaction();
@@ -49,8 +47,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $discount_percentage = calculateDiscountPercentage($mrp, $selling_price);
 
             // Insert product
-            $stmt = $pdo->prepare("INSERT INTO products (name, slug, description, mrp, selling_price, discount_percentage, gst_type, gst_rate, shipping_charge, category_id, stock_quantity, is_active, is_featured, is_discounted, sku) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$name, $slug, $description, $mrp, $selling_price, $discount_percentage, $gst_type, $gst_rate, $shipping_charge, $category_id, $stock_quantity, $is_active, $is_featured, $is_discounted, $sku]);
+            $stmt = $pdo->prepare("INSERT INTO products (name, slug, description, mrp, selling_price, discount_percentage, gst_type, gst_rate, category_id, stock_quantity, is_active, is_featured, is_discounted, sku, hsn) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$name, $slug, $description, $mrp, $selling_price, $discount_percentage, $gst_type, $gst_rate, $category_id, $stock_quantity, $is_active, $is_featured, $is_discounted, $sku, $hsn]);
             
             $product_id = $pdo->lastInsertId();
 
@@ -236,16 +234,6 @@ function uploadImage($file, $folder) {
 
                                         <div class="row mb-3">
                                             <div class="col-md-4">
-                                                <label for="gst_type" class="form-label">GST Type *</label>
-                                                <select class="form-control" id="gst_type" name="gst_type" required>
-                                                    <option value="">Select GST Type</option>
-                                                    <option value="sgst_cgst">SGST + CGST</option>
-                                                    <option value="igst">IGST</option>
-                                                </select>
-                                                <div class="form-text">SGST+CGST for same state, IGST for different state</div>
-                                                <div class="invalid-feedback">Please select a GST type.</div>
-                                            </div>
-                                            <div class="col-md-4">
                                                 <label for="gst_rate" class="form-label">GST Rate (%) *</label>
                                                 <input type="number" class="form-control" id="gst_rate" name="gst_rate" step="0.01" min="0" max="100" value="18.00" required>
                                                 <div class="form-text">Enter GST rate as percentage (e.g., 18 for 18%)</div>
@@ -262,14 +250,8 @@ function uploadImage($file, $folder) {
 
                                         <div class="row mb-3">
                                             <div class="col-md-4">
-                                                <label for="shipping_charge" class="form-label">Shipping Charge (₹)</label>
-                                                <input type="number" class="form-control" id="shipping_charge" name="shipping_charge" step="0.01" min="0" placeholder="0.00">
-                                                <div class="form-text">Leave empty for free shipping or zone-based charges</div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label for="stock_quantity" class="form-label">Stock Quantity *</label>
-                                                <input type="number" class="form-control" id="stock_quantity" name="stock_quantity" min="0" required>
-                                                <div class="invalid-feedback">Please provide stock quantity.</div>
+                                                <label for="hsn" class="form-label">HSN Code</label>
+                                                <input type="text" class="form-control" id="hsn" name="hsn" maxlength="20" value="<?php echo isset($_POST['hsn']) ? htmlspecialchars($_POST['hsn']) : ''; ?>">
                                             </div>
                                             <div class="col-md-4">
                                                 <label class="form-label">Total with Shipping</label>
@@ -452,17 +434,15 @@ function uploadImage($file, $folder) {
         }
 
         // Calculate total with shipping
-        document.getElementById('shipping_charge').addEventListener('input', calculateTotalWithShipping);
         document.getElementById('selling_price').addEventListener('input', calculateTotalWithShipping);
         document.getElementById('gst_rate').addEventListener('input', calculateTotalWithShipping);
 
         function calculateTotalWithShipping() {
             const sellingPrice = parseFloat(document.getElementById('selling_price').value) || 0;
             const gstRate = parseFloat(document.getElementById('gst_rate').value) || 0;
-            const shippingCharge = parseFloat(document.getElementById('shipping_charge').value) || 0;
             
             const gstAmount = (sellingPrice * gstRate) / 100;
-            const total = sellingPrice + gstAmount + shippingCharge;
+            const total = sellingPrice + gstAmount;
             
             document.getElementById('total_with_shipping_display').textContent = '₹' + total.toFixed(2);
         }

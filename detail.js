@@ -36,37 +36,37 @@ document.querySelectorAll('.product-detail-card').forEach(card => {
 
 // Remove or comment out all localStorage cart logic and add-to-cart logic below:
 /*
-// --- cart js ---------------------------------------------------------------------
-function saveToCart(product) {
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
-  const existing = cart.find(item => item.id === product.id);
+  // --- cart js ---------------------------------------------------------------------
+  function saveToCart(product) {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const existing = cart.find(item => item.id === product.id);
 
-  if (existing) {
-    existing.qty = product.qty;
-  } else {
-    cart.push(product);
+    if (existing) {
+      existing.qty = product.qty;
+    } else {
+      cart.push(product);
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
   }
 
-  localStorage.setItem("cart", JSON.stringify(cart));
-}
+  // --- Check if already in cart
+  function initCartButtonState() {
+    const title = document.querySelector(".product-detail-card .title")?.innerText || "";
+    const productId = title.replace(/\s+/g, "-").toLowerCase();
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-// --- Check if already in cart
-function initCartButtonState() {
-  const title = document.querySelector(".product-detail-card .title")?.innerText || "";
-  const productId = title.replace(/\s+/g, "-").toLowerCase();
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-  const exists = cart.find(item => item.id === productId);
-  if (exists) {
-    const btn = document.querySelector(".add-to-cart");
-    if (btn) {
-      btn.textContent = "Added to Cart";
-      btn.disabled = true;
+    const exists = cart.find(item => item.id === productId);
+    if (exists) {
+      const btn = document.querySelector(".add-to-cart");
+      if (btn) {
+        btn.textContent = "Added to Cart";
+        btn.disabled = true;
+      }
     }
   }
-}
 
-function showCartModal(productName = 'Product') {
+  function showCartModal(productName = 'Product') {
   const modal = document.getElementById('cart-modal');
   const message = document.getElementById('cart-message');
   const icon = document.getElementById('cart-icon');

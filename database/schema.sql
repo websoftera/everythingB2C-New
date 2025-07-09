@@ -25,6 +25,7 @@ CREATE TABLE products (
     name VARCHAR(255) NOT NULL,
     slug VARCHAR(255) UNIQUE NOT NULL,
     sku VARCHAR(100) UNIQUE NOT NULL,
+    hsn VARCHAR(20),
     description TEXT,
     mrp DECIMAL(10,2) NOT NULL,
     selling_price DECIMAL(10,2) NOT NULL,
@@ -105,6 +106,8 @@ CREATE TABLE order_items (
     product_id INT,
     quantity INT NOT NULL,
     price DECIMAL(10,2) NOT NULL,
+    mrp DECIMAL(10,2) NOT NULL,
+    selling_price DECIMAL(10,2) NOT NULL,
     FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );

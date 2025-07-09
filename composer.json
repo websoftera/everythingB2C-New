@@ -1,6 +1,7 @@
 {
     "require": {
         "razorpay/razorpay": "^2.9",
-        "mpdf/mpdf": "^8.2"
+        "mpdf/mpdf": "^8.2",
+        "endroid/qr-code": "^5.1"
     }
 }

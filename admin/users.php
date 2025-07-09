@@ -24,10 +24,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 try {
                     $stmt = $pdo->prepare("UPDATE users SET is_active = ? WHERE id = ?");
                     $stmt->execute([$new_status, $user_id]);
-                    $success_message = 'User status updated successfully!';
+                    $_SESSION['success_message'] = 'User status updated successfully!';
                 } catch (Exception $e) {
-                    $error_message = 'Error updating user status: ' . $e->getMessage();
+                    $_SESSION['error_message'] = 'Error updating user status: ' . $e->getMessage();
                 }
+                header('Location: users.php');
+                exit;
                 break;
                 
             case 'delete':
@@ -40,15 +42,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $order_count = $stmt->fetchColumn();
                     
                     if ($order_count > 0) {
-                        $error_message = 'Cannot delete user with existing orders.';
+                        $_SESSION['error_message'] = 'Cannot delete user with existing orders.';
                     } else {
                         $stmt = $pdo->prepare("DELETE FROM users WHERE id = ?");
                         $stmt->execute([$user_id]);
-                        $success_message = 'User deleted successfully!';
+                        $_SESSION['success_message'] = 'User deleted successfully!';
                     }
                 } catch (Exception $e) {
-                    $error_message = 'Error deleting user: ' . $e->getMessage();
+                    $_SESSION['error_message'] = 'Error deleting user: ' . $e->getMessage();
                 }
+                header('Location: users.php');
+                exit;
                 break;
         }
     }
