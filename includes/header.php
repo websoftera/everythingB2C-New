@@ -63,6 +63,7 @@ if (isLoggedIn()) {
 <section class="header2">
     <div class="nav-links">
         <a href="index.php">HOME</a><span>|</span>
+        <a href="shop.php">SHOP</a><span>|</span>
         <a href="wishlist.php">WISHLIST</a><span>|</span>
         <?php if (isLoggedIn()): ?>
             <a href="myaccount.php">MY ACCOUNT</a><span>|</span>
@@ -157,9 +158,12 @@ if (isLoggedIn()) {
                     <?php function renderCategoryMenu($tree) {
                         foreach ($tree as $cat) {
                             if (!empty($cat['children'])) {
-                                echo '<li class="nav-item dropdown">';
-                                echo '<a class="nav-link dropdown-toggle" href="category.php?slug=' . $cat['slug'] . '" id="catDropdown' . $cat['id'] . '" role="button" data-bs-toggle="dropdown" aria-expanded="false">' . strtoupper(htmlspecialchars($cat['name'])) . '</a>';
-                                echo '<ul class="dropdown-menu" aria-labelledby="catDropdown' . $cat['id'] . '">';
+                                echo '<li class="nav-item dropdown d-flex align-items-center">';
+                                // Main category link (always clickable)
+                                echo '<a class="nav-link" href="category.php?slug=' . $cat['slug'] . '" id="catDropdown' . $cat['id'] . '">' . strtoupper(htmlspecialchars($cat['name'])) . '</a>';
+                                // Caret/arrow for dropdown only
+                                echo '<a class="nav-link dropdown-toggle dropdown-caret-only" href="#" id="catDropdownToggle' . $cat['id'] . '" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="width:18px;padding:0 6px;line-height:1;font-size:18px;">&#9660;</a>';
+                                echo '<ul class="dropdown-menu" aria-labelledby="catDropdownToggle' . $cat['id'] . '">';
                                 foreach ($cat['children'] as $subcat) {
                                     echo '<li><a class="dropdown-item" href="category.php?slug=' . $subcat['slug'] . '">' . htmlspecialchars($subcat['name']) . '</a></li>';
                                 }

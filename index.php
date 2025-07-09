@@ -15,6 +15,9 @@ if (isLoggedIn()) {
         $wishlist_ids[] = $item['product_id'];
     }
 }
+
+// Filter to only main categories (parent_id is NULL)
+$main_categories = array_filter($categories, function($cat) { return empty($cat['parent_id']); });
 ?>
 
 <!-- Hero Section -->
@@ -83,7 +86,7 @@ if (isLoggedIn()) {
     <div class="category-wrapper">
         <button class="nav-btn prev-btn" aria-label="Scroll Left">&#10094;</button>
         <div class="category-container" id="slider">
-            <?php foreach ($categories as $category): ?>
+            <?php foreach ($main_categories as $category): ?>
                 <div class="category-card">
                     <a href="category.php?slug=<?php echo $category['slug']; ?>">
                         <img src="./<?php echo $category['image']; ?>" alt="<?php echo $category['name']; ?>" />
