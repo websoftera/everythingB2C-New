@@ -145,7 +145,8 @@ function calculateOrderTotal($cart_items, $delivery_state, $delivery_city = null
     $total_gst = 0;
     $gst_breakdown = [];
     $seller_state = 'Maharashtra'; // Set your seller's state here
-    // Calculate subtotal and GST for each item
+    $total_savings = 0;
+    // Calculate subtotal, GST, and savings for each item
     foreach ($cart_items as $item) {
         $item_price = isset($item['selling_price']) ? $item['selling_price'] : 0;
         $item_total = $item_price * $item['quantity'];
@@ -163,6 +164,10 @@ function calculateOrderTotal($cart_items, $delivery_state, $delivery_city = null
             'igst' => $gst_calc['igst'] * $item['quantity'],
             'gst_type' => $gst_calc['gst_type']
         ];
+        // Calculate savings for this item
+        if (isset($item['mrp'])) {
+            $total_savings += ($item['mrp'] - $item_price) * $item['quantity'];
+        }
     }
     // Calculate shipping charge ONCE for the whole order
     $shipping = calculateShippingCharge($delivery_state, $delivery_city, $delivery_pincode, $subtotal);
@@ -184,7 +189,8 @@ function calculateOrderTotal($cart_items, $delivery_state, $delivery_city = null
         'shipping_zone_name' => $shipping['zone_name'],
         'sgst_total' => $sgst_total,
         'cgst_total' => $cgst_total,
-        'igst_total' => $igst_total
+        'igst_total' => $igst_total,
+        'total_savings' => $total_savings
     ];
 }
 

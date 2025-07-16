@@ -56,9 +56,86 @@ if (isLoggedIn()) {
     <link rel="stylesheet" href="asset/style/popup.css">
     <link rel="stylesheet" href="asset/style/style.css">
     <link rel="stylesheet" href="asset/style/product-card.css">
-
+    <style>
+/* Hide spinner arrows for quantity input in floating cart */
+.cart-qty-input::-webkit-inner-spin-button,
+.cart-qty-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.cart-qty-input {
+  -moz-appearance: textfield;
+}
+#floatingCartPanel.fixed-panel {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  bottom: 20px;
+  right: 0;
+  width: 340px;
+  max-width: 90vw;
+  height: 540px;
+  max-height: 90vh;
+  background: #fff;
+  border: 1px solid #ddd;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  z-index: 2000;
+  border-radius: 12px;
+  padding: 0;
+  overflow: hidden;
+}
+#floatingCartPanel.fixed-panel .floating-cart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px 8px 18px;
+  border-bottom: 1px solid #eee;
+  flex-shrink: 0;
+}
+/* Product list area always scrolls, never summary or actions */
+#floatingCartPanel.fixed-panel #floatingCartContent {
+  height: 200px;
+  max-height: 200px;
+  overflow-y: auto;
+  min-height: 0;
+  padding: 10px 18px 0 18px;
+}
+#floatingCartPanel.fixed-panel #floatingCartSummary {
+  padding: 8px 18px 0 18px;
+  font-size: 0.97rem;
+  flex-shrink: 0;
+  background: #fff;
+}
+#floatingCartPanel.fixed-panel .floating-cart-actions {
+  padding: 10px 18px 10px 18px;
+  flex-shrink: 0;
+  background: #fff;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
+}
+</style>
 </head>
 <body>
+
+<!-- Floating Cart Icon and Panel -->
+<div id="floatingCartBtn" style="position:fixed;bottom:32px;right:32px;z-index:1050;display:flex;align-items:center;justify-content:center;width:60px;height:60px;background:#28a745;border-radius:50%;box-shadow:0 4px 16px rgba(0,0,0,0.18);cursor:pointer;transition:box-shadow 0.2s;">
+  <span style="position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:100%;">
+    <i class="bi bi-cart4" style="font-size:2rem;color:#fff;"></i>
+    <span id="floatingCartCount" style="position:absolute;top:8px;right:10px;background:#fff;color:#28a745;font-weight:bold;font-size:0.95rem;padding:2px 7px;border-radius:12px;min-width:22px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,0.12);">0</span>
+  </span>
+  <!-- Floating Cart Panel (dropdown style) -->
+  <div id="floatingCartPanel" class="fixed-panel" style="display:none;">
+    <div class="floating-cart-header">
+      <h5 style="margin:0;font-weight:bold;">My Cart</h5>
+      <button id="closeFloatingCartPanel" style="background:none;border:none;font-size:1.7rem;line-height:1;color:#888;cursor:pointer;">&times;</button>
+    </div>
+    <div id="floatingCartContent"></div>
+    <div id="floatingCartSummary"></div>
+    <div class="floating-cart-actions">
+      <a href="cart.php" class="btn btn-outline-primary w-100 mb-2" style="padding:6px 0;font-size:0.97rem;">View Full Cart</a>
+      <a href="checkout.php" class="btn btn-success w-100" style="padding:6px 0;font-size:0.97rem;">Checkout</a>
+    </div>
+  </div>
+</div>
 
 <section class="header2">
     <div class="nav-links">
@@ -91,9 +168,22 @@ if (isLoggedIn()) {
                   </button>
                   <ul class="dropdown-menu">
                     <li><a class="dropdown-item category-option" href="#" data-category="all">All</a></li>
-                    <?php foreach ($categories as $cat): ?>
-                      <li><a class="dropdown-item category-option" href="#" data-category="<?php echo $cat['slug']; ?>"><?php echo htmlspecialchars($cat['name']); ?></a></li>
-                    <?php endforeach; ?>
+                    <?php
+                    function renderCategoryDropdown($tree, $level = 0) {
+                        foreach ($tree as $cat) {
+                            $indent = str_repeat('&nbsp;&nbsp;&nbsp;', $level);
+                            if (!empty($cat['children'])) {
+                                // Main category as non-selectable header
+                                echo '<li><span class="dropdown-header" style="font-weight:bold;">' . $indent . htmlspecialchars($cat['name']) . '</span></li>';
+                                renderCategoryDropdown($cat['children'], $level + 1);
+                            } else {
+                                // Selectable category
+                                echo '<li><a class="dropdown-item category-option" href="#" data-category="' . $cat['slug'] . '">' . $indent . htmlspecialchars($cat['name']) . '</a></li>';
+                            }
+                        }
+                    }
+                    renderCategoryDropdown($categoryTree);
+                    ?>
                   </ul>
                 </div>
                 <!-- MOBILE Dropdown -->
@@ -103,9 +193,7 @@ if (isLoggedIn()) {
                   </button>
                   <ul class="dropdown-menu">
                     <li><a class="dropdown-item category-option" href="#" data-category="all">All</a></li>
-                    <?php foreach ($categories as $cat): ?>
-                      <li><a class="dropdown-item category-option" href="#" data-category="<?php echo $cat['slug']; ?>"><?php echo htmlspecialchars($cat['name']); ?></a></li>
-                    <?php endforeach; ?>
+                    <?php renderCategoryDropdown($categoryTree); ?>
                   </ul>
                 </div>
                 <input class="form-control" id="headerSearchInput" type="search" name="query" placeholder="Search for Products" aria-label="Search" autocomplete="off">
@@ -183,6 +271,179 @@ if (isLoggedIn()) {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="popup/popup.js"></script>
 <script src="popup/searchbar.js"></script>
+<script>
+// --- Floating Cart Logic (Dropdown/Panel, Advanced) ---
+function updateFloatingCartCount() {
+  fetch('ajax/get_cart_count.php')
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById('floatingCartCount').textContent = data.cart_count || 0;
+    });
+}
+function renderFloatingCart() {
+  const content = document.getElementById('floatingCartContent');
+  const summary = document.getElementById('floatingCartSummary');
+  content.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-success" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+  summary.innerHTML = '';
+  fetch('ajax/get-cart-summary.php?details=1')
+    .then(res => res.json())
+    .then(data => {
+      if (!data || !data.cartItems) {
+        content.innerHTML = '<div class="text-center text-danger py-4">Could not load cart.</div>';
+        return;
+      }
+      const items = data.cartItems;
+      if (!items || items.length === 0) {
+        content.innerHTML = '<div class="text-center text-muted py-4">Your cart is empty.</div>';
+        summary.innerHTML = '';
+        return;
+      }
+      let itemsHtml = '';
+      items.forEach(item => {
+        const cartId = item.cart_id || item.product_id;
+        itemsHtml += `
+          <div class="d-flex align-items-center gap-1 mb-2 border-bottom pb-1" style="min-width:0;">
+            <img src="./${item.main_image}" alt="${item.name}" style="width:38px;height:38px;object-fit:cover;border-radius:6px;border:1px solid #eee;flex-shrink:0;">
+            <div class="flex-grow-1" style="min-width:0;">
+              <div style="font-weight:600;font-size:0.97rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.name}</div>
+              <div class="text-muted d-flex align-items-center gap-1" style="font-size:0.85rem;">
+                <button class="btn btn-xs btn-outline-secondary btn-qty-minus" data-cart-id="${cartId}" ${item.quantity <= 1 ? 'disabled' : ''} style="width:22px;height:22px;padding:0 0 2px 0;line-height:1;">-</button>
+                <input type="number" min="1" class="form-control form-control-xs cart-qty-input" data-cart-id="${cartId}" value="${item.quantity}" style="width:32px;text-align:center;display:inline-block;padding:0 2px;font-size:0.9rem;height:22px;">
+                <button class="btn btn-xs btn-outline-secondary btn-qty-plus" data-cart-id="${cartId}" style="width:22px;height:22px;padding:0 0 2px 0;line-height:1;">+</button>
+                <span class="ms-1">x ₹${parseFloat(item.selling_price).toFixed(2)}</span>
+              </div>
+              <div class="text-muted" style="font-size:0.78rem;">HSN: ${item.hsn || '-'}</div>
+            </div>
+            <div class="text-end ms-1" style="min-width:54px;">
+              <div style="font-weight:700;font-size:0.98rem;">₹${(item.selling_price * item.quantity).toFixed(2)}</div>
+              <button class="btn btn-xs btn-outline-danger mt-1 remove-cart-item-btn" data-cart-id="${cartId}" style="padding:0 5px;font-size:0.9rem;"><i class="fas fa-trash"></i></button>
+            </div>
+          </div>
+        `;
+      });
+      content.innerHTML = itemsHtml;
+      // Summary
+      const totals = data.totals;
+      summary.innerHTML = `
+        <div class="d-flex justify-content-between mb-1 text-success" style="font-size:0.98rem;"><span><b>Total Savings</b></span><span><b>₹${parseFloat(totals.total_savings).toFixed(2)}</b></span></div>
+        <div class="d-flex justify-content-between mb-1"><span>Subtotal:</span><span>₹${parseFloat(totals.subtotal).toFixed(2)}</span></div>
+        <div class="d-flex justify-content-between mb-1"><span>GST:</span><span>₹${parseFloat(totals.total_gst).toFixed(2)}</span></div>
+        <div class="d-flex justify-content-between mb-1"><span>Shipping:</span><span>${totals.total_shipping > 0 ? '₹' + parseFloat(totals.total_shipping).toFixed(2) : 'Free'}</span></div>
+        <hr class="my-2" style="margin:4px 0;">
+        <div class="d-flex justify-content-between fw-bold" style="font-size:1.05rem;"><span>Total:</span><span>₹${parseFloat(totals.grand_total).toFixed(2)}</span></div>
+      `;
+      // Remove item event
+      document.querySelectorAll('.remove-cart-item-btn').forEach(btn => {
+        btn.onclick = function(e) {
+          e.stopPropagation();
+          const cartId = this.getAttribute('data-cart-id');
+          this.disabled = true;
+          fetch('ajax/remove-from-cart.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ cart_id: cartId })
+          })
+          .then(res => res.json())
+          .then(resp => {
+            if (resp.success) {
+              renderFloatingCart();
+              updateFloatingCartCount();
+            } else {
+              alert(resp.message || 'Could not remove item.');
+              this.disabled = false;
+            }
+          });
+        };
+      });
+      // Quantity minus/plus events
+      document.querySelectorAll('.btn-qty-minus').forEach(btn => {
+        btn.onclick = function(e) {
+          e.stopPropagation();
+          const cartId = this.getAttribute('data-cart-id');
+          const input = content.querySelector('.cart-qty-input[data-cart-id="' + cartId + '"]');
+          let qty = parseInt(input.value, 10) || 1;
+          if (qty > 1) {
+            updateCartQuantity(cartId, qty - 1, input, this);
+          }
+        };
+      });
+      document.querySelectorAll('.btn-qty-plus').forEach(btn => {
+        btn.onclick = function(e) {
+          e.stopPropagation();
+          const cartId = this.getAttribute('data-cart-id');
+          const input = content.querySelector('.cart-qty-input[data-cart-id="' + cartId + '"]');
+          let qty = parseInt(input.value, 10) || 1;
+          updateCartQuantity(cartId, qty + 1, input, this);
+        };
+      });
+      // Quantity input direct change
+      document.querySelectorAll('.cart-qty-input').forEach(input => {
+        input.onchange = function(e) {
+          let qty = parseInt(this.value, 10) || 1;
+          if (qty < 1) qty = 1;
+          const cartId = this.getAttribute('data-cart-id');
+          updateCartQuantity(cartId, qty, this, null);
+        };
+      });
+      function updateCartQuantity(cartId, qty, inputElem, btnElem) {
+        if (qty < 1) qty = 1;
+        if (inputElem) inputElem.disabled = true;
+        if (btnElem) btnElem.disabled = true;
+        content.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-success" role="status"><span class="visually-hidden">Updating...</span></div></div>';
+        fetch('ajax/update-cart.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cart_id: cartId, quantity: qty })
+        })
+        .then(res => res.json())
+        .then(resp => {
+          renderFloatingCart();
+          updateFloatingCartCount();
+        });
+      }
+    })
+    .catch(() => {
+      content.innerHTML = '<div class="text-center text-danger py-4">Could not load cart.</div>';
+      summary.innerHTML = '';
+    });
+}
+// Show/hide panel as dropdown
+const floatingCartBtn = document.getElementById('floatingCartBtn');
+const floatingCartPanel = document.getElementById('floatingCartPanel');
+const closeFloatingCartPanel = document.getElementById('closeFloatingCartPanel');
+floatingCartBtn.onclick = function(e) {
+  e.stopPropagation();
+  if (floatingCartPanel.style.display === 'block') {
+    floatingCartPanel.style.display = 'none';
+    return;
+  }
+  floatingCartPanel.style.display = 'block';
+  renderFloatingCart();
+};
+closeFloatingCartPanel.onclick = function(e) {
+  e.stopPropagation();
+  floatingCartPanel.style.display = 'none';
+};
+// Hide panel when clicking outside
+window.addEventListener('click', function(e) {
+  if (floatingCartPanel.style.display === 'block' && !floatingCartBtn.contains(e.target)) {
+    floatingCartPanel.style.display = 'none';
+  }
+});
+// Prevent closing when clicking inside the panel
+floatingCartPanel.onclick = function(e) {
+  e.stopPropagation();
+};
+// Update cart count on page load and every 30s
+updateFloatingCartCount();
+setInterval(updateFloatingCartCount, 30000);
+// Optionally update on add-to-cart events if available
+// Listen for global cart updates (from add-to-cart or other actions)
+window.addEventListener('cart-updated', function() {
+  renderFloatingCart();
+  updateFloatingCartCount();
+});
+</script>
 <main>
 
 <!-- Go to Top Button -->

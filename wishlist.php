@@ -76,7 +76,11 @@ require_once 'includes/header.php';
                             <?php else: ?>
                                 <div class="cart-actions">
                                     <button class="add-to-cart add-to-cart-btn btn btn-primary btn-sm" data-product-id="<?php echo $item['product_id']; ?>">ADD TO CART</button>
-                                    <input type="number" class="quantity-input form-control form-control-sm" value="1" min="1">
+                                    <div class="quantity-control d-inline-flex align-items-center">
+                                        <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
+                                        <input type="number" class="quantity-input form-control form-control-sm" value="1" min="1">
+                                        <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
+                                    </div>
                                 </div>
                             <?php endif; ?>
                         </div>

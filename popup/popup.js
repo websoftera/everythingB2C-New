@@ -112,6 +112,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 showToast(data.message, statusType);
                 if (data.success) {
                     updateCartCount();
+                    window.dispatchEvent(new Event('cart-updated'));
                 }
                 // Re-enable button after request
                 target.disabled = false;
@@ -187,3 +188,38 @@ document.addEventListener('DOMContentLoaded', function () {
     // Initial cart count update
     updateCartCount();
 });
+
+// Quantity control global handler
+function handleQtyButtonClick(e) {
+  const btn = e.target;
+  if (!btn.classList.contains('btn-qty')) return;
+  const control = btn.closest('.quantity-control');
+  if (!control) return;
+  const input = control.querySelector('input[type="number"]');
+  if (!input) return; // Prevents error if input is missing
+  let value = parseInt(input.value, 10) || 1;
+  if (btn.classList.contains('btn-qty-minus')) {
+    value = Math.max(1, value - 1);
+  } else if (btn.classList.contains('btn-qty-plus')) {
+    value = value + 1;
+  }
+  input.value = value;
+  // Send AJAX to update cart if data-product-id is present
+  const productId = input.dataset.productId || btn.dataset.productId;
+  if (productId) {
+    fetch('ajax/update-cart.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ product_id: productId, quantity: value })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        window.dispatchEvent(new Event('cart-updated'));
+      }
+    });
+  }
+  input.dispatchEvent(new Event('input', { bubbles: true }));
+  input.dispatchEvent(new Event('change', { bubbles: true }));
+}
+document.body.addEventListener('click', handleQtyButtonClick);

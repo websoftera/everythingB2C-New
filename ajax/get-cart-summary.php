@@ -40,7 +40,10 @@ if (isLoggedIn() && (empty($input['delivery_state']) || empty($input['delivery_c
 
 $totals = calculateOrderTotal($cartItems, $delivery_state, $delivery_city, $delivery_pincode);
 
-echo json_encode([
+// Add cartItems to response if details=1 in query string
+$withDetails = isset($_GET['details']) && $_GET['details'] == '1';
+
+$response = [
     'success' => true,
     'totals' => [
         'subtotal' => $totals['subtotal'],
@@ -54,5 +57,10 @@ echo json_encode([
         'shipping_zone_name' => isset($totals['shipping_zone_name']) ? $totals['shipping_zone_name'] : '',
         'shipping_zone_id' => isset($totals['shipping_zone_id']) ? $totals['shipping_zone_id'] : null,
         'gst_breakdown' => isset($totals['gst_breakdown']) ? $totals['gst_breakdown'] : [],
+        'total_savings' => isset($totals['total_savings']) ? $totals['total_savings'] : 0,
     ]
-]); 
+];
+if ($withDetails) {
+    $response['cartItems'] = $cartItems;
+}
+echo json_encode($response); 

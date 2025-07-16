@@ -68,7 +68,11 @@ require_once 'includes/header.php';
                                     <p class="text-muted">Price: <?php echo formatPrice($item['selling_price']); ?></p>
                                 </div>
                                 <div class="col-md-2">
-                                    <input type="number" class="form-control quantity-input" value="<?php echo $item['quantity']; ?>" min="1" data-cart-id="<?php echo $item['id']; ?>">
+                                    <div class="quantity-control d-inline-flex align-items-center">
+                                        <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
+                                        <input type="number" class="form-control quantity-input" value="<?php echo $item['quantity']; ?>" min="1" data-cart-id="<?php echo $item['id']; ?>">
+                                        <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
+                                    </div>
                                 </div>
                                 <div class="col-md-2">
                                     <strong><?php echo formatPrice($item['selling_price'] * $item['quantity']); ?></strong>
