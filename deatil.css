@@ -1,14 +1,14 @@
 .product-detail-card {
-    margin-top: 20px;
+  margin-top: 20px;
   display: flex;
   flex-wrap: wrap;
   gap: 40px;
   padding: 40px 30px;
   margin: 30px auto;
   max-width: 1200px;
-  background-color: #fff;
-  border-radius: 15px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  /* background-color: #fff; */
+  /* border-radius: 15px; */
+  /* box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); */
 }
 
 .product-image-section {

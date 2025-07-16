@@ -120,7 +120,7 @@ if (isLoggedIn()) {
 <div id="floatingCartBtn" style="position:fixed;bottom:32px;right:32px;z-index:1050;display:flex;align-items:center;justify-content:center;width:60px;height:60px;background:#28a745;border-radius:50%;box-shadow:0 4px 16px rgba(0,0,0,0.18);cursor:pointer;transition:box-shadow 0.2s;">
   <span style="position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:100%;">
     <i class="bi bi-cart4" style="font-size:2rem;color:#fff;"></i>
-    <span id="floatingCartCount" style="position:absolute;top:8px;right:10px;background:#fff;color:#28a745;font-weight:bold;font-size:0.95rem;padding:2px 7px;border-radius:12px;min-width:22px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,0.12);">0</span>
+    <span id="floatingCartCount" style="position:absolute;top:0px;right:10px;background:none;color:#fff;font-weight:bold;font-size:0.95rem;padding:2px 7px;border-radius:12px;min-width:22px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,0.12);">0</span>
   </span>
   <!-- Floating Cart Panel (dropdown style) -->
   <div id="floatingCartPanel" class="fixed-panel" style="display:none;">
@@ -247,11 +247,9 @@ if (isLoggedIn()) {
                         foreach ($tree as $cat) {
                             if (!empty($cat['children'])) {
                                 echo '<li class="nav-item dropdown d-flex align-items-center">';
-                                // Main category link (always clickable)
-                                echo '<a class="nav-link" href="category.php?slug=' . $cat['slug'] . '" id="catDropdown' . $cat['id'] . '">' . strtoupper(htmlspecialchars($cat['name'])) . '</a>';
-                                // Caret/arrow for dropdown only
-                                echo '<a class="nav-link dropdown-toggle dropdown-caret-only" href="#" id="catDropdownToggle' . $cat['id'] . '" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="width:18px;padding:0 6px;line-height:1;font-size:18px;">&#9660;</a>';
-                                echo '<ul class="dropdown-menu" aria-labelledby="catDropdownToggle' . $cat['id'] . '">';
+                                // Main category link as dropdown toggle
+                                echo '<a class="nav-link dropdown-toggle" href="category.php?slug=' . $cat['slug'] . '" id="catDropdown' . $cat['id'] . '" role="button" data-bs-toggle="dropdown" aria-expanded="false">' . strtoupper(htmlspecialchars($cat['name'])) . '</a>';
+                                echo '<ul class="dropdown-menu" aria-labelledby="catDropdown' . $cat['id'] . '">';
                                 foreach ($cat['children'] as $subcat) {
                                     echo '<li><a class="dropdown-item" href="category.php?slug=' . $subcat['slug'] . '">' . htmlspecialchars($subcat['name']) . '</a></li>';
                                 }
@@ -361,6 +359,7 @@ function renderFloatingCart() {
           e.stopPropagation();
           const cartId = this.getAttribute('data-cart-id');
           const input = content.querySelector('.cart-qty-input[data-cart-id="' + cartId + '"]');
+          if (!input) return; // Prevent error if input is missing
           let qty = parseInt(input.value, 10) || 1;
           if (qty > 1) {
             updateCartQuantity(cartId, qty - 1, input, this);
@@ -372,6 +371,7 @@ function renderFloatingCart() {
           e.stopPropagation();
           const cartId = this.getAttribute('data-cart-id');
           const input = content.querySelector('.cart-qty-input[data-cart-id="' + cartId + '"]');
+          if (!input) return; // Prevent error if input is missing
           let qty = parseInt(input.value, 10) || 1;
           updateCartQuantity(cartId, qty + 1, input, this);
         };

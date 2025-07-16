@@ -183,7 +183,7 @@ function getCartItems($userId = null) {
     if (isLoggedIn() && $userId) {
         // DB cart
         global $pdo;
-        $stmt = $pdo->prepare("SELECT c.*, p.name, p.selling_price, p.mrp, p.main_image, p.stock_quantity, p.gst_type, p.gst_rate, p.shipping_charge, p.hsn FROM cart c JOIN products p ON c.product_id = p.id WHERE c.user_id = ?");
+        $stmt = $pdo->prepare("SELECT c.*, p.name, p.selling_price, p.mrp, p.main_image, p.slug, p.stock_quantity, p.gst_type, p.gst_rate, p.shipping_charge, p.hsn FROM cart c JOIN products p ON c.product_id = p.id WHERE c.user_id = ?");
         $stmt->execute([$userId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     } else {
@@ -267,7 +267,7 @@ function getSessionCartItems() {
     $items = [];
     if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) return $items;
     foreach ($_SESSION['cart'] as $productId => $qty) {
-        $stmt = $pdo->prepare("SELECT id, name, selling_price, mrp, main_image, gst_type, gst_rate, shipping_charge, hsn FROM products WHERE id = ?");
+        $stmt = $pdo->prepare("SELECT id, name, selling_price, mrp, main_image, slug, gst_type, gst_rate, shipping_charge, hsn FROM products WHERE id = ?");
         $stmt->execute([$productId]);
         $product = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($product) {
@@ -469,7 +469,7 @@ function generateOrderNumber() {
     return $orderNumber;
 }
 
-function createOrder($userId, $addressId, $paymentMethod, $gstNumber = null, $companyName = null, $isBusinessPurchase = false) {
+function createOrder($userId, $addressId, $paymentMethod, $gstNumber = null, $companyName = null, $isBusinessPurchase = false, $upiTransactionId = null, $upiScreenshot = null) {
     global $pdo;
     
     try {
@@ -496,9 +496,10 @@ function createOrder($userId, $addressId, $paymentMethod, $gstNumber = null, $co
         );
         $trackingId = generateTrackingId();
         $orderNumber = generateOrderNumber();
-        // Insert order with correct totals
-        $stmt = $pdo->prepare("INSERT INTO orders (user_id, address_id, order_number, tracking_id, total_amount, subtotal, gst_amount, shipping_charge, payment_method, gst_number, company_name, is_business_purchase, order_status_id, payment_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 'pending')");
-        $stmt->execute([
+        // --- Direct Payment: add UPI fields if provided ---
+        $columns = "user_id, address_id, order_number, tracking_id, total_amount, subtotal, gst_amount, shipping_charge, payment_method, gst_number, company_name, is_business_purchase, order_status_id, payment_status";
+        $placeholders = "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 'pending'";
+        $values = [
             $userId,
             $addressId,
             $orderNumber,
@@ -511,7 +512,15 @@ function createOrder($userId, $addressId, $paymentMethod, $gstNumber = null, $co
             $gstNumber,
             $companyName,
             $isBusinessPurchase ? 1 : 0
-        ]);
+        ];
+        if ($paymentMethod === 'direct_payment') {
+            $columns .= ", upi_transaction_id, upi_screenshot";
+            $placeholders .= ", ?, ?";
+            $values[] = $upiTransactionId;
+            $values[] = $upiScreenshot;
+        }
+        $stmt = $pdo->prepare("INSERT INTO orders ($columns) VALUES ($placeholders)");
+        $stmt->execute($values);
         $orderId = $pdo->lastInsertId();
         // Add order items (use GST logic from gst_shipping_functions.php)
         $seller_state = 'Maharashtra';
@@ -621,16 +630,14 @@ function getOrderStatusHistory($orderId) {
 
 function getUserOrders($userId, $limit = null) {
     global $pdo;
-    $sql = "SELECT o.*, os.name as status_name, os.color as status_color 
-            FROM orders o 
+    $sql = "SELECT o.*, os.name as status_name, os.color as status_color, a.state as state FROM orders o 
             LEFT JOIN order_statuses os ON o.order_status_id = os.id 
+            LEFT JOIN addresses a ON o.address_id = a.id 
             WHERE o.user_id = ? 
             ORDER BY o.created_at DESC";
-    
     if ($limit) {
         $sql .= " LIMIT " . intval($limit);
     }
-    
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$userId]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);

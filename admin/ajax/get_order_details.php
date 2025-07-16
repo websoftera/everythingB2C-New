@@ -113,6 +113,13 @@ try {
     echo '<p><strong>Total Amount:</strong> ₹'.number_format($order['total_amount'],2).'</p>';
     echo '<p class="text-success"><strong>Total Savings:</strong> ₹'.number_format($total_savings,2).'</p>';
     echo '<p><strong>Payment Method:</strong> '.htmlspecialchars($order['payment_method']).'</p>';
+    // Show UPI details for direct payment
+    if ($order['payment_method'] === 'direct_payment') {
+        echo '<p><strong>UPI Transaction ID:</strong> ' . ($order['upi_transaction_id'] ? htmlspecialchars($order['upi_transaction_id']) : '<span class="text-danger">Not provided</span>') . '</p>';
+        if ($order['upi_screenshot']) {
+            echo '<p><strong>Payment Screenshot:</strong><br><img src="/' . htmlspecialchars($order['upi_screenshot']) . '" alt="UPI Screenshot" style="max-width:220px; border:1px solid #ccc; border-radius:6px;"></p>';
+        }
+    }
     echo '<p><strong>Status:</strong> '.ucfirst($order['status']).'</p>';
     echo '</div>';
 } catch (Exception $e) {

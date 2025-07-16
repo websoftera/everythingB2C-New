@@ -75,6 +75,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $selected_address_id = isset($_POST['selected_address']) ? intval($_POST['selected_address']) : 0;
         $payment_method = isset($_POST['payment_method']) ? $_POST['payment_method'] : '';
         $gst_number = isset($_POST['gst_number']) ? trim($_POST['gst_number']) : '';
+        $upi_transaction_id = null;
+        $upi_screenshot_path = null;
+        if ($payment_method === 'direct_payment') {
+            $upi_transaction_id = isset($_POST['upi_transaction_id']) ? trim($_POST['upi_transaction_id']) : null;
+            // Handle file upload
+            if (isset($_FILES['upi_screenshot']) && $_FILES['upi_screenshot']['error'] === UPLOAD_ERR_OK) {
+                $uploadDir = 'uploads/payments/';
+                if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+                $ext = pathinfo($_FILES['upi_screenshot']['name'], PATHINFO_EXTENSION);
+                $filename = 'upi_' . time() . '_' . rand(1000,9999) . '.' . $ext;
+                $targetPath = $uploadDir . $filename;
+                if (move_uploaded_file($_FILES['upi_screenshot']['tmp_name'], $targetPath)) {
+                    $upi_screenshot_path = $targetPath;
+                }
+            }
+        }
         if (!$selected_address_id || !$payment_method) {
             $error_message = 'Please select a delivery address and payment method.';
         } else {
@@ -82,16 +98,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (empty($cartItems)) {
                 $error_message = 'Your cart is empty.';
             } else {
-                $result = createOrder($userId, $selected_address_id, $payment_method, $gst_number);
+                $result = createOrder($userId, $selected_address_id, $payment_method, $gst_number, null, false, $upi_transaction_id, $upi_screenshot_path);
                 if ($result && !empty($result['success'])) {
                     $orderPlaced = true;
                     $placedOrderId = $result['order_id'];
-                    // --- Razorpay redirect logic restored ---
                     if ($payment_method === 'razorpay') {
                         header('Location: process_payment.php?order_id=' . $placedOrderId);
                         exit;
                     }
-                    // For COD, show thank you modal as before
                 } else {
                     $error_message = isset($result['message']) ? $result['message'] : 'Order could not be placed.';
                 }
@@ -201,31 +215,10 @@ foreach ($cartItems as $item) {
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
         <i class="fas fa-exclamation-triangle me-2"></i>
         <?php echo htmlspecialchars($error_message); ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-</div>
-<?php endif; ?>
-
-<?php if (isset($_GET['error'])): ?>
-<div class="container mt-3">
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="fas fa-exclamation-triangle me-2"></i>
-        <?php 
-        $error = $_GET['error'];
-        switch($error) {
-            case 'invalid_payment':
-                echo 'Invalid payment information. Please try again.';
-                break;
-            case 'payment_failed':
-                echo 'Payment failed. Please try again or choose a different payment method.';
-                break;
-            case 'payment_error':
-                echo 'An error occurred during payment processing. Please try again.';
-                break;
-            default:
-                echo 'An error occurred. Please try again.';
-        }
-        ?>
+        <?php if (isset($result)): ?>
+            <br><strong>Order Result Debug:</strong>
+            <pre style="max-height:200px;overflow:auto;font-size:0.95em;"><?php echo htmlspecialchars(print_r($result, true)); ?></pre>
+        <?php endif; ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 </div>
@@ -338,42 +331,26 @@ foreach ($cartItems as $item) {
     </div>
     <!-- RIGHT COLUMN: Bill summary, payment, and Place Order (form) -->
     <div class="col-lg-4">
-      <form id="checkoutForm" method="post">
+      <form id="checkoutForm" method="post" enctype="multipart/form-data">
         <!-- Hidden fields for address and GST -->
+        <input type="hidden" name="place_order" value="1">
         <input type="hidden" name="selected_address" id="selected_address_hidden">
         <input type="hidden" name="gst_number" id="gst_number_hidden">
+        <input type="hidden" name="upi_transaction_id" id="upi_transaction_id_hidden">
+        <input type="hidden" name="user_upi_id" id="user_upi_id_hidden">
+        <!-- UPI Screenshot file input (now inside form) -->
+        <div id="upiScreenshotFormField" style="display:none;">
+          <label for="upi_screenshot" class="form-label">Upload Payment Screenshot (optional)</label>
+          <input type="file" class="form-control" id="upi_screenshot" name="upi_screenshot" accept="image/*">
+        </div>
         <div class="checkout-card">
           <div class="card-body">
             <h5 class="mb-3">Bill Summary <span class="text-muted" style="font-size:1rem;">(<?php echo $count; ?> products)</span></h5>
             <!-- Per-product breakdown -->
-            <div class="mb-2">
-              <table class="table table-sm table-bordered" style="background: #fafbfc;">
-                <thead>
-                  <tr>
-                    <th>Product</th>
-                    <th>Qty</th>
-                    <th>MRP</th>
-                    <th>Price</th>
-                    <th>Savings</th>
-                    <th>HSN</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php foreach ($cartItems as $item): ?>
-                    <tr>
-                      <td><?php echo htmlspecialchars($item['name']); ?></td>
-                      <td><?php echo $item['quantity']; ?></td>
-                      <td>₹<?php echo number_format($item['mrp'] * $item['quantity'], 2); ?></td>
-                      <td>₹<?php echo number_format($item['selling_price'] * $item['quantity'], 2); ?></td>
-                      <td class="text-success">₹<?php echo number_format(($item['mrp'] - $item['selling_price']) * $item['quantity'], 2); ?></td>
-                      <td><?php echo htmlspecialchars($item['hsn'] ?? ''); ?></td>
-                    </tr>
-                  <?php endforeach; ?>
-                </tbody>
-              </table>
-            </div>
+            <!-- Removed per-product table as requested -->
+            <div class="mb-2"></div>
             <div class="d-flex justify-content-between mb-2"><span>Total MRP</span><span>₹<?php echo number_format($mrp,2); ?></span></div>
-            <div class="d-flex justify-content-between mb-2"><span>Subtotal</span><span>₹<?php echo number_format($orderTotals['subtotal'],2); ?></span></div>
+            <div class="d-flex justify-content-between mb-2"><span>You Pay</span><span>₹<?php echo number_format($orderTotals['subtotal'],2); ?></span></div>
             <div class="d-flex justify-content-between mb-2"><span>Delivery charge</span><span id="cart-shipping">₹<?php echo $orderTotals['shipping_charge']; ?></span></div>
             <div class="d-flex justify-content-between mb-2"><span>Shipping Zone</span><span id="cart-shipping-zone"><?php echo htmlspecialchars($orderTotals['shipping_zone_name'] ?? ''); ?></span></div>
             <div class="d-flex justify-content-between mb-2 bg-light p-2 rounded"><span class="text-success"><b>Total Savings</b></span><span class="text-success">₹<?php echo number_format($savings,2); ?></span></div>
@@ -387,7 +364,7 @@ foreach ($cartItems as $item) {
                 <div class="d-flex justify-content-between mb-1"><small>SGST (<?php echo number_format($orderTotals['sgst_total'] > 0 ? ($orderTotals['sgst_total'] / $orderTotals['subtotal']) * 100 : 0, 1); ?>%)</small><small>₹<?php echo number_format($orderTotals['sgst_total'],2); ?></small></div>
                 <div class="d-flex justify-content-between mb-1"><small>CGST (<?php echo number_format($orderTotals['cgst_total'] > 0 ? ($orderTotals['cgst_total'] / $orderTotals['subtotal']) * 100 : 0, 1); ?>%)</small><small>₹<?php echo number_format($orderTotals['cgst_total'],2); ?></small></div>
               <?php endif; ?>
-              <div class="d-flex justify-content-between"><small><strong>Total GST</strong></small><small><strong>₹<?php echo number_format($orderTotals['total_gst'],2); ?></strong></small></div>
+              <div class="d-flex justify-content-between"><small><strong>Total TAX</strong></small><small><strong>₹<?php echo number_format($orderTotals['total_gst'],2); ?></strong></small></div>
             </div>
             <div class="d-flex justify-content-between mb-2 bg-primary bg-opacity-10 p-2 rounded"><span><b>Total Amount to Pay</b></span><span id="order-total-amount"><b>₹<?php echo number_format($orderTotals['total'],2); ?></b></span></div>
             <!-- Payment Method Section and Place Order Button -->
@@ -402,16 +379,62 @@ foreach ($cartItems as $item) {
                     <br><small class="text-muted">Pay after you get your order </small>
                   </label>
                 </div>
-                <div class="form-check mb-2">
+                <!-- <div class="form-check mb-2">
                   <input class="form-check-input" type="radio" name="payment_method" id="razorpay" value="razorpay">
                   <label class="form-check-label" for="razorpay">
                     <i class="fas fa-credit-card me-2"></i>
                     <strong>Online Payment</strong>
                     <br><small class="text-muted">Pay via card, UPI or netbanking</small>
                   </label>
+                </div> -->
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="radio" name="payment_method" id="direct_payment" value="direct_payment">
+                  <label class="form-check-label" for="direct_payment">
+                    <i class="fas fa-qrcode me-2"></i>
+                    <strong>Direct Payment (UPI/QR)</strong>
+                    <br><small class="text-muted">Pay via UPI app or QR code, then enter transaction details</small>
+                  </label>
                 </div>
+                <div id="directPaymentSection" style="display:none; border:1px solid #e3e3e3; border-radius:8px; padding:16px; margin-bottom:16px; background:#f8f9fa;">
+                  <div class="mb-2 text-center">
+                    <a id="upiPaymentLink" href="#" class="btn btn-success" target="_blank">Pay via UPI App</a>
+                    <div class="text-muted mt-1" style="font-size:0.95rem;">(This button works only on mobile UPI apps)</div>
+                    <div id="upiQrCode" class="mt-3"></div>
+                  </div>
+                  <div class="mb-2">
+                    <label for="user_upi_id" class="form-label">Your UPI ID</label>
+                    <input type="text" class="form-control" id="user_upi_id" name="user_upi_id" placeholder="yourupi@bank" pattern="^[\w.-]+@[\w.-]+$" required>
+                    <div class="invalid-feedback">Please enter a valid UPI ID (e.g., yourname@bank).</div>
+                  </div>
+                  <div class="mb-2 text-muted" style="font-size:0.97rem;">
+                    <b>Instructions:</b><br>
+                    1. Scan the QR code or click the payment link to pay the total amount.<br>
+                    2. After payment, click <b>Continue</b> below.<br>
+                    3. On the next step, enter your UPI transaction ID and (optionally) upload a payment screenshot.<br>
+                    4. Your order will be placed as 'pending for confirmation' until payment is verified.<br>
+                  </div>
+                  <div class="d-grid">
+                    <button type="button" id="directPaymentContinueBtn" class="btn btn-primary">Continue</button>
+                  </div>
+                </div>
+                <!-- Direct Payment Step 2: Transaction ID and Screenshot (inside form, hidden by default) -->
+                <div id="directPaymentDetailsSection" style="display:none; border:1px solid #e3e3e3; border-radius:8px; padding:16px; margin-bottom:16px; background:#f8f9fa; max-width:400px; margin-left:auto; margin-right:auto;">
+                  <div class="mb-2">
+                    <label for="upi_transaction_id" class="form-label">UPI Transaction ID</label>
+                    <input type="text" class="form-control" id="upi_transaction_id" name="upi_transaction_id" required>
+                  </div>
+                  <div class="mb-2">
+                    <label for="upi_screenshot" class="form-label">Upload Payment Screenshot (optional)</label>
+                    <input type="file" class="form-control" id="upi_screenshot" name="upi_screenshot" accept="image/*">
+                  </div>
+                  <div class="d-grid mb-2">
+                    <button type="button" id="directPaymentSubmitBtn" class="btn btn-success">Submit Payment Details</button>
+                  </div>
+                  <div id="directPaymentInfoMsg" class="text-success text-center mb-2" style="display:none;"></div>
+                </div>
+                <div id="directPaymentInfoMsg" class="text-success text-center mb-2" style="display:none;"></div>
                 <div class="d-grid mb-3">
-                  <button type="submit" name="place_order" class="place-order-btn btn btn-primary w-100 mt-3" <?php if ($orderTotals['total'] < 150) echo 'disabled'; ?>>
+                  <button type="submit" name="place_order" id="placeOrderBtn" class="place-order-btn btn btn-primary w-100 mt-3" <?php if ($orderTotals['total'] < 150) echo 'disabled'; ?>>
                     <i class="fas fa-shopping-cart"></i> Place Order
                   </button>
                 </div>
@@ -485,7 +508,27 @@ foreach ($cartItems as $item) {
   </div>
 </div>
 
+<!-- Bootstrap modal for direct payment confirmation -->
+<div class="modal fade" id="directPaymentConfirmModal" tabindex="-1" aria-labelledby="directPaymentConfirmModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="directPaymentConfirmModalLabel">Confirm UPI Payment</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Have you completed the payment via UPI? You will now be asked to enter your transaction ID.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="directPaymentConfirmYesBtn">Yes, Continue</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
 <script>
 // Edit Address Modal logic (fills from PHP array, not AJAX)
 function editAddress(addressId) {
@@ -505,13 +548,21 @@ function editAddress(addressId) {
   modal.show();
 }
 
-// On form submit, copy selected address and GST number from left to hidden fields in form
+// --- Ensure hidden field is always up to date with selected address ---
+function updateSelectedAddressHidden() {
+  var selectedAddress = document.querySelector('input[name="selected_address_left"]:checked');
+  document.getElementById('selected_address_hidden').value = selectedAddress ? selectedAddress.value : '';
+}
+// Update on page load and whenever address is changed
+updateSelectedAddressHidden();
+document.querySelectorAll('input[name="selected_address_left"]').forEach(function(radio) {
+  radio.addEventListener('change', updateSelectedAddressHidden);
+});
+// On form submit, update hidden field just before submit
   document.getElementById('checkoutForm').addEventListener('submit', function(e) {
-    var selectedAddress = document.querySelector('input[name="selected_address_left"]:checked');
+    updateSelectedAddressHidden();
     var gstNumber = document.getElementById('gst_number_left').value;
-    document.getElementById('selected_address_hidden').value = selectedAddress ? selectedAddress.value : '';
     document.getElementById('gst_number_hidden').value = gstNumber;
-
     // --- Razorpay client-side flow ---
     var paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
     if (paymentMethod === 'razorpay') {
@@ -623,6 +674,119 @@ document.querySelectorAll('input[name="selected_address_left"]').forEach(functio
       }
     });
   });
+});
+
+// Direct Payment (UPI/QR) logic
+const paymentRadios = document.querySelectorAll('input[name="payment_method"]');
+const directPaymentSection = document.getElementById('directPaymentSection');
+const directPaymentDetailsSection = document.getElementById('directPaymentDetailsSection');
+const upiPaymentLink = document.getElementById('upiPaymentLink');
+// --- Use only the in-form elements ---
+const checkoutForm = document.getElementById('checkoutForm');
+const userUpiIdInput = checkoutForm.querySelector('#user_upi_id');
+const continueBtn = checkoutForm.querySelector('#directPaymentContinueBtn');
+const submitBtn = checkoutForm.querySelector('#directPaymentSubmitBtn');
+const upiTransactionIdInput = checkoutForm.querySelector('#upi_transaction_id');
+const upiScreenshotInput = checkoutForm.querySelector('#upi_screenshot');
+const placeOrderBtn = checkoutForm.querySelector('#placeOrderBtn');
+const orderTotal = <?php echo json_encode($orderTotals['total']); ?>;
+const upiId = 'prakash.raje7@oksbi';
+
+let directPaymentStepCompleted = false;
+
+function showDirectPaymentStep() {
+  directPaymentSection.style.display = '';
+  directPaymentDetailsSection.style.display = 'none';
+  placeOrderBtn.disabled = true;
+  directPaymentStepCompleted = false;
+}
+function showDirectPaymentDetails() {
+  directPaymentSection.style.display = 'none';
+  directPaymentDetailsSection.style.display = '';
+  placeOrderBtn.disabled = true;
+  directPaymentStepCompleted = false;
+}
+function resetDirectPaymentStep() {
+  directPaymentSection.style.display = 'none';
+  directPaymentDetailsSection.style.display = 'none';
+  placeOrderBtn.disabled = false;
+  directPaymentStepCompleted = false;
+  const infoMsg = checkoutForm.querySelector('#directPaymentInfoMsg');
+  if (infoMsg) infoMsg.style.display = 'none';
+  if (upiTransactionIdInput) upiTransactionIdInput.value = '';
+  if (upiScreenshotInput) upiScreenshotInput.value = '';
+}
+
+paymentRadios.forEach(radio => {
+  radio.addEventListener('change', function() {
+    if (this.value === 'direct_payment') {
+      showDirectPaymentStep();
+    } else {
+      resetDirectPaymentStep();
+    }
+  });
+});
+
+// Bootstrap modal for direct payment confirmation
+const directPaymentConfirmModal = new bootstrap.Modal(document.getElementById('directPaymentConfirmModal'));
+
+if (continueBtn) continueBtn.addEventListener('click', function() {
+  if (!userUpiIdInput.value.match(/^[\w.-]+@[\w.-]+$/)) {
+    userUpiIdInput.classList.add('is-invalid');
+    userUpiIdInput.focus();
+    return;
+  } else {
+    userUpiIdInput.classList.remove('is-invalid');
+  }
+  // Show Bootstrap modal instead of alert
+  directPaymentConfirmModal.show();
+  var yesBtn = document.getElementById('directPaymentConfirmYesBtn');
+  yesBtn.onclick = function() {
+    directPaymentConfirmModal.hide();
+    showDirectPaymentDetails();
+  };
+});
+
+if (submitBtn) submitBtn.addEventListener('click', function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  if (!upiTransactionIdInput.value.trim()) {
+    upiTransactionIdInput.classList.add('is-invalid');
+    upiTransactionIdInput.focus();
+    return;
+  } else {
+    upiTransactionIdInput.classList.remove('is-invalid');
+  }
+  directPaymentStepCompleted = true;
+  placeOrderBtn.disabled = false;
+  const infoMsg = checkoutForm.querySelector('#directPaymentInfoMsg');
+  if (infoMsg) {
+    infoMsg.textContent = 'Now you can click on Place Order to complete your order.';
+    infoMsg.style.display = '';
+  }
+});
+
+checkoutForm.addEventListener('submit', function(e) {
+  var paymentMethod = checkoutForm.querySelector('input[name="payment_method"]:checked').value;
+  if (paymentMethod === 'direct_payment') {
+    if (!directPaymentStepCompleted) {
+      e.preventDefault();
+      showDirectPaymentStep();
+      alert('Please complete the direct payment steps before placing the order.');
+      return false;
+    }
+    if (!upiTransactionIdInput.value.trim()) {
+      e.preventDefault();
+      upiTransactionIdInput.classList.add('is-invalid');
+      upiTransactionIdInput.focus();
+      alert('Please enter your UPI transaction ID.');
+      return false;
+    }
+    // Set hidden fields for backend
+    document.getElementById('upi_transaction_id_hidden').value = upiTransactionIdInput.value.trim();
+    document.getElementById('user_upi_id_hidden').value = userUpiIdInput.value.trim();
+    placeOrderBtn.disabled = true;
+  }
 });
 </script>
 

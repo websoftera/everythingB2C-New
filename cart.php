@@ -58,27 +58,44 @@ require_once 'includes/header.php';
                         <h5>Cart Items (<?php echo count($cartItems); ?>)</h5>
                     </div>
                     <div class="card-body">
+                        <!-- Header Row for Cart Columns -->
+                        <div class="cart-header-row d-flex align-items-center flex-nowrap" style="font-weight:600; color:#444; font-size:0.98rem; background:#f7f7f7; border-radius:6px; padding:7px 0 7px 8px; margin-bottom:8px; gap:8px;">
+                            <div style="flex:0 0 56px; max-width:56px; min-width:40px;">Image</div>
+                            <div style="flex:1 1 120px; min-width:60px; max-width:220px;">Product</div>
+                            <div style="flex:0 0 90px; min-width:60px; text-align:center;">MRP</div>
+                            <div style="flex:0 0 90px; min-width:60px; text-align:center;">You Pay</div>
+                            <div style="flex:0 0 90px; min-width:60px; text-align:center;">You Save</div>
+                            <div style="flex:0 0 80px; min-width:50px; text-align:center;">Qty</div>
+                            <div style="flex:0 0 70px; min-width:50px; text-align:center;">Total</div>
+                            <div style="flex:0 0 36px; min-width:28px; text-align:center; flex-shrink:0;"></div>
+                        </div>
                         <?php foreach ($cartItems as $item): ?>
-                            <div class="row mb-3 align-items-center">
-                                <div class="col-md-2">
-                                    <img src="./<?php echo $item['main_image']; ?>" alt="<?php echo $item['name']; ?>" class="img-fluid">
+                            <div class="cart-item-row d-flex align-items-center flex-nowrap" style="border: 1px solid #e0e0e0; border-radius: 7px; padding: 7px 0; margin-bottom: 10px; background: #fff; gap: 8px;">
+                                <div style="flex:0 0 56px; max-width:56px; min-width:40px;">
+                                    <a href="product.php?slug=<?php echo urlencode($item['slug']); ?>">
+                                        <img src="./<?php echo $item['main_image']; ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="img-fluid" style="width:44px;height:44px;object-fit:cover;border-radius:5px;">
+                                    </a>
                                 </div>
-                                <div class="col-md-4">
-                                    <h6><?php echo $item['name']; ?></h6>
-                                    <p class="text-muted">Price: <?php echo formatPrice($item['selling_price']); ?></p>
+                                <div style="flex:1 1 120px; min-width:60px; max-width:220px; font-size:0.97em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                    <a href="product.php?slug=<?php echo urlencode($item['slug']); ?>" title="<?php echo htmlspecialchars($item['name']); ?>" style="color:inherit; text-decoration:underline dotted; cursor:pointer;">
+                                        <?php echo htmlspecialchars($item['name']); ?>
+                                    </a>
                                 </div>
-                                <div class="col-md-2">
-                                    <div class="quantity-control d-inline-flex align-items-center">
+                                <div style="flex:0 0 90px; min-width:60px; font-size:0.93em; color:#888; text-align:center;"> <s><?php echo formatPrice($item['mrp']); ?></s> </div>
+                                <div style="flex:0 0 90px; min-width:60px; font-size:0.97em; color:#007bff; font-weight:500; text-align:center;"> <?php echo formatPrice($item['selling_price']); ?> </div>
+                                <div style="flex:0 0 90px; min-width:60px; font-size:0.93em; color:#23a036; text-align:center;"> <?php echo formatPrice(($item['mrp'] - $item['selling_price']) * $item['quantity']); ?> </div>
+                                <div style="flex:0 0 80px; min-width:50px; text-align:center;">
+                                    <div class="quantity-control d-inline-flex align-items-center justify-content-center">
                                         <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
-                                        <input type="number" class="form-control quantity-input" value="<?php echo $item['quantity']; ?>" min="1" data-cart-id="<?php echo $item['id']; ?>">
+                                        <input type="number" class="form-control quantity-input" value="<?php echo $item['quantity']; ?>" min="1" data-cart-id="<?php echo $item['id']; ?>" style="width:34px;display:inline-block;">
                                         <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
                                     </div>
                                 </div>
-                                <div class="col-md-2">
-                                    <strong><?php echo formatPrice($item['selling_price'] * $item['quantity']); ?></strong>
-                                </div>
-                                <div class="col-md-2">
-                                    <button class="btn btn-danger btn-sm remove-item" data-cart-id="<?php echo $item['id']; ?>">Remove</button>
+                                <div style="flex:0 0 70px; min-width:50px; text-align:center; font-weight:600; font-size:1.01em;"> <?php echo formatPrice($item['selling_price'] * $item['quantity']); ?> </div>
+                                <div style="flex:0 0 36px; min-width:28px; text-align:center; flex-shrink:0;">
+                                    <button class="btn btn-outline-danger btn-sm remove-item" data-cart-id="<?php echo $item['id']; ?>" title="Delete" style="padding: 4px 8px; font-size: 1.1rem;">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 </div>
                             </div>
                         <?php endforeach; ?>
@@ -161,6 +178,16 @@ require_once 'includes/header.php';
                             <span id="cart-shipping">Free</span>
                         </div>
                         <?php endif; ?>
+                        <div class="d-flex justify-content-between mb-2 text-success">
+                            <span><b>Total Savings</b></span>
+                            <span><b><?php
+                                $total_savings = 0;
+                                foreach ($cartItems as $item) {
+                                    $total_savings += ($item['mrp'] - $item['selling_price']) * $item['quantity'];
+                                }
+                                echo formatPrice($total_savings);
+                            ?></b></span>
+                        </div>
                         <hr>
                         <div class="d-flex justify-content-between mb-3">
                             <strong>Total:</strong>
@@ -177,6 +204,16 @@ require_once 'includes/header.php';
             </div>
         </div>
     <?php endif; ?>
+</div>
+
+<!-- Product Detail Popup Modal -->
+<div id="cartProductDetailModal" class="cart-product-modal" style="display:none;">
+    <div class="cart-product-modal-content">
+        <span class="cart-product-modal-close" id="cartProductModalClose">&times;</span>
+        <div id="cartProductModalBody">
+            <!-- Product details will be loaded here -->
+        </div>
+    </div>
 </div>
 
 <?php include 'includes/footer.php'; ?>
@@ -287,4 +324,76 @@ function formatPrice(amount) {
     if (isNaN(amount) || amount === null || amount === undefined) return '₹0.00';
     return '₹' + parseFloat(amount).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 }
+</script> 
+
+<style>
+@media (max-width: 768px) {
+  .cart-header-row, .cart-item-row {
+    font-size: 0.93rem !important;
+    gap: 2px !important;
+    padding-left: 1px !important;
+    padding-right: 1px !important;
+  }
+  .cart-header-row > div, .cart-item-row > div {
+    min-width: 28px !important;
+    font-size: 0.92em !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  .cart-item-row > div:nth-child(2) {
+    min-width: 40px !important;
+    max-width: 90px !important;
+  }
+  .cart-item-row > div {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+.cart-product-modal {
+  position: fixed;
+  z-index: 99999;
+  left: 0; top: 0; width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.45);
+  display: flex; align-items: center; justify-content: center;
+}
+.cart-product-modal-content {
+  background: #fff;
+  border-radius: 10px;
+  max-width: 420px;
+  width: 95vw;
+  padding: 24px 18px 18px 18px;
+  position: relative;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+}
+.cart-product-modal-close {
+  position: absolute; top: 10px; right: 18px;
+  font-size: 1.7rem; font-weight: bold; color: #888; cursor: pointer;
+}
+@media (max-width: 600px) {
+  .cart-product-modal-content { max-width: 98vw; padding: 12px 4px 8px 4px; }
+}
+</style> 
+
+<script>
+document.querySelectorAll('.cart-product-link').forEach(function(link) {
+  link.addEventListener('click', function(e) {
+    e.preventDefault();
+    var productId = this.getAttribute('data-product-id');
+    if (!productId) return;
+    var modal = document.getElementById('cartProductDetailModal');
+    var modalBody = document.getElementById('cartProductModalBody');
+    modalBody.innerHTML = '<div style="text-align:center;padding:30px 0;">Loading...</div>';
+    modal.style.display = 'flex';
+    fetch('ajax/get-product-detail-popup.php?id=' + encodeURIComponent(productId))
+      .then(function(res) { return res.text(); })
+      .then(function(html) { modalBody.innerHTML = html; });
+  });
+});
+document.getElementById('cartProductModalClose').onclick = function() {
+  document.getElementById('cartProductDetailModal').style.display = 'none';
+};
+document.getElementById('cartProductDetailModal').onclick = function(e) {
+  if (e.target === this) this.style.display = 'none';
+};
 </script> 

@@ -84,9 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 require_once 'includes/header.php';
 ?>
-
 <link rel="stylesheet" href="asset/style/login.css">
-
 <div class="account-page">
     <div class="container">
         <!-- <h1 class="account-title">My Account</h1> -->
@@ -105,28 +103,26 @@ require_once 'includes/header.php';
                             <input type="hidden" name="login" value="1">
                             <div class="form-group">
                                 <label for="email">Email Address <span class="required">*</span></label>
-                                <input type="email" class="form-control" name="email" required>
+                                <input type="email" class="login-form-control" name="email" required>
                             </div>
                             <div class="form-group">
                                 <label for="password">Password <span class="required">*</span></label>
-                                <input type="password" class="form-control" name="password" required>
+                                <input type="password" class="login-form-control" name="password" required>
                             </div>
-                            
                             <div class="form-options">
                                 <div class="remember-me">
                                     <input type="checkbox" id="remember_me">
                                     <label for="remember_me" style="font-weight: normal; font-size: 14px; margin-bottom:0;">Remember Me</label>
                                 </div>
-                                <button type="submit" class="btn btn-login">Log In</button>
+                                <button type="submit" class="login-btn login-btn-login">Log In</button>
                             </div>
-                             <div class="forgot-password" style="margin-top: 15px;">
-                                    <a href="#">Forgot Password?</a>
+                            <div class="forgot-password" style="margin-top: 15px;">
+                                <a href="#">Forgot Password?</a>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
-
             <!-- Register Form -->
             <div class="col-lg-6 register-form">
                 <div class="form-container">
@@ -146,36 +142,36 @@ require_once 'includes/header.php';
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="first_name">First Name <span class="required">*</span></label>
-                                        <input type="text" class="form-control" name="first_name" placeholder="First Name" required>
+                                        <input type="text" class="login-form-control" name="first_name" placeholder="First Name" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="last_name">Last Name <span class="required">*</span></label>
-                                        <input type="text" class="form-control" name="last_name" placeholder="Last Name" required>
+                                        <input type="text" class="login-form-control" name="last_name" placeholder="Last Name" required>
                                     </div>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="phone">Mobile Number <span class="required">*</span></label>
                                 <div class="mobile-number-group">
-                                    <input type="text" class="form-control country-code" value="+91" readonly>
-                                    <input type="tel" class="form-control" name="phone" placeholder="Mobile Number" required>
+                                    <input type="text" class="login-form-control country-code" value="+91" readonly>
+                                    <input type="tel" class="login-form-control" name="phone" placeholder="Mobile Number" required>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="email">Email Address <span class="required">*</span></label>
-                                <input type="email" class="form-control" name="email" placeholder="Email Address" required>
+                                <input type="email" class="login-form-control" name="email" placeholder="Email Address" required>
                             </div>
                             <div class="form-group">
                                 <label for="password">Password <span class="required">*</span></label>
-                                <input type="password" class="form-control" name="password" placeholder="Password" required>
+                                <input type="password" class="login-form-control" name="password" placeholder="Password" required>
                             </div>
                             <div class="form-group">
                                 <label for="confirm_password">Confirm Password <span class="required">*</span></label>
-                                <input type="password" class="form-control" name="confirm_password" placeholder="Confirm Password" required>
+                                <input type="password" class="login-form-control" name="confirm_password" placeholder="Confirm Password" required>
                             </div>
-                            <button type="submit" class="btn btn-register">Register</button>
+                            <button type="submit" class="login-btn login-btn-register">Register</button>
                         </form>
                         <?php endif; ?>
                     </div>
@@ -184,5 +180,4 @@ require_once 'includes/header.php';
         </div>
     </div>
 </div>
-
 <?php include 'includes/footer.php'; ?> 

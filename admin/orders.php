@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
     if (updateOrderStatus($orderId, $statusId, $description, $externalTrackingId, $externalTrackingLink, $estimatedDeliveryDate)) {
         if ($updatePaymentStatus) {
             $order = getOrderById($orderId);
-            if ($order && $order['payment_method'] === 'cod') {
+            if ($order && ($order['payment_method'] === 'cod' || $order['payment_method'] === 'direct_payment')) {
                 updatePaymentStatus($orderId, $paymentStatus);
             }
         }
@@ -358,10 +358,11 @@ $statuses = getAllOrderStatuses();
                                     </div>
                                     <!-- Payment Status Update for COD -->
                                     <div class="col-12" id="paymentStatusSection" style="display:none;">
-                                        <label class="form-label">Payment Status (COD only)</label>
+                                        <label class="form-label">Payment Status (COD & Direct Payment only)</label>
                                         <select name="payment_status" class="form-control">
                                             <option value="pending">Pending</option>
                                             <option value="paid">Paid</option>
+                                            <option value="unpaid">Unpaid</option>
                                             <option value="failed">Failed</option>
                                             <option value="refunded">Refunded</option>
                                         </select>
@@ -405,19 +406,21 @@ $statuses = getAllOrderStatuses();
             .then(response => response.json())
             .then(data => {
                 if (data.success && data.order) {
-                    if (data.order.payment_method === 'cod') {
-                        document.getElementById('paymentStatusSection').style.display = '';
+                    const paymentStatusSection = document.getElementById('paymentStatusSection');
+                    if (data.order.payment_method === 'cod' || data.order.payment_method === 'direct_payment') {
+                        paymentStatusSection.style.display = '';
                     } else {
-                        document.getElementById('paymentStatusSection').style.display = 'none';
+                        paymentStatusSection.style.display = 'none';
                     }
                 } else {
-                    document.getElementById('paymentStatusSection').style.display = 'none';
+                    paymentStatusSection.style.display = 'none';
                 }
                 const modal = new bootstrap.Modal(document.getElementById('updateStatusModal'));
                 modal.show();
             })
             .catch(() => {
-                document.getElementById('paymentStatusSection').style.display = 'none';
+                const paymentStatusSection = document.getElementById('paymentStatusSection');
+                paymentStatusSection.style.display = 'none';
                 const modal = new bootstrap.Modal(document.getElementById('updateStatusModal'));
                 modal.show();
             });

@@ -113,6 +113,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (data.success) {
                     updateCartCount();
                     window.dispatchEvent(new Event('cart-updated'));
+                    // Reload page to update product card UI and quantity controls
+                    location.reload();
                 }
                 // Re-enable button after request
                 target.disabled = false;
@@ -189,14 +191,14 @@ document.addEventListener('DOMContentLoaded', function () {
     updateCartCount();
 });
 
-// Quantity control global handler
-function handleQtyButtonClick(e) {
+// Global handler for all quantity plus/minus buttons (event delegation)
+document.body.addEventListener('click', function(e) {
   const btn = e.target;
   if (!btn.classList.contains('btn-qty')) return;
   const control = btn.closest('.quantity-control');
   if (!control) return;
   const input = control.querySelector('input[type="number"]');
-  if (!input) return; // Prevents error if input is missing
+  if (!input) return;
   let value = parseInt(input.value, 10) || 1;
   if (btn.classList.contains('btn-qty-minus')) {
     value = Math.max(1, value - 1);
@@ -204,13 +206,13 @@ function handleQtyButtonClick(e) {
     value = value + 1;
   }
   input.value = value;
-  // Send AJAX to update cart if data-product-id is present
-  const productId = input.dataset.productId || btn.dataset.productId;
-  if (productId) {
+  // If this input is for a cart item, update cart via AJAX
+  const cartId = input.dataset.cartId;
+  if (cartId) {
     fetch('ajax/update-cart.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ product_id: productId, quantity: value })
+      body: JSON.stringify({ cart_id: cartId, quantity: value })
     })
     .then(res => res.json())
     .then(data => {
@@ -221,5 +223,97 @@ function handleQtyButtonClick(e) {
   }
   input.dispatchEvent(new Event('input', { bubbles: true }));
   input.dispatchEvent(new Event('change', { bubbles: true }));
-}
-document.body.addEventListener('click', handleQtyButtonClick);
+});
+
+// Global handler for direct quantity input changes
+// (for cart items, update cart via AJAX)
+document.body.addEventListener('change', function(e) {
+  const input = e.target;
+  if (!input.classList.contains('quantity-input')) return;
+  let value = parseInt(input.value, 10) || 1;
+  input.value = value;
+  const cartId = input.dataset.cartId;
+  if (cartId) {
+    fetch('ajax/update-cart.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ cart_id: cartId, quantity: value })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        window.dispatchEvent(new Event('cart-updated'));
+      }
+    });
+  }
+});
+
+// Event delegation for popup controls
+// Handles popup quantity, add-to-cart, and wishlist
+
+document.body.addEventListener('click', function(e) {
+  // Quantity minus in popup
+  if (e.target.id === 'popupQtyMinus') {
+    const qtyInput = document.getElementById('popupQtyInput');
+    if (qtyInput) qtyInput.value = Math.max(1, parseInt(qtyInput.value, 10) - 1);
+  }
+  // Quantity plus in popup
+  if (e.target.id === 'popupQtyPlus') {
+    const qtyInput = document.getElementById('popupQtyInput');
+    if (qtyInput) qtyInput.value = parseInt(qtyInput.value, 10) + 1;
+  }
+  // Add to cart in popup
+  if (e.target.id === 'popupAddToCartBtn') {
+    e.preventDefault();
+    const btn = e.target;
+    const qtyInput = document.getElementById('popupQtyInput');
+    const qty = qtyInput ? parseInt(qtyInput.value, 10) || 1 : 1;
+    // Try to get productId from data attribute or fallback to global
+    const productId = btn.dataset.productId || btn.getAttribute('data-product-id') || window.currentPopupProductId;
+    if (!productId) return;
+    btn.disabled = true;
+    btn.textContent = 'ADDING...';
+    fetch('ajax/add-to-cart.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ product_id: productId, quantity: qty })
+    })
+    .then(res => res.json())
+    .then(data => {
+      btn.disabled = false;
+      btn.textContent = 'ADD TO CART';
+      if (data.success) {
+        window.dispatchEvent(new Event('cart-updated'));
+        btn.textContent = 'ADDED!';
+        setTimeout(function(){ btn.textContent = 'ADD TO CART'; }, 1200);
+      } else {
+        alert(data.message || 'Could not add to cart.');
+      }
+    });
+  }
+  // Wishlist in popup
+  if (e.target.id === 'popupWishlistBtn' || (e.target.closest && e.target.closest('#popupWishlistBtn'))) {
+    e.preventDefault();
+    const wishlistBtn = document.getElementById('popupWishlistBtn');
+    if (!wishlistBtn) return;
+    const icon = wishlistBtn.querySelector('i');
+    wishlistBtn.disabled = true;
+    // Try to get productId from data attribute or fallback to global
+    const productId = wishlistBtn.dataset.productId || window.currentPopupProductId;
+    const action = icon && icon.style.color === 'orange' ? 'remove' : 'add';
+    fetch('ajax/' + (action === 'add' ? 'add-to-wishlist.php' : 'remove-from-wishlist.php'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ product_id: productId })
+    })
+    .then(res => res.json())
+    .then(data => {
+      wishlistBtn.disabled = false;
+      if (data.success) {
+        if (icon) icon.style.color = action === 'add' ? 'orange' : '#fff';
+      } else {
+        alert(data.message || 'Could not update wishlist.');
+      }
+    });
+  }
+});

@@ -1,0 +1,22 @@
+Array
+(
+    [place_order] => 1
+    [selected_address] => 10
+    [gst_number] => 
+    [upi_transaction_id] => trn_1234gtr1234
+    [user_upi_id] => prakash.raje7@okaxis
+    [payment_method] => direct_payment
+)
+Array
+(
+    [upi_screenshot] => Array
+        (
+            [name] => 
+            [full_path] => 
+            [type] => 
+            [tmp_name] => 
+            [error] => 4
+            [size] => 0
+        )
+
+)

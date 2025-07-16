@@ -724,9 +724,9 @@ box-shadow: #000;
 .product-detail-card {
   margin: 30px auto;
   max-width: 300px;
-  background-color: #fff;
+  /* background-color: #fff;
   border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); */
   padding: 20px;
   text-align: center;
   border: 1px solid #ccc;

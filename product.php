@@ -112,6 +112,14 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
         <?php endif; ?>
     </div>
 </div>
+<style>
+.product-detail-main-card { background: #fff; border-radius: 18px; box-shadow: 0 4px 24px rgba(22,186,228,0.08); padding: 32px 24px; max-width: 1100px; margin: 0 auto; }
+.main-product-image { border-radius: 12px; box-shadow: 0 2px 12px rgba(34,52,89,0.07); background: #fff; }
+.thumbnail.active, .thumbnail:hover { border: 2px solid var(--primary-color) !important; }
+@media (max-width: 900px) { .product-detail-main-card { padding: 16px 4px; } }
+@media (max-width: 600px) { .product-detail-main-card { padding: 6px 0; } }
+</style>
+<!-- Zoom Modal and existing scripts/styles remain unchanged -->
 
 <!-- Zoom Modal -->
 <div id="zoomModal" class="zoom-modal">
@@ -123,8 +131,8 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
 
 <style>
 .modern-card {
-    box-shadow: 0 4px 24px rgba(0,0,0,0.10);
-    border-radius: 16px;
+    /* box-shadow: 0 4px 24px rgba(0,0,0,0.10); */
+    /* border-radius: 16px; */
     padding: 32px 24px;
     margin: 40px auto;
     max-width: 1100px;
@@ -155,10 +163,11 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
 .thumbnail-row { display: flex; gap: 10px; margin-top: 16px; }
 .thumbnail { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 2px solid transparent; cursor: pointer; transition: border 0.2s; }
 .thumbnail.active, .thumbnail:hover { border: 2px solid #007bff; }
-.modern-info h2.title { font-size: 2.2rem; font-weight: 700; margin-bottom: 12px; }
+.modern-info h2.title { text-align: left; font-size: 20px; font-weight: 700; margin-bottom: 12px; }
 .modern-prices { margin-bottom: 18px; }
 .modern-cart { margin-bottom: 18px; }
 .modern-desc { margin-top: 18px; }
+.product-hsn{margin-bottom: 10px;}
 /* Zoom Modal Styles */
 .zoom-modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100vw; height: 100vh; overflow: auto; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; }
 .zoom-modal-content { margin: auto; display: block; max-width: 90vw; max-height: 90vh; border-radius: 12px; box-shadow: 0 4px 32px rgba(0,0,0,0.25); background: #fff; }
