@@ -391,8 +391,8 @@ foreach ($cartItems as $item) {
                   <input class="form-check-input" type="radio" name="payment_method" id="direct_payment" value="direct_payment">
                   <label class="form-check-label" for="direct_payment">
                     <i class="fas fa-qrcode me-2"></i>
-                    <strong>Direct Payment (UPI/QR)</strong>
-                    <br><small class="text-muted">Pay via UPI app or QR code, then enter transaction details</small>
+                    <strong>Direct Payment</strong>
+                    <br><small class="text-muted">Pay via UPI app or QR code</small>
                   </label>
                 </div>
                 <div id="directPaymentSection" style="display:none; border:1px solid #e3e3e3; border-radius:8px; padding:16px; margin-bottom:16px; background:#f8f9fa;">
