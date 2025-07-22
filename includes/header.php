@@ -595,114 +595,120 @@ window.addEventListener('cart-updated', function() {
   updateFloatingCartCount();
 });
 
-function makeFloatingCartMovable() {
+// Shared floating cart position logic
+(function() {
+  const btn = document.getElementById('floatingCartBtn');
   const panel = document.getElementById('floatingCartPanel');
-  const header = panel ? panel.querySelector('.floating-cart-header') : null;
-  if (!panel || !header) return;
   let isDragging = false;
   let offsetX = 0, offsetY = 0;
   let startX = 0, startY = 0;
 
+  // Load position from localStorage
+  function loadPosition() {
+    const pos = localStorage.getItem('floatingCartPosition');
+    if (pos) {
+      try {
+        const { left, top } = JSON.parse(pos);
+        if (btn) {
+          btn.style.left = left + 'px';
+          btn.style.top = top + 'px';
+          btn.style.right = 'auto';
+          btn.style.bottom = 'auto';
+        }
+        if (panel) {
+          panel.style.left = left + 'px';
+          panel.style.top = top + 'px';
+          panel.style.right = 'auto';
+          panel.style.bottom = 'auto';
+        }
+      } catch(e) {}
+    }
+  }
+
+  // Save position to localStorage
+  function savePosition(left, top) {
+    localStorage.setItem('floatingCartPosition', JSON.stringify({ left, top }));
+  }
+
+  // Move both elements
+  function moveBoth(left, top) {
+    if (btn) {
+      btn.style.left = left + 'px';
+      btn.style.top = top + 'px';
+      btn.style.right = 'auto';
+      btn.style.bottom = 'auto';
+    }
+    if (panel) {
+      panel.style.left = left + 'px';
+      panel.style.top = top + 'px';
+      panel.style.right = 'auto';
+      panel.style.bottom = 'auto';
+    }
+  }
+
+  // Drag handler for both btn and panel header
   function onMouseDown(e) {
     isDragging = true;
     startX = e.clientX;
     startY = e.clientY;
-    const rect = panel.getBoundingClientRect();
+    // Use btn as reference for position
+    const rect = btn.getBoundingClientRect();
     offsetX = startX - rect.left;
     offsetY = startY - rect.top;
-    panel.style.transition = 'none';
-    panel.style.position = 'fixed';
-    panel.style.zIndex = 2000;
+    if (btn) btn.style.transition = 'none';
+    if (panel) panel.style.transition = 'none';
     document.body.style.userSelect = 'none';
   }
   function onMouseMove(e) {
     if (!isDragging) return;
     let x = e.clientX - offsetX;
     let y = e.clientY - offsetY;
-    x = Math.max(0, Math.min(window.innerWidth - panel.offsetWidth, x));
-    y = Math.max(0, Math.min(window.innerHeight - panel.offsetHeight, y));
-    panel.style.left = x + 'px';
-    panel.style.top = y + 'px';
-    panel.style.right = 'auto';
-    panel.style.bottom = 'auto';
-    panel.style.position = 'fixed';
-    panel.style.zIndex = 2000;
+    x = Math.max(0, Math.min(window.innerWidth - (btn ? btn.offsetWidth : 60), x));
+    y = Math.max(0, Math.min(window.innerHeight - (btn ? btn.offsetHeight : 60), y));
+    moveBoth(x, y);
   }
   function onMouseUp() {
-    isDragging = false;
-    document.body.style.userSelect = '';
+    if (isDragging) {
+      isDragging = false;
+      if (btn) btn.style.transition = '';
+      if (panel) panel.style.transition = '';
+      document.body.style.userSelect = '';
+      // Save position
+      const left = btn ? parseInt(btn.style.left) : 0;
+      const top = btn ? parseInt(btn.style.top) : 0;
+      savePosition(left, top);
+    }
   }
+
+  // Attach drag to both btn and panel header
   function attachDrag() {
-    header.addEventListener('mousedown', onMouseDown);
+    if (btn) btn.addEventListener('mousedown', onMouseDown);
+    if (panel) {
+      const header = panel.querySelector('.floating-cart-header');
+      if (header) header.addEventListener('mousedown', onMouseDown);
+    }
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
   }
   function detachDrag() {
-    header.removeEventListener('mousedown', onMouseDown);
+    if (btn) btn.removeEventListener('mousedown', onMouseDown);
+    if (panel) {
+      const header = panel.querySelector('.floating-cart-header');
+      if (header) header.removeEventListener('mousedown', onMouseDown);
+    }
     document.removeEventListener('mousemove', onMouseMove);
     document.removeEventListener('mouseup', onMouseUp);
   }
-  // Attach drag only when panel is shown
-  const observer = new MutationObserver(() => {
-    if (panel.style.display !== 'none') {
-      attachDrag();
-    } else {
-      detachDrag();
+
+  document.addEventListener('DOMContentLoaded', function() {
+    loadPosition();
+    attachDrag();
+    // Hide floating cart on checkout.php
+    if (window.location.pathname.endsWith('checkout.php')) {
+      if (btn) btn.style.display = 'none';
     }
   });
-  observer.observe(panel, { attributes: true, attributeFilter: ['style'] });
-}
-
-function makeFloatingCartBtnMovable() {
-  const btn = document.getElementById('floatingCartBtn');
-  if (!btn) return;
-  let isDragging = false;
-  let offsetX = 0, offsetY = 0;
-  let startX = 0, startY = 0;
-
-  btn.style.position = 'fixed';
-  btn.style.cursor = 'default';
-
-  btn.onmousedown = function(e) {
-    isDragging = true;
-    startX = e.clientX;
-    startY = e.clientY;
-    const rect = btn.getBoundingClientRect();
-    offsetX = startX - rect.left;
-    offsetY = startY - rect.top;
-    btn.style.transition = 'none';
-    document.body.style.userSelect = 'none';
-  };
-
-  document.onmousemove = function(e) {
-    if (!isDragging) return;
-    let x = e.clientX - offsetX;
-    let y = e.clientY - offsetY;
-    // Keep within viewport
-    x = Math.max(0, Math.min(window.innerWidth - btn.offsetWidth, x));
-    y = Math.max(0, Math.min(window.innerHeight - btn.offsetHeight, y));
-    btn.style.left = x + 'px';
-    btn.style.top = y + 'px';
-  };
-
-  document.onmouseup = function() {
-    if (isDragging) {
-      isDragging = false;
-      btn.style.transition = '';
-      document.body.style.userSelect = '';
-    }
-  };
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-  makeFloatingCartMovable();
-  makeFloatingCartBtnMovable();
-  // Hide floating cart on checkout.php
-  if (window.location.pathname.endsWith('checkout.php')) {
-    var floatingCartBtn = document.getElementById('floatingCartBtn');
-    if (floatingCartBtn) floatingCartBtn.style.display = 'none';
-  }
-});
+})();
 
 </script>
 <main>
