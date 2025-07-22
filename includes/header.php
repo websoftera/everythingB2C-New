@@ -104,16 +104,15 @@ html, body {
 }
 /* Product list area always scrolls, never summary or actions */
 #floatingCartPanel.fixed-panel #floatingCartContent {
-  height: 200px;
-  max-height: 200px;
+  height: 140px;
+  max-height: 140px;
   overflow-y: auto;
   min-height: 0;
-  padding: 10px 18px 0 18px;
+  padding: 6px 10px 0 10px;
 }
 #floatingCartPanel.fixed-panel #floatingCartSummary {
-  padding: 8px 18px 0 18px;
-  font-size: 0.97rem;
-  flex-shrink: 0;
+  padding: 4px 10px 0 10px;
+  font-size: 0.93rem;
   background: #fff;
 }
 #floatingCartPanel.fixed-panel .floating-cart-actions {
@@ -121,6 +120,20 @@ html, body {
   flex-shrink: 0;
   background: #fff;
   box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
+}
+#floatingCartPanel.fixed-panel .floating-cart-summary-box {
+  padding: 8px 10px 4px 10px !important;
+  margin-bottom: 6px !important;
+}
+#floatingCartPanel.fixed-panel .floating-cart-summary-box > div {
+  margin-bottom: 6px !important;
+}
+#floatingCartPanel.fixed-panel .floating-cart-summary-box .d-flex {
+  margin-bottom: 4px !important;
+}
+#floatingCartPanel.fixed-panel .floating-cart-summary-box .d-grid {
+  margin-top: 8px !important;
+  margin-bottom: 4px !important;
 }
 .header2 {
   height: 35px;
@@ -179,7 +192,6 @@ body { padding-top: 147px !important; }
     <div id="floatingCartSummary"></div>
     <div class="floating-cart-actions">
       <a href="cart.php" class="btn btn-outline-primary w-100 mb-2" style="padding:6px 0;font-size:0.97rem;">View Full Cart</a>
-      <a href="checkout.php" class="btn btn-success w-100" style="padding:6px 0;font-size:0.97rem;">Checkout</a>
     </div>
   </div>
 </div>
@@ -405,13 +417,13 @@ function renderFloatingCart() {
       // Summary
       const totals = data.totals;
       summary.innerHTML = `
-        <div class="floating-cart-summary-box" style="border:1px solid #cfd8dc;border-radius:8px;padding:16px 16px 8px 16px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:10px;">
-          <div style="font-weight:600;font-size:1.1rem;margin-bottom:12px;">Price Summary</div>
-          <div class="d-flex justify-content-between mb-2"><span class="text-muted">Total MRP</span><span style="font-weight:600;">₹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-          <div class="d-flex justify-content-between mb-2"><span class="text-muted">Delivery Charge <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
-          <div class="d-flex justify-content-between mb-2"><span class="text-muted">Savings</span><span class="fw-bold" style="color:#2e7d32;">₹${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-          <div class="d-grid mt-3 mb-2">
-            <a href='checkout.php' class='btn btn-success btn-lg fw-bold' style='font-size:1.08rem;'>PROCEED TO CHECKOUT</a>
+        <div class="floating-cart-summary-box" style="border:1px solid #cfd8dc;border-radius:8px;padding:8px 10px 4px 10px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:6px;">
+          <div style="font-weight:600;font-size:1.02rem;margin-bottom:6px;">Price Summary</div>
+          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Total MRP</span><span style="font-weight:600;">₹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Delivery <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
+          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Savings</span><span class="fw-bold" style="color:#2e7d32;">₹${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+          <div class="d-grid mt-2 mb-1">
+            <a href='checkout.php' class='btn btn-success btn-sm fw-bold' style='font-size:0.98rem;'>PROCEED TO CHECKOUT</a>
           </div>
         </div>
       `;
@@ -559,32 +571,46 @@ function updateFloatingCartSummary() {
     });
 }
 // Show/hide panel as dropdown
-const floatingCartBtn = document.getElementById('floatingCartBtn');
-const floatingCartPanel = document.getElementById('floatingCartPanel');
-const closeFloatingCartPanel = document.getElementById('closeFloatingCartPanel');
-floatingCartBtn.onclick = function(e) {
-  e.stopPropagation();
-  if (floatingCartPanel.style.display === 'block') {
-    floatingCartPanel.style.display = 'none';
-    return;
-  }
-  floatingCartPanel.style.display = 'block';
-  renderFloatingCart();
-};
-closeFloatingCartPanel.onclick = function(e) {
-  e.stopPropagation();
-  floatingCartPanel.style.display = 'none';
-};
+// const floatingCartBtn = document.getElementById('floatingCartBtn');
+// const floatingCartPanel = document.getElementById('floatingCartPanel');
+// const closeFloatingCartPanel = document.getElementById('closeFloatingCartPanel');
+// floatingCartBtn.onclick = function(e) {
+//   e.stopPropagation();
+//   if (floatingCartPanel.style.display === 'block') {
+//     floatingCartPanel.style.display = 'none';
+//     return;
+//   }
+//   floatingCartPanel.style.display = 'block';
+//   renderFloatingCart();
+// };
+// closeFloatingCartPanel.onclick = function(e) {
+//   e.stopPropagation();
+//   floatingCartPanel.style.display = 'none';
+// };
 // Hide panel when clicking outside
 window.addEventListener('click', function(e) {
-  if (floatingCartPanel.style.display === 'block' && !floatingCartBtn.contains(e.target)) {
+  const floatingCartBtn = document.getElementById('floatingCartBtn');
+  const floatingCartPanel = document.getElementById('floatingCartPanel');
+  if (floatingCartPanel && floatingCartPanel.style.display === 'block' && !floatingCartBtn.contains(e.target)) {
     floatingCartPanel.style.display = 'none';
   }
 });
 // Prevent closing when clicking inside the panel
-floatingCartPanel.onclick = function(e) {
-  e.stopPropagation();
-};
+const floatingCartPanel = document.getElementById('floatingCartPanel');
+if (floatingCartPanel) {
+  floatingCartPanel.onclick = function(e) {
+    e.stopPropagation();
+  };
+}
+// Close button logic
+const closeFloatingCartPanel = document.getElementById('closeFloatingCartPanel');
+if (closeFloatingCartPanel) {
+  closeFloatingCartPanel.onclick = function(e) {
+    e.stopPropagation();
+    const floatingCartPanel = document.getElementById('floatingCartPanel');
+    if (floatingCartPanel) floatingCartPanel.style.display = 'none';
+  };
+}
 // Update cart count on page load and every 30s
 updateFloatingCartCount();
 setInterval(updateFloatingCartCount, 30000);
@@ -595,14 +621,14 @@ window.addEventListener('cart-updated', function() {
   updateFloatingCartCount();
 });
 
-// Shared floating cart position logic with click/drag distinction
+// Robust floating cart drag logic with click/drag separation and debug logs
 (function() {
   const btn = document.getElementById('floatingCartBtn');
   const panel = document.getElementById('floatingCartPanel');
+  let isMouseDown = false;
   let isDragging = false;
   let offsetX = 0, offsetY = 0;
   let startX = 0, startY = 0;
-  let dragStarted = false;
 
   // Load position from localStorage
   function loadPosition() {
@@ -622,17 +648,19 @@ window.addEventListener('cart-updated', function() {
           panel.style.right = 'auto';
           panel.style.bottom = 'auto';
         }
-      } catch(e) {}
+      } catch(e) {console.log('[FloatingCart][DEBUG] Error loading position:', e);}
     }
   }
 
   // Save position to localStorage
   function savePosition(left, top) {
+    console.log('[FloatingCart][DEBUG] Saving position:', left, top);
     localStorage.setItem('floatingCartPosition', JSON.stringify({ left, top }));
   }
 
   // Move both elements
   function moveBoth(left, top) {
+    console.log('[FloatingCart][DEBUG] Moving both to:', left, top);
     if (btn) {
       btn.style.left = left + 'px';
       btn.style.top = top + 'px';
@@ -649,66 +677,46 @@ window.addEventListener('cart-updated', function() {
 
   // Drag handler for both btn and panel header
   function onMouseDown(e) {
-    isDragging = true;
-    dragStarted = false;
+    isMouseDown = true;
+    isDragging = false;
     startX = e.clientX;
     startY = e.clientY;
-    // Use btn as reference for position
     const rect = btn.getBoundingClientRect();
     offsetX = startX - rect.left;
     offsetY = startY - rect.top;
     if (btn) btn.style.transition = 'none';
     if (panel) panel.style.transition = 'none';
     document.body.style.userSelect = 'none';
-    // For click/drag distinction
-    document.addEventListener('mousemove', onMouseMoveOnce, { once: true });
-  }
-  function onMouseMoveOnce(e) {
-    if (!isDragging) return;
-    const dx = Math.abs(e.clientX - startX);
-    const dy = Math.abs(e.clientY - startY);
-    if (dx > 5 || dy > 5) {
-      dragStarted = true;
-    }
+    console.log('[FloatingCart][DEBUG] MouseDown', {startX, startY});
   }
   function onMouseMove(e) {
-    if (!isDragging) return;
+    if (!isMouseDown) return;
     const dx = Math.abs(e.clientX - startX);
     const dy = Math.abs(e.clientY - startY);
     if (dx > 5 || dy > 5) {
-      dragStarted = true;
-    }
-    if (dragStarted) {
+      isDragging = true;
       let x = e.clientX - offsetX;
       let y = e.clientY - offsetY;
       x = Math.max(0, Math.min(window.innerWidth - (btn ? btn.offsetWidth : 60), x));
       y = Math.max(0, Math.min(window.innerHeight - (btn ? btn.offsetHeight : 60), y));
       moveBoth(x, y);
+      console.log('[FloatingCart][DEBUG] Dragging', {x, y});
     }
   }
   function onMouseUp(e) {
-    if (isDragging) {
+    if (isMouseDown) {
+      if (isDragging) {
+        // Save position if dragged
+        const left = btn ? parseInt(btn.style.left) : 0;
+        const top = btn ? parseInt(btn.style.top) : 0;
+        savePosition(left, top);
+        console.log('[FloatingCart][DEBUG] Drag End', {left, top});
+      }
+      isMouseDown = false;
       isDragging = false;
       if (btn) btn.style.transition = '';
       if (panel) panel.style.transition = '';
       document.body.style.userSelect = '';
-      // Save position if dragged
-      if (dragStarted) {
-        const left = btn ? parseInt(btn.style.left) : 0;
-        const top = btn ? parseInt(btn.style.top) : 0;
-        savePosition(left, top);
-      } else {
-        // Treat as click if not dragged
-        if (e.target === btn || btn.contains(e.target)) {
-          // Simulate original click logic
-          if (panel.style.display === 'block') {
-            panel.style.display = 'none';
-            return;
-          }
-          panel.style.display = 'block';
-          if (typeof renderFloatingCart === 'function') renderFloatingCart();
-        }
-      }
     }
   }
 
@@ -730,6 +738,55 @@ window.addEventListener('cart-updated', function() {
     }
     document.removeEventListener('mousemove', onMouseMove);
     document.removeEventListener('mouseup', onMouseUp);
+  }
+
+  // Click handler for open/close (only if not dragging)
+  if (btn) {
+    btn.addEventListener('click', function(e) {
+      console.log('[FloatingCart][DEBUG] Click', {isDragging, isMouseDown, panel, display: panel ? panel.style.display : undefined});
+      if (isDragging) {
+        // Prevent click if just dragged
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('[FloatingCart][DEBUG] Click prevented due to drag');
+        return;
+      }
+      e.stopPropagation();
+      if (panel.style.display === 'block') {
+        panel.style.display = 'none';
+        console.log('[FloatingCart][DEBUG] Panel closed');
+        return;
+      }
+      // Force panel to a visible position and size
+      panel.style.left = 'auto';
+      panel.style.top = 'auto';
+      panel.style.right = '32px';
+      panel.style.bottom = '10px';
+      panel.style.width = '340px';
+      panel.style.height = 'auto';
+      panel.style.maxHeight = '540px';
+      panel.style.display = 'block';
+      if (typeof renderFloatingCart === 'function') renderFloatingCart();
+      // Debug: log computed style and bounding rect
+      setTimeout(function() {
+        const rect = panel.getBoundingClientRect();
+        const style = window.getComputedStyle(panel);
+        console.log('[FloatingCart][DEBUG] Panel rect:', rect);
+        console.log('[FloatingCart][DEBUG] Panel computed style:', {
+          display: style.display,
+          left: style.left,
+          top: style.top,
+          right: style.right,
+          bottom: style.bottom,
+          width: style.width,
+          height: style.height,
+          zIndex: style.zIndex,
+          opacity: style.opacity,
+          visibility: style.visibility
+        });
+      }, 100);
+      console.log('[FloatingCart][DEBUG] Panel opened');
+    });
   }
 
   document.addEventListener('DOMContentLoaded', function() {
