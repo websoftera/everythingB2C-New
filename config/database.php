@@ -7,9 +7,9 @@
 
 // Production Use Database configuration
 define('DB_HOST', 'localhost');
-define('DB_USER', 'u141519101_DEMO_SITE1');
+define('DB_USER', 'u141519101_everythingb2c1');
 define('DB_PASS', 'EveryThing@b2c#2025');
-define('DB_NAME', 'u141519101_DEMO_SITE1');
+define('DB_NAME', 'u141519101_everythingb2c1');
 
 // Create connection
 try {
