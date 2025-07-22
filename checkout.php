@@ -663,7 +663,7 @@ const upiTransactionIdInput = checkoutForm.querySelector('#upi_transaction_id');
 const upiScreenshotInput = checkoutForm.querySelector('#upi_screenshot');
 const placeOrderBtn = checkoutForm.querySelector('#placeOrderBtn');
 const orderTotal = <?php echo json_encode($orderTotals['total']); ?>;
-const upiId = 'prakash.raje7@oksbi';
+const upiId = 'samir.bvm@okicici';
 
 let directPaymentStepCompleted = false;
 
@@ -703,7 +703,7 @@ function mockVerifyUpiId(upiId) {
 
 function generateUpiQrCode(upiId, amount) {
   // Always use the fixed payee UPI ID
-  const payeeUpiId = 'prakash.raje7@oksbi';
+  const payeeUpiId = 'samir.bvm@okicici';
   const upiUrl = `upi://pay?pa=${encodeURIComponent(payeeUpiId)}&pn=EverythingB2C&am=${amount}&cu=INR`;
   var qrDiv = document.getElementById('upiQrCode');
   if (qrDiv) {
