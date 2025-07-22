@@ -153,6 +153,12 @@ body { padding-top: 147px !important; }
   .category-navbar { top: 83px !important; }
   body { padding-top: 118px !important; }
 }
+.floating-cart {
+  z-index: 99999 !important;
+}
+#floatingCartBtn {
+  z-index: 99999 !important;
+}
 </style>
 </head>
 <body>
