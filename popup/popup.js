@@ -63,38 +63,94 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(error => console.error('Error updating cart count:', error));
     }
 
+    // Helper to re-initialize quantity controls for all product cards and re-attach event handlers
+    function reinitQuantityControlsWithDebug() {
+        document.querySelectorAll('.product-card, .card, .shop-page-product-card, .product-detail-card').forEach(card => {
+            card.querySelectorAll('.quantity-input, .shop-page-quantity-input').forEach(input => {
+                input.disabled = false;
+                input.removeEventListener('input', input._debugInputHandler || (()=>{}));
+                const handler = function() {
+                    let val = parseInt(this.value, 10) || 1;
+                    if (val < 1) val = 1;
+                    this.value = val;
+                    console.log('[popup.js][DEBUG] Quantity input changed:', this, 'value:', val);
+                };
+                input.addEventListener('input', handler);
+                input._debugInputHandler = handler;
+            });
+            card.querySelectorAll('.btn-qty-minus, .btn-qty-plus').forEach(btn => {
+                btn.disabled = false;
+                btn.removeEventListener('click', btn._debugClickHandler || (()=>{}));
+                const handler = function(e) {
+                    e.stopPropagation();
+                    const input = btn.closest('.quantity-control')?.querySelector('input[type="number"]');
+                    if (!input) return;
+                    let value = parseInt(input.value, 10) || 1;
+                    if (btn.classList.contains('btn-qty-minus')) {
+                        value = Math.max(1, value - 1);
+                    } else if (btn.classList.contains('btn-qty-plus')) {
+                        value = value + 1;
+                    }
+                    input.value = value;
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                    console.log('[popup.js][DEBUG] Qty button clicked:', btn, 'new value:', value);
+                };
+                btn.addEventListener('click', handler);
+                btn._debugClickHandler = handler;
+            });
+        });
+        console.log('[popup.js][DEBUG] Re-initialized all quantity controls and handlers after add-to-cart');
+    }
+
 
     document.body.addEventListener('click', function(event) {
         const target = event.target;
         
         // Add to Cart
-        if (target.matches('.add-to-cart-btn')) {
+        if (target.matches('.add-to-cart-btn, .add-to-cart, .shop-page-add-to-cart-btn')) {
             event.preventDefault();
             const productId = target.dataset.productId;
-            
-            // Find the quantity input related to the button
-            const cartActions = target.closest('.cart-actions');
             let quantity = 1;
+            let cardRoot = target.closest('.product-card, .card, .shop-page-product-card, .product-detail-card');
+            let cartActions = target.closest('.cart-actions');
+            let cartControls = target.closest('.cart-controls');
+            let shopCartActions = target.closest('.shop-page-cart-actions');
+            let quantityInput = null;
             if (cartActions) {
-                const quantityInput = cartActions.querySelector('.quantity-input');
+                quantityInput = cartActions.querySelector('.quantity-input');
                 if (quantityInput) {
                     quantity = parseInt(quantityInput.value, 10);
                 }
-            } else {
-                 // Fallback for product detail page structure
-                const cartControls = target.closest('.cart-controls');
-                if(cartControls){
-                    const quantityInput = cartControls.querySelector('.quantity-input');
-                    if (quantityInput) {
-                        quantity = parseInt(quantityInput.value, 10);
-                    }
+            } else if (cartControls) {
+                quantityInput = cartControls.querySelector('.quantity-input');
+                if (quantityInput) {
+                    quantity = parseInt(quantityInput.value, 10);
+                }
+            } else if (shopCartActions) {
+                quantityInput = shopCartActions.querySelector('.shop-page-quantity-input');
+                if (quantityInput) {
+                    quantity = parseInt(quantityInput.value, 10);
                 }
             }
-            // Debug log
-            console.log('Add to Cart clicked:', { productId, quantity, target });
-            // Disable button to prevent double click
+            const originalLabel = target.textContent;
             target.disabled = true;
-
+            target.textContent = 'Added to Cart';
+            setTimeout(function() {
+                target.textContent = originalLabel;
+                target.disabled = false;
+                if (cardRoot) {
+                    cardRoot.querySelectorAll('.quantity-input, .shop-page-quantity-input').forEach(el => el.disabled = false);
+                    cardRoot.querySelectorAll('.btn-qty-minus, .btn-qty-plus').forEach(el => el.disabled = false);
+                }
+                reinitQuantityControlsWithDebug();
+                console.log('[popup.js][DEBUG] Re-enabled quantity controls for product card:', cardRoot);
+            }, 4000);
+            if (cardRoot) {
+                cardRoot.querySelectorAll('.quantity-input, .shop-page-quantity-input').forEach(el => el.disabled = false);
+                cardRoot.querySelectorAll('.btn-qty-minus, .btn-qty-plus').forEach(el => el.disabled = false);
+            }
+            console.log('[popup.js][DEBUG] Add to cart clicked for productId:', productId, 'quantity:', quantity, 'cardRoot:', cardRoot);
             fetch('ajax/add-to-cart.php', {
                 method: 'POST',
                 headers: {
@@ -107,23 +163,17 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .then(response => response.json())
             .then(data => {
-                // The 'status' field was named 'success' in the PHP response
                 const statusType = data.success ? 'success' : 'error';
                 showToast(data.message, statusType);
                 if (data.success) {
                     updateCartCount();
                     window.dispatchEvent(new Event('cart-updated'));
-                    // Reload page to update product card UI and quantity controls
-                    location.reload();
+                    reinitQuantityControlsWithDebug();
                 }
-                // Re-enable button after request
-                target.disabled = false;
             })
             .catch(error => {
                 console.error('Error:', error);
                 showToast('An error occurred.', 'error');
-                // Re-enable button on error
-                target.disabled = false;
             });
         }
 

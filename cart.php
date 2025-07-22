@@ -60,7 +60,7 @@ require_once 'includes/header.php';
                     <div class="card-body">
                         <!-- Header Row for Cart Columns -->
                         <div class="cart-header-row d-flex align-items-center flex-nowrap" style="font-weight:600; color:#444; font-size:0.98rem; background:#f7f7f7; border-radius:6px; padding:7px 0 7px 8px; margin-bottom:8px; gap:8px;">
-                            <div style="flex:0 0 56px; max-width:56px; min-width:40px;">Image</div>
+                            <div style="flex:0 0 56px; max-width:56px; min-width:40px;"></div>
                             <div style="flex:1 1 120px; min-width:60px; max-width:220px;">Product</div>
                             <div style="flex:0 0 90px; min-width:60px; text-align:center;">MRP</div>
                             <div style="flex:0 0 90px; min-width:60px; text-align:center;">You Pay</div>
@@ -106,98 +106,25 @@ require_once 'includes/header.php';
             <div class="col-md-4">
                 <div class="shopping-card">
                     <div class="card-header">
-                        <h5>Order Summary</h5>
+                        <h5>Price Summary</h5>
                     </div>
                     <div class="card-body">
-                        <div class="d-flex justify-content-between mb-2">
-                            <span>Subtotal:</span>
-                            <span id="cart-subtotal"><?php echo formatPrice($orderTotals['subtotal']); ?></span>
-                        </div>
-                        <!-- Delivery State Dropdown (for guests) -->
-                        <?php if (!isLoggedIn()): ?>
-                        <div class="d-flex justify-content-between mb-2 align-items-center">
-                            <label for="delivery_state" style="margin-bottom:0;">Enter Delivery State for GST Calculation:</label>
-                            <form method="post" style="margin-bottom:0;display:inline-block;">
-                                <select name="delivery_state" id="delivery_state" class="form-control" style="max-width:180px;display:inline-block;">
-                                    <?php foreach (getIndianStates() as $state): ?>
-                                        <option value="<?php echo htmlspecialchars($state); ?>" <?php if ($delivery_state == $state) echo 'selected'; ?>><?php echo htmlspecialchars($state); ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                                <button type="submit" class="btn btn-primary btn-sm">Update</button>
-                            </form>
-                        </div>
-                        <?php endif; ?>
-                        <?php
-                        // Calculate GST percent and type for display
-                        $gst_percent = 0;
-                        $gst_type_label = '';
-                        $seller_state = 'Maharashtra'; // Seller's state for GST comparison
-                        if (!empty($cartItems)) {
-                            $total_gst_rate = 0;
-                            $total_qty = 0;
-                            $sgst_cgst_qty = 0;
-                            $igst_qty = 0;
-                            foreach ($cartItems as $item) {
-                                if (isset($item['gst_rate'])) {
-                                    $total_gst_rate += $item['gst_rate'] * $item['quantity'];
-                                    $total_qty += $item['quantity'];
-                                    // Determine GST type for this item (pass seller_state as billing_state)
-                                    $gst_calc = calculateGST($item['selling_price'], $item['gst_rate'], $item['gst_type'], $delivery_state, $seller_state);
-                                    if ($gst_calc['gst_type'] === 'sgst_cgst') {
-                                        $sgst_cgst_qty += $item['quantity'];
-                                    } else {
-                                        $igst_qty += $item['quantity'];
-                                    }
-                                }
-                            }
-                            if ($total_qty > 0) {
-                                $gst_percent = round($total_gst_rate / $total_qty, 1);
-                                if ($sgst_cgst_qty > 0 && $igst_qty === 0) {
-                                    $gst_type_label = 'GST (SGST+CGST)';
-                                } elseif ($igst_qty > 0 && $sgst_cgst_qty === 0) {
-                                    $gst_type_label = 'IGST';
-                                } elseif ($sgst_cgst_qty > 0 && $igst_qty > 0) {
-                                    $gst_type_label = 'GST/IGST';
-                                }
-                            }
-                        }
-                        ?>
-                        <div class="d-flex justify-content-between mb-2">
-                            <span><?php echo $gst_type_label ?: 'GST'; ?><?php if ($gst_percent > 0): ?> (<?php echo $gst_percent; ?>%)<?php endif; ?>:</span>
-                            <span id="cart-gst"><?php echo formatPrice($orderTotals['gst_amount']); ?></span>
-                        </div>
-                        <?php if ($orderTotals['shipping_charge'] > 0): ?>
-                        <div class="d-flex justify-content-between mb-2">
-                            <span>Delivery charge</span>
-                            <span id="cart-shipping"><?php echo formatPrice($orderTotals['shipping_charge']); ?></span>
-                        </div>
-                        <div class="d-flex justify-content-between mb-2"><span>Shipping Zone</span><span><?php echo htmlspecialchars($orderTotals['shipping_zone_name'] ?? ''); ?></span></div>
-                        <?php else: ?>
-                        <div class="d-flex justify-content-between mb-2">
-                            <span>Shipping:</span>
-                            <span id="cart-shipping">Free</span>
-                        </div>
-                        <?php endif; ?>
-                        <div class="d-flex justify-content-between mb-2 text-success">
-                            <span><b>Total Savings</b></span>
-                            <span><b><?php
+                        <div class="floating-cart-summary-box" style="border:1px solid #cfd8dc;border-radius:8px;padding:16px 16px 8px 16px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:10px;">
+                          <div class="d-flex justify-content-between mb-2"><span class="text-muted">Total MRP</span><span style="font-weight:600;">₹<?php echo number_format($orderTotals['subtotal'], 0); ?></span></div>
+                          <div class="d-flex justify-content-between mb-2"><span class="text-muted">Delivery Charge <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
+                          <div class="d-flex justify-content-between mb-2"><span class="text-muted">Savings</span><span class="fw-bold" style="color:#2e7d32;">₹<?php
                                 $total_savings = 0;
                                 foreach ($cartItems as $item) {
                                     $total_savings += ($item['mrp'] - $item['selling_price']) * $item['quantity'];
                                 }
-                                echo formatPrice($total_savings);
-                            ?></b></span>
-                        </div>
-                        <hr>
-                        <div class="d-flex justify-content-between mb-3">
-                            <strong>Total:</strong>
-                            <strong id="cart-grandtotal"><?php echo formatPrice($orderTotals['total']); ?></strong>
-                        </div>
-                        <div class="d-grid">
-                            <a href="checkout.php" class="btn btn-primary">Proceed to Checkout</a>
-                        </div>
-                        <div class="text-center mt-3">
-                            <a href="index.php" class="btn btn-outline-secondary">Continue Shopping</a>
+                                echo number_format($total_savings, 0);
+                            ?></span></div>
+                          <div class="d-grid mt-3 mb-2">
+                            <a href='checkout.php' class='btn btn-success btn-lg fw-bold' style='font-size:1.08rem;'>PROCEED TO CHECKOUT</a>
+                          </div>
+                          <div class="d-grid mb-2">
+                            <a href='index.php' class='btn btn-outline-secondary btn-lg fw-bold' style='font-size:1.08rem;'>CONTINUE SHOPPING</a>
+                          </div>
                         </div>
                     </div>
                 </div>
@@ -272,18 +199,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (itemTotalElem && unitPrice) {
                         itemTotalElem.textContent = formatPrice(unitPrice * quantity);
                     }
+                    updateCartPageSummary();
+                    updateFloatingCartCount();
                     // Update order summary
-                    fetch('ajax/get-cart-summary.php')
-                        .then(res => res.json())
-                        .then(summary => {
-                            if (summary.success) {
-                                const totals = summary.totals;
-                                document.getElementById('cart-subtotal').textContent = formatPrice(totals.subtotal);
-                                document.getElementById('cart-shipping').textContent = (totals.total_shipping > 0) ? formatPrice(totals.total_shipping) : 'Free';
-                                document.getElementById('cart-gst').textContent = formatPrice(totals.total_gst);
-                                document.getElementById('cart-grandtotal').textContent = isNaN(totals.grand_total) ? formatPrice(0) : formatPrice(totals.grand_total);
-                            }
-                        });
+                    // fetch('ajax/get-cart-summary.php') // This line is now handled by updateCartPageSummary()
+                    //     .then(res => res.json())
+                    //     .then(summary => {
+                    //         if (summary.success) {
+                    //             const totals = summary.totals;
+                    //             document.getElementById('cart-subtotal').textContent = formatPrice(totals.subtotal);
+                    //             document.getElementById('cart-shipping').textContent = (totals.total_shipping > 0) ? formatPrice(totals.total_shipping) : 'Free';
+                    //             document.getElementById('cart-gst').textContent = formatPrice(totals.total_gst);
+                    //             document.getElementById('cart-grandtotal').textContent = isNaN(totals.grand_total) ? formatPrice(0) : formatPrice(totals.grand_total);
+                    //         }
+                    //     });
                 } else {
                     alert('Error: ' + data.message);
                 }
@@ -311,6 +240,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(data => {
                     if (data.success) {
                         location.reload();
+                        updateCartPageSummary();
+                        updateFloatingCartCount();
                     } else {
                         alert('Error: ' + data.message);
                     }
@@ -321,8 +252,50 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function formatPrice(amount) {
-    if (isNaN(amount) || amount === null || amount === undefined) return '₹0.00';
-    return '₹' + parseFloat(amount).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    if (isNaN(amount) || amount === null || amount === undefined) return '₹0';
+    return '₹' + parseFloat(amount).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+}
+
+// Add this helper function to update the price summary on the cart page
+function updateCartPageSummary() {
+    const summaryBox = document.querySelector('.floating-cart-summary-box');
+    if (!summaryBox) {
+        // If the summary box is missing (cart is empty), reload the page
+        location.reload();
+        return;
+    }
+    fetch('ajax/get-cart-summary.php?t=' + Date.now())
+        .then(res => res.json())
+        .then(summary => {
+            if (summary.success) {
+                const totals = summary.totals;
+                summaryBox.innerHTML = `
+                  <div class="d-flex justify-content-between mb-2"><span class="text-muted">Total MRP</span><span style="font-weight:600;">₹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+                  <div class="d-flex justify-content-between mb-2"><span class="text-muted">Delivery Charge <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
+                  <div class="d-flex justify-content-between mb-2"><span class="text-muted">Savings</span><span class="fw-bold" style="color:#2e7d32;">₹${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+                  <div class="d-grid mt-3 mb-2">
+                    <a href='checkout.php' class='btn btn-success btn-lg fw-bold' style='font-size:1.08rem;'>PROCEED TO CHECKOUT</a>
+                  </div>
+                  <div class="d-grid mb-2">
+                    <a href='index.php' class='btn btn-outline-secondary btn-lg fw-bold' style='font-size:1.08rem;'>CONTINUE SHOPPING</a>
+                  </div>
+                `;
+            }
+        });
+}
+
+// Add this helper function to update the header cart count
+function updateFloatingCartCount() {
+    fetch('ajax/get_cart_count.php')
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('floatingCartCount').textContent = data.cart_count || 0;
+            var headerCartCount = document.getElementById('cart-count');
+            if (headerCartCount) {
+                headerCartCount.textContent = data.cart_count > 0 ? data.cart_count : '';
+                headerCartCount.style.display = data.cart_count > 0 ? 'inline-block' : 'none';
+            }
+        });
 }
 </script> 
 

@@ -51,14 +51,14 @@ try {
         echo '</div>';
         echo '</div>';
         echo '</td>';
-        echo '<td>₹' . number_format($item['price'], 2) . '</td>';
+        echo '<td>₹' . number_format($item['price'], 0) . '</td>';
         echo '<td>' . $item['quantity'] . '</td>';
-        echo '<td><strong>₹' . number_format($item_total, 2) . '</strong></td>';
+        echo '<td><strong>₹' . number_format($item_total, 0) . '</strong></td>';
         echo '</tr>';
     }
     
     echo '</tbody>';
-    echo '<tfoot><tr><th colspan="3" class="text-end">Total:</th><th>₹' . number_format($total, 2) . '</th></tr></tfoot>';
+    echo '<tfoot><tr><th colspan="3" class="text-end">Total:</th><th>₹' . number_format($total, 0) . '</th></tr></tfoot>';
     echo '</table>';
     echo '</div>';
     

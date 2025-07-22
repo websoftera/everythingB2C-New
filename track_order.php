@@ -44,7 +44,7 @@ include 'includes/header.php';
                 <div class="card-body">
                     <form method="GET" action="track_order.php">
                         <div class="input-group">
-                            <input type="text" class="form-control" name="tracking_id" placeholder="Enter your tracking ID (e.g., Everythingb2c00000001)" value="<?php echo htmlspecialchars($trackingId); ?>" required>
+                            <input type="text" class="form-control" name="tracking_id" placeholder="Enter your tracking ID (e.g., DEMO_SITE00000001)" value="<?php echo htmlspecialchars($trackingId); ?>" required>
                             <button class="btn btn-primary" type="submit">
                                 <i class="fas fa-search"></i> Track
                             </button>
@@ -146,12 +146,12 @@ include 'includes/header.php';
                                 <?php echo $order['status_name']; ?>
                             </span>
                         </p>
-                        <p><strong>Subtotal:</strong> ₹<?php echo number_format($order['subtotal'], 2); ?></p>
+                        <p><strong>Subtotal:</strong> ₹<?php echo number_format($order['subtotal'], 0); ?></p>
                         <?php if (!empty($order['shipping_charge'])): ?>
-                            <p><strong>Shipping:</strong> ₹<?php echo number_format($order['shipping_charge'], 2); ?></p>
+                            <p><strong>Shipping:</strong> ₹<?php echo number_format($order['shipping_charge'], 0); ?></p>
                         <?php endif; ?>
                         <?php if (!empty($order['gst_amount'])): ?>
-                            <p><strong>Taxes (GST):</strong> ₹<?php echo number_format($order['gst_amount'], 2); ?></p>
+                            <p><strong>Taxes (GST):</strong> ₹<?php echo number_format($order['gst_amount'], 0); ?></p>
                         <?php endif; ?>
                         <?php 
                         $total_savings = 0;
@@ -161,8 +161,8 @@ include 'includes/header.php';
                             }
                         }
                         ?>
-                        <p class="text-success"><strong>Total Savings:</strong> ₹<?php echo number_format($total_savings, 2); ?></p>
-                        <p><strong>Total Amount:</strong> ₹<?php echo number_format($order['total_amount'], 2); ?></p>
+                        <p class="text-success"><strong>Total Savings:</strong> ₹<?php echo number_format($total_savings, 0); ?></p>
+                        <p><strong>Total Amount:</strong> ₹<?php echo number_format($order['total_amount'], 0); ?></p>
                         <?php if ($order['estimated_delivery_date']): ?>
                             <p><strong>Estimated Delivery:</strong> <?php echo date('F j, Y', strtotime($order['estimated_delivery_date'])); ?></p>
                         <?php endif; ?>

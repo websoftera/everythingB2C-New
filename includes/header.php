@@ -57,6 +57,16 @@ if (isLoggedIn()) {
     <link rel="stylesheet" href="asset/style/style.css">
     <link rel="stylesheet" href="asset/style/product-card.css">
     <style>
+html, body {
+  overflow-x: hidden !important;
+  max-width: 100vw;
+}
+.container, .row {
+  max-width: 100vw !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box;
+}
 /* Hide spinner arrows for quantity input in floating cart */
 .cart-qty-input::-webkit-inner-spin-button,
 .cart-qty-input::-webkit-outer-spin-button {
@@ -112,6 +122,37 @@ if (isLoggedIn()) {
   background: #fff;
   box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
 }
+.header2 {
+  height: 35px;
+  min-height: 35px;
+  z-index: 10000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+.navbar {
+  position: fixed !important;
+  top: 35px !important;
+  left: 0 !important;
+  width: 100% !important;
+  z-index: 9999 !important;
+  background: #fff !important;
+}
+.category-navbar {
+  position: fixed !important;
+  top: 91px !important;
+  left: 0 !important;
+  width: 100% !important;
+  z-index: 9998 !important;
+  background: #fff !important;
+}
+body { padding-top: 147px !important; }
+@media (max-width: 991.98px) {
+  .navbar { top: 35px !important; }
+  .category-navbar { top: 83px !important; }
+  body { padding-top: 118px !important; }
+}
 </style>
 </head>
 <body>
@@ -153,69 +194,67 @@ if (isLoggedIn()) {
 
 <!-- NAVBAR START -->
 <nav class="navbar navbar-expand-lg">
-    <div class="container-fluid d-flex align-items-center justify-content-between">
-        <div class="logo-wrapper d-flex align-items-center">
-            <a href="index.php">
-                <img src="./Kichen Page/page2/logo.webp" alt="Logo" class="img-fluid logo" />
-            </a>
-        </div>
-        <form class="d-flex flex-grow-1 mx-4 position-relative" role="search" autocomplete="off" onsubmit="return false;">
-            <div class="input-group w-100 flex-wrap">
-                <!-- DESKTOP Dropdown -->
-                <div class="dropdown-desktop">
-                  <button id="categoryDropdownDesktop" class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" data-selected-category="all">
-                    <span id="selectedCategoryDesktop">All</span>
-                  </button>
-                  <ul class="dropdown-menu">
-                    <li><a class="dropdown-item category-option" href="#" data-category="all">All</a></li>
-                    <?php
-                    function renderCategoryDropdown($tree, $level = 0) {
-                        foreach ($tree as $cat) {
-                            $indent = str_repeat('&nbsp;&nbsp;&nbsp;', $level);
-                            if (!empty($cat['children'])) {
-                                // Main category as non-selectable header
-                                echo '<li><span class="dropdown-header" style="font-weight:bold;">' . $indent . htmlspecialchars($cat['name']) . '</span></li>';
-                                renderCategoryDropdown($cat['children'], $level + 1);
-                            } else {
-                                // Selectable category
-                                echo '<li><a class="dropdown-item category-option" href="#" data-category="' . $cat['slug'] . '">' . $indent . htmlspecialchars($cat['name']) . '</a></li>';
-                            }
+    <div class="logo-wrapper d-flex align-items-center">
+        <a href="index.php">
+            <img src="./Kichen Page/page2/logo.webp" alt="Logo" class="img-fluid logo" />
+        </a>
+    </div>
+    <form class="d-flex flex-grow-1 mx-4 position-relative" role="search" autocomplete="off" onsubmit="return false;">
+        <div class="input-group w-100 flex-wrap">
+            <!-- DESKTOP Dropdown -->
+            <div class="dropdown-desktop">
+              <button id="categoryDropdownDesktop" class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" data-selected-category="all">
+                <span id="selectedCategoryDesktop">All</span>
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item category-option" href="#" data-category="all">All</a></li>
+                <?php
+                function renderCategoryDropdown($tree, $level = 0) {
+                    foreach ($tree as $cat) {
+                        $indent = str_repeat('&nbsp;&nbsp;&nbsp;', $level);
+                        if (!empty($cat['children'])) {
+                            // Main category as non-selectable header
+                            echo '<li><span class="dropdown-header" style="font-weight:bold;">' . $indent . htmlspecialchars($cat['name']) . '</span></li>';
+                            renderCategoryDropdown($cat['children'], $level + 1);
+                        } else {
+                            // Selectable category
+                            echo '<li><a class="dropdown-item category-option" href="#" data-category="' . $cat['slug'] . '">' . $indent . htmlspecialchars($cat['name']) . '</a></li>';
                         }
                     }
-                    renderCategoryDropdown($categoryTree);
-                    ?>
-                  </ul>
-                </div>
-                <!-- MOBILE Dropdown -->
-                <div class="dropdown-mobile">
-                  <button id="categoryDropdownMobile" class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" data-selected-category="all">
-                    <span id="selectedCategoryMobile">All</span>
-                  </button>
-                  <ul class="dropdown-menu">
-                    <li><a class="dropdown-item category-option" href="#" data-category="all">All</a></li>
-                    <?php renderCategoryDropdown($categoryTree); ?>
-                  </ul>
-                </div>
-                <input class="form-control" id="headerSearchInput" type="search" name="query" placeholder="Search for Products" aria-label="Search" autocomplete="off">
-                <button class="btn btn-primary" id="headerSearchBtn" type="button">
-                    <i class="bi bi-search"></i>
-                </button>
+                }
+                renderCategoryDropdown($categoryTree);
+                ?>
+              </ul>
             </div>
-            <div id="headerSearchResultsPopup" class="position-absolute w-100" style="z-index: 9999; display: none;"></div>
-        </form>
-        <div class="d-none d-lg-flex align-items-center">
-            <a href="Customer-Support.html" class="text-decoration-none text-dark">
-                <i class="bi bi-headset fs-4 me-2"></i>
-                <span class="me-4 fw-semibold customer-support">Customer Support</span>
-            </a>
-            <a href="cart.php" class="text-decoration-none text-dark cart-link position-relative">
-                <i class="bi bi-cart4 fs-4 cart-icon"></i>
-                <!-- <span class="me-4 fw-semibold">Cart</span> -->
-                <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill" style="display:<?php echo $cartCount > 0 ? 'inline-block' : 'none'; ?>;">
-                    <?php echo $cartCount > 0 ? $cartCount : ''; ?>
-                </span>
-            </a>
+            <!-- MOBILE Dropdown -->
+            <div class="dropdown-mobile">
+              <button id="categoryDropdownMobile" class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" data-selected-category="all">
+                <span id="selectedCategoryMobile">All</span>
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item category-option" href="#" data-category="all">All</a></li>
+                <?php renderCategoryDropdown($categoryTree); ?>
+              </ul>
+            </div>
+            <input class="form-control" id="headerSearchInput" type="search" name="query" placeholder="Search for Products" aria-label="Search" autocomplete="off">
+            <button class="btn btn-primary" id="headerSearchBtn" type="button">
+                <i class="bi bi-search"></i>
+            </button>
         </div>
+        <div id="headerSearchResultsPopup" class="position-absolute w-100" style="z-index: 9999; display: none;"></div>
+    </form>
+    <div class="d-none d-lg-flex align-items-center">
+        <a href="Customer-Support.html" class="text-decoration-none text-dark">
+            <i class="bi bi-headset fs-4 me-2"></i>
+            <span class="me-4 fw-semibold customer-support">Customer Support</span>
+        </a>
+        <a href="cart.php" class="text-decoration-none text-dark cart-link position-relative">
+            <i class="bi bi-cart4 fs-4 cart-icon"></i>
+            <!-- <span class="me-4 fw-semibold">Cart</span> -->
+            <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill" style="display:<?php echo $cartCount > 0 ? 'inline-block' : 'none'; ?>;">
+                <?php echo $cartCount > 0 ? $cartCount : ''; ?>
+            </span>
+        </a>
     </div>
 </nav>
 
@@ -239,30 +278,30 @@ if (isLoggedIn()) {
 
 <!-- Desktop Category Navigation -->
 <div class="second-navbar d-none d-lg-block">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top w-100 category-navbar">
-        <div class="container-fluid d-flex justify-content-between align-items-center">
-            <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
-                <ul class="navbar-nav category-list mb-2 mb-lg-0 d-flex align-items-center">
-                    <?php function renderCategoryMenu($tree) {
-                        foreach ($tree as $cat) {
-                            if (!empty($cat['children'])) {
-                                echo '<li class="nav-item dropdown d-flex align-items-center">';
-                                // Main category link as dropdown toggle
-                                echo '<a class="nav-link dropdown-toggle" href="category.php?slug=' . $cat['slug'] . '" id="catDropdown' . $cat['id'] . '" role="button" data-bs-toggle="dropdown" aria-expanded="false">' . strtoupper(htmlspecialchars($cat['name'])) . '</a>';
-                                echo '<ul class="dropdown-menu" aria-labelledby="catDropdown' . $cat['id'] . '">';
-                                foreach ($cat['children'] as $subcat) {
-                                    echo '<li><a class="dropdown-item" href="category.php?slug=' . $subcat['slug'] . '">' . htmlspecialchars($subcat['name']) . '</a></li>';
-                                }
-                                echo '</ul>';
-                                echo '</li>';
-                            } else {
-                                echo '<li class="nav-item"><a class="nav-link" href="category.php?slug=' . $cat['slug'] . '">' . strtoupper(htmlspecialchars($cat['name'])) . '</a></li>';
+    <nav class="navbar navbar-expand-lg navbar-light bg-light category-navbar">
+        <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
+            <ul class="navbar-nav category-list mb-2 mb-lg-0 d-flex align-items-center">
+                <?php function renderCategoryMenu($tree) {
+                    foreach ($tree as $cat) {
+                        if (!empty($cat['children'])) {
+                            echo '<li class="nav-item dropdown d-flex align-items-center">';
+                            // Main category name as clickable link
+                            echo '<a class="nav-link" href="category.php?slug=' . $cat['slug'] . '" id="catLink' . $cat['id'] . '">' . strtoupper(htmlspecialchars($cat['name'])) . '</a>';
+                            // Separate dropdown toggle button (no nav-link class, only btn btn-link)
+                            echo '<button class="btn btn-link p-0 ms-1 align-self-center" id="catDropdown' . $cat['id'] . '" data-bs-toggle="dropdown" aria-expanded="false" style="font-size:0.85rem;line-height:1;vertical-align:middle;color:#222;">&#9660;</button>';
+                            echo '<ul class="dropdown-menu" aria-labelledby="catDropdown' . $cat['id'] . '">';
+                            foreach ($cat['children'] as $subcat) {
+                                echo '<li><a class="dropdown-item" href="category.php?slug=' . $subcat['slug'] . '">' . htmlspecialchars($subcat['name']) . '</a></li>';
                             }
+                            echo '</ul>';
+                            echo '</li>';
+                        } else {
+                            echo '<li class="nav-item"><a class="nav-link" href="category.php?slug=' . $cat['slug'] . '">' . strtoupper(htmlspecialchars($cat['name'])) . '</a></li>';
                         }
                     }
-                    renderCategoryMenu($categoryTree); ?>
-                </ul>
-            </div>
+                }
+                renderCategoryMenu($categoryTree); ?>
+            </ul>
         </div>
     </nav>
 </div>
@@ -271,11 +310,49 @@ if (isLoggedIn()) {
 <script src="popup/searchbar.js"></script>
 <script>
 // --- Floating Cart Logic (Dropdown/Panel, Advanced) ---
+function updateCartQuantity(cartId, qty, inputElem, btnElem, callback) {
+  const content = document.getElementById('floatingCartContent');
+  if (qty < 1) qty = 1;
+  if (inputElem) inputElem.disabled = true;
+  if (btnElem) btnElem.disabled = true;
+  fetch('ajax/update-cart.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ cart_id: cartId, quantity: qty })
+  })
+  .then(res => res.json())
+  .then(resp => {
+    if (inputElem) inputElem.disabled = false;
+    if (btnElem) btnElem.disabled = false;
+    if (resp.success) {
+      // Only reload if cart is now empty
+      if (!content.querySelector('.d-flex.align-items-center')) {
+        renderFloatingCart();
+        updateFloatingCartCount();
+      } else {
+        updateFloatingCartSummary();
+      }
+      if (callback) callback(true);
+    } else {
+      if (callback) callback(false);
+    }
+  });
+}
 function updateFloatingCartCount() {
   fetch('ajax/get_cart_count.php')
     .then(res => res.json())
     .then(data => {
       document.getElementById('floatingCartCount').textContent = data.cart_count || 0;
+      var headerCartCount = document.getElementById('cart-count');
+      if (headerCartCount) {
+        headerCartCount.textContent = data.cart_count > 0 ? data.cart_count : '';
+        headerCartCount.style.display = data.cart_count > 0 ? 'inline-block' : 'none';
+      }
+      // Hide or show floating cart icon
+      var floatingCartBtn = document.getElementById('floatingCartBtn');
+      if (floatingCartBtn) {
+        floatingCartBtn.style.display = (data.cart_count > 0) ? '' : 'none';
+      }
     });
 }
 function renderFloatingCart() {
@@ -283,7 +360,7 @@ function renderFloatingCart() {
   const summary = document.getElementById('floatingCartSummary');
   content.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-success" role="status"><span class="visually-hidden">Loading...</span></div></div>';
   summary.innerHTML = '';
-  fetch('ajax/get-cart-summary.php?details=1')
+  fetch('ajax/get-cart-summary.php?details=1&t=' + Date.now())
     .then(res => res.json())
     .then(data => {
       if (!data || !data.cartItems) {
@@ -298,7 +375,7 @@ function renderFloatingCart() {
       }
       let itemsHtml = '';
       items.forEach(item => {
-        const cartId = item.cart_id || item.product_id;
+        const cartId = item.id; // Use the cart table's primary key
         itemsHtml += `
           <div class="d-flex align-items-center gap-1 mb-2 border-bottom pb-1" style="min-width:0;">
             <img src="./${item.main_image}" alt="${item.name}" style="width:38px;height:38px;object-fit:cover;border-radius:6px;border:1px solid #eee;flex-shrink:0;">
@@ -310,7 +387,6 @@ function renderFloatingCart() {
                 <button class="btn btn-xs btn-outline-secondary btn-qty-plus" data-cart-id="${cartId}" style="width:22px;height:22px;padding:0 0 2px 0;line-height:1;">+</button>
                 <span class="ms-1">x ₹${parseFloat(item.selling_price).toFixed(2)}</span>
               </div>
-              <div class="text-muted" style="font-size:0.78rem;">HSN: ${item.hsn || '-'}</div>
             </div>
             <div class="text-end ms-1" style="min-width:54px;">
               <div style="font-weight:700;font-size:0.98rem;">₹${(item.selling_price * item.quantity).toFixed(2)}</div>
@@ -323,19 +399,84 @@ function renderFloatingCart() {
       // Summary
       const totals = data.totals;
       summary.innerHTML = `
-        <div class="d-flex justify-content-between mb-1 text-success" style="font-size:0.98rem;"><span><b>Total Savings</b></span><span><b>₹${parseFloat(totals.total_savings).toFixed(2)}</b></span></div>
-        <div class="d-flex justify-content-between mb-1"><span>Subtotal:</span><span>₹${parseFloat(totals.subtotal).toFixed(2)}</span></div>
-        <div class="d-flex justify-content-between mb-1"><span>GST:</span><span>₹${parseFloat(totals.total_gst).toFixed(2)}</span></div>
-        <div class="d-flex justify-content-between mb-1"><span>Shipping:</span><span>${totals.total_shipping > 0 ? '₹' + parseFloat(totals.total_shipping).toFixed(2) : 'Free'}</span></div>
-        <hr class="my-2" style="margin:4px 0;">
-        <div class="d-flex justify-content-between fw-bold" style="font-size:1.05rem;"><span>Total:</span><span>₹${parseFloat(totals.grand_total).toFixed(2)}</span></div>
+        <div class="floating-cart-summary-box" style="border:1px solid #cfd8dc;border-radius:8px;padding:16px 16px 8px 16px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:10px;">
+          <div style="font-weight:600;font-size:1.1rem;margin-bottom:12px;">Price Summary</div>
+          <div class="d-flex justify-content-between mb-2"><span class="text-muted">Total MRP</span><span style="font-weight:600;">₹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+          <div class="d-flex justify-content-between mb-2"><span class="text-muted">Delivery Charge <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
+          <div class="d-flex justify-content-between mb-2"><span class="text-muted">Savings</span><span class="fw-bold" style="color:#2e7d32;">₹${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+          <div class="d-grid mt-3 mb-2">
+            <a href='checkout.php' class='btn btn-success btn-lg fw-bold' style='font-size:1.08rem;'>PROCEED TO CHECKOUT</a>
+          </div>
+        </div>
       `;
-      // Remove item event
-      document.querySelectorAll('.remove-cart-item-btn').forEach(btn => {
+      // Attach direct handlers to floating cart buttons
+      content.querySelectorAll('.btn-qty-minus').forEach(btn => {
         btn.onclick = function(e) {
           e.stopPropagation();
-          const cartId = this.getAttribute('data-cart-id');
-          this.disabled = true;
+          const cartId = btn.getAttribute('data-cart-id');
+          const row = btn.closest('.d-flex.align-items-center');
+          const input = content.querySelector('.cart-qty-input[data-cart-id="' + cartId + '"]');
+          let qty = parseInt(input.value, 10) || 1;
+          if (qty > 1) {
+            const prevQty = qty;
+            input.value = qty - 1;
+            // Update total in DOM
+            const priceSpan = row.querySelector('.ms-1');
+            const unitPrice = parseFloat(priceSpan ? priceSpan.textContent.replace(/[^\d.]/g, '') : 0);
+            const totalDiv = row.querySelector('div[style*="font-weight:700"]');
+            if (totalDiv && unitPrice) {
+              totalDiv.textContent = '₹' + ((qty - 1) * unitPrice).toFixed(2);
+            }
+            updateCartQuantity(cartId, qty - 1, input, btn, function(success) {
+              if (!success) {
+                input.value = prevQty;
+                if (totalDiv && unitPrice) {
+                  totalDiv.textContent = '₹' + (prevQty * unitPrice).toFixed(2);
+                }
+                alert('Could not update cart.');
+              } else {
+                updateFloatingCartCount();
+              }
+            });
+          }
+        };
+      });
+      content.querySelectorAll('.btn-qty-plus').forEach(btn => {
+        btn.onclick = function(e) {
+          e.stopPropagation();
+          const cartId = btn.getAttribute('data-cart-id');
+          const row = btn.closest('.d-flex.align-items-center');
+          const input = content.querySelector('.cart-qty-input[data-cart-id="' + cartId + '"]');
+          let qty = parseInt(input.value, 10) || 1;
+          const prevQty = qty;
+          input.value = qty + 1;
+          // Update total in DOM
+          const priceSpan = row.querySelector('.ms-1');
+          const unitPrice = parseFloat(priceSpan ? priceSpan.textContent.replace(/[^\d.]/g, '') : 0);
+          const totalDiv = row.querySelector('div[style*="font-weight:700"]');
+          if (totalDiv && unitPrice) {
+            totalDiv.textContent = '₹' + ((qty + 1) * unitPrice).toFixed(2);
+          }
+          updateCartQuantity(cartId, qty + 1, input, btn, function(success) {
+            if (!success) {
+              input.value = prevQty;
+              if (totalDiv && unitPrice) {
+                totalDiv.textContent = '₹' + (prevQty * unitPrice).toFixed(2);
+              }
+              alert('Could not update cart.');
+            } else {
+              updateFloatingCartCount();
+            }
+          });
+        };
+      });
+      content.querySelectorAll('.remove-cart-item-btn').forEach(btn => {
+        btn.onclick = function(e) {
+          e.stopPropagation();
+          const cartId = btn.getAttribute('data-cart-id');
+          const row = btn.closest('.d-flex.align-items-center');
+          const rowClone = row.cloneNode(true);
+          row.parentNode.removeChild(row);
           fetch('ajax/remove-from-cart.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -344,40 +485,24 @@ function renderFloatingCart() {
           .then(res => res.json())
           .then(resp => {
             if (resp.success) {
-              renderFloatingCart();
-              updateFloatingCartCount();
+              // If cart is now empty, reload floating cart
+              if (!content.querySelector('.d-flex.align-items-center')) {
+                renderFloatingCart();
+                updateFloatingCartCount();
+              } else {
+                updateFloatingCartSummary();
+                updateFloatingCartCount();
+              }
             } else {
+              // Restore row if error
+              content.insertBefore(rowClone, content.firstChild);
               alert(resp.message || 'Could not remove item.');
-              this.disabled = false;
             }
           });
         };
       });
-      // Quantity minus/plus events
-      document.querySelectorAll('.btn-qty-minus').forEach(btn => {
-        btn.onclick = function(e) {
-          e.stopPropagation();
-          const cartId = this.getAttribute('data-cart-id');
-          const input = content.querySelector('.cart-qty-input[data-cart-id="' + cartId + '"]');
-          if (!input) return; // Prevent error if input is missing
-          let qty = parseInt(input.value, 10) || 1;
-          if (qty > 1) {
-            updateCartQuantity(cartId, qty - 1, input, this);
-          }
-        };
-      });
-      document.querySelectorAll('.btn-qty-plus').forEach(btn => {
-        btn.onclick = function(e) {
-          e.stopPropagation();
-          const cartId = this.getAttribute('data-cart-id');
-          const input = content.querySelector('.cart-qty-input[data-cart-id="' + cartId + '"]');
-          if (!input) return; // Prevent error if input is missing
-          let qty = parseInt(input.value, 10) || 1;
-          updateCartQuantity(cartId, qty + 1, input, this);
-        };
-      });
       // Quantity input direct change
-      document.querySelectorAll('.cart-qty-input').forEach(input => {
+      content.querySelectorAll('.cart-qty-input').forEach(input => {
         input.onchange = function(e) {
           let qty = parseInt(this.value, 10) || 1;
           if (qty < 1) qty = 1;
@@ -385,26 +510,46 @@ function renderFloatingCart() {
           updateCartQuantity(cartId, qty, this, null);
         };
       });
-      function updateCartQuantity(cartId, qty, inputElem, btnElem) {
-        if (qty < 1) qty = 1;
-        if (inputElem) inputElem.disabled = true;
-        if (btnElem) btnElem.disabled = true;
-        content.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-success" role="status"><span class="visually-hidden">Updating...</span></div></div>';
-        fetch('ajax/update-cart.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ cart_id: cartId, quantity: qty })
-        })
-        .then(res => res.json())
-        .then(resp => {
-          renderFloatingCart();
-          updateFloatingCartCount();
-        });
-      }
     })
     .catch(() => {
       content.innerHTML = '<div class="text-center text-danger py-4">Could not load cart.</div>';
       summary.innerHTML = '';
+    });
+}
+// Add this helper function to update only the floating cart summary
+function updateFloatingCartSummary() {
+  const summary = document.getElementById('floatingCartSummary');
+  fetch('ajax/get-cart-summary.php?t=' + Date.now())
+    .then(res => res.json())
+    .then(data => {
+      if (!data || !data.totals) return;
+      const totals = data.totals;
+      const isEmpty = parseFloat(totals.subtotal) === 0;
+      if (isEmpty) {
+        summary.innerHTML = `
+          <div class="floating-cart-summary-box" style="border:1px solid #cfd8dc;border-radius:8px;padding:24px 16px 16px 16px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:10px;text-align:center;">
+            <div style="font-weight:600;font-size:1.1rem;margin-bottom:12px;">Your cart is empty</div>
+            <div class="d-grid mt-3 mb-2">
+              <a href='shop.php' class='btn btn-outline-secondary btn-lg fw-bold' style='font-size:1.08rem;'>CONTINUE SHOPPING</a>
+            </div>
+          </div>
+        `;
+      } else {
+        summary.innerHTML = `
+          <div class="floating-cart-summary-box" style="border:1px solid #cfd8dc;border-radius:8px;padding:16px 16px 8px 16px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:10px;">
+            <div style="font-weight:600;font-size:1.1rem;margin-bottom:12px;">Price Summary</div>
+            <div class="d-flex justify-content-between mb-2"><span class="text-muted">Total MRP</span><span style="font-weight:600;">₹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+            <div class="d-flex justify-content-between mb-2"><span class="text-muted">Delivery Charge <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
+            <div class="d-flex justify-content-between mb-2"><span class="text-muted">Savings</span><span class="fw-bold" style="color:#2e7d32;">₹${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+            <div class="d-grid mt-3 mb-2"><a href='checkout.php' class='btn btn-success btn-lg fw-bold' style='font-size:1.08rem;'>PROCEED TO CHECKOUT</a></div>
+          </div>
+        `;
+      }
+      // Show/hide floating cart actions (both buttons) if cart is empty
+      var cartActionsDiv = document.querySelector('#floatingCartPanel .floating-cart-actions');
+      if (cartActionsDiv) {
+        cartActionsDiv.style.display = isEmpty ? 'none' : '';
+      }
     });
 }
 // Show/hide panel as dropdown
@@ -443,6 +588,116 @@ window.addEventListener('cart-updated', function() {
   renderFloatingCart();
   updateFloatingCartCount();
 });
+
+function makeFloatingCartMovable() {
+  const panel = document.getElementById('floatingCartPanel');
+  const header = panel ? panel.querySelector('.floating-cart-header') : null;
+  if (!panel || !header) return;
+  let isDragging = false;
+  let offsetX = 0, offsetY = 0;
+  let startX = 0, startY = 0;
+
+  function onMouseDown(e) {
+    isDragging = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    const rect = panel.getBoundingClientRect();
+    offsetX = startX - rect.left;
+    offsetY = startY - rect.top;
+    panel.style.transition = 'none';
+    panel.style.position = 'fixed';
+    panel.style.zIndex = 2000;
+    document.body.style.userSelect = 'none';
+  }
+  function onMouseMove(e) {
+    if (!isDragging) return;
+    let x = e.clientX - offsetX;
+    let y = e.clientY - offsetY;
+    x = Math.max(0, Math.min(window.innerWidth - panel.offsetWidth, x));
+    y = Math.max(0, Math.min(window.innerHeight - panel.offsetHeight, y));
+    panel.style.left = x + 'px';
+    panel.style.top = y + 'px';
+    panel.style.right = 'auto';
+    panel.style.bottom = 'auto';
+    panel.style.position = 'fixed';
+    panel.style.zIndex = 2000;
+  }
+  function onMouseUp() {
+    isDragging = false;
+    document.body.style.userSelect = '';
+  }
+  function attachDrag() {
+    header.addEventListener('mousedown', onMouseDown);
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  }
+  function detachDrag() {
+    header.removeEventListener('mousedown', onMouseDown);
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+  }
+  // Attach drag only when panel is shown
+  const observer = new MutationObserver(() => {
+    if (panel.style.display !== 'none') {
+      attachDrag();
+    } else {
+      detachDrag();
+    }
+  });
+  observer.observe(panel, { attributes: true, attributeFilter: ['style'] });
+}
+
+function makeFloatingCartBtnMovable() {
+  const btn = document.getElementById('floatingCartBtn');
+  if (!btn) return;
+  let isDragging = false;
+  let offsetX = 0, offsetY = 0;
+  let startX = 0, startY = 0;
+
+  btn.style.position = 'fixed';
+  btn.style.cursor = 'default';
+
+  btn.onmousedown = function(e) {
+    isDragging = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    const rect = btn.getBoundingClientRect();
+    offsetX = startX - rect.left;
+    offsetY = startY - rect.top;
+    btn.style.transition = 'none';
+    document.body.style.userSelect = 'none';
+  };
+
+  document.onmousemove = function(e) {
+    if (!isDragging) return;
+    let x = e.clientX - offsetX;
+    let y = e.clientY - offsetY;
+    // Keep within viewport
+    x = Math.max(0, Math.min(window.innerWidth - btn.offsetWidth, x));
+    y = Math.max(0, Math.min(window.innerHeight - btn.offsetHeight, y));
+    btn.style.left = x + 'px';
+    btn.style.top = y + 'px';
+  };
+
+  document.onmouseup = function() {
+    if (isDragging) {
+      isDragging = false;
+      btn.style.transition = '';
+      document.body.style.userSelect = '';
+    }
+  };
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  makeFloatingCartMovable();
+  makeFloatingCartBtnMovable();
+  // Hide floating cart on checkout.php
+  if (window.location.pathname.endsWith('checkout.php')) {
+    var floatingCartBtn = document.getElementById('floatingCartBtn');
+    if (floatingCartBtn) floatingCartBtn.style.display = 'none';
+  }
+});
+
 </script>
 <main>
 

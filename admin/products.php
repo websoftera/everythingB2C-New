@@ -268,10 +268,10 @@ $categories = getAllCategories();
                                                         <td>
                                                             <div class="d-flex flex-column">
                                                                 <span class="text-decoration-line-through text-muted">
-                                                                    ₹<?php echo number_format($product['mrp'], 2); ?>
+                                                                    ₹<?php echo number_format($product['mrp'], 0); ?>
                                                                 </span>
                                                                 <strong class="text-primary">
-                                                                    ₹<?php echo number_format($product['selling_price'], 2); ?>
+                                                                    ₹<?php echo number_format($product['selling_price'], 0); ?>
                                                                 </strong>
                                                                 <?php if ($product['discount_percentage'] > 0): ?>
                                                                     <small class="text-success">
@@ -289,7 +289,7 @@ $categories = getAllCategories();
                                                         <td>
                                                             <?php 
                                                             if ($product['shipping_charge'] !== null) {
-                                                                echo '₹' . number_format($product['shipping_charge'], 2);
+                                                                echo '₹' . number_format($product['shipping_charge'], 0);
                                                             } else {
                                                                 echo '<span class="text-muted">Free</span>';
                                                             }

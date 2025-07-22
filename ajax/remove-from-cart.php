@@ -14,6 +14,7 @@ header('Content-Type: application/json');
 $input = json_decode(file_get_contents('php://input'), true);
 
 if (!$input || !isset($input['cart_id'])) {
+    session_write_close();
     echo json_encode(['success' => false, 'message' => 'Invalid input']);
     exit;
 }
@@ -30,8 +31,10 @@ if (isLoggedIn()) {
 }
 
 if ($result) {
+    session_write_close();
     echo json_encode(['success' => true, 'message' => 'Item removed from cart']);
 } else {
+    session_write_close();
     echo json_encode(['success' => false, 'message' => 'Failed to remove item']);
 }
 ?> 

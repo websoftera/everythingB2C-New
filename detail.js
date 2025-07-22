@@ -20,18 +20,18 @@ document.querySelectorAll('.product-detail-card').forEach(card => {
   updatePayText();
 
   // --- Fix: Disable add-to-cart button if already in cart (AJAX cart) ---
-  function checkAjaxCartButtonState() {
-    // Use the numeric product ID from data-product-id
-    const productId = addBtn?.dataset.productId;
-    if (!productId) return;
-    // Check if the button is already disabled (e.g., after click)
-    if (addBtn.disabled) return;
-    // Optionally, you could fetch the cart count or state from the server via AJAX
-    // For now, always enable the button (let server handle duplicates)
-    addBtn.disabled = false;
-    addBtn.textContent = 'ADD TO CART';
-  }
-  checkAjaxCartButtonState();
+  // function checkAjaxCartButtonState() {
+  //   // Use the numeric product ID from data-product-id
+  //   const productId = addBtn?.dataset.productId;
+  //   if (!productId) return;
+  //   // Check if the button is already disabled (e.g., after click)
+  //   if (addBtn.disabled) return;
+  //   // Optionally, you could fetch the cart count or state from the server via AJAX
+  //   // For now, always enable the button (let server handle duplicates)
+  //   addBtn.disabled = false;
+  //   addBtn.textContent = 'ADD TO CART';
+  // }
+  // checkAjaxCartButtonState();
 });
 
 // Remove or comment out all localStorage cart logic and add-to-cart logic below:

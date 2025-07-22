@@ -127,20 +127,20 @@
           <img src="${item.image}" class="cart-img" alt="${item.title}">
           <span>${item.title}</span>
         </div>
-        <div>${price.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}</div>
+        <div>${price.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</div>
         <div class="qty-control">
           <button onclick="updateQty(${index}, -1)">−</button>
           <input type="number" value="${item.qty}" min="1" onchange="changeQty(${index}, this.value)">
           <button onclick="updateQty(${index}, 1)">+</button>
         </div>
-        <div>${total.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}</div>
+        <div>${total.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</div>
         <div class="remove-x" onclick="removeItem(${index})">×</div>
       `;
       cartContainer.appendChild(row);
     });
 
     const finalTotal = subtotal + deliveryCharge;
-    subtotalSpan.textContent = finalTotal.toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
+    subtotalSpan.textContent = finalTotal.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
     localStorage.setItem("cart", JSON.stringify(cart));
   }
@@ -185,7 +185,7 @@
 
         if (charge !== undefined) {
           deliveryCharge = charge;
-          chargeDiv.textContent = `Delivery Charges: ₹${deliveryCharge.toFixed(2)}`;
+          chargeDiv.textContent = `Delivery Charges: ₹${deliveryCharge.toFixed(0)}`;
           deliveryError.textContent = "";
         } else {
           deliveryCharge = 0;

@@ -1,6 +1,6 @@
 -- Create database
--- CREATE DATABASE IF NOT EXISTS everythingb2c;
--- USE everythingb2c;
+-- CREATE DATABASE IF NOT EXISTS EverythingB2C;
+-- USE EverythingB2C;
 
 -- Categories table
 CREATE TABLE categories (

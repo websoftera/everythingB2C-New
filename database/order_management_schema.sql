@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS payment_transactions (
 );
 
 -- Generate tracking IDs for existing orders
-UPDATE orders SET tracking_id = CONCAT('Everythingb2c', LPAD(id, 8, '0')) WHERE tracking_id IS NULL;
+UPDATE orders SET tracking_id = CONCAT('EverythingB2C', LPAD(id, 8, '0')) WHERE tracking_id IS NULL;
 
 -- Create index for better performance
 CREATE INDEX idx_orders_tracking_id ON orders(tracking_id);

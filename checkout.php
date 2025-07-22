@@ -349,24 +349,24 @@ foreach ($cartItems as $item) {
             <!-- Per-product breakdown -->
             <!-- Removed per-product table as requested -->
             <div class="mb-2"></div>
-            <div class="d-flex justify-content-between mb-2"><span>Total MRP</span><span>₹<?php echo number_format($mrp,2); ?></span></div>
-            <div class="d-flex justify-content-between mb-2"><span>You Pay</span><span>₹<?php echo number_format($orderTotals['subtotal'],2); ?></span></div>
+            <div class="d-flex justify-content-between mb-2"><span>Total MRP</span><span>₹<?php echo number_format($mrp,0); ?></span></div>
+            <div class="d-flex justify-content-between mb-2"><span>You Pay</span><span>₹<?php echo number_format($orderTotals['subtotal'],0); ?></span></div>
             <div class="d-flex justify-content-between mb-2"><span>Delivery charge</span><span id="cart-shipping">₹<?php echo $orderTotals['shipping_charge']; ?></span></div>
-            <div class="d-flex justify-content-between mb-2"><span>Shipping Zone</span><span id="cart-shipping-zone"><?php echo htmlspecialchars($orderTotals['shipping_zone_name'] ?? ''); ?></span></div>
-            <div class="d-flex justify-content-between mb-2 bg-light p-2 rounded"><span class="text-success"><b>Total Savings</b></span><span class="text-success">₹<?php echo number_format($savings,2); ?></span></div>
+            <!-- <div class="d-flex justify-content-between mb-2"><span>Shipping Zone</span><span id="cart-shipping-zone"><?php echo htmlspecialchars($orderTotals['shipping_zone_name'] ?? ''); ?></span></div> -->
+            <div class="d-flex justify-content-between mb-2 bg-light p-2 rounded"><span class="text-success"><b>Total Savings</b></span><span class="text-success">₹<?php echo number_format($savings,0); ?></span></div>
             <!-- GST Breakdown -->
             <div class="border-top pt-2 mt-2" id="gst-breakdown-section">
               <!-- This content will be fully replaced by JS on address change -->
-              <small class="text-muted">TAX Breakdown:</small>
+              <!-- <small class="text-muted">TAX Breakdown:</small> -->
               <?php if ($orderTotals['igst_total'] > 0): ?>
-                <div class="d-flex justify-content-between mb-1"><small>IGST (<?php echo number_format($orderTotals['igst_total'] > 0 ? ($orderTotals['igst_total'] / $orderTotals['subtotal']) * 100 : 0, 1); ?>%)</small><small>₹<?php echo number_format($orderTotals['igst_total'],2); ?></small></div>
+                <!-- <div class="d-flex justify-content-between mb-1"><small>IGST (<?php echo number_format($orderTotals['igst_total'] > 0 ? ($orderTotals['igst_total'] / $orderTotals['subtotal']) * 100 : 0, 1); ?>%)</small><small>₹<?php echo number_format($orderTotals['igst_total'],0); ?></small></div> -->
               <?php elseif ($orderTotals['sgst_total'] > 0 || $orderTotals['cgst_total'] > 0): ?>
-                <div class="d-flex justify-content-between mb-1"><small>SGST (<?php echo number_format($orderTotals['sgst_total'] > 0 ? ($orderTotals['sgst_total'] / $orderTotals['subtotal']) * 100 : 0, 1); ?>%)</small><small>₹<?php echo number_format($orderTotals['sgst_total'],2); ?></small></div>
-                <div class="d-flex justify-content-between mb-1"><small>CGST (<?php echo number_format($orderTotals['cgst_total'] > 0 ? ($orderTotals['cgst_total'] / $orderTotals['subtotal']) * 100 : 0, 1); ?>%)</small><small>₹<?php echo number_format($orderTotals['cgst_total'],2); ?></small></div>
+                <!-- <div class="d-flex justify-content-between mb-1"><small>SGST (<?php echo number_format($orderTotals['sgst_total'] > 0 ? ($orderTotals['sgst_total'] / $orderTotals['subtotal']) * 100 : 0, 1); ?>%)</small><small>₹<?php echo number_format($orderTotals['sgst_total'],0); ?></small></div> -->
+                <!-- <div class="d-flex justify-content-between mb-1"><small>CGST (<?php echo number_format($orderTotals['cgst_total'] > 0 ? ($orderTotals['cgst_total'] / $orderTotals['subtotal']) * 100 : 0, 1); ?>%)</small><small>₹<?php echo number_format($orderTotals['cgst_total'],0); ?></small></div> -->
               <?php endif; ?>
-              <div class="d-flex justify-content-between"><small><strong>Total TAX</strong></small><small><strong>₹<?php echo number_format($orderTotals['total_gst'],2); ?></strong></small></div>
+              <div class="d-flex justify-content-between"><small><strong>Total TAX</strong></small><small><strong>₹<?php echo number_format($orderTotals['total_gst'],0); ?></strong></small></div>
             </div>
-            <div class="d-flex justify-content-between mb-2 bg-primary bg-opacity-10 p-2 rounded"><span><b>Total Amount to Pay</b></span><span id="order-total-amount"><b>₹<?php echo number_format($orderTotals['total'],2); ?></b></span></div>
+            <div class="d-flex justify-content-between mb-2 bg-primary bg-opacity-10 p-2 rounded"><span><b>Total Amount to Pay</b></span><span id="order-total-amount"><b>₹<?php echo number_format($orderTotals['total'],0); ?></b></span></div>
             <!-- Payment Method Section and Place Order Button -->
             <div class="checkout-card mt-3">
               <div class="card-body">
@@ -396,41 +396,11 @@ foreach ($cartItems as $item) {
                   </label>
                 </div>
                 <div id="directPaymentSection" style="display:none; border:1px solid #e3e3e3; border-radius:8px; padding:16px; margin-bottom:16px; background:#f8f9fa;">
-                  <div class="mb-2 text-center">
-                    <a id="upiPaymentLink" href="#" class="btn btn-success" target="_blank">Pay via UPI App</a>
-                    <div class="text-muted mt-1" style="font-size:0.95rem;">(This button works only on mobile UPI apps)</div>
-                    <div id="upiQrCode" class="mt-3"></div>
-                  </div>
-                  <div class="mb-2">
-                    <label for="user_upi_id" class="form-label">Your UPI ID</label>
-                    <input type="text" class="form-control" id="user_upi_id" name="user_upi_id" placeholder="yourupi@bank" pattern="^[\w.-]+@[\w.-]+$" required>
-                    <div class="invalid-feedback">Please enter a valid UPI ID (e.g., yourname@bank).</div>
-                  </div>
-                  <div class="mb-2 text-muted" style="font-size:0.97rem;">
-                    <b>Instructions:</b><br>
-                    1. Scan the QR code or click the payment link to pay the total amount.<br>
-                    2. After payment, click <b>Continue</b> below.<br>
-                    3. On the next step, enter your UPI transaction ID and (optionally) upload a payment screenshot.<br>
-                    4. Your order will be placed as 'pending for confirmation' until payment is verified.<br>
-                  </div>
-                  <div class="d-grid">
-                    <button type="button" id="directPaymentContinueBtn" class="btn btn-primary">Continue</button>
-                  </div>
+                  <!-- UPI Step 1 fields will be inserted here by JS -->
                 </div>
                 <!-- Direct Payment Step 2: Transaction ID and Screenshot (inside form, hidden by default) -->
                 <div id="directPaymentDetailsSection" style="display:none; border:1px solid #e3e3e3; border-radius:8px; padding:16px; margin-bottom:16px; background:#f8f9fa; max-width:400px; margin-left:auto; margin-right:auto;">
-                  <div class="mb-2">
-                    <label for="upi_transaction_id" class="form-label">UPI Transaction ID</label>
-                    <input type="text" class="form-control" id="upi_transaction_id" name="upi_transaction_id" required>
-                  </div>
-                  <div class="mb-2">
-                    <label for="upi_screenshot" class="form-label">Upload Payment Screenshot (optional)</label>
-                    <input type="file" class="form-control" id="upi_screenshot" name="upi_screenshot" accept="image/*">
-                  </div>
-                  <div class="d-grid mb-2">
-                    <button type="button" id="directPaymentSubmitBtn" class="btn btn-success">Submit Payment Details</button>
-                  </div>
-                  <div id="directPaymentInfoMsg" class="text-success text-center mb-2" style="display:none;"></div>
+                  <!-- UPI Step 2 fields will be inserted here by JS -->
                 </div>
                 <div id="directPaymentInfoMsg" class="text-success text-center mb-2" style="display:none;"></div>
                 <div class="d-grid mb-3">
@@ -657,16 +627,19 @@ document.querySelectorAll('input[name="selected_address_left"]').forEach(functio
       if (resp && resp.success !== false && resp.totals) {
         // Update shipping charge
         document.getElementById('cart-shipping').textContent = '₹' + parseFloat(resp.totals.total_shipping).toFixed(2);
-        // Update shipping zone
-        document.getElementById('cart-shipping-zone').textContent = resp.totals.shipping_zone_name || '';
-        // Update GST breakdown
-        let gstHtml = '<small class="text-muted">TAX Breakdown:</small>';
-        if (resp.totals.igst_total > 0) {
-          gstHtml += `<div class="d-flex justify-content-between mb-1"><small>IGST (${((resp.totals.igst_total/resp.totals.subtotal)*100).toFixed(1)}%)</small><small>₹${parseFloat(resp.totals.igst_total).toFixed(2)}</small></div>`;
-        } else if (resp.totals.sgst_total > 0 || resp.totals.cgst_total > 0) {
-          gstHtml += `<div class="d-flex justify-content-between mb-1"><small>SGST (${((resp.totals.sgst_total/resp.totals.subtotal)*100).toFixed(1)}%)</small><small>₹${parseFloat(resp.totals.sgst_total).toFixed(2)}</small></div>`;
-          gstHtml += `<div class="d-flex justify-content-between mb-1"><small>CGST (${((resp.totals.cgst_total/resp.totals.subtotal)*100).toFixed(1)}%)</small><small>₹${parseFloat(resp.totals.cgst_total).toFixed(2)}</small></div>`;
+        // Update shipping zone (add null check)
+        var shippingZoneElem = document.getElementById('cart-shipping-zone');
+        if (shippingZoneElem) {
+          shippingZoneElem.textContent = resp.totals.shipping_zone_name || '';
         }
+        // Update GST breakdown
+        let gstHtml = '<small class="text-muted"></small>';
+        // if (resp.totals.igst_total > 0) {
+        //   gstHtml += `<div class="d-flex justify-content-between mb-1"><small>IGST (${((resp.totals.igst_total/resp.totals.subtotal)*100).toFixed(1)}%)</small><small>₹${parseFloat(resp.totals.igst_total).toFixed(2)}</small></div>`;
+        // } else if (resp.totals.sgst_total > 0 || resp.totals.cgst_total > 0) {
+        //   gstHtml += `<div class="d-flex justify-content-between mb-1"><small>SGST (${((resp.totals.sgst_total/resp.totals.subtotal)*100).toFixed(1)}%)</small><small>₹${parseFloat(resp.totals.sgst_total).toFixed(2)}</small></div>`;
+        //   gstHtml += `<div class="d-flex justify-content-between mb-1"><small>CGST (${((resp.totals.cgst_total/resp.totals.subtotal)*100).toFixed(1)}%)</small><small>₹${parseFloat(resp.totals.cgst_total).toFixed(2)}</small></div>`;
+        // }
         gstHtml += `<div class="d-flex justify-content-between"><small><strong>Total GST</strong></small><small><strong>₹${parseFloat(resp.totals.total_gst).toFixed(2)}</strong></small></div>`;
         document.getElementById('gst-breakdown-section').innerHTML = gstHtml;
         // Update total amount
@@ -717,12 +690,215 @@ function resetDirectPaymentStep() {
   if (upiScreenshotInput) upiScreenshotInput.value = '';
 }
 
+// --- UPI Verification, QR Code, and Step Navigation Logic ---
+function mockVerifyUpiId(upiId) {
+  // Simulate async verification (replace with real API if needed)
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      // Accept any UPI ID that matches the pattern
+      resolve(/^[\w.-]+@[\w.-]+$/.test(upiId));
+    }, 600);
+  });
+}
+
+function generateUpiQrCode(upiId, amount) {
+  // Always use the fixed payee UPI ID
+  const payeeUpiId = 'prakash.raje7@oksbi';
+  const upiUrl = `upi://pay?pa=${encodeURIComponent(payeeUpiId)}&pn=EverythingB2C&am=${amount}&cu=INR`;
+  var qrDiv = document.getElementById('upiQrCode');
+  if (qrDiv) {
+    qrDiv.innerHTML = '';
+    var wrapper = document.createElement('div');
+    wrapper.style.display = 'flex';
+    wrapper.style.flexDirection = 'column';
+    wrapper.style.alignItems = 'center';
+    var qr = new QRious({
+      element: document.createElement('canvas'),
+      value: upiUrl,
+      size: 180
+    });
+    wrapper.appendChild(qr.element);
+    var link = document.createElement('a');
+    link.href = upiUrl;
+    link.textContent = 'Pay via UPI App';
+    link.className = 'btn btn-success btn-sm mt-2';
+    link.target = '_blank';
+    wrapper.appendChild(link);
+    var info = document.createElement('div');
+    info.className = 'text-muted';
+    info.style.fontSize = '0.93rem';
+    info.style.marginTop = '2px';
+    info.textContent = 'This button only works on mobile devices with a UPI app.';
+    wrapper.appendChild(info);
+    qrDiv.appendChild(wrapper);
+  }
+}
+
+// Store original UPI fields markup for re-insertion
+const upiStep1Html = `
+  <div class="mb-2 upi-step1-block">
+    <div class="text-muted" style="font-size:0.97rem;">
+      <b>Instructions:</b><br>
+      1. Enter your UPI ID and click <b>Verify</b>.<br>
+      2. Scan the QR code or click the payment link to pay the total amount.<br>
+      3. After payment, click <b>Continue</b> below.<br>
+      4. On the next step, enter your UPI transaction ID and (optionally) upload a payment screenshot.<br>
+      5. Your order will be placed as 'pending for confirmation' until payment is verified.<br>
+    </div>
+    <label for="user_upi_id" class="form-label mt-2">Your UPI ID</label>
+    <div class="input-group">
+      <input type="text" class="form-control" id="user_upi_id" name="user_upi_id" placeholder="yourupi@bank" pattern="^[\w.-]+@[\w.-]+$" required>
+      <button type="button" id="verifyUpiBtn" class="btn btn-outline-secondary">Verify</button>
+    </div>
+    <div class="invalid-feedback">Please enter a valid UPI ID (e.g., yourname@bank).</div>
+    <div id="upiVerifyMsg" class="text-success mt-1" style="display:none;"></div>
+    <div id="upiQrCode" class="mt-3"></div>
+  </div>
+  <div class="d-grid mt-3 mb-2 upi-step1-block">
+    <button type="button" id="directPaymentContinueBtn" class="btn btn-primary" disabled>Continue</button>
+  </div>
+`;
+const upiStep2Html = `
+  <div class="d-flex align-items-center mb-2 upi-step2-block">
+    <button type="button" id="upiStepBackBtn" class="btn btn-link p-0 me-2" style="font-size:1.3rem;">&#8592;</button>
+    <span class="fw-bold">Enter UPI Transaction Details</span>
+  </div>
+  <div class="mb-2 upi-step2-block">
+    <label for="upi_transaction_id" class="form-label">UPI Transaction ID</label>
+    <input type="text" class="form-control" id="upi_transaction_id" name="upi_transaction_id" required>
+  </div>
+  <div class="mb-2 upi-step2-block">
+    <label for="upi_screenshot" class="form-label">Upload Payment Screenshot (optional)</label>
+    <input type="file" class="form-control" id="upi_screenshot" name="upi_screenshot" accept="image/*">
+  </div>
+  <div class="d-grid mb-2 upi-step2-block">
+    <button type="button" id="directPaymentSubmitBtn" class="btn btn-success">Submit Payment Details</button>
+  </div>
+`;
+
+function removeUpiFields() {
+  document.querySelectorAll('.upi-step1-block').forEach(el => el.remove());
+  document.querySelectorAll('.upi-step2-block').forEach(el => el.remove());
+}
+function insertUpiFields() {
+  removeUpiFields();
+  const directPaymentSection = document.getElementById('directPaymentSection');
+  if (directPaymentSection && !document.getElementById('user_upi_id')) {
+    directPaymentSection.insertAdjacentHTML('beforeend', upiStep1Html);
+  }
+  const directPaymentDetailsSection = document.getElementById('directPaymentDetailsSection');
+  if (directPaymentDetailsSection && !document.getElementById('upi_transaction_id')) {
+    directPaymentDetailsSection.insertAdjacentHTML('afterbegin', upiStep2Html);
+  }
+  attachUpiEventHandlers();
+}
+
+function attachUpiEventHandlers() {
+  var verifyBtn = document.getElementById('verifyUpiBtn');
+  var userUpiIdInput = document.getElementById('user_upi_id');
+  var upiVerifyMsg = document.getElementById('upiVerifyMsg');
+  var continueBtn = document.getElementById('directPaymentContinueBtn');
+  var qrDiv = document.getElementById('upiQrCode');
+  var orderAmount = typeof orderTotal !== 'undefined' ? orderTotal : 0;
+  if (verifyBtn && userUpiIdInput) {
+    verifyBtn.onclick = function() {
+      upiVerifyMsg.style.display = 'none';
+      continueBtn.disabled = true;
+      qrDiv.innerHTML = '';
+      var upiId = userUpiIdInput.value.trim();
+      if (!upiId.match(/^[\w.-]+@[\w.-]+$/)) {
+        userUpiIdInput.classList.add('is-invalid');
+        upiVerifyMsg.style.display = 'block';
+        upiVerifyMsg.textContent = 'Please enter a valid UPI ID.';
+        return;
+      }
+      userUpiIdInput.classList.remove('is-invalid');
+      upiVerifyMsg.style.display = 'block';
+      upiVerifyMsg.textContent = 'Verifying...';
+      mockVerifyUpiId(upiId).then(function(valid) {
+        if (valid) {
+          upiVerifyMsg.textContent = 'UPI ID verified!';
+          upiVerifyMsg.className = 'text-success mt-1';
+          generateUpiQrCode(upiId, orderAmount);
+          continueBtn.disabled = false;
+        } else {
+          upiVerifyMsg.textContent = 'Invalid UPI ID.';
+          upiVerifyMsg.className = 'text-danger mt-1';
+          continueBtn.disabled = true;
+        }
+      });
+    };
+  }
+  if (continueBtn) {
+    continueBtn.onclick = function() {
+      // Only allow continue if verified
+      if (continueBtn.disabled) return;
+      showDirectPaymentDetails();
+    };
+  }
+  // Back button in step 2
+  var upiStepBackBtn = document.getElementById('upiStepBackBtn');
+  if (upiStepBackBtn) {
+    upiStepBackBtn.onclick = function() {
+      // Preserve entered UPI ID
+      var prevUpiId = document.getElementById('user_upi_id') ? document.getElementById('user_upi_id').value : '';
+      showDirectPaymentStep();
+      attachUpiEventHandlers();
+      // Restore UPI ID value
+      var userUpiIdInput = document.getElementById('user_upi_id');
+      if (userUpiIdInput && prevUpiId) {
+        userUpiIdInput.value = prevUpiId;
+        // Optionally, re-verify automatically
+        // document.getElementById('verifyUpiBtn').click();
+      }
+    };
+  }
+  // Submit button in step 2
+  var submitBtn = document.getElementById('directPaymentSubmitBtn');
+  var upiTransactionIdInput = document.getElementById('upi_transaction_id');
+  if (submitBtn && upiTransactionIdInput) {
+    submitBtn.onclick = function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!upiTransactionIdInput.value.trim()) {
+        upiTransactionIdInput.classList.add('is-invalid');
+        upiTransactionIdInput.focus();
+        return;
+      } else {
+        upiTransactionIdInput.classList.remove('is-invalid');
+      }
+      directPaymentStepCompleted = true;
+      placeOrderBtn.disabled = false;
+      const infoMsg = checkoutForm.querySelector('#directPaymentInfoMsg');
+      if (infoMsg) {
+        infoMsg.textContent = 'Now you can click on Place Order to complete your order.';
+        infoMsg.style.display = '';
+      }
+    };
+  }
+}
+
+// Attach handlers on initial load if fields are present
+attachUpiEventHandlers();
+
 paymentRadios.forEach(radio => {
   radio.addEventListener('change', function() {
+    // Always get the latest references in case fields were re-inserted
+    var userUpiIdInput = document.getElementById('user_upi_id');
+    var upiTransactionIdInput = document.getElementById('upi_transaction_id');
+    var upiScreenshotInput = document.getElementById('upi_screenshot');
     if (this.value === 'direct_payment') {
       showDirectPaymentStep();
+      insertUpiFields && insertUpiFields();
+      if (userUpiIdInput) { userUpiIdInput.disabled = false; userUpiIdInput.required = true; }
+      if (upiTransactionIdInput) { upiTransactionIdInput.disabled = false; upiTransactionIdInput.required = true; }
+      if (upiScreenshotInput) { upiScreenshotInput.disabled = false; }
     } else {
       resetDirectPaymentStep();
+      if (userUpiIdInput) { userUpiIdInput.disabled = true; userUpiIdInput.required = false; }
+      if (upiTransactionIdInput) { upiTransactionIdInput.disabled = true; upiTransactionIdInput.required = false; }
+      if (upiScreenshotInput) { upiScreenshotInput.disabled = true; }
+      removeUpiFields && removeUpiFields();
     }
   });
 });
@@ -730,64 +906,19 @@ paymentRadios.forEach(radio => {
 // Bootstrap modal for direct payment confirmation
 const directPaymentConfirmModal = new bootstrap.Modal(document.getElementById('directPaymentConfirmModal'));
 
-if (continueBtn) continueBtn.addEventListener('click', function() {
-  if (!userUpiIdInput.value.match(/^[\w.-]+@[\w.-]+$/)) {
-    userUpiIdInput.classList.add('is-invalid');
-    userUpiIdInput.focus();
-    return;
-  } else {
-    userUpiIdInput.classList.remove('is-invalid');
+// On page load, ensure UPI fields are disabled and not required if COD is selected by default
+(function() {
+  var codRadio = document.getElementById('cod');
+  if (codRadio && codRadio.checked) {
+    if (typeof removeUpiFields === 'function') removeUpiFields();
+    var userUpiIdInput = document.getElementById('user_upi_id');
+    var upiTransactionIdInput = document.getElementById('upi_transaction_id');
+    var upiScreenshotInput = document.getElementById('upi_screenshot');
+    if (userUpiIdInput) { userUpiIdInput.disabled = true; userUpiIdInput.required = false; }
+    if (upiTransactionIdInput) { upiTransactionIdInput.disabled = true; upiTransactionIdInput.required = false; }
+    if (upiScreenshotInput) { upiScreenshotInput.disabled = true; }
   }
-  // Show Bootstrap modal instead of alert
-  directPaymentConfirmModal.show();
-  var yesBtn = document.getElementById('directPaymentConfirmYesBtn');
-  yesBtn.onclick = function() {
-    directPaymentConfirmModal.hide();
-    showDirectPaymentDetails();
-  };
-});
-
-if (submitBtn) submitBtn.addEventListener('click', function(e) {
-  e.preventDefault();
-  e.stopPropagation();
-  if (!upiTransactionIdInput.value.trim()) {
-    upiTransactionIdInput.classList.add('is-invalid');
-    upiTransactionIdInput.focus();
-    return;
-  } else {
-    upiTransactionIdInput.classList.remove('is-invalid');
-  }
-  directPaymentStepCompleted = true;
-  placeOrderBtn.disabled = false;
-  const infoMsg = checkoutForm.querySelector('#directPaymentInfoMsg');
-  if (infoMsg) {
-    infoMsg.textContent = 'Now you can click on Place Order to complete your order.';
-    infoMsg.style.display = '';
-  }
-});
-
-checkoutForm.addEventListener('submit', function(e) {
-  var paymentMethod = checkoutForm.querySelector('input[name="payment_method"]:checked').value;
-  if (paymentMethod === 'direct_payment') {
-    if (!directPaymentStepCompleted) {
-      e.preventDefault();
-      showDirectPaymentStep();
-      alert('Please complete the direct payment steps before placing the order.');
-      return false;
-    }
-    if (!upiTransactionIdInput.value.trim()) {
-      e.preventDefault();
-      upiTransactionIdInput.classList.add('is-invalid');
-      upiTransactionIdInput.focus();
-      alert('Please enter your UPI transaction ID.');
-      return false;
-    }
-    // Set hidden fields for backend
-    document.getElementById('upi_transaction_id_hidden').value = upiTransactionIdInput.value.trim();
-    document.getElementById('user_upi_id_hidden').value = userUpiIdInput.value.trim();
-    placeOrderBtn.disabled = true;
-  }
-});
+})();
 </script>
 
 <!-- Thank You Modal (always present for JS to show) -->

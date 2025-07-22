@@ -40,7 +40,7 @@
             </div>
             <div class="contact-info mt-3">
                 <p><i class="fas fa-phone"></i> +91 1234567890</p>
-                <p><i class="fas fa-envelope footer-email"></i> info@everythingb2c.com</p>
+                <p><i class="fas fa-envelope footer-email"></i> info@EverythingB2C.com</p>
             </div>
         </div>
     </div>

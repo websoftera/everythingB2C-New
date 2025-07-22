@@ -114,9 +114,7 @@ include 'includes/header.php';
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // All interaction logic is now in popup.js
-});
+// Remove any add-to-cart button JS logic here, rely on popup.js
 </script>
 
 <?php include 'includes/footer.php'; ?> 

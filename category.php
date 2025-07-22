@@ -52,13 +52,13 @@ $products = array_slice($products, $offset, $itemsPerPage);
 ?>
 
 <!-- Banner/Breadcrumb (skip homepage) -->
-<div class="page-banner" style="background: url('asset/images/internalpage-bg.webp') center/cover no-repeat; min-height: 240px; display: flex; align-items: center;">
+<!-- <div class="page-banner" style="background: url('asset/images/internalpage-bg.webp') center/cover no-repeat; min-height: 240px; display: flex; align-items: center;">
     <div class="container">
         <h2 style="color: #fff; font-size: 2rem; font-weight: bold; text-shadow: 0 2px 8px rgba(0,0,0,0.3); margin: 0; padding: 32px 0;">
             <?php echo htmlspecialchars($pageTitle); ?>
         </h2>
     </div>
-</div>
+</div> -->
 <!-- Category Header -->
 <section class="category-header">
     <div class="container">
@@ -69,7 +69,7 @@ $products = array_slice($products, $offset, $itemsPerPage);
 </section>
 
 <!-- Products Grid -->
-<section class="products-section">
+<section class="products-section mt-5">
     <div class="container">
         <?php if (empty($products)): ?>
             <div class="text-center py-5">
@@ -165,9 +165,7 @@ $products = array_slice($products, $offset, $itemsPerPage);
 <link rel="stylesheet" href="./asset/style/style.css">
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // All interaction logic is now in popup.js
-});
+// Remove any add-to-cart button JS logic here, rely on popup.js
 </script>
 
 </body>

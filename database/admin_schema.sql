@@ -13,7 +13,7 @@ CREATE TABLE admins (
 
 -- Insert default admin user (password: admin123)
 INSERT INTO admins (name, email, password, role) VALUES 
-('Super Admin', 'admin@everythingb2c.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'super_admin');
+('Super Admin', 'admin@EverythingB2C.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'super_admin');
 
 -- Add indexes for better performance
 CREATE INDEX idx_products_category ON products(category_id);

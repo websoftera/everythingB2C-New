@@ -89,19 +89,19 @@ try {
             echo '<br><small class="text-muted">SKU: '.htmlspecialchars($item['slug']).'</small>';
             echo '</td>';
             echo '<td>' . htmlspecialchars($item['hsn'] ?? '') . '</td>';
-            echo '<td>₹'.number_format($mrp,2).'</td>';
-            echo '<td>₹'.number_format($selling,2).'</td>';
+            echo '<td>₹'.number_format($mrp,0).'</td>';
+            echo '<td>₹'.number_format($selling,0).'</td>';
             echo '<td>'.$qty.'</td>';
-            echo '<td>₹'.number_format($mrp_total,2).'</td>';
-            echo '<td>₹'.number_format($selling_total,2).'</td>';
-            echo '<td class="text-success">₹'.number_format($item_savings,2).'</td>';
+            echo '<td>₹'.number_format($mrp_total,0).'</td>';
+            echo '<td>₹'.number_format($selling_total,0).'</td>';
+            echo '<td class="text-success">₹'.number_format($item_savings,0).'</td>';
             echo '</tr>';
         }
         echo '</tbody>';
         echo '<tfoot>';
-        echo '<tr><th colspan="4" class="text-end">Total MRP:</th><th>₹'.number_format($total_mrp,2).'</th><th></th><th></th></tr>';
-        echo '<tr><th colspan="4" class="text-end">Total Selling:</th><th></th><th>₹'.number_format($total_selling,2).'</th><th></th></tr>';
-        echo '<tr><th colspan="4" class="text-end">Total Savings:</th><th></th><th></th><th class="text-success">₹'.number_format($total_savings,2).'</th></tr>';
+        echo '<tr><th colspan="4" class="text-end">Total MRP:</th><th>₹'.number_format($total_mrp,0).'</th><th></th><th></th></tr>';
+        echo '<tr><th colspan="4" class="text-end">Total Selling:</th><th></th><th>₹'.number_format($total_selling,0).'</th><th></th></tr>';
+        echo '<tr><th colspan="4" class="text-end">Total Savings:</th><th></th><th></th><th class="text-success">₹'.number_format($total_savings,0).'</th></tr>';
         echo '</tfoot>';
         echo '</table>';
         echo '</div>';
@@ -110,8 +110,8 @@ try {
     // Order Summary
     echo '<div class="mb-3">';
     echo '<h6>Order Summary</h6>';
-    echo '<p><strong>Total Amount:</strong> ₹'.number_format($order['total_amount'],2).'</p>';
-    echo '<p class="text-success"><strong>Total Savings:</strong> ₹'.number_format($total_savings,2).'</p>';
+    echo '<p><strong>Total Amount:</strong> ₹'.number_format($order['total_amount'],0).'</p>';
+    echo '<p class="text-success"><strong>Total Savings:</strong> ₹'.number_format($total_savings,0).'</p>';
     echo '<p><strong>Payment Method:</strong> '.htmlspecialchars($order['payment_method']).'</p>';
     // Show UPI details for direct payment
     if ($order['payment_method'] === 'direct_payment') {

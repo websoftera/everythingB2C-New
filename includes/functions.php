@@ -140,7 +140,7 @@ function calculateDiscountPercentage($mrp, $sellingPrice) {
 
 // Function to format price
 function formatPrice($price) {
-    return '₹' . number_format($price, 2);
+    return '₹' . number_format($price, 0);
 }
 
 // Function to check if user is logged in
@@ -452,7 +452,7 @@ function calculateCartTotals($cartItems) {
 function generateTrackingId() {
     global $pdo;
     do {
-        $trackingId = 'Everythingb2c' . str_pad(mt_rand(1, 99999999), 8, '0', STR_PAD_LEFT);
+        $trackingId = 'EverythingB2C' . str_pad(mt_rand(1, 99999999), 8, '0', STR_PAD_LEFT);
         $stmt = $pdo->prepare("SELECT COUNT(*) FROM orders WHERE tracking_id = ?");
         $stmt->execute([$trackingId]);
     } while ($stmt->fetchColumn() > 0);

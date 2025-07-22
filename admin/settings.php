@@ -189,7 +189,7 @@ $admin = $stmt->fetch(PDO::FETCH_ASSOC);
                                         <div class="mb-3">
                                             <label for="contact_email" class="form-label">Contact Email</label>
                                             <input type="email" class="form-control" id="contact_email" name="contact_email" 
-                                                   value="contact@everythingb2c.com">
+                                                   value="contact@EverythingB2C.com">
                                         </div>
                                         
                                         <div class="mb-3">

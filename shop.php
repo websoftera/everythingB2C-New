@@ -143,42 +143,36 @@ $maxPriceValue = $maxPrice ?: $siteMaxPrice;
         <?php foreach ($products as $product): 
           $isOutOfStock = ($product['stock_quantity'] <= 0);
         ?>
-          <div class="shop-page-product-card" data-id="prod-<?php echo $product['id']; ?>">
+          <div class="card product-card" data-id="prod-<?php echo $product['id']; ?>">
             <?php if ($product['is_discounted']): ?>
-              <div class="shop-page-discount-banner">SAVE ₹<?php echo $product['mrp'] - $product['selling_price']; ?> (<?php echo $product['discount_percentage']; ?>% OFF)</div>
+              <div class="discount-banner">SAVE ₹<?php echo $product['mrp'] - $product['selling_price']; ?> (<?php echo $product['discount_percentage']; ?>% OFF)</div>
             <?php endif; ?>
-            <div class="shop-page-product-image">
+            <div class="product-image">
               <a href="product.php?slug=<?php echo $product['slug']; ?>">
                 <img src="./<?php echo $product['main_image']; ?>" alt="<?php echo $product['name']; ?>">
               </a>
               <?php if ($isOutOfStock): ?>
-                <div class="shop-page-out-of-stock">OUT OF STOCK</div>
+                <div class="out-of-stock">OUT OF STOCK</div>
               <?php endif; ?>
             </div>
-            <div class="shop-page-product-details">
+            <div class="product-details">
               <h3><?php echo strtoupper($product['name']); ?></h3>
-              <div class="shop-page-price-buttons">
-                <div class="shop-page-price-btn mrp">
-                  <span class="label">MRP</span>
-                  <span class="value">₹<?php echo number_format($product['mrp'],2); ?></span>
-                </div>
-                <div class="shop-page-price-btn pay">
-                  <span class="label">PAY</span>
-                  <span class="value">₹<?php echo number_format($product['selling_price'],2); ?></span>
-                </div>
-                <div class="shop-page-wishlist">
-                  <input type="checkbox" class="shop-page-heart-checkbox" id="wishlist-checkbox-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>">
-                  <label for="wishlist-checkbox-<?php echo $product['id']; ?>" class="shop-page-wishlist-label"><i class="fas fa-heart"></i></label>
-                </div>
+              <div class="price-buttons">
+                <button class="mrp"><span class="label">MRP</span> <span class="value">₹<?php echo number_format($product['mrp'],0); ?></span></button>
+                <button class="pay"><span class="label">PAY</span> <span class="value">₹<?php echo number_format($product['selling_price'],0); ?></span></button>
+                <label class="wishlist">
+                  <input type="checkbox" class="heart-checkbox" id="wishlist-checkbox-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>">
+                  <span class="heart-icon">&#10084;</span>
+                </label>
               </div>
               <?php if ($isOutOfStock): ?>
-                <a href="product.php?slug=<?php echo $product['slug']; ?>" class="shop-page-read-more">READ MORE</a>
+                <a href="product.php?slug=<?php echo $product['slug']; ?>" class="read-more">READ MORE</a>
               <?php else: ?>
-                <div class="shop-page-cart-actions">
-                  <button class="shop-page-add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">ADD TO CART</button>
-                  <div class="quantity-control d-inline-flex align-items-center">
+                <div class="cart-actions">
+                  <button class="add-to-cart" data-product-id="<?php echo $product['id']; ?>">ADD TO CART</button>
+                  <div class="quantity-control">
                     <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
-                    <input type="number" class="shop-page-quantity-input" value="1" min="1">
+                    <input type="number" class="quantity-input" value="1" min="1">
                     <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
                   </div>
                 </div>
@@ -191,7 +185,23 @@ $maxPriceValue = $maxPrice ?: $siteMaxPrice;
   </section>
 </div>
 
+<!-- Toast Notification for Add to Cart -->
+<div id="toastNotification" class="toast-notification"></div>
 <script>
+function showToast(message) {
+  var toast = document.getElementById('toastNotification');
+  if (!toast) return;
+  toast.textContent = message;
+  toast.style.opacity = '1';
+  toast.style.visibility = 'visible';
+  toast.style.transform = 'translateY(0)';
+  setTimeout(function() {
+    toast.style.opacity = '0';
+    toast.style.visibility = 'hidden';
+    toast.style.transform = 'translateY(-20px)';
+  }, 2200);
+}
+
 // --- Desktop Filter Logic ---
 const maxPriceRangeDesktop = document.getElementById('maxPriceRangeDesktop');
 const maxPriceDisplayDesktop = document.getElementById('maxPriceDisplayDesktop');
@@ -253,6 +263,13 @@ function fetchProductsAJAX(form) {
         mobileFilterPanel.classList.remove('show');
         document.body.style.overflow = '';
       }
+      // Re-initialize quantity controls and handlers after AJAX update
+      if (window.reinitQuantityControlsWithDebug) {
+        window.reinitQuantityControlsWithDebug();
+      } else if (typeof reinitQuantityControlsWithDebug === 'function') {
+        reinitQuantityControlsWithDebug();
+      }
+      console.log('[shop.php][DEBUG] Called reinitQuantityControlsWithDebug after AJAX product grid update');
     });
 }
 

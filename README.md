@@ -30,7 +30,7 @@ The website uses the following main tables:
 
 ### 1. Database Setup
 
-1. Create a MySQL database named `everythingb2c`
+1. Create a MySQL database named `EverythingB2C`
 2. Import the database schema from `database/schema.sql`
 3. Update database credentials in `config/database.php` if needed
 
@@ -38,7 +38,7 @@ The website uses the following main tables:
 
 Ensure your files are organized as follows:
 ```
-everythingB2C-New/
+EverythingB2C-New/
 ├── config/
 │   └── database.php
 ├── includes/
@@ -79,7 +79,7 @@ everythingB2C-New/
 define('DB_HOST', 'localhost');
 define('DB_USER', 'your_username');
 define('DB_PASS', 'your_password');
-define('DB_NAME', 'everythingb2c');
+define('DB_NAME', 'EverythingB2C');
 ```
 
 2. Ensure your web server is configured to serve PHP files

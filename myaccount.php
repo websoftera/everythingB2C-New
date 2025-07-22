@@ -396,7 +396,7 @@ if (isset($_POST['delete_address'])) {
                         <div class="account-order-card">
                             <div>
                                 <h6>Order #<?php echo htmlspecialchars($order['tracking_id'] ?? $order['order_number']); ?></h6>
-                                <p>₹<?php echo number_format($order['total_amount'], 2); ?> • <?php echo date('M d, Y', strtotime($order['created_at'])); ?></p>
+                                <p>₹<?php echo number_format($order['total_amount'], 0); ?> • <?php echo date('M d, Y', strtotime($order['created_at'])); ?></p>
                             </div>
                             <div>
                                 <span class="status <?php echo $order['status']; ?>">
@@ -426,7 +426,7 @@ if (isset($_POST['delete_address'])) {
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <div>
                                     <h6>Order #<?php echo htmlspecialchars($order['tracking_id'] ?? $order['order_number']); ?></h6>
-                                    <p>₹<?php echo number_format($order['total_amount'], 2); ?> • <?php echo date('M d, Y', strtotime($order['created_at'])); ?></p>
+                                    <p>₹<?php echo number_format($order['total_amount'], 0); ?> • <?php echo date('M d, Y', strtotime($order['created_at'])); ?></p>
                                     <p>Payment: <strong><?php echo strtoupper($order['payment_method'] ?? 'N/A'); ?></strong> • Status: <strong><?php echo ucfirst($order['payment_status'] ?? 'N/A'); ?></strong></p>
                                     <p>Order Status: <span class="badge" style="background-color: <?php echo $order['color'] ?? '#007bff'; ?>; color: #fff;"><?php echo $order['status_name'] ?? ucfirst($order['status']); ?></span></p>
                                 </div>
@@ -460,8 +460,8 @@ if (isset($_POST['delete_address'])) {
                                                 <td><?php echo htmlspecialchars($item['sku']); ?></td>
                                                 <td><?php echo htmlspecialchars($item['hsn'] ?? ''); ?></td>
                                                 <td><?php echo $item['quantity']; ?></td>
-                                                <td>₹<?php echo number_format($item['price'], 2); ?></td>
-                                                <td>₹<?php echo number_format($item['price'] * $item['quantity'], 2); ?></td>
+                                                <td>₹<?php echo number_format($item['price'], 0); ?></td>
+                                                <td>₹<?php echo number_format($item['price'] * $item['quantity'], 0); ?></td>
                                             </tr>
                                         <?php endforeach; ?>
                                     </tbody>
@@ -480,19 +480,19 @@ if (isset($_POST['delete_address'])) {
                                 ?>
                                 <table class="table table-sm mb-0" style="max-width:350px;float:right;background:#f8f9fa;">
                                     <tbody>
-                                        <tr><td>Subtotal</td><td class="text-end">₹<?php echo number_format($order['subtotal'], 2); ?></td></tr>
+                                        <tr><td>Subtotal</td><td class="text-end">₹<?php echo number_format($order['subtotal'], 0); ?></td></tr>
                                         <?php if (!empty($order['shipping_charge'])): ?>
-                                            <tr><td>Shipping</td><td class="text-end">₹<?php echo number_format($order['shipping_charge'], 2); ?></td></tr>
+                                            <tr><td>Shipping</td><td class="text-end">₹<?php echo number_format($order['shipping_charge'], 0); ?></td></tr>
                                         <?php endif; ?>
                                         <?php if (!empty($order['gst_amount'])): ?>
                                             <?php 
                                             $seller_state = 'Maharashtra';
                                             $tax_label = (isset($order['state']) && strtolower(trim($order['state'])) !== strtolower($seller_state)) ? 'Taxes (IGST)' : 'Taxes (GST)';
                                             ?>
-                                            <tr><td><?php echo $tax_label; ?></td><td class="text-end">₹<?php echo number_format($order['gst_amount'], 2); ?></td></tr>
+                                            <tr><td><?php echo $tax_label; ?></td><td class="text-end">₹<?php echo number_format($order['gst_amount'], 0); ?></td></tr>
                                         <?php endif; ?>
-                                        <tr><td class="text-success">Total Savings</td><td class="text-end text-success">₹<?php echo number_format($total_savings, 2); ?></td></tr>
-                                        <tr class="fw-bold"><td>Total Paid</td><td class="text-end">₹<?php echo number_format($order['total_amount'], 2); ?></td></tr>
+                                        <tr><td class="text-success">Total Savings</td><td class="text-end text-success">₹<?php echo number_format($total_savings, 0); ?></td></tr>
+                                        <tr class="fw-bold"><td>Total Paid</td><td class="text-end">₹<?php echo number_format($order['total_amount'], 0); ?></td></tr>
                                     </tbody>
                                 </table>
                                 <div style="clear:both;"></div>
@@ -602,7 +602,7 @@ if (isset($_POST['delete_address'])) {
                             <div class="account-wishlist-item">
                                 <img src="<?php echo htmlspecialchars($item['main_image']); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>">
                                 <h6><?php echo htmlspecialchars($item['name']); ?></h6>
-                                <p>₹<?php echo number_format($item['selling_price'], 2); ?></p>
+                                <p>₹<?php echo number_format($item['selling_price'], 0); ?></p>
                                 <a href="product.php?slug=<?php echo $item['slug']; ?>" class="btn small">View</a>
                                 <a href="ajax/remove-from-wishlist.php?product_id=<?php echo $item['id']; ?>" class="btn small danger" onclick="return confirm('Remove from wishlist?')">Remove</a>
                             </div>

@@ -66,7 +66,7 @@ SOURCE database/admin_schema.sql;
 
 ### 2. Default Admin Account
 The system comes with a default admin account:
-- **Email:** admin@everythingb2c.com
+- **Email:** admin@EverythingB2C.com
 - **Password:** admin123
 
 **Important:** Change the default password immediately after first login!

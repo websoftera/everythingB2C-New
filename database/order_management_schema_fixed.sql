@@ -27,7 +27,7 @@ INSERT IGNORE INTO order_statuses (name, description, color, is_system, sort_ord
 
 -- Check and add tracking_id column
 SET @sql = (SELECT IF(
-    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'everythingb2c' AND TABLE_NAME = 'orders' AND COLUMN_NAME = 'tracking_id') = 0,
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'EverythingB2C' AND TABLE_NAME = 'orders' AND COLUMN_NAME = 'tracking_id') = 0,
     'ALTER TABLE orders ADD COLUMN tracking_id VARCHAR(50) UNIQUE',
     'SELECT "tracking_id column already exists" as message'
 ));
@@ -37,7 +37,7 @@ DEALLOCATE PREPARE stmt;
 
 -- Check and add external_tracking_id column
 SET @sql = (SELECT IF(
-    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'everythingb2c' AND TABLE_NAME = 'orders' AND COLUMN_NAME = 'external_tracking_id') = 0,
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'EverythingB2C' AND TABLE_NAME = 'orders' AND COLUMN_NAME = 'external_tracking_id') = 0,
     'ALTER TABLE orders ADD COLUMN external_tracking_id VARCHAR(100)',
     'SELECT "external_tracking_id column already exists" as message'
 ));
@@ -47,7 +47,7 @@ DEALLOCATE PREPARE stmt;
 
 -- Check and add external_tracking_link column
 SET @sql = (SELECT IF(
-    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'everythingb2c' AND TABLE_NAME = 'orders' AND COLUMN_NAME = 'external_tracking_link') = 0,
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'EverythingB2C' AND TABLE_NAME = 'orders' AND COLUMN_NAME = 'external_tracking_link') = 0,
     'ALTER TABLE orders ADD COLUMN external_tracking_link TEXT',
     'SELECT "external_tracking_link column already exists" as message'
 ));
@@ -57,7 +57,7 @@ DEALLOCATE PREPARE stmt;
 
 -- Check and add order_status_id column
 SET @sql = (SELECT IF(
-    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'everythingb2c' AND TABLE_NAME = 'orders' AND COLUMN_NAME = 'order_status_id') = 0,
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'EverythingB2C' AND TABLE_NAME = 'orders' AND COLUMN_NAME = 'order_status_id') = 0,
     'ALTER TABLE orders ADD COLUMN order_status_id INT DEFAULT 1',
     'SELECT "order_status_id column already exists" as message'
 ));
@@ -67,7 +67,7 @@ DEALLOCATE PREPARE stmt;
 
 -- Check and add payment_method column
 SET @sql = (SELECT IF(
-    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'everythingb2c' AND TABLE_NAME = 'orders' AND COLUMN_NAME = 'payment_method') = 0,
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'EverythingB2C' AND TABLE_NAME = 'orders' AND COLUMN_NAME = 'payment_method') = 0,
     'ALTER TABLE orders ADD COLUMN payment_method ENUM("cod", "razorpay") DEFAULT "cod"',
     'SELECT "payment_method column already exists" as message'
 ));
@@ -77,7 +77,7 @@ DEALLOCATE PREPARE stmt;
 
 -- Check and add payment_status column
 SET @sql = (SELECT IF(
-    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'everythingb2c' AND TABLE_NAME = 'orders' AND COLUMN_NAME = 'payment_status') = 0,
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'EverythingB2C' AND TABLE_NAME = 'orders' AND COLUMN_NAME = 'payment_status') = 0,
     'ALTER TABLE orders ADD COLUMN payment_status ENUM("pending", "paid", "failed", "refunded") DEFAULT "pending"',
     'SELECT "payment_status column already exists" as message'
 ));
@@ -87,7 +87,7 @@ DEALLOCATE PREPARE stmt;
 
 -- Check and add razorpay_order_id column
 SET @sql = (SELECT IF(
-    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'everythingb2c' AND TABLE_NAME = 'orders' AND COLUMN_NAME = 'razorpay_order_id') = 0,
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'EverythingB2C' AND TABLE_NAME = 'orders' AND COLUMN_NAME = 'razorpay_order_id') = 0,
     'ALTER TABLE orders ADD COLUMN razorpay_order_id VARCHAR(100)',
     'SELECT "razorpay_order_id column already exists" as message'
 ));
@@ -97,7 +97,7 @@ DEALLOCATE PREPARE stmt;
 
 -- Check and add razorpay_payment_id column
 SET @sql = (SELECT IF(
-    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'everythingb2c' AND TABLE_NAME = 'orders' AND COLUMN_NAME = 'razorpay_payment_id') = 0,
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'EverythingB2C' AND TABLE_NAME = 'orders' AND COLUMN_NAME = 'razorpay_payment_id') = 0,
     'ALTER TABLE orders ADD COLUMN razorpay_payment_id VARCHAR(100)',
     'SELECT "razorpay_payment_id column already exists" as message'
 ));
@@ -107,7 +107,7 @@ DEALLOCATE PREPARE stmt;
 
 -- Check and add gst_number column
 SET @sql = (SELECT IF(
-    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'everythingb2c' AND TABLE_NAME = 'orders' AND COLUMN_NAME = 'gst_number') = 0,
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'EverythingB2C' AND TABLE_NAME = 'orders' AND COLUMN_NAME = 'gst_number') = 0,
     'ALTER TABLE orders ADD COLUMN gst_number VARCHAR(20)',
     'SELECT "gst_number column already exists" as message'
 ));
@@ -117,7 +117,7 @@ DEALLOCATE PREPARE stmt;
 
 -- Check and add company_name column
 SET @sql = (SELECT IF(
-    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'everythingb2c' AND TABLE_NAME = 'orders' AND COLUMN_NAME = 'company_name') = 0,
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'EverythingB2C' AND TABLE_NAME = 'orders' AND COLUMN_NAME = 'company_name') = 0,
     'ALTER TABLE orders ADD COLUMN company_name VARCHAR(100)',
     'SELECT "company_name column already exists" as message'
 ));
@@ -127,7 +127,7 @@ DEALLOCATE PREPARE stmt;
 
 -- Check and add is_business_purchase column
 SET @sql = (SELECT IF(
-    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'everythingb2c' AND TABLE_NAME = 'orders' AND COLUMN_NAME = 'is_business_purchase') = 0,
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'EverythingB2C' AND TABLE_NAME = 'orders' AND COLUMN_NAME = 'is_business_purchase') = 0,
     'ALTER TABLE orders ADD COLUMN is_business_purchase BOOLEAN DEFAULT FALSE',
     'SELECT "is_business_purchase column already exists" as message'
 ));
@@ -137,7 +137,7 @@ DEALLOCATE PREPARE stmt;
 
 -- Check and add status_description column
 SET @sql = (SELECT IF(
-    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'everythingb2c' AND TABLE_NAME = 'orders' AND COLUMN_NAME = 'status_description') = 0,
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'EverythingB2C' AND TABLE_NAME = 'orders' AND COLUMN_NAME = 'status_description') = 0,
     'ALTER TABLE orders ADD COLUMN status_description TEXT',
     'SELECT "status_description column already exists" as message'
 ));
@@ -147,7 +147,7 @@ DEALLOCATE PREPARE stmt;
 
 -- Check and add estimated_delivery_date column
 SET @sql = (SELECT IF(
-    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'everythingb2c' AND TABLE_NAME = 'orders' AND COLUMN_NAME = 'estimated_delivery_date') = 0,
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'EverythingB2C' AND TABLE_NAME = 'orders' AND COLUMN_NAME = 'estimated_delivery_date') = 0,
     'ALTER TABLE orders ADD COLUMN estimated_delivery_date DATE',
     'SELECT "estimated_delivery_date column already exists" as message'
 ));
@@ -157,7 +157,7 @@ DEALLOCATE PREPARE stmt;
 
 -- Check and add actual_delivery_date column
 SET @sql = (SELECT IF(
-    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'everythingb2c' AND TABLE_NAME = 'orders' AND COLUMN_NAME = 'actual_delivery_date') = 0,
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'EverythingB2C' AND TABLE_NAME = 'orders' AND COLUMN_NAME = 'actual_delivery_date') = 0,
     'ALTER TABLE orders ADD COLUMN actual_delivery_date DATE',
     'SELECT "actual_delivery_date column already exists" as message'
 ));
@@ -167,7 +167,7 @@ DEALLOCATE PREPARE stmt;
 
 -- Add foreign key constraint (only if it doesn't exist)
 SET @sql = (SELECT IF(
-    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA = 'everythingb2c' AND TABLE_NAME = 'orders' AND CONSTRAINT_NAME = 'fk_orders_status') = 0,
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA = 'EverythingB2C' AND TABLE_NAME = 'orders' AND CONSTRAINT_NAME = 'fk_orders_status') = 0,
     'ALTER TABLE orders ADD CONSTRAINT fk_orders_status FOREIGN KEY (order_status_id) REFERENCES order_statuses(id) ON DELETE RESTRICT',
     'SELECT "fk_orders_status constraint already exists" as message'
 ));
@@ -205,7 +205,7 @@ CREATE TABLE IF NOT EXISTS payment_transactions (
 );
 
 -- Generate tracking IDs for existing orders (only if tracking_id is NULL)
-UPDATE orders SET tracking_id = CONCAT('Everythingb2c', LPAD(id, 8, '0')) WHERE tracking_id IS NULL;
+UPDATE orders SET tracking_id = CONCAT('EverythingB2C', LPAD(id, 8, '0')) WHERE tracking_id IS NULL;
 
 -- Create indexes (ignore if they exist)
 CREATE INDEX IF NOT EXISTS idx_orders_tracking_id ON orders(tracking_id);

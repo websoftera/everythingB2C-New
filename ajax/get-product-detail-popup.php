@@ -47,7 +47,7 @@ function abs_img($rel) {
   <div style="display:flex;gap:28px;align-items:flex-start;flex-wrap:wrap;">
     <div style="flex:0 0 160px;max-width:160px;">
       <?php if ($discount > 0): ?>
-        <div style="color:#23a036;font-weight:600;font-size:1.05em;margin-bottom:6px;">SAVE ₹<?php echo number_format($discount,2); ?><?php if ($discountPercent > 0): ?> (<?php echo $discountPercent; ?>% OFF)<?php endif; ?></div>
+        <div style="color:#23a036;font-weight:600;font-size:1.05em;margin-bottom:6px;">SAVE ₹<?php echo number_format($discount,0); ?><?php if ($discountPercent > 0): ?> (<?php echo $discountPercent; ?>% OFF)<?php endif; ?></div>
       <?php endif; ?>
       <img id="popupMainImage" src="<?php echo abs_img($product['main_image']); ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" style="width:160px;height:160px;object-fit:contain;border-radius:8px;box-shadow:0 2px 8px #eee;">
       <div style="display:flex;gap:6px;margin-top:10px;justify-content:center;flex-wrap:wrap;">
@@ -64,8 +64,8 @@ function abs_img($rel) {
         <?php if (!empty($product['hsn'])): ?><span><b>HSN:</b> <?php echo htmlspecialchars($product['hsn']); ?></span><br><?php endif; ?>
       </div>
       <div style="display:flex;gap:10px;align-items:center;margin-bottom:8px;flex-wrap:wrap;">
-        <span style="background:#007bff;color:#fff;padding:6px 14px;border-radius:7px;font-weight:600;">MRP <s>₹<?php echo number_format($product['mrp'],2); ?></s></span>
-        <span style="background:#23a036;color:#fff;padding:6px 14px;border-radius:7px;font-weight:600;">PAY ₹<?php echo number_format($product['selling_price'],2); ?></span>
+        <span style="background:#007bff;color:#fff;padding:6px 14px;border-radius:7px;font-weight:600;">MRP <s>₹<?php echo number_format($product['mrp'],0); ?></s></span>
+        <span style="background:#23a036;color:#fff;padding:6px 14px;border-radius:7px;font-weight:600;">PAY ₹<?php echo number_format($product['selling_price'],0); ?></span>
         <button id="popupWishlistBtn" class="popup-wishlist-btn" style="background:#007bff;border:none;border-radius:7px;padding:6px 10px;display:inline-flex;align-items:center;cursor:pointer;outline:none;">
           <i class="fas fa-heart" style="color:<?php echo $inWishlist ? 'orange' : '#fff'; ?>;font-size:1.2em;"></i>
         </button>
