@@ -595,13 +595,14 @@ window.addEventListener('cart-updated', function() {
   updateFloatingCartCount();
 });
 
-// Shared floating cart position logic
+// Shared floating cart position logic with click/drag distinction
 (function() {
   const btn = document.getElementById('floatingCartBtn');
   const panel = document.getElementById('floatingCartPanel');
   let isDragging = false;
   let offsetX = 0, offsetY = 0;
   let startX = 0, startY = 0;
+  let dragStarted = false;
 
   // Load position from localStorage
   function loadPosition() {
@@ -649,6 +650,7 @@ window.addEventListener('cart-updated', function() {
   // Drag handler for both btn and panel header
   function onMouseDown(e) {
     isDragging = true;
+    dragStarted = false;
     startX = e.clientX;
     startY = e.clientY;
     // Use btn as reference for position
@@ -658,25 +660,55 @@ window.addEventListener('cart-updated', function() {
     if (btn) btn.style.transition = 'none';
     if (panel) panel.style.transition = 'none';
     document.body.style.userSelect = 'none';
+    // For click/drag distinction
+    document.addEventListener('mousemove', onMouseMoveOnce, { once: true });
+  }
+  function onMouseMoveOnce(e) {
+    if (!isDragging) return;
+    const dx = Math.abs(e.clientX - startX);
+    const dy = Math.abs(e.clientY - startY);
+    if (dx > 5 || dy > 5) {
+      dragStarted = true;
+    }
   }
   function onMouseMove(e) {
     if (!isDragging) return;
-    let x = e.clientX - offsetX;
-    let y = e.clientY - offsetY;
-    x = Math.max(0, Math.min(window.innerWidth - (btn ? btn.offsetWidth : 60), x));
-    y = Math.max(0, Math.min(window.innerHeight - (btn ? btn.offsetHeight : 60), y));
-    moveBoth(x, y);
+    const dx = Math.abs(e.clientX - startX);
+    const dy = Math.abs(e.clientY - startY);
+    if (dx > 5 || dy > 5) {
+      dragStarted = true;
+    }
+    if (dragStarted) {
+      let x = e.clientX - offsetX;
+      let y = e.clientY - offsetY;
+      x = Math.max(0, Math.min(window.innerWidth - (btn ? btn.offsetWidth : 60), x));
+      y = Math.max(0, Math.min(window.innerHeight - (btn ? btn.offsetHeight : 60), y));
+      moveBoth(x, y);
+    }
   }
-  function onMouseUp() {
+  function onMouseUp(e) {
     if (isDragging) {
       isDragging = false;
       if (btn) btn.style.transition = '';
       if (panel) panel.style.transition = '';
       document.body.style.userSelect = '';
-      // Save position
-      const left = btn ? parseInt(btn.style.left) : 0;
-      const top = btn ? parseInt(btn.style.top) : 0;
-      savePosition(left, top);
+      // Save position if dragged
+      if (dragStarted) {
+        const left = btn ? parseInt(btn.style.left) : 0;
+        const top = btn ? parseInt(btn.style.top) : 0;
+        savePosition(left, top);
+      } else {
+        // Treat as click if not dragged
+        if (e.target === btn || btn.contains(e.target)) {
+          // Simulate original click logic
+          if (panel.style.display === 'block') {
+            panel.style.display = 'none';
+            return;
+          }
+          panel.style.display = 'block';
+          if (typeof renderFloatingCart === 'function') renderFloatingCart();
+        }
+      }
     }
   }
 
@@ -709,7 +741,6 @@ window.addEventListener('cart-updated', function() {
     }
   });
 })();
-
 </script>
 <main>
 
