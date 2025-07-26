@@ -50,8 +50,8 @@ if (isLoggedIn()) {
     <!-- CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="stylesheet" href="asset/style/header.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="Header.css">
     <link rel="stylesheet" href="asset/style/footer.css">
     <link rel="stylesheet" href="asset/style/popup.css">
     <link rel="stylesheet" href="asset/style/style.css">
@@ -153,14 +153,14 @@ html, body {
   background: #fff !important;
 }
 .category-navbar {
-  position: fixed !important;
+  position: sticky !important;
   top: 91px !important;
   left: 0 !important;
   width: 100% !important;
   z-index: 9998 !important;
   background: #fff !important;
 }
-body { padding-top: 147px !important; }
+body { padding-top: 125px !important; }
 @media (max-width: 991.98px) {
   .navbar { top: 35px !important; }
   .category-navbar { top: 83px !important; }
@@ -333,7 +333,7 @@ body { padding-top: 147px !important; }
 <!-- Desktop Category Navigation -->
 <div class="second-navbar d-none d-lg-block">
     <nav class="navbar navbar-expand-lg navbar-light bg-light category-navbar">
-        <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
+        <div class="navbar-collapse justify-content-center" id="navbarSupportedContent">
             <ul class="navbar-nav category-list mb-2 mb-lg-0 d-flex align-items-center">
                 <?php function renderCategoryMenu($tree) {
                     foreach ($tree as $cat) {
