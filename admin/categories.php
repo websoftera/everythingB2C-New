@@ -227,51 +227,48 @@ $categoryTree = buildCategoryTree($categories);
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <?php foreach ($categoryTree as $category): ?>
-                                                <tr>
-                                                    <td>
-                                                        <?php if ($category['image']): ?>
-                                                            <img src="../<?php echo $category['image']; ?>" 
-                                                                 alt="<?php echo htmlspecialchars($category['name']); ?>"
-                                                                 class="img-preview">
-                                                        <?php else: ?>
-                                                            <div class="img-preview bg-light d-flex align-items-center justify-content-center">
-                                                                <i class="fas fa-image text-muted"></i>
-                                                            </div>
-                                                        <?php endif; ?>
-                                                    </td>
-                                                    <td>
-                                                        <strong style="padding-left: <?php echo $category['level'] * 20; ?>px">
-                                                            <?php echo htmlspecialchars($category['name']); ?>
-                                                        </strong>
-                                                        <?php if ($category['parent_id']): ?>
-                                                            <span class="badge bg-secondary ms-2">Sub-category</span>
-                                                        <?php endif; ?>
-                                                    </td>
-                                                    <td>
-                                                        <code><?php echo htmlspecialchars($category['slug']); ?></code>
-                                                    </td>
-                                                    <td>
-                                                        <?php echo htmlspecialchars($category['description'] ?? ''); ?>
-                                                    </td>
-                                                    <td>
-                                                        <span class="badge bg-primary"><?php echo $category['product_count']; ?></span>
-                                                    </td>
-                                                    <td><?php echo date('M d, Y', strtotime($category['created_at'])); ?></td>
-                                                    <td>
-                                                        <div class="action-buttons">
-                                                            <button type="button" class="btn btn-warning btn-sm" 
-                                                                    onclick="editCategory(<?php echo htmlspecialchars(json_encode($category)); ?>)" title="Edit">
-                                                                <i class="fas fa-edit"></i>
-                                                            </button>
-                                                            <button type="button" class="btn btn-danger btn-sm" 
-                                                                    onclick="deleteCategory(<?php echo $category['id']; ?>, '<?php echo htmlspecialchars($category['name']); ?>')" title="Delete">
-                                                                <i class="fas fa-trash"></i>
-                                                            </button>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            <?php endforeach; ?>
+                                            <?php 
+                                            function displayCategories($categories, $level = 0) {
+                                                foreach ($categories as $category) {
+                                                    echo '<tr>';
+                                                    echo '<td>';
+                                                    if ($category['image']) {
+                                                        echo '<img src="../' . $category['image'] . '" alt="' . htmlspecialchars($category['name']) . '" class="img-preview">';
+                                                    } else {
+                                                        echo '<div class="img-preview bg-light d-flex align-items-center justify-content-center"><i class="fas fa-image text-muted"></i></div>';
+                                                    }
+                                                    echo '</td>';
+                                                    echo '<td>';
+                                                    echo '<strong style="padding-left: ' . ($level * 20) . 'px">';
+                                                    echo htmlspecialchars($category['name']);
+                                                    echo '</strong>';
+                                                    if ($category['parent_id']) {
+                                                        echo '<span class="badge bg-secondary ms-2">Sub-category</span>';
+                                                    } else {
+                                                        echo '<span class="badge bg-primary ms-2">Main Category</span>';
+                                                    }
+                                                    echo '</td>';
+                                                    echo '<td><code>' . htmlspecialchars($category['slug']) . '</code></td>';
+                                                    echo '<td>' . htmlspecialchars($category['description'] ?? '') . '</td>';
+                                                    echo '<td><span class="badge bg-primary">' . $category['product_count'] . '</span></td>';
+                                                    echo '<td>' . date('M d, Y', strtotime($category['created_at'])) . '</td>';
+                                                    echo '<td>';
+                                                    echo '<div class="action-buttons">';
+                                                    echo '<button type="button" class="btn btn-warning btn-sm" onclick="editCategory(' . htmlspecialchars(json_encode($category)) . ')" title="Edit"><i class="fas fa-edit"></i></button>';
+                                                    echo '<button type="button" class="btn btn-danger btn-sm" onclick="deleteCategory(' . $category['id'] . ', \'' . htmlspecialchars($category['name']) . '\')" title="Delete"><i class="fas fa-trash"></i></button>';
+                                                    echo '</div>';
+                                                    echo '</td>';
+                                                    echo '</tr>';
+                                                    
+                                                    // Recursively display subcategories
+                                                    if (!empty($category['children'])) {
+                                                        displayCategories($category['children'], $level + 1);
+                                                    }
+                                                }
+                                            }
+                                            
+                                            displayCategories($categoryTree);
+                                            ?>
                                         </tbody>
                                     </table>
                                 </div>
@@ -304,8 +301,20 @@ $categoryTree = buildCategoryTree($categories);
                             <label for="parent_id" class="form-label">Parent Category</label>
                             <select class="form-control" id="parent_id" name="parent_id">
                                 <option value="">None (Main Category)</option>
-                                <?php foreach ($allCategories as $cat): ?>
-                                    <option value="<?php echo $cat['id']; ?>"><?php echo htmlspecialchars($cat['name']); ?></option>
+                                <?php foreach ($parentCategories as $parentCategory): ?>
+                                    <optgroup label="<?php echo htmlspecialchars($parentCategory['name']); ?>">
+                                        <option value="<?php echo $parentCategory['id']; ?>">
+                                            <?php echo htmlspecialchars($parentCategory['name']); ?>
+                                        </option>
+                                        <?php 
+                                        $subcategories = getSubcategoriesByParentId($parentCategory['id']);
+                                        foreach ($subcategories as $subcategory): 
+                                        ?>
+                                            <option value="<?php echo $subcategory['id']; ?>">
+                                                &nbsp;&nbsp;&nbsp;&nbsp;→ <?php echo htmlspecialchars($subcategory['name']); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </optgroup>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -352,8 +361,20 @@ $categoryTree = buildCategoryTree($categories);
                             <label for="edit_parent_id" class="form-label">Parent Category</label>
                             <select class="form-control" id="edit_parent_id" name="parent_id">
                                 <option value="">None (Main Category)</option>
-                                <?php foreach ($allCategories as $cat): ?>
-                                    <option value="<?php echo $cat['id']; ?>"><?php echo htmlspecialchars($cat['name']); ?></option>
+                                <?php foreach ($parentCategories as $parentCategory): ?>
+                                    <optgroup label="<?php echo htmlspecialchars($parentCategory['name']); ?>">
+                                        <option value="<?php echo $parentCategory['id']; ?>">
+                                            <?php echo htmlspecialchars($parentCategory['name']); ?>
+                                        </option>
+                                        <?php 
+                                        $subcategories = getSubcategoriesByParentId($parentCategory['id']);
+                                        foreach ($subcategories as $subcategory): 
+                                        ?>
+                                            <option value="<?php echo $subcategory['id']; ?>">
+                                                &nbsp;&nbsp;&nbsp;&nbsp;→ <?php echo htmlspecialchars($subcategory['name']); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </optgroup>
                                 <?php endforeach; ?>
                             </select>
                         </div>

@@ -354,18 +354,7 @@ foreach ($cartItems as $item) {
             <div class="d-flex justify-content-between mb-2"><span>Delivery charge</span><span id="cart-shipping">₹<?php echo $orderTotals['shipping_charge']; ?></span></div>
             <!-- <div class="d-flex justify-content-between mb-2"><span>Shipping Zone</span><span id="cart-shipping-zone"><?php echo htmlspecialchars($orderTotals['shipping_zone_name'] ?? ''); ?></span></div> -->
             <div class="d-flex justify-content-between mb-2 bg-light p-2 rounded"><span class="text-success"><b>Total Savings</b></span><span class="text-success">₹<?php echo number_format($savings,0); ?></span></div>
-            <!-- GST Breakdown -->
-            <div class="border-top pt-2 mt-2" id="gst-breakdown-section">
-              <!-- This content will be fully replaced by JS on address change -->
-              <!-- <small class="text-muted">TAX Breakdown:</small> -->
-              <?php if ($orderTotals['igst_total'] > 0): ?>
-                <!-- <div class="d-flex justify-content-between mb-1"><small>IGST (<?php echo number_format($orderTotals['igst_total'] > 0 ? ($orderTotals['igst_total'] / $orderTotals['subtotal']) * 100 : 0, 1); ?>%)</small><small>₹<?php echo number_format($orderTotals['igst_total'],0); ?></small></div> -->
-              <?php elseif ($orderTotals['sgst_total'] > 0 || $orderTotals['cgst_total'] > 0): ?>
-                <!-- <div class="d-flex justify-content-between mb-1"><small>SGST (<?php echo number_format($orderTotals['sgst_total'] > 0 ? ($orderTotals['sgst_total'] / $orderTotals['subtotal']) * 100 : 0, 1); ?>%)</small><small>₹<?php echo number_format($orderTotals['sgst_total'],0); ?></small></div> -->
-                <!-- <div class="d-flex justify-content-between mb-1"><small>CGST (<?php echo number_format($orderTotals['cgst_total'] > 0 ? ($orderTotals['cgst_total'] / $orderTotals['subtotal']) * 100 : 0, 1); ?>%)</small><small>₹<?php echo number_format($orderTotals['cgst_total'],0); ?></small></div> -->
-              <?php endif; ?>
-              <div class="d-flex justify-content-between"><small><strong>Total TAX</strong></small><small><strong>₹<?php echo number_format($orderTotals['total_gst'],0); ?></strong></small></div>
-            </div>
+            <!-- GST Breakdown removed: prices are inclusive of GST -->
             <div class="d-flex justify-content-between mb-2 bg-primary bg-opacity-10 p-2 rounded"><span><b>Total Amount to Pay</b></span><span id="order-total-amount"><b>₹<?php echo number_format($orderTotals['total'],0); ?></b></span></div>
             <!-- Payment Method Section and Place Order Button -->
             <div class="checkout-card mt-3">

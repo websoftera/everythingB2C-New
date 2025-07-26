@@ -83,9 +83,10 @@ $total_pages = ceil($total_products / $per_page);
 $offset = ($page - 1) * $per_page;
 
 // Get products
-$sql = "SELECT p.*, c.name as category_name, p.hsn 
+$sql = "SELECT p.*, c.name as category_name, c.parent_id, pc.name as parent_category_name, p.hsn 
         FROM products p 
         LEFT JOIN categories c ON p.category_id = c.id 
+        LEFT JOIN categories pc ON c.parent_id = pc.id 
         $where_clause 
         ORDER BY p.created_at DESC 
         LIMIT $per_page OFFSET $offset";
@@ -94,8 +95,9 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Get categories for filter
+// Get categories for filter with hierarchical structure
 $categories = getAllCategories();
+$parentCategories = getParentCategories();
 ?>
 
 <!DOCTYPE html>
@@ -169,11 +171,22 @@ $categories = getAllCategories();
                                 <div class="col-md-3">
                                     <select class="form-control" name="category">
                                         <option value="">All Categories</option>
-                                        <?php foreach ($categories as $category): ?>
-                                            <option value="<?php echo $category['id']; ?>" 
-                                                    <?php echo $category_filter == $category['id'] ? 'selected' : ''; ?>>
-                                                <?php echo htmlspecialchars($category['name']); ?>
-                                            </option>
+                                        <?php foreach ($parentCategories as $parentCategory): ?>
+                                            <optgroup label="<?php echo htmlspecialchars($parentCategory['name']); ?>">
+                                                <option value="<?php echo $parentCategory['id']; ?>" 
+                                                        <?php echo $category_filter == $parentCategory['id'] ? 'selected' : ''; ?>>
+                                                    <?php echo htmlspecialchars($parentCategory['name']); ?>
+                                                </option>
+                                                <?php 
+                                                $subcategories = getSubcategoriesByParentId($parentCategory['id']);
+                                                foreach ($subcategories as $subcategory): 
+                                                ?>
+                                                    <option value="<?php echo $subcategory['id']; ?>" 
+                                                            <?php echo $category_filter == $subcategory['id'] ? 'selected' : ''; ?>>
+                                                        &nbsp;&nbsp;&nbsp;&nbsp;→ <?php echo htmlspecialchars($subcategory['name']); ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </optgroup>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
@@ -264,7 +277,18 @@ $categories = getAllCategories();
                                                         </td>
                                                         <td><?php echo htmlspecialchars($product['sku']); ?></td>
                                                         <td><?php echo htmlspecialchars($product['hsn'] ?? ''); ?></td>
-                                                        <td><?php echo htmlspecialchars($product['category_name'] ?? 'Uncategorized'); ?></td>
+                                                        <td>
+                                                            <?php 
+                                                            if ($product['parent_category_name']) {
+                                                                // Product is in a subcategory
+                                                                echo '<strong>' . htmlspecialchars($product['parent_category_name']) . '</strong>';
+                                                                echo '<br><small class="text-muted">→ ' . htmlspecialchars($product['category_name']) . '</small>';
+                                                            } else {
+                                                                // Product is in a parent category
+                                                                echo htmlspecialchars($product['category_name'] ?? 'Uncategorized');
+                                                            }
+                                                            ?>
+                                                        </td>
                                                         <td>
                                                             <div class="d-flex flex-column">
                                                                 <span class="text-decoration-line-through text-muted">

@@ -8,6 +8,31 @@ function getAllCategories() {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+// Function to get parent categories only (categories with no parent or parent_id is null)
+function getParentCategories() {
+    global $pdo;
+    $stmt = $pdo->query("SELECT * FROM categories WHERE parent_id IS NULL ORDER BY name");
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// Function to get subcategories by parent category ID
+function getSubcategoriesByParentId($parentId) {
+    global $pdo;
+    $stmt = $pdo->prepare("SELECT * FROM categories WHERE parent_id = ? ORDER BY name");
+    $stmt->execute([$parentId]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// Function to get category with its parent information
+function getCategoryWithParent($categoryId) {
+    global $pdo;
+    $stmt = $pdo->prepare("SELECT c.*, p.name as parent_name FROM categories c 
+                          LEFT JOIN categories p ON c.parent_id = p.id 
+                          WHERE c.id = ?");
+    $stmt->execute([$categoryId]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
 // Function to get category by slug
 function getCategoryBySlug($slug) {
     global $pdo;

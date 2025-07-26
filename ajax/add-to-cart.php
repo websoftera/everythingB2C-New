@@ -34,6 +34,15 @@ if ($product['stock_quantity'] < $quantity) {
     exit;
 }
 
+// Check max quantity per order
+if ($product['max_quantity_per_order'] !== null && $quantity > $product['max_quantity_per_order']) {
+    echo json_encode([
+        'success' => false, 
+        'message' => "Maximum quantity allowed for this product is {$product['max_quantity_per_order']}"
+    ]);
+    exit;
+}
+
 // Check if user is logged in
 if (isLoggedIn()) {
     $userId = $_SESSION['user_id'];

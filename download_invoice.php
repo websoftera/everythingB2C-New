@@ -169,13 +169,11 @@ foreach ($orderItems as $item) {
 }
 $html .= '</table>';
 
-// Determine GST label based on delivery state vs seller state
-$seller_state = 'Maharashtra';
-$gstLabel = (isset($address['state']) && strtolower(trim($address['state'])) !== strtolower($seller_state)) ? 'IGST' : 'GST';
+// Note: GST is included in the selling price
 $html .= '<p><b>Order Subtotal:</b> ₹' . number_format($order['subtotal'], 2) . '<br>';
 $html .= '<b>Shipping:</b> ₹' . number_format($order['shipping_charge'], 2) . '<br>';
-$html .= '<b>' . $gstLabel . ':</b> ₹' . number_format($order['gst_amount'], 2) . '<br>';
 $html .= '<b>Total Paid:</b> ₹' . number_format($total, 2) . '</p>';
+$html .= '<p style="font-size: 12px; color: #666; margin-top: 8px;"><i>* All prices are inclusive of GST</i></p>';
 
 // Helper function to convert number to words (Indian style)
 function numberToWords($number)

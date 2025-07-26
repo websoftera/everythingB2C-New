@@ -91,7 +91,7 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
         <div class="cart-controls modern-cart">
             <div class="quantity-control d-inline-flex align-items-center">
                 <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
-                <input type="number" class="quantity-input" value="1" min="1">
+                <input type="number" class="quantity-input" value="1" min="1" max="99" data-product-id="<?php echo $product['id']; ?>">
                 <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
             </div>
             <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">ADD TO CART</button>
@@ -353,7 +353,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                         <div class="cart-actions">
                             <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $relatedProduct['id']; ?>">ADD TO CART</button>
-                            <input type="number" class="quantity-input" value="1" min="1">
+                            <input type="number" class="quantity-input" value="1" min="1" max="99" data-product-id="<?php echo $relatedProduct['id']; ?>">
                         </div>
                     </div>
                 </div>

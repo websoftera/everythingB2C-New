@@ -41,6 +41,7 @@ $product = array_merge([
     'selling_price' => 0,
     'category_id' => '',
     'stock_quantity' => 0,
+    'max_quantity_per_order' => null,
     'gst_rate' => 18.00,
     'shipping_charge' => null,
     'is_active' => 1,
@@ -57,8 +58,11 @@ $stmt = $pdo->prepare("SELECT * FROM product_images WHERE product_id = ? ORDER B
 $stmt->execute([$product_id]);
 $product_images = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Get categories for dropdown
-$categories = getAllCategories();
+// Get parent categories for dropdown
+$parentCategories = getParentCategories();
+
+// Get current category with parent info
+$currentCategory = getCategoryWithParent($product['category_id']);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name']);
@@ -66,8 +70,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $description = trim($_POST['description']);
     $mrp = floatval($_POST['mrp']);
     $selling_price = floatval($_POST['selling_price']);
-    $category_id = intval($_POST['category_id']);
+    
+    // Handle category selection - use subcategory if selected, otherwise use parent category
+    $category_id = !empty($_POST['category_id']) ? intval($_POST['category_id']) : intval($_POST['parent_category_id']);
+    
     $stock_quantity = intval($_POST['stock_quantity']);
+    $max_quantity_per_order = !empty($_POST['max_quantity_per_order']) ? intval($_POST['max_quantity_per_order']) : null;
     $gst_rate = floatval($_POST['gst_rate']);
     $sku = trim($_POST['sku']);
     $hsn = isset($_POST['hsn']) ? trim($_POST['hsn']) : null;
@@ -75,6 +83,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Validation
     if (empty($name) || empty($description) || $mrp <= 0 || $selling_price <= 0) {
         $error_message = 'Please fill in all required fields with valid values.';
+    } elseif (empty($_POST['parent_category_id'])) {
+        $error_message = 'Please select a category.';
     } elseif ($selling_price > $mrp) {
         $error_message = 'Selling price cannot be greater than MRP.';
     } elseif ($gst_rate < 0 || $gst_rate > 100) {
@@ -87,8 +97,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $discount_percentage = calculateDiscountPercentage($mrp, $selling_price);
 
             // Update product
-            $stmt = $pdo->prepare("UPDATE products SET name = ?, slug = ?, description = ?, mrp = ?, selling_price = ?, discount_percentage = ?, gst_rate = ?, category_id = ?, stock_quantity = ?, is_active = ?, is_featured = ?, is_discounted = ?, sku = ?, hsn = ? WHERE id = ?");
-            $stmt->execute([$name, $slug, $description, $mrp, $selling_price, $discount_percentage, $gst_rate, $category_id, $stock_quantity, $is_active, $is_featured, $is_discounted, $sku, $hsn, $product_id]);
+            $stmt = $pdo->prepare("UPDATE products SET name = ?, slug = ?, description = ?, mrp = ?, selling_price = ?, discount_percentage = ?, gst_rate = ?, category_id = ?, stock_quantity = ?, max_quantity_per_order = ?, is_active = ?, is_featured = ?, is_discounted = ?, sku = ?, hsn = ? WHERE id = ?");
+            $stmt->execute([$name, $slug, $description, $mrp, $selling_price, $discount_percentage, $gst_rate, $category_id, $stock_quantity, $max_quantity_per_order, $is_active, $is_featured, $is_discounted, $sku, $hsn, $product_id]);
 
             // Handle main image upload
             if (isset($_FILES['main_image']) && $_FILES['main_image']['error'] === UPLOAD_ERR_OK) {
@@ -233,16 +243,26 @@ function uploadImage($file, $folder) {
                                                        value="<?php echo htmlspecialchars($product['name']); ?>" required>
                                             </div>
                                             <div class="col-md-4">
-                                                <label for="edit_category_id" class="form-label">Category *</label>
-                                                <select class="form-control" id="edit_category_id" name="category_id" required>
+                                                <label for="parent_category_id" class="form-label">Category *</label>
+                                                <select class="form-control" id="parent_category_id" name="parent_category_id" required>
                                                     <option value="">Select Category</option>
-                                                    <?php foreach ($categories as $category): ?>
+                                                    <?php foreach ($parentCategories as $category): ?>
                                                         <option value="<?php echo $category['id']; ?>" 
-                                                                <?php echo $product['category_id'] == $category['id'] ? 'selected' : ''; ?>>
+                                                                <?php echo ($currentCategory && $currentCategory['parent_id'] == $category['id']) ? 'selected' : ''; ?>>
                                                             <?php echo htmlspecialchars($category['name']); ?>
                                                         </option>
                                                     <?php endforeach; ?>
                                                 </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-3" id="subcategory_row" style="display: none;">
+                                            <div class="col-md-4">
+                                                <label for="category_id" class="form-label">Subcategory</label>
+                                                <select class="form-control" id="category_id" name="category_id">
+                                                    <option value="">Select Subcategory (Optional)</option>
+                                                </select>
+                                                <div class="form-text">Select a subcategory if available</div>
                                             </div>
                                         </div>
 
@@ -281,7 +301,7 @@ function uploadImage($file, $folder) {
                                                 <div class="form-control-plaintext" id="gst_amount_display">
                                                     ₹<?php echo number_format(($product['selling_price'] * $product['gst_rate']) / 100, 2); ?>
                                                 </div>
-                                                <div class="form-text">Calculated automatically for reference</div>
+                                                <div class="form-text">Calculated automatically for reference (selling price is inclusive of GST)</div>
                                             </div>
                                         </div>
 
@@ -290,6 +310,11 @@ function uploadImage($file, $folder) {
                                                 <label for="stock_quantity" class="form-label">Stock Quantity *</label>
                                                 <input type="number" class="form-control" id="stock_quantity" name="stock_quantity" min="0" value="<?php echo htmlspecialchars($product['stock_quantity']); ?>" required>
                                                 <div class="invalid-feedback">Please provide stock quantity.</div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="max_quantity_per_order" class="form-label">Max Quantity Per Order</label>
+                                                <input type="number" class="form-control" id="max_quantity_per_order" name="max_quantity_per_order" min="1" value="<?php echo htmlspecialchars($product['max_quantity_per_order'] ?? ''); ?>" placeholder="Leave empty for no limit">
+                                                <div class="form-text">Maximum quantity a customer can order at once</div>
                                             </div>
                                             <div class="col-md-4">
                                                 <label class="form-label">Total with Shipping</label>
@@ -542,6 +567,73 @@ function uploadImage($file, $folder) {
             
             document.getElementById('total_with_shipping_display').textContent = '₹' + total.toFixed(2);
         }
+
+        // Subcategory loading functionality
+        document.getElementById('parent_category_id').addEventListener('change', function() {
+            const parentId = this.value;
+            const subcategoryRow = document.getElementById('subcategory_row');
+            const categorySelect = document.getElementById('category_id');
+            
+            // Clear subcategory dropdown
+            categorySelect.innerHTML = '<option value="">Select Subcategory (Optional)</option>';
+            
+            if (parentId) {
+                // Show subcategory row and load subcategories
+                subcategoryRow.style.display = 'block';
+                
+                fetch(`ajax/get_subcategories.php?parent_id=${parentId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.subcategories.length > 0) {
+                            data.subcategories.forEach(subcategory => {
+                                const option = document.createElement('option');
+                                option.value = subcategory.id;
+                                option.textContent = subcategory.name;
+                                categorySelect.appendChild(option);
+                            });
+                        } else {
+                            // No subcategories, hide the row
+                            subcategoryRow.style.display = 'none';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading subcategories:', error);
+                        subcategoryRow.style.display = 'none';
+                    });
+            } else {
+                // No parent category selected, hide subcategory row
+                subcategoryRow.style.display = 'none';
+            }
+        });
+
+        // Handle form initialization for edit mode
+        document.addEventListener('DOMContentLoaded', function() {
+            const parentCategorySelect = document.getElementById('parent_category_id');
+            const selectedParentId = parentCategorySelect.value;
+            const currentCategoryId = <?php echo $product['category_id']; ?>;
+            
+            if (selectedParentId) {
+                // Trigger the change event to load subcategories
+                parentCategorySelect.dispatchEvent(new Event('change'));
+                
+                // After a short delay, set the selected subcategory if it exists
+                setTimeout(() => {
+                    const categorySelect = document.getElementById('category_id');
+                    
+                    if (categorySelect && currentCategoryId) {
+                        // Check if current category is a subcategory of selected parent
+                        const currentCategory = <?php echo json_encode($currentCategory); ?>;
+                        
+                        if (currentCategory && currentCategory.parent_id == selectedParentId) {
+                            categorySelect.value = currentCategoryId;
+                        } else {
+                            // Current category is the parent category itself
+                            categorySelect.value = '';
+                        }
+                    }
+                }, 500);
+            }
+        });
 
         // Form validation
         (function() {

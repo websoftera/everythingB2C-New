@@ -54,8 +54,11 @@ require_once 'includes/header.php';
         <div class="row">
             <div class="col-md-8">
                 <div class="shopping-card">
-                    <div class="card-header">
-                        <h5>Cart Items (<?php echo count($cartItems); ?>)</h5>
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Cart Items (<?php echo count($cartItems); ?>)</h5>
+                        <button type="button" class="btn btn-outline-danger btn-sm" id="removeAllItems" title="Remove all items from cart">
+                            <i class="fas fa-trash-alt me-1"></i>Remove All
+                        </button>
                     </div>
                     <div class="card-body">
                         <!-- Header Row for Cart Columns -->
@@ -87,7 +90,7 @@ require_once 'includes/header.php';
                                 <div style="flex:0 0 80px; min-width:50px; text-align:center;">
                                     <div class="quantity-control d-inline-flex align-items-center justify-content-center">
                                         <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
-                                        <input type="number" class="form-control quantity-input" value="<?php echo $item['quantity']; ?>" min="1" data-cart-id="<?php echo $item['id']; ?>" style="width:34px;display:inline-block;">
+                                        <input type="number" class="form-control quantity-input" value="<?php echo $item['quantity']; ?>" min="1" max="99" data-cart-id="<?php echo $item['id']; ?>" style="width:34px;display:inline-block;">
                                         <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
                                     </div>
                                 </div>
@@ -110,15 +113,16 @@ require_once 'includes/header.php';
                     </div>
                     <div class="card-body">
                         <div class="floating-cart-summary-box" style="border:1px solid #cfd8dc;border-radius:8px;padding:16px 16px 8px 16px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:10px;">
-                          <div class="d-flex justify-content-between mb-2"><span class="text-muted">Total MRP</span><span style="font-weight:600;">₹<?php echo number_format($orderTotals['subtotal'], 0); ?></span></div>
-                          <div class="d-flex justify-content-between mb-2"><span class="text-muted">Delivery Charge <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
-                          <div class="d-flex justify-content-between mb-2"><span class="text-muted">Savings</span><span class="fw-bold" style="color:#2e7d32;">₹<?php
+                                      <div class="d-flex justify-content-between mb-2"><span class="text-muted">Total MRP</span><span style="font-weight:600;">₹<?php echo number_format($orderTotals['subtotal'], 0); ?></span></div>
+            <div class="d-flex justify-content-between mb-2"><span class="text-muted">Delivery Charge <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
+            <div class="d-flex justify-content-between mb-2"><span class="text-muted">Savings</span><span class="fw-bold" style="color:#2e7d32;">₹<?php
                                 $total_savings = 0;
                                 foreach ($cartItems as $item) {
                                     $total_savings += ($item['mrp'] - $item['selling_price']) * $item['quantity'];
                                 }
                                 echo number_format($total_savings, 0);
                             ?></span></div>
+            <div class="d-flex justify-content-between mb-2"><span class="text-muted" style="font-size: 0.85rem;"><i>* All prices are inclusive of GST</i></span></div>
                           <div class="d-grid mt-3 mb-2">
                             <a href='checkout.php' class='btn btn-success btn-lg fw-bold' style='font-size:1.08rem;'>PROCEED TO CHECKOUT</a>
                           </div>
@@ -369,4 +373,43 @@ document.getElementById('cartProductModalClose').onclick = function() {
 document.getElementById('cartProductDetailModal').onclick = function(e) {
   if (e.target === this) this.style.display = 'none';
 };
+
+// Remove All Items functionality
+document.getElementById('removeAllItems').addEventListener('click', function() {
+    if (confirm('Are you sure you want to remove all items from your cart? This action cannot be undone.')) {
+        // Show loading state
+        const button = this;
+        const originalText = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Removing...';
+        button.disabled = true;
+        
+        fetch('ajax/remove-all-cart.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Show success message
+                alert('All items have been removed from your cart.');
+                // Redirect to empty cart page or reload
+                window.location.reload();
+            } else {
+                alert('Failed to remove items: ' + (data.message || 'Unknown error'));
+                // Reset button
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while removing items from cart.');
+            // Reset button
+            button.innerHTML = originalText;
+            button.disabled = false;
+        });
+    }
+});
 </script> 

@@ -169,10 +169,10 @@ $maxPriceValue = $maxPrice ?: $siteMaxPrice;
                 <a href="product.php?slug=<?php echo $product['slug']; ?>" class="read-more">READ MORE</a>
               <?php else: ?>
                 <div class="cart-actions">
-                  <button class="add-to-cart" data-product-id="<?php echo $product['id']; ?>">ADD TO CART</button>
+                  <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">ADD TO CART</button>
                   <div class="quantity-control">
                     <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
-                    <input type="number" class="quantity-input" value="1" min="1">
+                    <input type="number" class="quantity-input" value="1" min="1" max="99" data-product-id="<?php echo $product['id']; ?>">
                     <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
                   </div>
                 </div>

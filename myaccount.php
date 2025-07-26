@@ -484,13 +484,7 @@ if (isset($_POST['delete_address'])) {
                                         <?php if (!empty($order['shipping_charge'])): ?>
                                             <tr><td>Shipping</td><td class="text-end">₹<?php echo number_format($order['shipping_charge'], 0); ?></td></tr>
                                         <?php endif; ?>
-                                        <?php if (!empty($order['gst_amount'])): ?>
-                                            <?php 
-                                            $seller_state = 'Maharashtra';
-                                            $tax_label = (isset($order['state']) && strtolower(trim($order['state'])) !== strtolower($seller_state)) ? 'Taxes (IGST)' : 'Taxes (GST)';
-                                            ?>
-                                            <tr><td><?php echo $tax_label; ?></td><td class="text-end">₹<?php echo number_format($order['gst_amount'], 0); ?></td></tr>
-                                        <?php endif; ?>
+                                        <!-- GST is included in the selling price -->
                                         <tr><td class="text-success">Total Savings</td><td class="text-end text-success">₹<?php echo number_format($total_savings, 0); ?></td></tr>
                                         <tr class="fw-bold"><td>Total Paid</td><td class="text-end">₹<?php echo number_format($order['total_amount'], 0); ?></td></tr>
                                     </tbody>

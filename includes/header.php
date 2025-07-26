@@ -172,6 +172,39 @@ body { padding-top: 147px !important; }
 #floatingCartBtn {
   z-index: 99999 !important;
 }
+
+/* Product Added Highlight Effect */
+.product-added-highlight {
+  animation: productAddedPulse 0.6s ease-in-out;
+  border: 2px solid #28a745 !important;
+  box-shadow: 0 0 15px rgba(40, 167, 69, 0.3) !important;
+  transform: scale(1.02);
+  transition: all 0.3s ease;
+}
+
+@keyframes productAddedPulse {
+  0% {
+    border-color: #28a745;
+    box-shadow: 0 0 5px rgba(40, 167, 69, 0.2);
+    transform: scale(1);
+  }
+  50% {
+    border-color: #20c997;
+    box-shadow: 0 0 20px rgba(40, 167, 69, 0.5);
+    transform: scale(1.03);
+  }
+  100% {
+    border-color: #28a745;
+    box-shadow: 0 0 15px rgba(40, 167, 69, 0.3);
+    transform: scale(1.02);
+  }
+}
+
+/* Ensure smooth transitions for all product cards */
+.card, .product-detail-card, [data-id^="prod-"] {
+  transition: all 0.3s ease;
+  border: 1px solid #dee2e6;
+}
 </style>
 </head>
 <body>
@@ -192,6 +225,9 @@ body { padding-top: 147px !important; }
     <div id="floatingCartSummary"></div>
     <div class="floating-cart-actions">
       <a href="cart.php" class="btn btn-outline-primary w-100 mb-2" style="padding:6px 0;font-size:0.97rem;">View Full Cart</a>
+      <button type="button" class="btn btn-outline-danger w-100" id="floatingRemoveAll" style="padding:6px 0;font-size:0.97rem;">
+        <i class="fas fa-trash-alt me-1"></i>Remove All
+      </button>
     </div>
   </div>
 </div>
@@ -326,6 +362,7 @@ body { padding-top: 147px !important; }
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="popup/popup.js"></script>
 <script src="popup/searchbar.js"></script>
+<script src="js/max-quantity-check.js"></script>
 <script>
 // --- Floating Cart Logic (Dropdown/Panel, Advanced) ---
 function updateCartQuantity(cartId, qty, inputElem, btnElem, callback) {
@@ -422,6 +459,7 @@ function renderFloatingCart() {
           <div class="d-flex justify-content-between mb-1"><span class="text-muted">Total MRP</span><span style="font-weight:600;">₹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
           <div class="d-flex justify-content-between mb-1"><span class="text-muted">Delivery <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
           <div class="d-flex justify-content-between mb-1"><span class="text-muted">Savings</span><span class="fw-bold" style="color:#2e7d32;">₹${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+          <div class="d-flex justify-content-between mb-1"><span class="text-muted" style="font-size: 0.75rem;"><i>* All prices are inclusive of GST</i></span></div>
           <div class="d-grid mt-2 mb-1">
             <a href='checkout.php' class='btn btn-success btn-sm fw-bold' style='font-size:0.98rem;'>PROCEED TO CHECKOUT</a>
           </div>
@@ -619,6 +657,56 @@ setInterval(updateFloatingCartCount, 30000);
 window.addEventListener('cart-updated', function() {
   renderFloatingCart();
   updateFloatingCartCount();
+});
+
+// Floating Cart Remove All functionality
+document.addEventListener('DOMContentLoaded', function() {
+  const floatingRemoveAllBtn = document.getElementById('floatingRemoveAll');
+  if (floatingRemoveAllBtn) {
+    floatingRemoveAllBtn.addEventListener('click', function() {
+      if (confirm('Are you sure you want to remove all items from your cart? This action cannot be undone.')) {
+        // Show loading state
+        const button = this;
+        const originalText = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Removing...';
+        button.disabled = true;
+        
+        fetch('ajax/remove-all-cart.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Show success message
+            alert('All items have been removed from your cart.');
+            // Update floating cart
+            renderFloatingCart();
+            updateFloatingCartCount();
+            // Close floating cart panel
+            const floatingCartPanel = document.getElementById('floatingCartPanel');
+            if (floatingCartPanel) {
+              floatingCartPanel.style.display = 'none';
+            }
+          } else {
+            alert('Failed to remove items: ' + (data.message || 'Unknown error'));
+            // Reset button
+            button.innerHTML = originalText;
+            button.disabled = false;
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('An error occurred while removing items from cart.');
+          // Reset button
+          button.innerHTML = originalText;
+          button.disabled = false;
+        });
+      }
+    });
+  }
 });
 
 // Robust floating cart drag logic with click/drag separation and debug logs

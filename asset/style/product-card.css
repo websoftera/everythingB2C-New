@@ -190,36 +190,110 @@
     justify-content: center !important;
 }
 
-/* --- Cart Actions: Compact --- */
+/* --- Cart Actions: Improved Alignment --- */
 .cart-actions {
     display: flex !important;
-    justify-content: center !important;
+    flex-direction: column !important;
     align-items: center !important;
-    gap: 2px !important;
+    gap: 8px !important;
     width: 100% !important;
-    margin-bottom: 6px !important;
-    margin-top: 0px !important;
-    padding: 0 5px !important;
+    margin-bottom: 8px !important;
+    margin-top: 4px !important;
+    padding: 0 8px !important;
     box-sizing: border-box !important;
+}
+
+/* Quantity Control Container */
+.quantity-control {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0 !important;
+    width: 100% !important;
+    max-width: 120px !important;
+    height: 32px !important;
+    border: 1px solid #007bff !important;
+    border-radius: 4px !important;
+    background: #fff !important;
+    overflow: hidden !important;
+}
+
+/* Quantity Buttons */
+.quantity-control .btn-qty {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 14px !important;
+    font-weight: bold !important;
+    border: none !important;
+    background: #007bff !important;
+    color: #fff !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: background-color 0.2s ease !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.quantity-control .btn-qty:hover {
+    background: #0056b3 !important;
+}
+
+.quantity-control .btn-qty:disabled {
+    background: #6c757d !important;
+    cursor: not-allowed !important;
+}
+
+/* Quantity Input */
+.quantity-control .quantity-input {
+    width: 56px !important;
+    height: 32px !important;
+    font-size: 14px !important;
+    font-weight: bold !important;
+    text-align: center !important;
+    border: none !important;
+    background: #fff !important;
+    color: #333 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: textfield !important;
+    appearance: textfield !important;
+}
+
+.quantity-control .quantity-input::-webkit-inner-spin-button,
+.quantity-control .quantity-input::-webkit-outer-spin-button {
+    -webkit-appearance: none !important;
+    margin: 0 !important;
 }
 .add-to-cart {
     background: #222e3a !important;
     color: #fff !important;
     font-weight: bold !important;
     border: none !important;
-    border-radius: 2px !important;
-    padding: 5px 6px !important;
+    border-radius: 4px !important;
+    padding: 10px 12px !important;
     width: 100% !important;
-    font-size: 11px !important;
+    font-size: 12px !important;
     cursor: pointer !important;
-    transition: background 0.2s !important;
+    transition: all 0.2s ease !important;
     letter-spacing: 0.5px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     box-sizing: border-box !important;
+    height: 36px !important;
+    text-transform: uppercase !important;
 }
-.quantity-input {
+
+.add-to-cart:hover {
+    background: #0056b3 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+}
+/* Legacy quantity input styles - only for non-quantity-control inputs */
+.quantity-input:not(.quantity-control .quantity-input) {
     width: 100% !important;
     max-width: 50px !important;
     height: 28px !important;
@@ -233,25 +307,13 @@
     margin-left: 2px !important;
     appearance: textfield !important;
     box-sizing: border-box !important;
-    appearance: auto;
-  -webkit-appearance: none;
-  -moz-appearance: textfield;
-
-}
-.quantity-input::-webkit-inner-spin-button,
-.quantity-input::-webkit-outer-spin-button {
-  -webkit-appearance: inner-spin-button;
-  opacity: 1; /* Make sure it is fully visible */
-  display: block;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
 }
 
-/* For Firefox - already shows it by default, but we disable suppression */
-.quantity-input {
-  -moz-appearance: number-input;
-}
-.quantity-input::-webkit-inner-spin-button,
-.quantity-input::-webkit-outer-spin-button {
-    /* -webkit-appearance: none !important; */
+.quantity-input:not(.quantity-control .quantity-input)::-webkit-inner-spin-button,
+.quantity-input:not(.quantity-control .quantity-input)::-webkit-outer-spin-button {
+    -webkit-appearance: none !important;
     margin: 0 !important;
 }
 
@@ -297,6 +359,35 @@
         min-height: 16px !important;
         margin: 6px 0 6px 0 !important;
     }
+    
+    /* Adjust button sizes for medium screens */
+    .cart-actions {
+        gap: 6px !important;
+        padding: 0 6px !important;
+    }
+    
+    .add-to-cart {
+        font-size: 11px !important;
+        height: 32px !important;
+        padding: 8px 10px !important;
+    }
+    
+    .quantity-control {
+        max-width: 100px !important;
+        height: 28px !important;
+    }
+    
+    .quantity-control .btn-qty {
+        width: 28px !important;
+        height: 28px !important;
+        font-size: 12px !important;
+    }
+    
+    .quantity-control .quantity-input {
+        width: 44px !important;
+        height: 28px !important;
+        font-size: 12px !important;
+    }
 }
 
 @media (max-width: 900px) {
@@ -322,6 +413,37 @@
         font-size: 0.75rem !important;
         min-height: 10px !important;
         margin: 4px 0 4px 0 !important;
+    }
+    
+    /* Mobile-optimized button layout */
+    .cart-actions {
+        gap: 4px !important;
+        padding: 0 4px !important;
+        margin-bottom: 6px !important;
+    }
+    
+    .add-to-cart {
+        font-size: 10px !important;
+        height: 28px !important;
+        padding: 6px 8px !important;
+        letter-spacing: 0.3px !important;
+    }
+    
+    .quantity-control {
+        max-width: 80px !important;
+        height: 24px !important;
+    }
+    
+    .quantity-control .btn-qty {
+        width: 24px !important;
+        height: 24px !important;
+        font-size: 10px !important;
+    }
+    
+    .quantity-control .quantity-input {
+        width: 32px !important;
+        height: 24px !important;
+        font-size: 10px !important;
     }
 }
 
@@ -484,53 +606,8 @@
   color: orange !important;
 }
 
-/* Compact quantity controls for all product cards */
-.quantity-control {
-  height: 28px !important;
-  min-height: 28px !important;
-  border: none !important;
-  border-radius: 5px !important;
-  box-shadow: none !important;
-  border: 1px solid #007bff !important;
-}
-.quantity-control .btn-qty {
-  width: 24px !important;
-  height: 28px !important;
-  font-size: 1.1rem !important;
-  border: none !important;
-  border-radius: 0 !important;
-  padding: 0 !important;
-  background: #007bff !important;
-  color: #222 !important;
-  box-shadow: none !important;
-}
-.quantity-control input[type="number"] {
-  width: 24px !important;
-  height: 28px !important;
-  font-size: 1rem !important;
-  padding: 0 !important;
-  border: none !important;
-  border-radius: 0 !important;
-  background: transparent !important;
-  color: #222 !important;
-  box-shadow: none !important;
-}
-@media (max-width: 600px) {
-  .quantity-control {
-    height: 24px !important;
-    min-height: 24px !important;
-  }
-  .quantity-control .btn-qty {
-    width: 24px !important;
-    height: 24px !important;
-    font-size: 1rem !important;
-  }
-  .quantity-control input[type="number"] {
-    width: 24px !important;
-    height: 24px !important;
-    font-size: 0.95rem !important;
-  }
-}
+/* Legacy quantity control styles - overridden by new styles above */
+/* Mobile quantity control styles are now handled in the main responsive section above */
 
 /* Force-hide spinner arrows for .quantity-input inside .quantity-control */
 .quantity-control .quantity-input::-webkit-inner-spin-button,
