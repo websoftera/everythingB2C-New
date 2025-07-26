@@ -123,8 +123,8 @@ $stmt = $pdo->query("SELECT c.*, COUNT(p.id) as product_count
                      ORDER BY c.name");
 $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Fetch all categories for parent selection (excluding self in edit)
-$allCategories = $pdo->query("SELECT id, name FROM categories ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
+// Fetch only main categories for parent selection
+$mainCategories = $pdo->query("SELECT id, name FROM categories WHERE parent_id IS NULL ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
 
 // Helper functions
 function createSlug($string) {
@@ -301,20 +301,10 @@ $categoryTree = buildCategoryTree($categories);
                             <label for="parent_id" class="form-label">Parent Category</label>
                             <select class="form-control" id="parent_id" name="parent_id">
                                 <option value="">None (Main Category)</option>
-                                <?php foreach ($parentCategories as $parentCategory): ?>
-                                    <optgroup label="<?php echo htmlspecialchars($parentCategory['name']); ?>">
-                                        <option value="<?php echo $parentCategory['id']; ?>">
-                                            <?php echo htmlspecialchars($parentCategory['name']); ?>
-                                        </option>
-                                        <?php 
-                                        $subcategories = getSubcategoriesByParentId($parentCategory['id']);
-                                        foreach ($subcategories as $subcategory): 
-                                        ?>
-                                            <option value="<?php echo $subcategory['id']; ?>">
-                                                &nbsp;&nbsp;&nbsp;&nbsp;→ <?php echo htmlspecialchars($subcategory['name']); ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </optgroup>
+                                <?php foreach ($mainCategories as $category): ?>
+                                    <option value="<?php echo $category['id']; ?>">
+                                        <?php echo htmlspecialchars($category['name']); ?>
+                                    </option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -361,20 +351,10 @@ $categoryTree = buildCategoryTree($categories);
                             <label for="edit_parent_id" class="form-label">Parent Category</label>
                             <select class="form-control" id="edit_parent_id" name="parent_id">
                                 <option value="">None (Main Category)</option>
-                                <?php foreach ($parentCategories as $parentCategory): ?>
-                                    <optgroup label="<?php echo htmlspecialchars($parentCategory['name']); ?>">
-                                        <option value="<?php echo $parentCategory['id']; ?>">
-                                            <?php echo htmlspecialchars($parentCategory['name']); ?>
-                                        </option>
-                                        <?php 
-                                        $subcategories = getSubcategoriesByParentId($parentCategory['id']);
-                                        foreach ($subcategories as $subcategory): 
-                                        ?>
-                                            <option value="<?php echo $subcategory['id']; ?>">
-                                                &nbsp;&nbsp;&nbsp;&nbsp;→ <?php echo htmlspecialchars($subcategory['name']); ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </optgroup>
+                                <?php foreach ($mainCategories as $category): ?>
+                                    <option value="<?php echo $category['id']; ?>">
+                                        <?php echo htmlspecialchars($category['name']); ?>
+                                    </option>
                                 <?php endforeach; ?>
                             </select>
                         </div>

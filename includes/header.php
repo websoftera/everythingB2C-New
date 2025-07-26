@@ -205,6 +205,97 @@ body { padding-top: 125px !important; }
   transition: all 0.3s ease;
   border: 1px solid #dee2e6;
 }
+/* Multi-level dropdowns for Bootstrap 5 - Improved UI */
+.dropdown-menu {
+  min-width: 220px;
+  border-radius: 0.6rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.13);
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  padding: 0.3rem 0;
+}
+.dropdown-menu .dropdown-item {
+  padding: 0.55rem 1.25rem 0.55rem 1.25rem;
+  font-size: 1rem;
+  color: #222;
+  border-radius: 0.4rem;
+  transition: background 0.15s, color 0.15s;
+}
+.dropdown-menu .dropdown-item:hover, .dropdown-menu .dropdown-item:focus {
+  background: #f3f8f3;
+  color: #28a745;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu > .dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -1px;
+  margin-left: 0.1rem;
+  border-radius: 0.6rem;
+  min-width: 210px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.13);
+  background: #fff;
+  border: 1px solid #e0e0e0;
+}
+.dropdown-menu > .dropdown-submenu > .dropdown-toggle:after {
+  content: "\25B6";
+  float: right;
+  margin-left: 0.7em;
+  font-size: 0.95em;
+  color: #888;
+}
+.dropdown-menu .dropdown-menu {
+  display: none;
+  position: absolute;
+  left: 100%;
+  top: 0;
+  z-index: 1051;
+}
+.dropdown-menu > .dropdown-submenu:hover > .dropdown-menu {
+  display: block;
+}
+.dropdown-menu > .dropdown-submenu > .dropdown-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+/* Prevent submenu from going off the right edge */
+@media (min-width: 992px) {
+  .dropdown-menu .dropdown-menu {
+    right: auto;
+    left: 100%;
+  }
+}
+
+/* CSS: Make sure pointer events and hover work for both link and submenu */
+<style>
+.dropdown-menu > .dropdown-submenu > .dropdown-toggle:after {
+  content: "\25B6";
+  float: right;
+  margin-left: 0.7em;
+  font-size: 0.95em;
+  color: #888;
+}
+.dropdown-menu > .dropdown-submenu > .dropdown-toggle {
+  cursor: pointer;
+}
+.dropdown-menu.show {
+  display: block !important;
+}
+.dropdown-menu .submenu-arrow.dropdown-toggle::after {
+  display: none !important;
+}
+    .submenu-arrow span {
+      color: #222 !important;
+    }
+    .submenu-arrow.dropdown-toggle::after,
+    .submenu-arrow::after {
+      display: none !important;
+      content: none !important;
+    }
 </style>
 </head>
 <body>
@@ -335,26 +426,26 @@ body { padding-top: 125px !important; }
     <nav class="navbar navbar-expand-lg navbar-light bg-light category-navbar">
         <div class="navbar-collapse justify-content-center" id="navbarSupportedContent">
             <ul class="navbar-nav category-list mb-2 mb-lg-0 d-flex align-items-center">
-                <?php function renderCategoryMenu($tree) {
-                    foreach ($tree as $cat) {
-                        if (!empty($cat['children'])) {
-                            echo '<li class="nav-item dropdown d-flex align-items-center">';
-                            // Main category name as clickable link
-                            echo '<a class="nav-link" href="category.php?slug=' . $cat['slug'] . '" id="catLink' . $cat['id'] . '">' . strtoupper(htmlspecialchars($cat['name'])) . '</a>';
-                            // Separate dropdown toggle button (no nav-link class, only btn btn-link)
-                            echo '<button class="btn btn-link p-0 ms-1 align-self-center" id="catDropdown' . $cat['id'] . '" data-bs-toggle="dropdown" aria-expanded="false" style="font-size:0.85rem;line-height:1;vertical-align:middle;color:#222;">&#9660;</button>';
-                            echo '<ul class="dropdown-menu" aria-labelledby="catDropdown' . $cat['id'] . '">';
-                            foreach ($cat['children'] as $subcat) {
-                                echo '<li><a class="dropdown-item" href="category.php?slug=' . $subcat['slug'] . '">' . htmlspecialchars($subcat['name']) . '</a></li>';
-                            }
-                            echo '</ul>';
-                            echo '</li>';
-                        } else {
-                            echo '<li class="nav-item"><a class="nav-link" href="category.php?slug=' . $cat['slug'] . '">' . strtoupper(htmlspecialchars($cat['name'])) . '</a></li>';
-                        }
-                    }
-                }
-                renderCategoryMenu($categoryTree); ?>
+                <?php
+function renderCategoryMenu($tree, $level = 0) {
+    foreach ($tree as $cat) {
+        $hasChildren = !empty($cat['children']);
+        $liClass = $hasChildren ? 'nav-item dropdown d-flex align-items-center dropdown-submenu' : 'nav-item';
+        echo '<li class="' . $liClass . '">';
+        // Main category link (always clickable)
+        echo '<a class="nav-link" href="category.php?slug=' . $cat['slug'] . '">' . strtoupper(htmlspecialchars($cat['name'])) . '</a>';
+        if ($hasChildren) {
+            // Arrow button for toggling submenu (mobile/touch)
+            echo '<button class="submenu-arrow btn btn-link p-0 ms-1 align-self-center dropdown-toggle" type="button" tabindex="-1" aria-label="Show subcategories" data-bs-toggle="dropdown"><span style="font-size:1.1em;">&#9654;</span></button>';
+            echo '<ul class="dropdown-menu">';
+            renderCategoryMenu($cat['children'], $level + 1);
+            echo '</ul>';
+        }
+        echo '</li>';
+    }
+}
+renderCategoryMenu($categoryTree);
+?>
             </ul>
         </div>
     </nav>
