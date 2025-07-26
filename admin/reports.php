@@ -30,7 +30,7 @@ $sales_stats = $stmt->fetch(PDO::FETCH_ASSOC);
 $stmt = $pdo->prepare("SELECT 
     p.name, p.slug, p.main_image,
     SUM(oi.quantity) as total_sold,
-    SUM(oi.quantity * oi.price) as total_revenue
+    SUM(oi.quantity * oi.selling_price) as total_revenue
     FROM order_items oi
     JOIN products p ON oi.product_id = p.id
     JOIN orders o ON oi.order_id = o.id
@@ -44,7 +44,7 @@ $top_products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 // Get sales by category
 $stmt = $pdo->prepare("SELECT 
     c.name as category_name,
-    SUM(oi.quantity * oi.price) as total_revenue,
+    SUM(oi.quantity * oi.selling_price) as total_revenue,
     COUNT(DISTINCT o.id) as order_count
     FROM order_items oi
     JOIN products p ON oi.product_id = p.id

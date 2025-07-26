@@ -437,7 +437,17 @@ $statuses = getAllOrderStatuses();
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error loading order details');
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Error loading order details',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                } else {
+                    alert('Error loading order details');
+                }
             });
     }
     </script>

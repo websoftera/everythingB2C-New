@@ -17,9 +17,29 @@ function checkPincode() {
   const serviceablePins = ["400001", "500001", "560001", "380001"];
 
   if (serviceablePins.includes(pin)) {
-    alert("Delivery available in your area.");
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            icon: 'success',
+            title: 'Delivery Available',
+            text: 'Delivery available in your area.',
+            timer: 3000,
+            showConfirmButton: false
+        });
+    } else {
+        alert("Delivery available in your area.");
+    }
   } else {
-    alert("Sorry, we do not deliver in this area.");
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            icon: 'error',
+            title: 'Delivery Not Available',
+            text: 'Sorry, we do not deliver in this area.',
+            timer: 4000,
+            showConfirmButton: false
+        });
+    } else {
+        alert("Sorry, we do not deliver in this area.");
+    }
   }
 }
 

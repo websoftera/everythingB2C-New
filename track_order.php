@@ -150,9 +150,7 @@ include 'includes/header.php';
                         <?php if (!empty($order['shipping_charge'])): ?>
                             <p><strong>Shipping:</strong> ₹<?php echo number_format($order['shipping_charge'], 0); ?></p>
                         <?php endif; ?>
-                        <?php if (!empty($order['gst_amount'])): ?>
-                            <p><strong>Taxes (GST):</strong> ₹<?php echo number_format($order['gst_amount'], 0); ?></p>
-                        <?php endif; ?>
+                        <!-- GST is already included in the selling prices -->
                         <?php 
                         $total_savings = 0;
                         foreach ($orderItems as $item) {

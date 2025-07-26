@@ -36,8 +36,8 @@ try {
     
     $total = 0;
     foreach ($items as $item) {
-        $item_total = $item['price'] * $item['quantity'];
-        $total += $item_total;
+            $item_total = $item['selling_price'] * $item['quantity'];
+    $total += $item_total;
         
         echo '<tr>';
         echo '<td>';
@@ -51,7 +51,7 @@ try {
         echo '</div>';
         echo '</div>';
         echo '</td>';
-        echo '<td>₹' . number_format($item['price'], 0) . '</td>';
+        echo '<td>₹' . number_format($item['selling_price'], 0) . '</td>';
         echo '<td>' . $item['quantity'] . '</td>';
         echo '<td><strong>₹' . number_format($item_total, 0) . '</strong></td>';
         echo '</tr>';

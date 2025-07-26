@@ -143,13 +143,13 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                     <?php if ($isOutOfStock): ?>
                         <a href="product.php?slug=<?php echo $product['slug']; ?>" class="read-more">READ MORE</a>
                     <?php else: ?>
-                        <div class="cart-actions">
-                            <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">ADD TO CART</button>
+                        <div class="cart-actions d-flex align-items-center gap-2">
                             <div class="quantity-control d-inline-flex align-items-center">
                                 <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
                                 <input type="number" class="quantity-input" value="1" min="1" max="99" data-product-id="<?php echo $product['id']; ?>">
                                 <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
                             </div>
+                            <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">Add to Cart</button>
                         </div>
                     <?php endif; ?>
                 </div>

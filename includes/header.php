@@ -362,7 +362,8 @@ body { padding-top: 125px !important; }
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="popup/popup.js"></script>
 <script src="popup/searchbar.js"></script>
-<script src="js/max-quantity-check.js"></script>
+<script src="js/real-time-max-quantity.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 // --- Floating Cart Logic (Dropdown/Panel, Advanced) ---
 function updateCartQuantity(cartId, qty, inputElem, btnElem, callback) {
@@ -408,6 +409,34 @@ function updateFloatingCartCount() {
       if (floatingCartBtn) {
         floatingCartBtn.style.display = (data.cart_count > 0) ? '' : 'none';
       }
+    });
+}
+
+function updateFloatingCartSummary() {
+  const summary = document.getElementById('floatingCartSummary');
+  if (!summary) return;
+  
+  fetch('ajax/get-cart-summary.php?details=1&t=' + Date.now())
+    .then(res => res.json())
+    .then(data => {
+      if (!data || !data.totals) return;
+      
+      const totals = data.totals;
+      summary.innerHTML = `
+        <div class="floating-cart-summary-box" style="border:1px solid #cfd8dc;border-radius:8px;padding:8px 10px 4px 10px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:6px;">
+          <div style="font-weight:600;font-size:1.02rem;margin-bottom:6px;">Price Summary</div>
+          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Total MRP</span><span style="font-weight:600;text-decoration:line-through;">₹${parseFloat(totals.total_mrp || totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+          <div class="d-flex justify-content-between mb-1"><span class="text-muted">You Pay</span><span style="font-weight:600;">₹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Delivery <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
+          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Savings</span><span class="fw-bold" style="color:#2e7d32;">₹${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+          <div class="d-grid mt-2 mb-1">
+            <a href='checkout.php' class='btn btn-success btn-sm fw-bold' style='font-size:0.98rem;'>PROCEED TO CHECKOUT</a>
+          </div>
+        </div>
+      `;
+    })
+    .catch(error => {
+      console.error('Error updating floating cart summary:', error);
     });
 }
 function renderFloatingCart() {
@@ -456,10 +485,10 @@ function renderFloatingCart() {
       summary.innerHTML = `
         <div class="floating-cart-summary-box" style="border:1px solid #cfd8dc;border-radius:8px;padding:8px 10px 4px 10px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:6px;">
           <div style="font-weight:600;font-size:1.02rem;margin-bottom:6px;">Price Summary</div>
-          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Total MRP</span><span style="font-weight:600;">₹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Total MRP</span><span style="font-weight:600;text-decoration:line-through;">₹${parseFloat(totals.total_mrp || totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+          <div class="d-flex justify-content-between mb-1"><span class="text-muted">You Pay</span><span style="font-weight:600;">₹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
           <div class="d-flex justify-content-between mb-1"><span class="text-muted">Delivery <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
           <div class="d-flex justify-content-between mb-1"><span class="text-muted">Savings</span><span class="fw-bold" style="color:#2e7d32;">₹${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-          <div class="d-flex justify-content-between mb-1"><span class="text-muted" style="font-size: 0.75rem;"><i>* All prices are inclusive of GST</i></span></div>
           <div class="d-grid mt-2 mb-1">
             <a href='checkout.php' class='btn btn-success btn-sm fw-bold' style='font-size:0.98rem;'>PROCEED TO CHECKOUT</a>
           </div>
@@ -490,9 +519,20 @@ function renderFloatingCart() {
                 if (totalDiv && unitPrice) {
                   totalDiv.textContent = '₹' + (prevQty * unitPrice).toFixed(2);
                 }
-                alert('Could not update cart.');
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Could not update cart.',
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
+                } else {
+                    alert('Could not update cart.');
+                }
               } else {
                 updateFloatingCartCount();
+                updateFloatingCartSummary();
               }
             });
           }
@@ -521,9 +561,20 @@ function renderFloatingCart() {
               if (totalDiv && unitPrice) {
                 totalDiv.textContent = '₹' + (prevQty * unitPrice).toFixed(2);
               }
-              alert('Could not update cart.');
+              if (typeof Swal !== 'undefined') {
+                  Swal.fire({
+                      icon: 'error',
+                      title: 'Error',
+                      text: 'Could not update cart.',
+                      timer: 3000,
+                      showConfirmButton: false
+                  });
+              } else {
+                  alert('Could not update cart.');
+              }
             } else {
               updateFloatingCartCount();
+              updateFloatingCartSummary();
             }
           });
         };
@@ -554,7 +605,17 @@ function renderFloatingCart() {
             } else {
               // Restore row if error
               content.insertBefore(rowClone, content.firstChild);
-              alert(resp.message || 'Could not remove item.');
+              if (typeof Swal !== 'undefined') {
+                  Swal.fire({
+                      icon: 'error',
+                      title: 'Error',
+                      text: resp.message || 'Could not remove item.',
+                      timer: 3000,
+                      showConfirmButton: false
+                  });
+              } else {
+                  alert(resp.message || 'Could not remove item.');
+              }
             }
           });
         };
@@ -713,7 +774,17 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
           if (data.success) {
             // Show success message
-            alert('All items have been removed from your cart.');
+                            if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'All items have been removed from your cart.',
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
+                } else {
+                    alert('All items have been removed from your cart.');
+                }
             // Update floating cart
             renderFloatingCart();
             updateFloatingCartCount();
@@ -723,7 +794,17 @@ document.addEventListener('DOMContentLoaded', function() {
               floatingCartPanel.style.display = 'none';
             }
           } else {
-            alert('Failed to remove items: ' + (data.message || 'Unknown error'));
+                            if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to remove items: ' + (data.message || 'Unknown error'),
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                } else {
+                    alert('Failed to remove items: ' + (data.message || 'Unknown error'));
+                }
             // Reset button
             button.innerHTML = originalText;
             button.disabled = false;
@@ -731,7 +812,17 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => {
           console.error('Error:', error);
-          alert('An error occurred while removing items from cart.');
+                      if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while removing items from cart.',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            } else {
+                alert('An error occurred while removing items from cart.');
+            }
           // Reset button
           button.innerHTML = originalText;
           button.disabled = false;

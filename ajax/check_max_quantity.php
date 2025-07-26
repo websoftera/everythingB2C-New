@@ -42,6 +42,13 @@ try {
         exit;
     }
     
+    // Always return max_quantity info for display purposes
+    $response = [
+        'success' => true,
+        'max_quantity' => $max_quantity,
+        'stock_quantity' => $stock_quantity
+    ];
+    
     // Check if quantity exceeds stock
     if ($quantity > $stock_quantity) {
         echo json_encode([
@@ -78,11 +85,7 @@ try {
         }
     }
     
-    echo json_encode([
-        'success' => true,
-        'max_quantity' => $max_quantity,
-        'stock_quantity' => $stock_quantity
-    ]);
+    echo json_encode($response);
     
 } catch (Exception $e) {
     http_response_code(500);

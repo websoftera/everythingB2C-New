@@ -88,7 +88,7 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                 <label for="wishlist-checkbox-main-<?php echo $product['id']; ?>" class="wishlist-label"><i class="fas fa-heart"></i></label>
             </div>
         </div>
-        <div class="cart-controls modern-cart">
+        <div class="cart-controls d-flex align-items-center gap-2">
             <div class="quantity-control d-inline-flex align-items-center">
                 <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
                 <input type="number" class="quantity-input" value="1" min="1" max="99" data-product-id="<?php echo $product['id']; ?>">

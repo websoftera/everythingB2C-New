@@ -730,7 +730,7 @@ h3{
 .product-carousel-wrapper {
   position: relative;
   width: 100%;
-  max-width: 1200px;
+  max-width: 95vw;
   margin: 0 auto 30px;
 }
 
@@ -878,32 +878,29 @@ h3{
   font-family: 12px;
 }
 
-.price-buttons {
+.price-buttons, .price-buttons1, .modern-prices {
   display: flex;
-  justify-content: space-between;
+  flex-direction: row;
   align-items: center;
   gap: 10px;
-  margin-bottom: 15px;
+  width: 100%;
 }
-
-.price-buttons button {
-  padding: 6px 10px;
-  border: none;
-  border-radius: 4px;
-  font-weight: bold;
-  cursor: pointer;
-  font-size: 13px;
+.price-btn, .mrp, .pay {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 100%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
-
-.mrp {
-  background-color: #007bff;
-  color: white;
-  text-decoration: line-through;
-}
-
-.pay {
-  background-color: #28a745;
-  color: white;
+.wishlist, .wishlist-label, .wishlist input[type="checkbox"] {
+  flex: 0 0 38px;
+  width: 38px;
+  min-width: 38px;
+  max-width: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .wishlist {
@@ -938,25 +935,45 @@ input[type="checkbox"]:checked + .heart-icon {
   color: red;
 }
 
-.cart-actions {
+.cart-actions, .cart-controls {
   display: flex;
-  justify-content: center;
+  flex-direction: row;
   align-items: center;
-  gap: 5px;
-  margin-top: 10px;
+  gap: 12px;
+  width: 100%;
 }
-
-.add-to-cart {
-  background-color: #243655;
-  color: white;
-  padding: 8px 12px;
-  font-size: 13px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  text-transform: uppercase;
-  max-width: 206px;
-  max-height:30px;
+.quantity-control {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1 1 0;
+  min-width: 0;
+  border: 1px solid #007bff;
+  border-radius: 2px;
+  background: #fff;
+  overflow: hidden;
+}
+.quantity-input {
+  width: 48px;
+  min-width: 0;
+  flex: 1 1 0;
+}
+.add-to-cart-btn, .add-to-cart {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 200px;
+  height: 30px;
+  min-height: 30px;
+  max-height: 30px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 12px;
+  padding-right: 12px;
+  box-sizing: border-box;
 }
 
 .modern-prices{
@@ -969,18 +986,6 @@ input[type="checkbox"]:checked + .heart-icon {
 
 .place-order-btn{
   background-color: #99d052 !important;
-}
-
-.quantity-input {
-  width: 50px;
-  padding: 6px 10px;
-  font-size: 14px;
-  font-weight: bold;
-  color: white;
-  background-color: #007bff;
-  border: none;
-  border-radius: 10px;
-  text-align: center;
 }
 
 /* Hide spinner arrows for all quantity input fields across the site */
@@ -1534,8 +1539,6 @@ box-shadow: #000;
   scroll-behavior: smooth;
   -ms-overflow-style: none; /* IE/Edge */
   scrollbar-width: none; /* Firefox */
-  background-color: #fff;
-  box-shadow: 0 0 8px rgba(28, 27, 27, 0.1);
 }
 
 #product::-webkit-scrollbar {
@@ -1620,12 +1623,12 @@ input, select, textarea, button {
   min-height: 28px !important;
   max-width: 80px !important;
   border: none !important;
-  border-radius: 5px !important;
+  border-radius: 2px !important;
   box-shadow: none !important;
   border: 1px solid #007bff !important;
 }
 .quantity-control .btn-qty {
-  width: 24px !important;
+  width: 100% !important;
   height: 28px !important;
   font-size: 1.1rem !important;
   border: none !important;
@@ -1638,6 +1641,7 @@ input, select, textarea, button {
 .quantity-control input[type="number"] {
   width: 24px !important;
   max-width: 24px !important;
+  min-width: 20px !important;
   height: 28px !important;
   font-size: 1rem !important;
   padding: 0 !important;
@@ -1653,7 +1657,7 @@ input, select, textarea, button {
     min-height: 24px !important;
   }
   .quantity-control .btn-qty {
-    width: 24px !important;
+    width: 100% !important;
     height: 24px !important;
     font-size: 1rem !important;
   }
@@ -1662,6 +1666,35 @@ input, select, textarea, button {
     height: 24px !important;
     font-size: 0.95rem !important;
   }
+}
+
+.price-btn, .mrp, .pay, .wishlist, .wishlist-label, .wishlist input[type="checkbox"],
+.price-buttons1 button, .modern-prices button, .price-buttons button {
+  height: 30px !important;
+  min-height: 30px !important;
+  max-height: 30px !important;
+  max-width: 200px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+  box-sizing: border-box !important;
+}
+
+.product-detail-card .mrp,
+.product-detail-card .pay,
+.modern-info .mrp,
+.modern-info .pay {
+  max-width: 117px !important;
+}
+
+.add-to-cart.cart-added-highlight, .add-to-cart-btn.cart-added-highlight, .shop-page-add-to-cart-btn.cart-added-highlight {
+  border: 2.5px solid #ffd600 !important; /* Yellow border */
+  background: #28a745 !important; /* Green background */
+  color: #fff !important;
+  box-shadow: 0 0 0 6px rgba(255,214,0,0.18), 0 2px 12px rgba(40,167,69,0.22) !important;
+  transition: box-shadow 0.2s, border 0.2s, background 0.2s, color 0.2s;
 }
 
 

@@ -157,14 +157,16 @@ $html .= '<h2>Invoice Details</h2>
 <table border="1" cellpadding="5" cellspacing="0" width="100%">
 <tr><th>Product</th><th>HSN</th><th>Qty</th><th>MRP</th><th>Price</th><th>Discount</th><th>Total</th></tr>';
 foreach ($orderItems as $item) {
+    $item_discount = ($item['mrp'] - $item['selling_price']) * $item['quantity'];
+    $item_total = $item['selling_price'] * $item['quantity'];
     $html .= '<tr>
     <td>' . htmlspecialchars($item['name']) . '</td>
     <td>' . htmlspecialchars($item['hsn']) . '</td>
     <td>' . htmlspecialchars($item['quantity']) . '</td>
     <td>₹' . number_format($item['mrp'], 2) . '</td>
     <td>₹' . number_format($item['selling_price'], 2) . '</td>
-    <td>₹' . number_format($total_discount, 2) . '</td>
-    <td>₹' . number_format($order['subtotal'], 2) . '</td>
+    <td>₹' . number_format($item_discount, 2) . '</td>
+    <td>₹' . number_format($item_total, 2) . '</td>
     </tr>';
 }
 $html .= '</table>';
@@ -173,7 +175,6 @@ $html .= '</table>';
 $html .= '<p><b>Order Subtotal:</b> ₹' . number_format($order['subtotal'], 2) . '<br>';
 $html .= '<b>Shipping:</b> ₹' . number_format($order['shipping_charge'], 2) . '<br>';
 $html .= '<b>Total Paid:</b> ₹' . number_format($total, 2) . '</p>';
-$html .= '<p style="font-size: 12px; color: #666; margin-top: 8px;"><i>* All prices are inclusive of GST</i></p>';
 
 // Helper function to convert number to words (Indian style)
 function numberToWords($number)

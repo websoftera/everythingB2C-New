@@ -114,14 +114,29 @@
 }
 
 /* --- Price Buttons: Pill, Horizontal --- */
-.price-buttons {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    gap: 2px !important;
-    margin-bottom: 5px !important;
-    border-radius: 0px !important;  
-    width: 100% !important;
+.price-buttons, .price-buttons1, .modern-prices {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 10px !important;
+  width: 100% !important;
+}
+.price-btn, .mrp, .pay {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+  overflow: hidden !important;
+}
+.wishlist, .wishlist-label, .wishlist input[type="checkbox"] {
+  flex: 0 0 38px !important;
+  width: 38px !important;
+  min-width: 38px !important;
+  max-width: 38px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 .price-btn {
     display: flex !important;
@@ -191,36 +206,50 @@
 }
 
 /* --- Cart Actions: Improved Alignment --- */
-.cart-actions {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    gap: 8px !important;
-    width: 100% !important;
-    margin-bottom: 8px !important;
-    margin-top: 4px !important;
-    padding: 0 8px !important;
-    box-sizing: border-box !important;
+.cart-actions, .cart-controls {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 12px !important;
+  width: 100% !important;
+}
+.quantity-control {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  border: 1px solid #007bff !important;
+  border-radius: 4px !important;
+  background: #fff !important;
+  overflow: hidden !important;
+}
+.quantity-input {
+  width: 48px !important;
+  min-width: 0 !important;
+  flex: 1 1 0 !important;
+}
+.add-to-cart-btn, .add-to-cart {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  max-width: 200px !important;
+  height: 30px !important;
+  min-height: 30px !important;
+  max-height: 30px !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+  overflow: hidden !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+  box-sizing: border-box !important;
 }
 
 /* Quantity Control Container */
-.quantity-control {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 0 !important;
-    width: 100% !important;
-    max-width: 120px !important;
-    height: 32px !important;
-    border: 1px solid #007bff !important;
-    border-radius: 4px !important;
-    background: #fff !important;
-    overflow: hidden !important;
-}
-
-/* Quantity Buttons */
 .quantity-control .btn-qty {
-    width: 32px !important;
+    width: 100% !important;
     height: 32px !important;
     font-size: 14px !important;
     font-weight: bold !important;
@@ -378,7 +407,7 @@
     }
     
     .quantity-control .btn-qty {
-        width: 28px !important;
+        width: 100% !important;
         height: 28px !important;
         font-size: 12px !important;
     }
@@ -435,7 +464,7 @@
     }
     
     .quantity-control .btn-qty {
-        width: 24px !important;
+        width: 100% !important;
         height: 24px !important;
         font-size: 10px !important;
     }
@@ -617,4 +646,25 @@
 }
 .quantity-control .quantity-input {
   -moz-appearance: textfield !important;
+}
+
+.price-btn, .mrp, .pay, .wishlist, .wishlist-label, .wishlist input[type="checkbox"],
+.price-buttons1 button, .modern-prices button, .price-buttons button {
+  height: 30px !important;
+  min-height: 30px !important;
+  max-height: 30px !important;
+  max-width: 200px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+  box-sizing: border-box !important;
+}
+
+.product-detail-card .mrp,
+.product-detail-card .pay,
+.modern-info .mrp,
+.modern-info .pay {
+  max-width: 117px !important;
 }

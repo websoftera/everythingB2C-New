@@ -60,6 +60,7 @@ $response = [
     'success' => true,
     'totals' => [
         'subtotal' => $totals['subtotal'],
+        'total_mrp' => $totals['total_mrp'],
         'total_shipping' => $totals['shipping_charge'],
         'total_gst' => $totals['gst_amount'],
         'grand_total' => $totals['total'],

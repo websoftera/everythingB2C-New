@@ -350,7 +350,7 @@ foreach ($cartItems as $item) {
             <!-- Removed per-product table as requested -->
             <div class="mb-2"></div>
             <div class="d-flex justify-content-between mb-2"><span>Total MRP</span><span>₹<?php echo number_format($mrp,0); ?></span></div>
-            <div class="d-flex justify-content-between mb-2"><span>You Pay</span><span>₹<?php echo number_format($orderTotals['subtotal'],0); ?></span></div>
+            <div class="d-flex justify-content-between mb-2"><span>You Pay</span><span id="you-pay-amount">₹<?php echo number_format($orderTotals['subtotal'],0); ?></span></div>
             <div class="d-flex justify-content-between mb-2"><span>Delivery charge</span><span id="cart-shipping">₹<?php echo $orderTotals['shipping_charge']; ?></span></div>
             <!-- <div class="d-flex justify-content-between mb-2"><span>Shipping Zone</span><span id="cart-shipping-zone"><?php echo htmlspecialchars($orderTotals['shipping_zone_name'] ?? ''); ?></span></div> -->
             <div class="d-flex justify-content-between mb-2 bg-light p-2 rounded"><span class="text-success"><b>Total Savings</b></span><span class="text-success">₹<?php echo number_format($savings,0); ?></span></div>
@@ -572,7 +572,17 @@ document.querySelectorAll('input[name="selected_address_left"]').forEach(functio
                     if (e.target === this) window.location.href = 'index.php';
                   };
                 } else {
-                  alert('Payment verification failed: ' + (vresp.message || ''));
+                  if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Payment Verification Failed',
+                        text: 'Payment verification failed: ' + (vresp.message || ''),
+                        timer: 5000,
+                        showConfirmButton: false
+                    });
+                } else {
+                    alert('Payment verification failed: ' + (vresp.message || ''));
+                }
                   window.location.reload();
                 }
               });
@@ -587,7 +597,17 @@ document.querySelectorAll('input[name="selected_address_left"]').forEach(functio
           var rzp = new Razorpay(options);
           rzp.open();
         } else {
-          alert('Error: ' + (resp.message || 'Could not initiate payment.'));
+                          if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Payment Error',
+                        text: 'Error: ' + (resp.message || 'Could not initiate payment.'),
+                        timer: 5000,
+                        showConfirmButton: false
+                    });
+                } else {
+                    alert('Error: ' + (resp.message || 'Could not initiate payment.'));
+                }
         }
       });
     }
@@ -621,19 +641,20 @@ document.querySelectorAll('input[name="selected_address_left"]').forEach(functio
         if (shippingZoneElem) {
           shippingZoneElem.textContent = resp.totals.shipping_zone_name || '';
         }
-        // Update GST breakdown
-        let gstHtml = '<small class="text-muted"></small>';
-        // if (resp.totals.igst_total > 0) {
-        //   gstHtml += `<div class="d-flex justify-content-between mb-1"><small>IGST (${((resp.totals.igst_total/resp.totals.subtotal)*100).toFixed(1)}%)</small><small>₹${parseFloat(resp.totals.igst_total).toFixed(2)}</small></div>`;
-        // } else if (resp.totals.sgst_total > 0 || resp.totals.cgst_total > 0) {
-        //   gstHtml += `<div class="d-flex justify-content-between mb-1"><small>SGST (${((resp.totals.sgst_total/resp.totals.subtotal)*100).toFixed(1)}%)</small><small>₹${parseFloat(resp.totals.sgst_total).toFixed(2)}</small></div>`;
-        //   gstHtml += `<div class="d-flex justify-content-between mb-1"><small>CGST (${((resp.totals.cgst_total/resp.totals.subtotal)*100).toFixed(1)}%)</small><small>₹${parseFloat(resp.totals.cgst_total).toFixed(2)}</small></div>`;
-        // }
-        gstHtml += `<div class="d-flex justify-content-between"><small><strong>Total GST</strong></small><small><strong>₹${parseFloat(resp.totals.total_gst).toFixed(2)}</strong></small></div>`;
-        document.getElementById('gst-breakdown-section').innerHTML = gstHtml;
+        // Update You Pay amount (subtotal)
+        const youPayElement = document.getElementById('you-pay-amount');
+        if (youPayElement) {
+          youPayElement.textContent = '₹' + parseFloat(resp.totals.subtotal).toFixed(2);
+        }
+        // GST is already included in the selling prices, no need to display separately
         // Update total amount
         document.getElementById('order-total-amount').innerHTML = '<b>₹' + parseFloat(resp.totals.grand_total).toFixed(2) + '</b>';
+      } else {
+        console.error('Error updating totals:', resp);
       }
+    })
+    .catch(function(error) {
+      console.error('Error fetching cart summary:', error);
     });
   });
 });

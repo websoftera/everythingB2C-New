@@ -28,6 +28,32 @@ if ($quantity < 1) {
     exit;
 }
 
+// --- MAX QUANTITY CHECK ---
+// For logged-in users, get product_id from cart table
+// For guests, cartId is productId
+$productId = null;
+if (isset($_SESSION['user_id'])) {
+    global $pdo;
+    $stmt = $pdo->prepare("SELECT product_id FROM cart WHERE id = ? AND user_id = ?");
+    $stmt->execute([$cartId, $_SESSION['user_id']]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($row) {
+        $productId = $row['product_id'];
+    }
+} else {
+    // For guests, cartId is productId
+    $productId = $cartId;
+}
+if ($productId) {
+    $product = getProductById($productId);
+    if ($product && $product['max_quantity_per_order'] !== null && $quantity > $product['max_quantity_per_order']) {
+        session_write_close();
+        echo json_encode(['success' => false, 'message' => "Maximum quantity allowed for this product is {$product['max_quantity_per_order']}"]);
+        exit;
+    }
+}
+// --- END MAX QUANTITY CHECK ---
+
 if (isset($_SESSION['user_id'])) {
     // Logged-in user: update DB cart
     global $pdo;

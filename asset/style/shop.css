@@ -657,6 +657,7 @@
   border: none !important;
   margin: 0 !important;
   background: none !important;
+  border: 1px solid #007bff !important;
 }
 
 .btn-qty {

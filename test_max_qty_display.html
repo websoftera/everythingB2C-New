@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Max Quantity Display</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .product-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px;
+            border-radius: 8px;
+        }
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .btn-qty {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+        }
+        .quantity-input {
+            width: 60px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>Test Max Quantity Display</h2>
+        
+        <!-- Test Product 1 (with max quantity = 20) -->
+        <div class="product-card" data-product-id="1">
+            <h4>JK Sparkle (Max: 20)</h4>
+            <p>Test product with max quantity limit of 20 items</p>
+            
+            <div class="quantity-control">
+                <button class="btn-qty btn-qty-minus">-</button>
+                <input type="number" class="quantity-input" value="1" min="1" data-product-id="1">
+                <button class="btn-qty btn-qty-plus">+</button>
+            </div>
+            
+            <button class="btn btn-primary add-to-cart-btn" data-product-id="1">Add to Cart</button>
+        </div>
+        
+        <!-- Test Product 2 (no max quantity) -->
+        <div class="product-card" data-product-id="2">
+            <h4>Test Product 2 (No Limit)</h4>
+            <p>Test product with no quantity limit</p>
+            
+            <div class="quantity-control">
+                <button class="btn-qty btn-qty-minus">-</button>
+                <input type="number" class="quantity-input" value="1" min="1" data-product-id="2">
+                <button class="btn-qty btn-qty-plus">+</button>
+            </div>
+            
+            <button class="btn btn-primary add-to-cart-btn" data-product-id="2">Add to Cart</button>
+        </div>
+        
+        <!-- Floating Cart Test -->
+        <div class="product-card">
+            <h4>Floating Cart Test</h4>
+            <p>Simulating cart item with product ID 1</p>
+            
+            <div class="quantity-control">
+                <button class="btn-qty btn-qty-minus">-</button>
+                <input type="number" class="cart-qty-input" value="1" min="1" data-cart-id="1">
+                <button class="btn-qty btn-qty-plus">+</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/real-time-max-quantity.js"></script>
+    
+    <script>
+        // Simple quantity button handlers for testing
+        document.addEventListener('click', function(e) {
+            if (e.target.matches('.btn-qty-minus, .btn-qty-plus')) {
+                const input = e.target.parentNode.querySelector('input[type="number"]');
+                let value = parseInt(input.value) || 1;
+                
+                if (e.target.classList.contains('btn-qty-minus')) {
+                    value = Math.max(1, value - 1);
+                } else {
+                    value = value + 1;
+                }
+                
+                input.value = value;
+                input.dispatchEvent(new Event('input'));
+            }
+        });
+    </script>
+</body>
+</html> 

@@ -771,12 +771,13 @@ function mergeSessionCartToUserCart($userId) {
 // Clear session cart
 function clearSessionCart() {
     unset($_SESSION['cart']);
+    return true; // Always return true since unset() doesn't return a boolean
 }
 
 // Clear user's database cart
 function clearUserCart($userId) {
     global $pdo;
     $stmt = $pdo->prepare("DELETE FROM cart WHERE user_id = ?");
-    $stmt->execute([$userId]);
+    return $stmt->execute([$userId]);
 }
 ?> 

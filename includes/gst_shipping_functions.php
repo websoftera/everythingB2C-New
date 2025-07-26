@@ -142,6 +142,7 @@ function calculateShippingCharge($state, $city = null, $pincode = null, $order_a
  */
 function calculateOrderTotal($cart_items, $delivery_state, $delivery_city = null, $delivery_pincode = null) {
     $subtotal = 0;
+    $total_mrp = 0;
     $total_gst = 0;
     $gst_breakdown = [];
     $seller_state = 'Maharashtra'; // Set your seller's state here
@@ -149,8 +150,11 @@ function calculateOrderTotal($cart_items, $delivery_state, $delivery_city = null
     // Calculate subtotal, GST, and savings for each item
     foreach ($cart_items as $item) {
         $item_price = isset($item['selling_price']) ? $item['selling_price'] : 0;
+        $item_mrp = isset($item['mrp']) ? $item['mrp'] : $item_price;
         $item_total = $item_price * $item['quantity'];
+        $item_mrp_total = $item_mrp * $item['quantity'];
         $subtotal += $item_total;
+        $total_mrp += $item_mrp_total;
         // Calculate GST for this item using seller_state as billing_state
         $gst_calc = calculateGST($item_price, $item['gst_rate'], $item['gst_type'], $delivery_state, $seller_state);
         $item_gst = $gst_calc['total_gst'] * $item['quantity'];
@@ -171,7 +175,7 @@ function calculateOrderTotal($cart_items, $delivery_state, $delivery_city = null
     }
     // Calculate shipping charge ONCE for the whole order
     $shipping = calculateShippingCharge($delivery_state, $delivery_city, $delivery_pincode, $subtotal);
-    $total = $subtotal + $total_gst + $shipping['charge'];
+    $total = $subtotal + $shipping['charge'];
     // Calculate totals for each GST type
     $sgst_total = 0; $cgst_total = 0; $igst_total = 0;
     foreach ($gst_breakdown as $item) {
@@ -181,6 +185,7 @@ function calculateOrderTotal($cart_items, $delivery_state, $delivery_city = null
     }
     return [
         'subtotal' => $subtotal,
+        'total_mrp' => $total_mrp,
         'gst_amount' => $total_gst,
         'shipping_charge' => $shipping['charge'],
         'total' => $total,

@@ -113,7 +113,8 @@ require_once 'includes/header.php';
                     </div>
                     <div class="card-body">
                         <div class="floating-cart-summary-box" style="border:1px solid #cfd8dc;border-radius:8px;padding:16px 16px 8px 16px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:10px;">
-                                      <div class="d-flex justify-content-between mb-2"><span class="text-muted">Total MRP</span><span style="font-weight:600;">₹<?php echo number_format($orderTotals['subtotal'], 0); ?></span></div>
+                                      <div class="d-flex justify-content-between mb-2"><span class="text-muted">Total MRP</span><span style="font-weight:600;text-decoration:line-through;">₹<?php echo number_format($orderTotals['total_mrp'], 0); ?></span></div>
+                                      <div class="d-flex justify-content-between mb-2"><span class="text-muted">You Pay</span><span style="font-weight:600;">₹<?php echo number_format($orderTotals['subtotal'], 0); ?></span></div>
             <div class="d-flex justify-content-between mb-2"><span class="text-muted">Delivery Charge <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
             <div class="d-flex justify-content-between mb-2"><span class="text-muted">Savings</span><span class="fw-bold" style="color:#2e7d32;">₹<?php
                                 $total_savings = 0;
@@ -122,7 +123,7 @@ require_once 'includes/header.php';
                                 }
                                 echo number_format($total_savings, 0);
                             ?></span></div>
-            <div class="d-flex justify-content-between mb-2"><span class="text-muted" style="font-size: 0.85rem;"><i>* All prices are inclusive of GST</i></span></div>
+            <div class="d-flex justify-content-between mb-2"></div>
                           <div class="d-grid mt-3 mb-2">
                             <a href='checkout.php' class='btn btn-success btn-lg fw-bold' style='font-size:1.08rem;'>PROCEED TO CHECKOUT</a>
                           </div>
@@ -171,7 +172,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         input.addEventListener('change', function() {
             if (!/^[1-9][0-9]*$/.test(this.value)) {
-                alert('Please enter a valid quantity (1 or more).');
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Invalid Quantity',
+                        text: 'Please enter a valid quantity (1 or more).',
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
+                } else {
+                    alert('Please enter a valid quantity (1 or more).');
+                }
                 this.value = lastValid;
                 this.classList.remove('is-invalid');
                 return;
@@ -218,7 +229,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     //         }
                     //     });
                 } else {
-                    alert('Error: ' + data.message);
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Error: ' + data.message,
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
                 }
             });
         });
@@ -247,7 +268,17 @@ document.addEventListener('DOMContentLoaded', function() {
                         updateCartPageSummary();
                         updateFloatingCartCount();
                     } else {
-                        alert('Error: ' + data.message);
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Error: ' + data.message,
+                                timer: 4000,
+                                showConfirmButton: false
+                            });
+                        } else {
+                            alert('Error: ' + data.message);
+                        }
                     }
                 });
             }
@@ -274,9 +305,11 @@ function updateCartPageSummary() {
             if (summary.success) {
                 const totals = summary.totals;
                 summaryBox.innerHTML = `
-                  <div class="d-flex justify-content-between mb-2"><span class="text-muted">Total MRP</span><span style="font-weight:600;">₹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+                  <div class="d-flex justify-content-between mb-2"><span class="text-muted">Total MRP</span><span style="font-weight:600;text-decoration:line-through;">₹${parseFloat(totals.total_mrp || totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+                  <div class="d-flex justify-content-between mb-2"><span class="text-muted">You Pay</span><span style="font-weight:600;">₹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
                   <div class="d-flex justify-content-between mb-2"><span class="text-muted">Delivery Charge <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
                   <div class="d-flex justify-content-between mb-2"><span class="text-muted">Savings</span><span class="fw-bold" style="color:#2e7d32;">₹${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+                  <div class="d-flex justify-content-between mb-2"><span class="text-muted" style="font-size: 0.85rem;"><i>* All prices are inclusive of GST</i></span></div>
                   <div class="d-grid mt-3 mb-2">
                     <a href='checkout.php' class='btn btn-success btn-lg fw-bold' style='font-size:1.08rem;'>PROCEED TO CHECKOUT</a>
                   </div>
@@ -393,11 +426,31 @@ document.getElementById('removeAllItems').addEventListener('click', function() {
         .then(data => {
             if (data.success) {
                 // Show success message
-                alert('All items have been removed from your cart.');
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'All items have been removed from your cart.',
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
+                } else {
+                    alert('All items have been removed from your cart.');
+                }
                 // Redirect to empty cart page or reload
                 window.location.reload();
             } else {
-                alert('Failed to remove items: ' + (data.message || 'Unknown error'));
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to remove items: ' + (data.message || 'Unknown error'),
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                } else {
+                    alert('Failed to remove items: ' + (data.message || 'Unknown error'));
+                }
                 // Reset button
                 button.innerHTML = originalText;
                 button.disabled = false;
@@ -405,7 +458,17 @@ document.getElementById('removeAllItems').addEventListener('click', function() {
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('An error occurred while removing items from cart.');
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while removing items from cart.',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            } else {
+                alert('An error occurred while removing items from cart.');
+            }
             // Reset button
             button.innerHTML = originalText;
             button.disabled = false;

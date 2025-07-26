@@ -18,9 +18,29 @@ function checkPincode() {
   const serviceablePins = ["400001", "500001", "560001", "380001"]; // example pins
 
   if (serviceablePins.includes(pin)) {
-    alert("Delivery available in your area.");
+            if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'success',
+                title: 'Delivery Available',
+                text: 'Delivery available in your area.',
+                timer: 3000,
+                showConfirmButton: false
+            });
+        } else {
+            alert("Delivery available in your area.");
+        }
   } else {
-    alert("Sorry, we do not deliver in this area.");
+          if (typeof Swal !== 'undefined') {
+          Swal.fire({
+              icon: 'error',
+              title: 'Delivery Not Available',
+              text: 'Sorry, we do not deliver in this area.',
+              timer: 4000,
+              showConfirmButton: false
+          });
+      } else {
+          alert("Sorry, we do not deliver in this area.");
+      }
   }
 }
 
@@ -136,16 +156,19 @@ document.addEventListener('DOMContentLoaded', function () {
             const originalLabel = target.textContent;
             target.disabled = true;
             target.textContent = 'Added to Cart';
+            // --- HIGHLIGHT BUTTON ---
+            target.classList.add('cart-added-highlight');
             setTimeout(function() {
                 target.textContent = originalLabel;
                 target.disabled = false;
+                target.classList.remove('cart-added-highlight');
                 if (cardRoot) {
                     cardRoot.querySelectorAll('.quantity-input, .shop-page-quantity-input').forEach(el => el.disabled = false);
                     cardRoot.querySelectorAll('.btn-qty-minus, .btn-qty-plus').forEach(el => el.disabled = false);
                 }
                 reinitQuantityControlsWithDebug();
                 console.log('[popup.js][DEBUG] Re-enabled quantity controls for product card:', cardRoot);
-            }, 4000);
+            }, 3000);
             if (cardRoot) {
                 cardRoot.querySelectorAll('.quantity-input, .shop-page-quantity-input').forEach(el => el.disabled = false);
                 cardRoot.querySelectorAll('.btn-qty-minus, .btn-qty-plus').forEach(el => el.disabled = false);
@@ -337,7 +360,17 @@ document.body.addEventListener('click', function(e) {
         btn.textContent = 'ADDED!';
         setTimeout(function(){ btn.textContent = 'ADD TO CART'; }, 1200);
       } else {
-        alert(data.message || 'Could not add to cart.');
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message || 'Could not add to cart.',
+                timer: 4000,
+                showConfirmButton: false
+            });
+        } else {
+            alert(data.message || 'Could not add to cart.');
+        }
       }
     });
   }
@@ -362,7 +395,17 @@ document.body.addEventListener('click', function(e) {
       if (data.success) {
         if (icon) icon.style.color = action === 'add' ? 'orange' : '#fff';
       } else {
-        alert(data.message || 'Could not update wishlist.');
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message || 'Could not update wishlist.',
+                timer: 4000,
+                showConfirmButton: false
+            });
+        } else {
+            alert(data.message || 'Could not update wishlist.');
+        }
       }
     });
   }

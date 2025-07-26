@@ -63,6 +63,14 @@ $parentCategories = getParentCategories();
 
 // Get current category with parent info
 $currentCategory = getCategoryWithParent($product['category_id']);
+// Determine parent category for dropdown
+if ($currentCategory && $currentCategory['parent_id']) {
+    $selectedParentCategoryId = $currentCategory['parent_id'];
+    $selectedSubCategoryId = $currentCategory['id'];
+} else {
+    $selectedParentCategoryId = $currentCategory ? $currentCategory['id'] : '';
+    $selectedSubCategoryId = '';
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name']);
@@ -79,6 +87,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $gst_rate = floatval($_POST['gst_rate']);
     $sku = trim($_POST['sku']);
     $hsn = isset($_POST['hsn']) ? trim($_POST['hsn']) : null;
+
+    // --- FIX: Ensure checkboxes are always set ---
+    $is_active = isset($_POST['is_active']) ? 1 : 0;
+    $is_featured = isset($_POST['is_featured']) ? 1 : 0;
+    $is_discounted = isset($_POST['is_discounted']) ? 1 : 0;
+    // --- END FIX ---
 
     // Validation
     if (empty($name) || empty($description) || $mrp <= 0 || $selling_price <= 0) {
@@ -248,7 +262,7 @@ function uploadImage($file, $folder) {
                                                     <option value="">Select Category</option>
                                                     <?php foreach ($parentCategories as $category): ?>
                                                         <option value="<?php echo $category['id']; ?>" 
-                                                                <?php echo ($currentCategory && $currentCategory['parent_id'] == $category['id']) ? 'selected' : ''; ?>>
+                                                                <?php echo ($selectedParentCategoryId == $category['id']) ? 'selected' : ''; ?>>
                                                             <?php echo htmlspecialchars($category['name']); ?>
                                                         </option>
                                                     <?php endforeach; ?>
@@ -610,7 +624,7 @@ function uploadImage($file, $folder) {
         document.addEventListener('DOMContentLoaded', function() {
             const parentCategorySelect = document.getElementById('parent_category_id');
             const selectedParentId = parentCategorySelect.value;
-            const currentCategoryId = <?php echo $product['category_id']; ?>;
+            const currentCategoryId = <?php echo json_encode($selectedSubCategoryId); ?>;
             
             if (selectedParentId) {
                 // Trigger the change event to load subcategories
