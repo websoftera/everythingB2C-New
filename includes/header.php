@@ -436,7 +436,11 @@ function renderCategoryMenu($tree, $level = 0) {
         echo '<a class="nav-link" href="category.php?slug=' . $cat['slug'] . '">' . strtoupper(htmlspecialchars($cat['name'])) . '</a>';
         if ($hasChildren) {
             // Arrow button for toggling submenu (mobile/touch)
-            echo '<button class="submenu-arrow btn btn-link p-0 ms-1 align-self-center dropdown-toggle" type="button" tabindex="-1" aria-label="Show subcategories" data-bs-toggle="dropdown"><span style="font-size:1.1em;">&#9654;</span></button>';
+            echo '<button class="submenu-arrow btn btn-link p-0 ms-1 align-self-center" 
+             data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="fa-solid fa-chevron-down" style="color: black; font-size: 12px;"></i>
+      </button>';
+
             echo '<ul class="dropdown-menu">';
             renderCategoryMenu($cat['children'], $level + 1);
             echo '</ul>';
