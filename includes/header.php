@@ -478,7 +478,8 @@ function renderFloatingCart() {
             input.value = qty - 1;
             // Update total in DOM
             const priceSpan = row.querySelector('.ms-1');
-            const unitPrice = parseFloat(priceSpan ? priceSpan.textContent.replace(/[^\d.]/g, '') : 0);
+            const unitPriceText = priceSpan ? priceSpan.textContent : '';
+            const unitPrice = parseFloat(unitPriceText.match(/₹(\d+\.?\d*)/)?.[1] || 0);
             const totalDiv = row.querySelector('div[style*="font-weight:700"]');
             if (totalDiv && unitPrice) {
               totalDiv.textContent = '₹' + ((qty - 1) * unitPrice).toFixed(2);
@@ -508,7 +509,8 @@ function renderFloatingCart() {
           input.value = qty + 1;
           // Update total in DOM
           const priceSpan = row.querySelector('.ms-1');
-          const unitPrice = parseFloat(priceSpan ? priceSpan.textContent.replace(/[^\d.]/g, '') : 0);
+          const unitPriceText = priceSpan ? priceSpan.textContent : '';
+          const unitPrice = parseFloat(unitPriceText.match(/₹(\d+\.?\d*)/)?.[1] || 0);
           const totalDiv = row.querySelector('div[style*="font-weight:700"]');
           if (totalDiv && unitPrice) {
             totalDiv.textContent = '₹' + ((qty + 1) * unitPrice).toFixed(2);
@@ -562,8 +564,38 @@ function renderFloatingCart() {
         input.onchange = function(e) {
           let qty = parseInt(this.value, 10) || 1;
           if (qty < 1) qty = 1;
+          if (qty > 99) qty = 99; // Enforce max quantity
+          this.value = qty; // Update input value to reflect limits
           const cartId = this.getAttribute('data-cart-id');
+          const row = this.closest('.d-flex.align-items-center');
+          
+          // Update total price display immediately
+          const priceSpan = row.querySelector('.ms-1');
+          const unitPriceText = priceSpan ? priceSpan.textContent : '';
+          const unitPrice = parseFloat(unitPriceText.match(/₹(\d+\.?\d*)/)?.[1] || 0);
+          const totalDiv = row.querySelector('div[style*="font-weight:700"]');
+          if (totalDiv && unitPrice) {
+            totalDiv.textContent = '₹' + (qty * unitPrice).toFixed(2);
+          }
+          
           updateCartQuantity(cartId, qty, this, null);
+        };
+        
+        // Real-time price update on input
+        input.oninput = function(e) {
+          let qty = parseInt(this.value, 10) || 1;
+          if (qty < 1) qty = 1;
+          if (qty > 99) qty = 99; // Enforce max quantity
+          const row = this.closest('.d-flex.align-items-center');
+          
+          // Update total price display immediately
+          const priceSpan = row.querySelector('.ms-1');
+          const unitPriceText = priceSpan ? priceSpan.textContent : '';
+          const unitPrice = parseFloat(unitPriceText.match(/₹(\d+\.?\d*)/)?.[1] || 0);
+          const totalDiv = row.querySelector('div[style*="font-weight:700"]');
+          if (totalDiv && unitPrice) {
+            totalDiv.textContent = '₹' + (qty * unitPrice).toFixed(2);
+          }
         };
       });
     })
