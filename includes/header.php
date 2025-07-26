@@ -568,7 +568,7 @@ function renderFloatingCart() {
               </div>
             </div>
             <div class="text-end ms-1" style="min-width:54px;">
-              <div style="font-weight:700;font-size:0.98rem;">₹${(item.selling_price * item.quantity).toFixed(2)}</div>
+              <div data-cart-total-id="${cartId}" style="font-weight:700;font-size:0.98rem;">₹${(item.selling_price * item.quantity).toFixed(2)}</div>
               <button class="btn btn-xs btn-outline-danger mt-1 remove-cart-item-btn" data-cart-id="${cartId}" style="padding:0 5px;font-size:0.9rem;"><i class="fas fa-trash"></i></button>
             </div>
           </div>
@@ -604,11 +604,12 @@ function renderFloatingCart() {
             const priceSpan = row.querySelector('.ms-1');
             const unitPriceText = priceSpan ? priceSpan.textContent : '';
             const unitPrice = parseFloat(unitPriceText.match(/₹(\d+\.?\d*)/)?.[1] || 0);
-            const totalDiv = row.querySelector('div[style*="font-weight:700"]');
+            const totalDiv = row.querySelector('div[data-cart-total-id]');
             if (totalDiv && unitPrice) {
               totalDiv.textContent = '₹' + ((qty - 1) * unitPrice).toFixed(2);
             }
-            updateCartQuantity(cartId, qty - 1, input, btn, function(success) {
+            updateFloatingCartSummary(); // Real-time update
+            updateCartQuantity(cartId, qty - 1, input, btn, function(success, updatedItem) {
               if (!success) {
                 input.value = prevQty;
                 if (totalDiv && unitPrice) {
@@ -627,7 +628,11 @@ function renderFloatingCart() {
                 }
               } else {
                 updateFloatingCartCount();
-                updateFloatingCartSummary();
+                // Update the per-item total directly
+                const unitPrice = parseFloat(priceSpan.textContent.match(/₹(\d+\.?\d*)/)?.[1] || 0);
+                if (unitPrice > 0) {
+                  updateItemTotal(cartId, qty - 1, unitPrice);
+                }
               }
             });
           }
@@ -646,11 +651,12 @@ function renderFloatingCart() {
           const priceSpan = row.querySelector('.ms-1');
           const unitPriceText = priceSpan ? priceSpan.textContent : '';
           const unitPrice = parseFloat(unitPriceText.match(/₹(\d+\.?\d*)/)?.[1] || 0);
-          const totalDiv = row.querySelector('div[style*="font-weight:700"]');
+          const totalDiv = row.querySelector('div[data-cart-total-id]');
           if (totalDiv && unitPrice) {
             totalDiv.textContent = '₹' + ((qty + 1) * unitPrice).toFixed(2);
           }
-          updateCartQuantity(cartId, qty + 1, input, btn, function(success) {
+          updateFloatingCartSummary(); // Real-time update
+          updateCartQuantity(cartId, qty + 1, input, btn, function(success, updatedItem) {
             if (!success) {
               input.value = prevQty;
               if (totalDiv && unitPrice) {
@@ -669,7 +675,11 @@ function renderFloatingCart() {
               }
             } else {
               updateFloatingCartCount();
-              updateFloatingCartSummary();
+              // Update the per-item total directly
+              const unitPrice = parseFloat(priceSpan.textContent.match(/₹(\d+\.?\d*)/)?.[1] || 0);
+              if (unitPrice > 0) {
+                updateItemTotal(cartId, qty + 1, unitPrice);
+              }
             }
           });
         };
@@ -729,12 +739,23 @@ function renderFloatingCart() {
           const priceSpan = row.querySelector('.ms-1');
           const unitPriceText = priceSpan ? priceSpan.textContent : '';
           const unitPrice = parseFloat(unitPriceText.match(/₹(\d+\.?\d*)/)?.[1] || 0);
-          const totalDiv = row.querySelector('div[style*="font-weight:700"]');
+          const totalDiv = row.querySelector('div[data-cart-total-id]');
           if (totalDiv && unitPrice) {
             totalDiv.textContent = '₹' + (qty * unitPrice).toFixed(2);
           }
           
-          updateCartQuantity(cartId, qty, this, null);
+          updateCartQuantity(cartId, qty, this, null, function(success, updatedItem) {
+            if (success && updatedItem) {
+              updatePerItemTotal(updatedItem.id, updatedItem.selling_price * updatedItem.quantity);
+            }
+          });
+          // Update the per-item total directly after backend update
+          setTimeout(() => {
+            const unitPrice = parseFloat(priceSpan.textContent.match(/₹(\d+\.?\d*)/)?.[1] || 0);
+            if (unitPrice > 0) {
+              updateItemTotal(cartId, qty, unitPrice);
+            }
+          }, 300);
         };
         
         // Real-time price update on input
@@ -742,13 +763,14 @@ function renderFloatingCart() {
           let qty = parseInt(this.value, 10) || 1;
           if (qty < 1) qty = 1;
           if (qty > 99) qty = 99; // Enforce max quantity
+          const cartId = this.getAttribute('data-cart-id');
           const row = this.closest('.d-flex.align-items-center');
           
           // Update total price display immediately
           const priceSpan = row.querySelector('.ms-1');
           const unitPriceText = priceSpan ? priceSpan.textContent : '';
           const unitPrice = parseFloat(unitPriceText.match(/₹(\d+\.?\d*)/)?.[1] || 0);
-          const totalDiv = row.querySelector('div[style*="font-weight:700"]');
+          const totalDiv = row.querySelector('div[data-cart-total-id]');
           if (totalDiv && unitPrice) {
             totalDiv.textContent = '₹' + (qty * unitPrice).toFixed(2);
           }
@@ -960,7 +982,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Save position to localStorage
   function savePosition(left, top) {
-    console.log('[FloatingCart][DEBUG] Saving position:', left, top);
     localStorage.setItem('floatingCartPosition', JSON.stringify({ left, top }));
   }
 
@@ -1060,7 +1081,6 @@ document.addEventListener('DOMContentLoaded', function() {
       e.stopPropagation();
       if (panel.style.display === 'block') {
         panel.style.display = 'none';
-        console.log('[FloatingCart][DEBUG] Panel closed');
         return;
       }
       // Force panel to a visible position and size
@@ -1077,7 +1097,6 @@ document.addEventListener('DOMContentLoaded', function() {
       setTimeout(function() {
         const rect = panel.getBoundingClientRect();
         const style = window.getComputedStyle(panel);
-        console.log('[FloatingCart][DEBUG] Panel rect:', rect);
         console.log('[FloatingCart][DEBUG] Panel computed style:', {
           display: style.display,
           left: style.left,
@@ -1091,7 +1110,6 @@ document.addEventListener('DOMContentLoaded', function() {
           visibility: style.visibility
         });
       }, 100);
-      console.log('[FloatingCart][DEBUG] Panel opened');
     });
   }
 
@@ -1104,6 +1122,143 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 })();
+// Add this simple function to update per-item total
+function updateItemTotal(cartId, quantity, unitPrice) {
+  console.log('[updateItemTotal] Called with cartId:', cartId, 'quantity:', quantity, 'unitPrice:', unitPrice);
+  
+  const totalDiv = document.querySelector('div[data-cart-total-id="' + cartId + '"]');
+  console.log('[updateItemTotal] Found totalDiv:', totalDiv);
+  
+  if (totalDiv) {
+    const oldText = totalDiv.textContent;
+    const newTotal = (quantity * unitPrice).toFixed(2);
+    totalDiv.textContent = '₹' + newTotal;
+    console.log('[updateItemTotal] Updated from', oldText, 'to ₹' + newTotal);
+  } else {
+    console.log('[updateItemTotal] ERROR: Could not find totalDiv for cartId:', cartId);
+    console.log('[updateItemTotal] Available elements with data-cart-total-id:');
+    document.querySelectorAll('div[data-cart-total-id]').forEach(el => {
+      console.log('  - Element:', el, 'cartId:', el.getAttribute('data-cart-total-id'));
+    });
+  }
+}
+
+// Add global event listener for real-time updates
+document.body.addEventListener('input', function(e) {
+  console.log('[INPUT EVENT] Target:', e.target, 'classList:', e.target.classList);
+  
+  if (e.target.classList.contains('cart-qty-input')) {
+    console.log('[INPUT EVENT] Found cart-qty-input');
+    
+    const cartId = e.target.getAttribute('data-cart-id');
+    const quantity = parseInt(e.target.value) || 1;
+    console.log('[INPUT EVENT] cartId:', cartId, 'quantity:', quantity);
+    
+    const row = e.target.closest('.d-flex.align-items-center');
+    console.log('[INPUT EVENT] Found row:', row);
+    
+    const priceSpan = row.querySelector('.ms-1');
+    console.log('[INPUT EVENT] Found priceSpan:', priceSpan, 'text:', priceSpan ? priceSpan.textContent : 'null');
+    
+    const unitPrice = parseFloat(priceSpan.textContent.match(/₹(\d+\.?\d*)/)?.[1] || 0);
+    console.log('[INPUT EVENT] Extracted unitPrice:', unitPrice);
+    
+    if (unitPrice > 0) {
+      console.log('[INPUT EVENT] Calling updateItemTotal...');
+      updateItemTotal(cartId, quantity, unitPrice);
+    } else {
+      console.log('[INPUT EVENT] ERROR: unitPrice is 0 or invalid');
+    }
+  } else {
+    console.log('[INPUT EVENT] Target does not have cart-qty-input class');
+  }
+});
+
+// Add global event listener for change events
+document.body.addEventListener('change', function(e) {
+  console.log('[CHANGE EVENT] Target:', e.target, 'classList:', e.target.classList);
+  
+  if (e.target.classList.contains('cart-qty-input')) {
+    console.log('[CHANGE EVENT] Found cart-qty-input');
+    
+    const cartId = e.target.getAttribute('data-cart-id');
+    const quantity = parseInt(e.target.value) || 1;
+    console.log('[CHANGE EVENT] cartId:', cartId, 'quantity:', quantity);
+    
+    const row = e.target.closest('.d-flex.align-items-center');
+    console.log('[CHANGE EVENT] Found row:', row);
+    
+    const priceSpan = row.querySelector('.ms-1');
+    console.log('[CHANGE EVENT] Found priceSpan:', priceSpan, 'text:', priceSpan ? priceSpan.textContent : 'null');
+    
+    const unitPrice = parseFloat(priceSpan.textContent.match(/₹(\d+\.?\d*)/)?.[1] || 0);
+    console.log('[CHANGE EVENT] Extracted unitPrice:', unitPrice);
+    
+    if (unitPrice > 0) {
+      console.log('[CHANGE EVENT] Calling updateItemTotal...');
+      updateItemTotal(cartId, quantity, unitPrice);
+    } else {
+      console.log('[CHANGE EVENT] ERROR: unitPrice is 0 or invalid');
+    }
+  } else {
+    console.log('[CHANGE EVENT] Target does not have cart-qty-input class');
+  }
+});
+
+// Add debug function to check all cart elements
+function debugCartElements() {
+  console.log('[DEBUG] Checking all cart elements...');
+  
+  const inputs = document.querySelectorAll('.cart-qty-input');
+  console.log('[DEBUG] Found', inputs.length, 'cart-qty-input elements');
+  
+  inputs.forEach((input, index) => {
+    const cartId = input.getAttribute('data-cart-id');
+    const row = input.closest('.d-flex.align-items-center');
+    const totalDiv = row ? row.querySelector('div[data-cart-total-id]') : null;
+    
+    console.log('[DEBUG] Input', index + 1, ':', {
+      cartId: cartId,
+      value: input.value,
+      row: row,
+      totalDiv: totalDiv,
+      totalText: totalDiv ? totalDiv.textContent : 'null'
+    });
+  });
+}
+
+// Call debug function when page loads
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('[DEBUG] Page loaded, checking cart elements...');
+  setTimeout(debugCartElements, 2000); // Wait 2 seconds for cart to load
+});
+
+// Add smooth update function for immediate feedback
+function smoothUpdatePerItemTotal(cartId, newTotal) {
+  const totalDiv = document.querySelector('div[data-cart-total-id="' + cartId + '"]');
+  if (totalDiv) {
+    const oldTotal = parseFloat(totalDiv.textContent.replace('₹', '')) || 0;
+    const newTotalValue = parseFloat(newTotal);
+    
+    // Immediate visual feedback
+    totalDiv.style.transition = 'all 0.2s ease';
+    totalDiv.style.backgroundColor = '#d4edda';
+    totalDiv.style.borderRadius = '4px';
+    totalDiv.style.padding = '2px 4px';
+    
+    // Update value
+    totalDiv.textContent = '₹' + newTotalValue.toFixed(2);
+    
+    // Remove highlight
+    setTimeout(() => {
+      totalDiv.style.backgroundColor = '';
+      totalDiv.style.borderRadius = '';
+      totalDiv.style.padding = '';
+    }, 200);
+    
+    console.log('[smoothUpdatePerItemTotal] Updated cartId:', cartId, 'from', oldTotal, 'to', newTotalValue);
+  }
+}
 </script>
 <main>
 
