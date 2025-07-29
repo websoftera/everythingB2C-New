@@ -115,14 +115,14 @@ require_once 'includes/header.php';
                         <div class="floating-cart-summary-box" style="border:1px solid #cfd8dc;border-radius:8px;padding:16px 16px 8px 16px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:10px;">
                                       <div class="d-flex justify-content-between mb-2"><span class="text-muted">Total MRP</span><span style="font-weight:600;text-decoration:line-through;">₹<?php echo number_format($orderTotals['total_mrp'], 0); ?></span></div>
                                       <div class="d-flex justify-content-between mb-2"><span class="text-muted">You Pay</span><span style="font-weight:600;">₹<?php echo number_format($orderTotals['subtotal'], 0); ?></span></div>
-            <div class="d-flex justify-content-between mb-2"><span class="text-muted">Delivery Charge <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
-            <div class="d-flex justify-content-between mb-2"><span class="text-muted">Savings</span><span class="fw-bold" style="color:#2e7d32;">₹<?php
+                                                  <div class="d-flex justify-content-between mb-2"><span class="text-muted">Savings</span><span class="fw-bold" style="color:#2e7d32;">₹<?php
                                 $total_savings = 0;
                                 foreach ($cartItems as $item) {
                                     $total_savings += ($item['mrp'] - $item['selling_price']) * $item['quantity'];
                                 }
                                 echo number_format($total_savings, 0);
                             ?></span></div>
+            <div class="d-flex justify-content-between mb-2"><span class="text-muted">Delivery Charge <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
             <div class="d-flex justify-content-between mb-2"></div>
                           <div class="d-grid mt-3 mb-2">
                             <a href='checkout.php' class='btn btn-success btn-lg fw-bold' style='font-size:1.08rem;'>PROCEED TO CHECKOUT</a>
@@ -264,6 +264,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
+                        // Dispatch cart-item-removed event
+                        if (data.product_id) {
+                            window.dispatchEvent(new CustomEvent('cart-item-removed', {
+                                detail: { productId: data.product_id }
+                            }));
+                            
+                            // Also dispatch cart-updated event to trigger button re-initialization
+                            window.dispatchEvent(new Event('cart-updated'));
+                        }
+                        
                         location.reload();
                         updateCartPageSummary();
                         updateFloatingCartCount();
@@ -307,8 +317,8 @@ function updateCartPageSummary() {
                 summaryBox.innerHTML = `
                   <div class="d-flex justify-content-between mb-2"><span class="text-muted">Total MRP</span><span style="font-weight:600;text-decoration:line-through;">₹${parseFloat(totals.total_mrp || totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
                   <div class="d-flex justify-content-between mb-2"><span class="text-muted">You Pay</span><span style="font-weight:600;">₹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-                  <div class="d-flex justify-content-between mb-2"><span class="text-muted">Delivery Charge <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
                   <div class="d-flex justify-content-between mb-2"><span class="text-muted">Savings</span><span class="fw-bold" style="color:#2e7d32;">₹${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+                  <div class="d-flex justify-content-between mb-2"><span class="text-muted">Delivery Charge <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
                   <div class="d-grid mt-3 mb-2">
                     <a href='checkout.php' class='btn btn-success btn-lg fw-bold' style='font-size:1.08rem;'>PROCEED TO CHECKOUT</a>
                   </div>
@@ -424,6 +434,15 @@ document.getElementById('removeAllItems').addEventListener('click', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                // Dispatch cart-removed-all event
+                if (data.remove_all) {
+                    console.log('Dispatching cart-removed-all event');
+                    window.dispatchEvent(new CustomEvent('cart-removed-all'));
+                    
+                    // Also dispatch cart-updated event to trigger button re-initialization
+                    window.dispatchEvent(new Event('cart-updated'));
+                }
+                
                 // Show success message
                 if (typeof Swal !== 'undefined') {
                     Swal.fire({

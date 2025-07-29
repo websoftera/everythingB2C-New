@@ -1,0 +1,4 @@
+Name,SKU,Description,MRP,Selling Price,Category Name,HSN,Stock Quantity,Max Quantity Per Order,GST Rate,Is Active,Is Featured,Is Discounted,Main Image
+Sample Product 1,SKU001,This is a sample product description for testing import functionality,500,450,Kitchen,123456,100,10,18,Yes,No,Yes,
+Sample Product 2,SKU002,Another sample product with different category,750,600,Office Stationery,789012,50,5,12,Yes,Yes,Yes,
+Sample Product 3,SKU003,Third sample product for demonstration,300,300,Personal Care,345678,200,20,5,Yes,No,No, 

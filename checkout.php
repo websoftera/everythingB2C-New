@@ -351,9 +351,10 @@ foreach ($cartItems as $item) {
             <div class="mb-2"></div>
             <div class="d-flex justify-content-between mb-2"><span>Total MRP</span><span>₹<?php echo number_format($mrp,0); ?></span></div>
             <div class="d-flex justify-content-between mb-2"><span>You Pay</span><span id="you-pay-amount">₹<?php echo number_format($orderTotals['subtotal'],0); ?></span></div>
+            <div class="d-flex justify-content-between mb-2 bg-light p-2 rounded"><span class="text-success"><b>Total Savings</b></span><span class="text-success">₹<?php echo number_format($savings,0); ?></span></div>
             <div class="d-flex justify-content-between mb-2"><span>Delivery charge</span><span id="cart-shipping">₹<?php echo $orderTotals['shipping_charge']; ?></span></div>
             <!-- <div class="d-flex justify-content-between mb-2"><span>Shipping Zone</span><span id="cart-shipping-zone"><?php echo htmlspecialchars($orderTotals['shipping_zone_name'] ?? ''); ?></span></div> -->
-            <div class="d-flex justify-content-between mb-2 bg-light p-2 rounded"><span class="text-success"><b>Total Savings</b></span><span class="text-success">₹<?php echo number_format($savings,0); ?></span></div>
+            
             <!-- GST Breakdown removed: prices are inclusive of GST -->
             <div class="d-flex justify-content-between mb-2 bg-primary bg-opacity-10 p-2 rounded"><span><b>Total Amount to Pay</b></span><span id="order-total-amount"><b>₹<?php echo number_format($orderTotals['total'],0); ?></b></span></div>
             <!-- Payment Method Section and Place Order Button -->

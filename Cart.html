@@ -130,7 +130,7 @@
         <div>${price.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</div>
         <div class="qty-control">
           <button onclick="updateQty(${index}, -1)">−</button>
-          <input type="number" value="${item.qty}" min="1" onchange="changeQty(${index}, this.value)">
+          <input type="number" value="${item.qty}" min="1" max="99" onchange="changeQty(${index}, this.value)">
           <button onclick="updateQty(${index}, 1)">+</button>
         </div>
         <div>${total.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</div>

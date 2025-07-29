@@ -18,7 +18,7 @@ if (isLoggedIn()) {
     }
 }
 
-$categories = getAllCategories();
+$categories = getAllCategoriesWithProductCount();
 $categoryTree = buildCategoryTree($categories);
 $currentUser = getCurrentUser();
 
@@ -135,37 +135,7 @@ html, body {
   margin-top: 8px !important;
   margin-bottom: 4px !important;
 }
-.header2 {
-  height: 35px;
-  min-height: 35px;
-  z-index: 10000;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-}
-.navbar {
-  position: fixed !important;
-  top: 35px !important;
-  left: 0 !important;
-  width: 100% !important;
-  z-index: 9999 !important;
-  background: #fff !important;
-}
-.category-navbar {
-  position: sticky !important;
-  top: 91px !important;
-  left: 0 !important;
-  width: 100% !important;
-  z-index: 9998 !important;
-  background: #fff !important;
-}
-body { padding-top: 125px !important; }
-@media (max-width: 991.98px) {
-  .navbar { top: 35px !important; }
-  .category-navbar { top: 83px !important; }
-  body { padding-top: 118px !important; }
-}
+/* Sticky header styles moved to Header.css */
 .floating-cart {
   z-index: 99999 !important;
 }
@@ -338,68 +308,92 @@ body { padding-top: 125px !important; }
 </section>
 
 <!-- NAVBAR START -->
-<nav class="navbar navbar-expand-lg">
-    <div class="logo-wrapper d-flex align-items-center">
-        <a href="index.php">
-            <img src="./Kichen Page/page2/logo.webp" alt="Logo" class="img-fluid logo" />
-        </a>
-    </div>
-    <form class="d-flex flex-grow-1 mx-4 position-relative" role="search" autocomplete="off" onsubmit="return false;">
-        <div class="input-group w-100 flex-wrap">
-            <!-- DESKTOP Dropdown -->
-            <div class="dropdown-desktop">
-              <button id="categoryDropdownDesktop" class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" data-selected-category="all">
-                <span id="selectedCategoryDesktop">All</span>
-              </button>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item category-option" href="#" data-category="all">All</a></li>
-                <?php
-                function renderCategoryDropdown($tree, $level = 0) {
-                    foreach ($tree as $cat) {
-                        $indent = str_repeat('&nbsp;&nbsp;&nbsp;', $level);
-                        if (!empty($cat['children'])) {
-                            // Main category as non-selectable header
-                            echo '<li><span class="dropdown-header" style="font-weight:bold;">' . $indent . htmlspecialchars($cat['name']) . '</span></li>';
-                            renderCategoryDropdown($cat['children'], $level + 1);
-                        } else {
-                            // Selectable category
-                            echo '<li><a class="dropdown-item category-option" href="#" data-category="' . $cat['slug'] . '">' . $indent . htmlspecialchars($cat['name']) . '</a></li>';
+<nav class="navbar navbar-expand-lg sticky-top bg-white">
+    <div class="container-fluid">
+        <div class="d-flex align-items-center">
+            <!-- Logo -->
+            <div class="logo-wrapper d-flex align-items-center">
+                <a href="index.php">
+                    <img src="./Kichen Page/page2/logo.webp" alt="Logo" class="img-fluid logo" />
+                </a>
+            </div>
+            
+            <!-- Mobile Cart Icon -->
+            <div class="d-lg-none ms-auto cart-section-mobile">
+                <a href="cart.php" class="text-decoration-none text-dark cart-link position-relative">
+                    <i class="bi bi-cart4 fs-4 cart-icon"></i>
+                    <span id="cart-count-mobile" class="position-absolute top-0 start-100 translate-middle badge rounded-pill" style="display:<?php echo $cartCount > 0 ? 'inline-block' : 'none'; ?>;">
+                        <?php echo $cartCount > 0 ? $cartCount : ''; ?>
+                    </span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Search Form -->
+        <form class="d-flex flex-grow-1 mx-4 position-relative" role="search" autocomplete="off" onsubmit="return false;">
+            <div class="input-group w-100 flex-wrap">
+                <!-- DESKTOP Dropdown -->
+                <div class="dropdown-desktop">
+                  <button id="categoryDropdownDesktop" class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" data-selected-category="all">
+                    <span id="selectedCategoryDesktop">All</span>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item category-option" href="#" data-category="all">All</a></li>
+                    <?php
+                    function renderCategoryDropdown($tree, $level = 0) {
+                        foreach ($tree as $cat) {
+                            $indent = str_repeat('&nbsp;&nbsp;&nbsp;', $level);
+                            if (!empty($cat['children'])) {
+                                // Main category as non-selectable header
+                                echo '<li><span class="dropdown-header" style="font-weight:bold;">' . $indent . htmlspecialchars($cat['name']) . '</span></li>';
+                                renderCategoryDropdown($cat['children'], $level + 1);
+                            } else {
+                                // Selectable category
+                                echo '<li><a class="dropdown-item category-option" href="#" data-category="' . $cat['slug'] . '">' . $indent . htmlspecialchars($cat['name']) . '</a></li>';
+                            }
                         }
                     }
-                }
-                renderCategoryDropdown($categoryTree);
-                ?>
-              </ul>
+                    renderCategoryDropdown($categoryTree);
+                    ?>
+                  </ul>
+                </div>
+                <!-- MOBILE Dropdown -->
+                <div class="dropdown-mobile">
+                  <button id="categoryDropdownMobile" class="btn btn-light dropdown-toggle mobile-category-btn" type="button" data-bs-toggle="dropdown" data-selected-category="all">
+                    <span id="selectedCategoryMobile">All</span>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item category-option" href="#" data-category="all">All</a></li>
+                    <?php renderCategoryDropdown($categoryTree); ?>
+                  </ul>
+                </div>
+                <input class="form-control mobile-search-input" id="headerSearchInput" type="search" name="query" placeholder="Search for Products" aria-label="Search" autocomplete="off">
+                <button class="btn btn-primary mobile-search-btn" id="headerSearchBtn" type="button">
+                    <i class="bi bi-search"></i>
+                </button>
             </div>
-            <!-- MOBILE Dropdown -->
-            <div class="dropdown-mobile">
-              <button id="categoryDropdownMobile" class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" data-selected-category="all">
-                <span id="selectedCategoryMobile">All</span>
-              </button>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item category-option" href="#" data-category="all">All</a></li>
-                <?php renderCategoryDropdown($categoryTree); ?>
-              </ul>
+            <div id="headerSearchResultsPopup" class="position-absolute w-100" style="z-index: 9999; display: none;"></div>
+        </form>
+        
+        <!-- Desktop Right Section -->
+        <div class="d-none d-lg-flex align-items-center">
+            <!-- Customer Support Section -->
+            <div class="customer-support-section">
+                <a href="Customer-Support.html" class="text-decoration-none text-dark">
+                    <i class="bi bi-headset fs-4 me-2"></i>
+                    <span class="me-4 fw-semibold customer-support">Customer Support</span>
+                </a>
             </div>
-            <input class="form-control" id="headerSearchInput" type="search" name="query" placeholder="Search for Products" aria-label="Search" autocomplete="off">
-            <button class="btn btn-primary" id="headerSearchBtn" type="button">
-                <i class="bi bi-search"></i>
-            </button>
+            <!-- Cart Section -->
+            <div class="cart-section">
+                <a href="cart.php" class="text-decoration-none text-dark cart-link position-relative">
+                    <i class="bi bi-cart4 fs-4 cart-icon"></i>
+                    <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill" style="display:<?php echo $cartCount > 0 ? 'inline-block' : 'none'; ?>;">
+                        <?php echo $cartCount > 0 ? $cartCount : ''; ?>
+                    </span>
+                </a>
+            </div>
         </div>
-        <div id="headerSearchResultsPopup" class="position-absolute w-100" style="z-index: 9999; display: none;"></div>
-    </form>
-    <div class="d-none d-lg-flex align-items-center">
-        <a href="Customer-Support.html" class="text-decoration-none text-dark">
-            <i class="bi bi-headset fs-4 me-2"></i>
-            <span class="me-4 fw-semibold customer-support">Customer Support</span>
-        </a>
-        <a href="cart.php" class="text-decoration-none text-dark cart-link position-relative">
-            <i class="bi bi-cart4 fs-4 cart-icon"></i>
-            <!-- <span class="me-4 fw-semibold">Cart</span> -->
-            <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill" style="display:<?php echo $cartCount > 0 ? 'inline-block' : 'none'; ?>;">
-                <?php echo $cartCount > 0 ? $cartCount : ''; ?>
-            </span>
-        </a>
     </div>
 </nav>
 
@@ -424,9 +418,10 @@ body { padding-top: 125px !important; }
 <!-- Desktop Category Navigation -->
 <div class="second-navbar d-none d-lg-block">
     <nav class="navbar navbar-expand-lg navbar-light bg-light category-navbar">
-        <div class="navbar-collapse justify-content-center" id="navbarSupportedContent">
-            <ul class="navbar-nav category-list mb-2 mb-lg-0 d-flex align-items-center">
-                <?php
+        <div class="container-fluid">
+            <div class="navbar-collapse justify-content-center" id="navbarSupportedContent">
+                <ul class="navbar-nav category-list mb-2 mb-lg-0 d-flex align-items-center">
+                    <?php
 function renderCategoryMenu($tree, $level = 0) {
     foreach ($tree as $cat) {
         $hasChildren = !empty($cat['children']);
@@ -450,7 +445,8 @@ function renderCategoryMenu($tree, $level = 0) {
 }
 renderCategoryMenu($categoryTree);
 ?>
-            </ul>
+                </ul>
+            </div>
         </div>
     </nav>
 </div>
@@ -459,6 +455,23 @@ renderCategoryMenu($categoryTree);
 <script src="popup/searchbar.js"></script>
 <script src="js/real-time-max-quantity.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+// Ensure sticky header works
+document.addEventListener('DOMContentLoaded', function() {
+    const navbar = document.querySelector('.navbar.sticky-top');
+    if (navbar) {
+        // Force sticky positioning
+        navbar.style.position = 'sticky';
+        navbar.style.top = '0';
+        navbar.style.zIndex = '1030';
+        navbar.style.backgroundColor = '#fff';
+        navbar.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+        navbar.style.width = '100%';
+        
+        console.log('Sticky header initialized');
+    }
+});
+</script>
 <script>
 // --- Floating Cart Logic (Dropdown/Panel, Advanced) ---
 function updateCartQuantity(cartId, qty, inputElem, btnElem, callback) {
@@ -499,6 +512,15 @@ function updateFloatingCartCount() {
         headerCartCount.textContent = data.cart_count > 0 ? data.cart_count : '';
         headerCartCount.style.display = data.cart_count > 0 ? 'inline-block' : 'none';
       }
+      // Update mobile cart count
+      var mobileCartCount = document.getElementById('cart-count-mobile');
+      if (mobileCartCount) {
+        mobileCartCount.textContent = data.cart_count > 0 ? data.cart_count : '';
+        mobileCartCount.style.display = data.cart_count > 0 ? 'inline-block' : 'none';
+        console.log('Updated mobile cart count:', data.cart_count);
+      } else {
+        console.log('Mobile cart count element not found');
+      }
       // Hide or show floating cart icon
       var floatingCartBtn = document.getElementById('floatingCartBtn');
       if (floatingCartBtn) {
@@ -522,8 +544,8 @@ function updateFloatingCartSummary() {
           <div style="font-weight:600;font-size:1.02rem;margin-bottom:6px;">Price Summary</div>
           <div class="d-flex justify-content-between mb-1"><span class="text-muted">Total MRP</span><span style="font-weight:600;text-decoration:line-through;">₹${parseFloat(totals.total_mrp || totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
           <div class="d-flex justify-content-between mb-1"><span class="text-muted">You Pay</span><span style="font-weight:600;">₹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Delivery <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
           <div class="d-flex justify-content-between mb-1"><span class="text-muted">Savings</span><span class="fw-bold" style="color:#2e7d32;">₹${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Delivery <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
           <div class="d-grid mt-2 mb-1">
             <a href='checkout.php' class='btn btn-success btn-sm fw-bold' style='font-size:0.98rem;'>PROCEED TO CHECKOUT</a>
           </div>
@@ -582,8 +604,8 @@ function renderFloatingCart() {
           <div style="font-weight:600;font-size:1.02rem;margin-bottom:6px;">Price Summary</div>
           <div class="d-flex justify-content-between mb-1"><span class="text-muted">Total MRP</span><span style="font-weight:600;text-decoration:line-through;">₹${parseFloat(totals.total_mrp || totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
           <div class="d-flex justify-content-between mb-1"><span class="text-muted">You Pay</span><span style="font-weight:600;">₹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Delivery <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
           <div class="d-flex justify-content-between mb-1"><span class="text-muted">Savings</span><span class="fw-bold" style="color:#2e7d32;">₹${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Delivery <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
           <div class="d-grid mt-2 mb-1">
             <a href='checkout.php' class='btn btn-success btn-sm fw-bold' style='font-size:0.98rem;'>PROCEED TO CHECKOUT</a>
           </div>
@@ -639,24 +661,73 @@ function renderFloatingCart() {
         };
       });
       content.querySelectorAll('.btn-qty-plus').forEach(btn => {
-        btn.onclick = function(e) {
+        btn.onclick = async function(e) {
           e.stopPropagation();
           const cartId = btn.getAttribute('data-cart-id');
           const row = btn.closest('.d-flex.align-items-center');
           const input = content.querySelector('.cart-qty-input[data-cart-id="' + cartId + '"]');
           let qty = parseInt(input.value, 10) || 1;
           const prevQty = qty;
-          input.value = qty + 1;
+          
+          // Get product ID from cart item
+          let productId = null;
+          try {
+            const response = await fetch(`ajax/get_product_id_from_cart.php?cart_id=${cartId}`);
+            const data = await response.json();
+            if (data.success) {
+              productId = data.product_id;
+            }
+          } catch (error) {
+            console.error('Error getting product ID:', error);
+          }
+          
+          // Check max quantity if we have product ID
+          let newQty = qty + 1;
+          if (productId) {
+            try {
+              const maxResponse = await fetch('ajax/check_max_quantity.php', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `product_id=${productId}&quantity=${newQty}`
+              });
+              const allowedQuantity = 99; // Default max if not set
+              const result = await maxResponse.json();
+              if (result.error && result.max_quantity || newQty > allowedQuantity) {
+                // Show SweetAlert but don't change the input value
+                if(!result.max_quantity && newQty > allowedQuantity) {
+                  result.message = `Maximum quantity is ${allowedQuantity}.`;
+                }
+                if (typeof Swal !== 'undefined') {
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Maximum quantity reached',
+                    text: result.message,
+                    timer: 4000,
+                    showConfirmButton: false
+                  });
+                } else {
+                  alert(result.message);
+                }
+                return; // Don't proceed with the update
+              }
+            } catch (error) {
+              console.error('Error checking max quantity:', error);
+            }
+          }
+          
+          input.value = newQty;
           // Update total in DOM
           const priceSpan = row.querySelector('.ms-1');
           const unitPriceText = priceSpan ? priceSpan.textContent : '';
           const unitPrice = parseFloat(unitPriceText.match(/₹(\d+\.?\d*)/)?.[1] || 0);
           const totalDiv = row.querySelector('div[data-cart-total-id]');
           if (totalDiv && unitPrice) {
-            totalDiv.textContent = '₹' + ((qty + 1) * unitPrice).toFixed(2);
+            totalDiv.textContent = '₹' + (newQty * unitPrice).toFixed(2);
           }
           updateFloatingCartSummary(); // Real-time update
-          updateCartQuantity(cartId, qty + 1, input, btn, function(success, updatedItem) {
+          updateCartQuantity(cartId, newQty, input, btn, function(success, updatedItem) {
             if (!success) {
               input.value = prevQty;
               if (totalDiv && unitPrice) {
@@ -678,7 +749,7 @@ function renderFloatingCart() {
               // Update the per-item total directly
               const unitPrice = parseFloat(priceSpan.textContent.match(/₹(\d+\.?\d*)/)?.[1] || 0);
               if (unitPrice > 0) {
-                updateItemTotal(cartId, qty + 1, unitPrice);
+                updateItemTotal(cartId, newQty, unitPrice);
               }
             }
           });
@@ -699,6 +770,24 @@ function renderFloatingCart() {
           .then(res => res.json())
           .then(resp => {
             if (resp.success) {
+              // Dispatch cart-item-removed event
+              if (resp.product_id) {
+                console.log('Dispatching cart-item-removed event for product ID:', resp.product_id);
+                window.dispatchEvent(new CustomEvent('cart-item-removed', {
+                  detail: { productId: resp.product_id }
+                }));
+                
+                // Also dispatch cart-updated event to trigger button re-initialization
+                window.dispatchEvent(new Event('cart-updated'));
+                
+                // Also directly update button state if updateButtonState function exists
+                if (typeof updateButtonState === 'function') {
+                  updateButtonState(resp.product_id, false);
+                }
+              } else {
+                console.log('No product_id in response:', resp);
+              }
+              
               // If cart is now empty, reload floating cart
               if (!content.querySelector('.d-flex.align-items-center')) {
                 renderFloatingCart();
@@ -727,12 +816,73 @@ function renderFloatingCart() {
       });
       // Quantity input direct change
       content.querySelectorAll('.cart-qty-input').forEach(input => {
-        input.onchange = function(e) {
+        input.onchange = async function(e) {
+          // Store the actual user input value before any parsing
+          const originalUserInput = this.value;
           let qty = parseInt(this.value, 10) || 1;
           if (qty < 1) qty = 1;
+          
+          // Get product ID from cart item
+          const cartId = this.getAttribute('data-cart-id');
+          let productId = null;
+          
+          // Try to get product ID from the cart item
+          try {
+            const response = await fetch(`ajax/get_product_id_from_cart.php?cart_id=${cartId}`);
+            const data = await response.json();
+            if (data.success) {
+              productId = data.product_id;
+            }
+          } catch (error) {
+            console.error('Error getting product ID:', error);
+          }
+          
+          // Check max quantity if we have product ID
+          let validationFailed = false;
+          if (productId) {
+            try {
+              const maxResponse = await fetch('ajax/check_max_quantity.php', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `product_id=${productId}&quantity=${qty}`
+              });
+              const allowedQuantity = 99; // Default max if not set
+              const result = await maxResponse.json();
+              if (result.error && result.max_quantity || qty > allowedQuantity) {
+                // Show SweetAlert but don't change the input value
+                if(!result.max_quantity && qty > allowedQuantity) {
+                  result.message = `Maximum quantity is ${allowedQuantity}.`;
+                }
+                if (typeof Swal !== 'undefined') {
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Maximum quantity reached',
+                    text: result.message,
+                    timer: 4000,
+                    showConfirmButton: false
+                  });
+                } else {
+                  alert(result.message);
+                }
+                // Reset to original user input and don't proceed with update
+                console.log('Validation failed, resetting to:', originalUserInput);
+                this.value = originalUserInput;
+                validationFailed = true;
+              }
+            } catch (error) {
+              console.error('Error checking max quantity:', error);
+            }
+          }
+          
+          // If validation failed, don't proceed with cart update
+          if (validationFailed) {
+            return;
+          }
+          
           if (qty > 99) qty = 99; // Enforce max quantity
           this.value = qty; // Update input value to reflect limits
-          const cartId = this.getAttribute('data-cart-id');
           const row = this.closest('.d-flex.align-items-center');
           
           // Update total price display immediately
@@ -805,8 +955,8 @@ function updateFloatingCartSummary() {
           <div class="floating-cart-summary-box" style="border:1px solid #cfd8dc;border-radius:8px;padding:16px 16px 8px 16px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:10px;">
             <div style="font-weight:600;font-size:1.1rem;margin-bottom:12px;">Price Summary</div>
             <div class="d-flex justify-content-between mb-2"><span class="text-muted">Total MRP</span><span style="font-weight:600;">₹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-            <div class="d-flex justify-content-between mb-2"><span class="text-muted">Delivery Charge <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
             <div class="d-flex justify-content-between mb-2"><span class="text-muted">Savings</span><span class="fw-bold" style="color:#2e7d32;">₹${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+            <div class="d-flex justify-content-between mb-2"><span class="text-muted">Delivery Charge <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
             <div class="d-grid mt-3 mb-2"><a href='checkout.php' class='btn btn-success btn-lg fw-bold' style='font-size:1.08rem;'>PROCEED TO CHECKOUT</a></div>
           </div>
         `;
@@ -890,6 +1040,15 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
           if (data.success) {
+            // Dispatch cart-removed-all event
+            if (data.remove_all) {
+              console.log('Dispatching cart-removed-all event');
+              window.dispatchEvent(new CustomEvent('cart-removed-all'));
+              
+              // Also dispatch cart-updated event to trigger button re-initialization
+              window.dispatchEvent(new Event('cart-updated'));
+            }
+            
             // Show success message
                             if (typeof Swal !== 'undefined') {
                     Swal.fire({
@@ -1283,3 +1442,4 @@ if(document.getElementById('goToTopBtn')){
     };
 }
 </script>
+

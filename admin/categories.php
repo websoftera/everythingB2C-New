@@ -123,8 +123,8 @@ $stmt = $pdo->query("SELECT c.*, COUNT(p.id) as product_count
                      ORDER BY c.name");
 $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Fetch only main categories for parent selection
-$mainCategories = $pdo->query("SELECT id, name FROM categories WHERE parent_id IS NULL ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
+// Fetch all categories for parent selection (excluding the category being edited)
+$allCategories = $pdo->query("SELECT id, name, parent_id FROM categories ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
 
 // Helper functions
 function createSlug($string) {
@@ -301,11 +301,23 @@ $categoryTree = buildCategoryTree($categories);
                             <label for="parent_id" class="form-label">Parent Category</label>
                             <select class="form-control" id="parent_id" name="parent_id">
                                 <option value="">None (Main Category)</option>
-                                <?php foreach ($mainCategories as $category): ?>
-                                    <option value="<?php echo $category['id']; ?>">
-                                        <?php echo htmlspecialchars($category['name']); ?>
-                                    </option>
-                                <?php endforeach; ?>
+                                <?php 
+                                // Build hierarchical category options
+                                $categoryTree = buildCategoryTree($allCategories);
+                                function displayCategoryOptions($categories, $level = 0) {
+                                    foreach ($categories as $category) {
+                                        $indent = str_repeat('— ', $level);
+                                        echo '<option value="' . $category['id'] . '">';
+                                        echo $indent . htmlspecialchars($category['name']);
+                                        echo '</option>';
+                                        
+                                        if (!empty($category['children'])) {
+                                            displayCategoryOptions($category['children'], $level + 1);
+                                        }
+                                    }
+                                }
+                                displayCategoryOptions($categoryTree);
+                                ?>
                             </select>
                         </div>
                         
@@ -351,11 +363,26 @@ $categoryTree = buildCategoryTree($categories);
                             <label for="edit_parent_id" class="form-label">Parent Category</label>
                             <select class="form-control" id="edit_parent_id" name="parent_id">
                                 <option value="">None (Main Category)</option>
-                                <?php foreach ($mainCategories as $category): ?>
-                                    <option value="<?php echo $category['id']; ?>">
-                                        <?php echo htmlspecialchars($category['name']); ?>
-                                    </option>
-                                <?php endforeach; ?>
+                                <?php 
+                                // Build hierarchical category options for edit form
+                                function displayCategoryOptionsForEdit($categories, $level = 0, $excludeId = null) {
+                                    foreach ($categories as $category) {
+                                        // Skip the category being edited to prevent self-reference
+                                        if ($excludeId && $category['id'] == $excludeId) {
+                                            continue;
+                                        }
+                                        $indent = str_repeat('— ', $level);
+                                        echo '<option value="' . $category['id'] . '">';
+                                        echo $indent . htmlspecialchars($category['name']);
+                                        echo '</option>';
+                                        
+                                        if (!empty($category['children'])) {
+                                            displayCategoryOptionsForEdit($category['children'], $level + 1, $excludeId);
+                                        }
+                                    }
+                                }
+                                displayCategoryOptionsForEdit($categoryTree);
+                                ?>
                             </select>
                         </div>
                         
@@ -395,6 +422,15 @@ $categoryTree = buildCategoryTree($categories);
             document.getElementById('edit_description').value = category.description || '';
             document.getElementById('edit_parent_id').value = category.parent_id || '';
             
+            // Update the edit dropdown to exclude the current category
+            const editParentSelect = document.getElementById('edit_parent_id');
+            editParentSelect.innerHTML = '<option value="">None (Main Category)</option>';
+            
+            // Rebuild the dropdown options excluding the current category
+            const categories = <?php echo json_encode($allCategories); ?>;
+            const categoryTree = buildCategoryTreeForJS(categories);
+            displayCategoryOptionsForEditJS(categoryTree, category.id);
+            
             // Show current image preview
             const previewDiv = document.getElementById('current_image_preview');
             if (category.image) {
@@ -414,6 +450,48 @@ $categoryTree = buildCategoryTree($categories);
                 document.getElementById('delete_id').value = id;
                 document.getElementById('deleteCategoryForm').submit();
             }
+        }
+        
+        // JavaScript functions for building category tree
+        function buildCategoryTreeForJS(categories) {
+            const tree = [];
+            const lookup = {};
+            
+            // Create lookup table
+            categories.forEach(cat => {
+                lookup[cat.id] = { ...cat, children: [] };
+            });
+            
+            // Build tree
+            categories.forEach(cat => {
+                if (cat.parent_id === null) {
+                    tree.push(lookup[cat.id]);
+                } else {
+                    if (lookup[cat.parent_id]) {
+                        lookup[cat.parent_id].children.push(lookup[cat.id]);
+                    }
+                }
+            });
+            
+            return tree;
+        }
+        
+        function displayCategoryOptionsForEditJS(categories, excludeId, level = 0) {
+            const editParentSelect = document.getElementById('edit_parent_id');
+            
+            categories.forEach(category => {
+                if (category.id == excludeId) return; // Skip the category being edited
+                
+                const indent = '— '.repeat(level);
+                const option = document.createElement('option');
+                option.value = category.id;
+                option.textContent = indent + category.name;
+                editParentSelect.appendChild(option);
+                
+                if (category.children && category.children.length > 0) {
+                    displayCategoryOptionsForEditJS(category.children, excludeId, level + 1);
+                }
+            });
         }
     </script>
 </body>

@@ -17,7 +17,7 @@ try {
         $result = clearUserCart($userId);
         
         if ($result) {
-            echo json_encode(['success' => true, 'message' => 'All items removed from cart']);
+            echo json_encode(['success' => true, 'message' => 'All items removed from cart', 'remove_all' => true]);
         } else {
             echo json_encode(['success' => false, 'message' => 'Failed to remove items from cart']);
         }
@@ -26,7 +26,7 @@ try {
         $result = clearSessionCart();
         
         if ($result) {
-            echo json_encode(['success' => true, 'message' => 'All items removed from cart']);
+            echo json_encode(['success' => true, 'message' => 'All items removed from cart', 'remove_all' => true]);
         } else {
             echo json_encode(['success' => false, 'message' => 'Failed to remove items from cart']);
         }

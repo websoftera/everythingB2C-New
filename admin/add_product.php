@@ -13,8 +13,9 @@ $pageTitle = 'Add New Product';
 $success_message = '';
 $error_message = '';
 
-// Get parent categories for dropdown
-$parentCategories = getParentCategories();
+// Get all categories for dropdown with hierarchical structure
+$allCategories = getAllCategoriesWithProductCount();
+$categoryTree = buildCategoryTree($allCategories);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name']);
@@ -23,12 +24,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $mrp = floatval($_POST['mrp']);
     $selling_price = floatval($_POST['selling_price']);
     
-    // Handle category selection - use subcategory if selected, otherwise use parent category
-    $category_id = !empty($_POST['category_id']) ? intval($_POST['category_id']) : intval($_POST['parent_category_id']);
+    // Handle category selection - use the selected category directly
+    $category_id = intval($_POST['parent_category_id']);
     
     $stock_quantity = intval($_POST['stock_quantity']);
     $max_quantity_per_order = !empty($_POST['max_quantity_per_order']) ? intval($_POST['max_quantity_per_order']) : null;
-    $gst_type = $_POST['gst_type'] ?? 'sgst_cgst';
+    $gst_type = 'sgst_cgst'; // Default GST type
     $gst_rate = floatval($_POST['gst_rate']);
     $is_active = isset($_POST['is_active']) ? 1 : 0;
     $is_featured = isset($_POST['is_featured']) ? 1 : 0;
@@ -197,25 +198,29 @@ function uploadImage($file, $folder) {
                                                 <label for="parent_category_id" class="form-label">Category *</label>
                                                 <select class="form-control" id="parent_category_id" name="parent_category_id" required>
                                                     <option value="">Select Category</option>
-                                                    <?php foreach ($parentCategories as $category): ?>
-                                                        <option value="<?php echo $category['id']; ?>" <?php echo (isset($_POST['parent_category_id']) && $_POST['parent_category_id'] == $category['id']) ? 'selected' : ''; ?>>
-                                                            <?php echo htmlspecialchars($category['name']); ?>
-                                                        </option>
-                                                    <?php endforeach; ?>
+                                                    <?php 
+                                                    // Display categories in hierarchical structure
+                                                    function displayCategoryOptions($categories, $level = 0) {
+                                                        foreach ($categories as $category) {
+                                                            $indent = str_repeat('— ', $level);
+                                                            $selected = (isset($_POST['parent_category_id']) && $_POST['parent_category_id'] == $category['id']) ? 'selected' : '';
+                                                            echo '<option value="' . $category['id'] . '" ' . $selected . '>';
+                                                            echo $indent . htmlspecialchars($category['name']);
+                                                            echo '</option>';
+                                                            
+                                                            if (!empty($category['children'])) {
+                                                                displayCategoryOptions($category['children'], $level + 1);
+                                                            }
+                                                        }
+                                                    }
+                                                    displayCategoryOptions($categoryTree);
+                                                    ?>
                                                 </select>
                                                 <div class="invalid-feedback">Please select a category.</div>
                                             </div>
                                         </div>
 
-                                        <div class="row mb-3" id="subcategory_row" style="display: none;">
-                                            <div class="col-md-6">
-                                                <label for="category_id" class="form-label">Subcategory</label>
-                                                <select class="form-control" id="category_id" name="category_id">
-                                                    <option value="">Select Subcategory (Optional)</option>
-                                                </select>
-                                                <div class="form-text">Select a subcategory if available</div>
-                                            </div>
-                                        </div>
+
 
                                         <div class="row mb-3">
                                             <div class="col-md-6">
@@ -255,26 +260,15 @@ function uploadImage($file, $folder) {
 
                                         <div class="row mb-3">
                                             <div class="col-md-4">
-                                                <label for="gst_type" class="form-label">GST Type *</label>
-                                                <select class="form-control" id="gst_type" name="gst_type" required>
-                                                    <option value="sgst_cgst" <?php echo (isset($_POST['gst_type']) && $_POST['gst_type'] == 'sgst_cgst') ? 'selected' : ''; ?>>SGST + CGST</option>
-                                                    <option value="igst" <?php echo (isset($_POST['gst_type']) && $_POST['gst_type'] == 'igst') ? 'selected' : ''; ?>>IGST</option>
+                                                <label for="gst_rate" class="form-label">GST Rate (%)</label>
+                                                <select class="form-control" id="gst_rate" name="gst_rate" required>
+                                                    <option value="0" <?php echo (isset($_POST['gst_rate']) && $_POST['gst_rate'] == '0') ? 'selected' : ''; ?>>0%</option>
+                                                    <option value="5" <?php echo (isset($_POST['gst_rate']) && $_POST['gst_rate'] == '5') ? 'selected' : ''; ?>>5%</option>
+                                                    <option value="12" <?php echo (isset($_POST['gst_rate']) && $_POST['gst_rate'] == '12') ? 'selected' : ''; ?>>12%</option>
+                                                    <option value="18" <?php echo (isset($_POST['gst_rate']) && $_POST['gst_rate'] == '18') ? 'selected' : ''; ?>>18%</option>
                                                 </select>
-                                                <div class="form-text">Select GST type based on delivery location</div>
-                                                <div class="invalid-feedback">Please select a GST type.</div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label for="gst_rate" class="form-label">GST Rate (%) *</label>
-                                                <input type="number" class="form-control" id="gst_rate" name="gst_rate" step="0.01" min="0" max="100" value="18.00" required>
-                                                <div class="form-text">Enter GST rate as percentage (e.g., 18 for 18%)</div>
-                                                <div class="invalid-feedback">Please provide a valid GST rate between 0 and 100.</div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label class="form-label">GST Amount (Auto)</label>
-                                                <div class="form-control-plaintext" id="gst_amount_display">
-                                                    ₹0.00
-                                                </div>
-                                                <div class="form-text">Calculated automatically for reference (selling price is inclusive of GST)</div>
+                                                <div class="form-text">Select GST rate for record keeping</div>
+                                                <div class="invalid-feedback">Please select a GST rate.</div>
                                             </div>
                                         </div>
 
@@ -440,28 +434,7 @@ function uploadImage($file, $folder) {
                 }
             }
             
-            // Calculate GST amount
-            calculateGSTAmount();
-        }
 
-        // Calculate GST amount
-        document.getElementById('gst_rate').addEventListener('input', calculateGSTAmount);
-        document.getElementById('selling_price').addEventListener('input', calculateGSTAmount);
-
-        function calculateGSTAmount() {
-            const sellingPrice = parseFloat(document.getElementById('selling_price').value) || 0;
-            const gstRate = parseFloat(document.getElementById('gst_rate').value) || 0;
-            
-            if (sellingPrice > 0 && gstRate > 0) {
-                const gstAmount = (sellingPrice * gstRate) / 100;
-                document.getElementById('gst_amount_display').textContent = '₹' + gstAmount.toFixed(2);
-            } else {
-                document.getElementById('gst_amount_display').textContent = '₹0.00';
-            }
-            
-            // Calculate total with shipping
-            calculateTotalWithShipping();
-        }
 
         // Calculate total with shipping
         document.getElementById('selling_price').addEventListener('input', calculateTotalWithShipping);
@@ -469,72 +442,11 @@ function uploadImage($file, $folder) {
 
         function calculateTotalWithShipping() {
             const sellingPrice = parseFloat(document.getElementById('selling_price').value) || 0;
-            const gstRate = parseFloat(document.getElementById('gst_rate').value) || 0;
             
-            const gstAmount = (sellingPrice * gstRate) / 100;
-            const total = sellingPrice + gstAmount;
-            
-            document.getElementById('total_with_shipping_display').textContent = '₹' + total.toFixed(2);
+            document.getElementById('total_with_shipping_display').textContent = '₹' + sellingPrice.toFixed(2);
         }
 
-        // Subcategory loading functionality
-        document.getElementById('parent_category_id').addEventListener('change', function() {
-            const parentId = this.value;
-            const subcategoryRow = document.getElementById('subcategory_row');
-            const categorySelect = document.getElementById('category_id');
-            
-            // Clear subcategory dropdown
-            categorySelect.innerHTML = '<option value="">Select Subcategory (Optional)</option>';
-            
-            if (parentId) {
-                // Show subcategory row and load subcategories
-                subcategoryRow.style.display = 'block';
-                
-                fetch(`ajax/get_subcategories.php?parent_id=${parentId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success && data.subcategories.length > 0) {
-                            data.subcategories.forEach(subcategory => {
-                                const option = document.createElement('option');
-                                option.value = subcategory.id;
-                                option.textContent = subcategory.name;
-                                categorySelect.appendChild(option);
-                            });
-                        } else {
-                            // No subcategories, hide the row
-                            subcategoryRow.style.display = 'none';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error loading subcategories:', error);
-                        subcategoryRow.style.display = 'none';
-                    });
-            } else {
-                // No parent category selected, hide subcategory row
-                subcategoryRow.style.display = 'none';
-            }
-        });
 
-        // Handle form repopulation on page load (for validation errors)
-        document.addEventListener('DOMContentLoaded', function() {
-            const parentCategorySelect = document.getElementById('parent_category_id');
-            const selectedParentId = parentCategorySelect.value;
-            
-            if (selectedParentId) {
-                // Trigger the change event to load subcategories
-                parentCategorySelect.dispatchEvent(new Event('change'));
-                
-                // After a short delay, set the selected subcategory if it exists
-                setTimeout(() => {
-                    const categorySelect = document.getElementById('category_id');
-                    const selectedCategoryId = '<?php echo isset($_POST['category_id']) ? $_POST['category_id'] : ''; ?>';
-                    
-                    if (selectedCategoryId && categorySelect) {
-                        categorySelect.value = selectedCategoryId;
-                    }
-                }, 500);
-            }
-        });
 
         // Form validation
         (function() {

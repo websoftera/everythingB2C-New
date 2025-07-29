@@ -131,7 +131,7 @@
     margin: 0 auto 24px auto;
     overflow: hidden !important;
     position: relative;
-    padding: 0 0 12px 0 !important;
+    padding: 0 2px 0 2px !important;
     box-sizing: border-box !important;
 }
 .shop-page-product-card:hover {

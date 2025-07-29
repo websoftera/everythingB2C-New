@@ -214,9 +214,12 @@ $parentCategories = getParentCategories();
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">Products (<?php echo $total_products; ?>)</h5>
                             <div class="d-flex gap-2">
-                                <button type="button" class="btn btn-success btn-sm" id="exportBtn" data-format="csv">
-                                    <i class="fas fa-download"></i> Export
-                                </button>
+                                <a href="export_products.php" class="btn btn-success btn-sm">
+                                    <i class="fas fa-download"></i> Export CSV
+                                </a>
+                                <a href="import_products.php" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-upload"></i> Import CSV
+                                </a>
                             </div>
                         </div>
                         <div class="card-body">

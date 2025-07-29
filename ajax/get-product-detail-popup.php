@@ -72,7 +72,7 @@ function abs_img($rel) {
       </div>
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
         <button type="button" class="btn-qty btn-qty-minus" style="width:36px;height:36px;font-size:1.3em;background:#f5f5f5;border:none;border-radius:4px;" aria-label="Decrease quantity" id="popupQtyMinus">-</button>
-        <input type="number" id="popupQtyInput" value="<?php echo $cartQty; ?>" min="1" style="width:48px;text-align:center;font-size:1.1em;border:1px solid #ddd;border-radius:4px;height:36px;">
+        <input type="number" id="popupQtyInput" value="<?php echo $cartQty; ?>" min="1" max="99" style="width:48px;text-align:center;font-size:1.1em;border:1px solid #ddd;border-radius:4px;height:36px;">
         <button type="button" class="btn-qty btn-qty-plus" style="width:36px;height:36px;font-size:1.3em;background:#f5f5f5;border:none;border-radius:4px;" aria-label="Increase quantity" id="popupQtyPlus">+</button>
         <button id="popupAddToCartBtn" class="btn btn-dark" style="margin-left:10px;padding:8px 24px;font-weight:600;letter-spacing:0.5px;">ADD TO CART</button>
       </div>

@@ -29,6 +29,11 @@ class RealTimeMaxQuantityChecker {
             return;
         }
 
+        // Skip floating cart inputs - they have their own logic
+        if (input.classList.contains('cart-qty-input')) {
+            return;
+        }
+
         // Get product ID from the input or its parent elements
         const productId = this.getProductIdFromInput(input);
         
@@ -111,6 +116,12 @@ class RealTimeMaxQuantityChecker {
         if (!productId) {
             return;
         }
+        
+        // Skip validation for floating cart inputs - they have their own logic
+        if (input.classList.contains('cart-qty-input')) {
+            return;
+        }
+        
         try {
             const response = await fetch('ajax/check_max_quantity.php', {
                 method: 'POST',
@@ -119,10 +130,16 @@ class RealTimeMaxQuantityChecker {
                 },
                 body: `product_id=${productId}&quantity=${quantity}`
             });
+            const allowedQuantity = 99; // Default max if not set
             const result = await response.json();
-            if (result.error && result.max_quantity) {
+            if (result.error && result.max_quantity ||  quantity > allowedQuantity) {
                 // Limit the input value and show SweetAlert
-                input.value = result.max_quantity;
+                if(!result.max_quantity && quantity > allowedQuantity) {
+                    input.value = allowedQuantity;
+                    result.message = `Maximum quantity is ${allowedQuantity}.`;
+                } else {
+                    input.value = result.max_quantity;
+                }
                 if (typeof Swal !== 'undefined') {
                     Swal.fire({
                         icon: 'error',
@@ -131,19 +148,9 @@ class RealTimeMaxQuantityChecker {
                         timer: 4000,
                         showConfirmButton: false
                     });
-                                            } else {
-                                if (typeof Swal !== 'undefined') {
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Maximum quantity reached',
-                                        text: result.message,
-                                        timer: 4000,
-                                        showConfirmButton: false
-                                    });
-                                } else {
-                                    alert(result.message);
-                                }
-                            }
+                } else {
+                    alert(result.message);
+                }
             }
         } catch (error) {
             console.error('Error checking max quantity:', error);

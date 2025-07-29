@@ -86,7 +86,7 @@ foreach ($products as $product):
     <?php else: ?>
       <div class="shop-page-cart-actions">
         <button class="shop-page-add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">ADD TO CART</button>
-        <input type="number" class="shop-page-quantity-input" value="1" min="1">
+        <input type="number" class="shop-page-quantity-input" value="1" min="1" max="99" >
       </div>
     <?php endif; ?>
   </div>

@@ -8,6 +8,17 @@ function getAllCategories() {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+// Function to get all categories with real-time product counts
+function getAllCategoriesWithProductCount() {
+    global $pdo;
+    $stmt = $pdo->query("SELECT c.*, COUNT(p.id) as product_count 
+                         FROM categories c 
+                         LEFT JOIN products p ON c.id = p.category_id AND p.is_active = 1 
+                         GROUP BY c.id 
+                         ORDER BY c.name");
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 // Function to get parent categories only (categories with no parent or parent_id is null)
 function getParentCategories() {
     global $pdo;
