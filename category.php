@@ -25,8 +25,26 @@ if (!$category) {
 $pageTitle = $category['name'];
 require_once 'includes/header.php';
 
-// Get products in this category
-$products = getProductsByCategory($category['id']);
+// Get all descendant category IDs (including self)
+function getAllDescendantCategoryIds($categories, $parentId) {
+    $ids = [$parentId];
+    foreach ($categories as $cat) {
+        if ($cat['parent_id'] == $parentId) {
+            $ids = array_merge($ids, getAllDescendantCategoryIds($categories, $cat['id']));
+        }
+    }
+    return $ids;
+}
+
+$categories = getAllCategories();
+$categoryIds = getAllDescendantCategoryIds($categories, $category['id']);
+
+global $pdo;
+$in  = str_repeat('?,', count($categoryIds) - 1) . '?';
+$sql = "SELECT p.*, c.name as category_name FROM products p LEFT JOIN categories c ON p.category_id = c.id WHERE p.category_id IN ($in) AND p.is_active = 1 ORDER BY p.created_at DESC";
+$stmt = $pdo->prepare($sql);
+$stmt->execute($categoryIds);
+$products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Get user's wishlist for quick lookup
 $wishlist_ids = [];

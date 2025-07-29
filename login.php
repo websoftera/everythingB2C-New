@@ -33,7 +33,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['user_name'] = $user['name'];
                 // Merge guest cart into user cart
                 mergeSessionCartToUserCart($user['id']);
-                header('Location: myaccount.php');
+                $redirect = isset($_SESSION['redirect_after_login']) ? $_SESSION['redirect_after_login'] : 'myaccount.php';
+                unset($_SESSION['redirect_after_login']);
+                header('Location: ' . $redirect);
                 exit;
             } else {
                 $login_error = 'Invalid email or password';

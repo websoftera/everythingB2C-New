@@ -152,29 +152,109 @@ foreach ($orderItems as $item) {
     $total_discount += ($item['mrp'] - $item['selling_price']) * $item['quantity'];
 }
 
-// === MIDDLE SECTION (UNCHANGED) ===
+// Determine GST type based on shipping/billing state
+$maharashtra_states = ['maharashtra', 'maharastra', 'maha'];
+$order_state = strtolower(trim($order['state'] ?? ''));
+$is_maharashtra = in_array($order_state, $maharashtra_states);
+
+// Set GST column headers based on state
+$gst_col = $is_maharashtra ? 'GST' : 'IGST';
+$item_gst_col = $is_maharashtra ? 'Item GST' : 'Item IGST';
+$net_gst_col = $is_maharashtra ? 'Net GST' : 'Net IGST';
+
+// === MIDDLE SECTION (FORMATTED) ===
 $html .= '<h2>Invoice Details</h2>
 <table border="1" cellpadding="5" cellspacing="0" width="100%">
-<tr><th>Product</th><th>HSN</th><th>Qty</th><th>MRP</th><th>Price</th><th>Discount</th><th>Total</th></tr>';
+<tr><th>Sr.</th><th>Product</th><th>Product Name</th><th>HSN Code</th><th>Qty.</th><th>Unit</th><th>' . $gst_col . '</th><th>Item MRP</th><th>Item Price</th><th>' . $item_gst_col . '</th><th>Net Price</th><th>' . $net_gst_col . '</th><th>Total</th><th>Savings</th></tr>';
+
+$sr = 1;
+$total_net_price = 0;
+$total_net_gst = 0;
+$total_total = 0;
+$total_savings = 0;
+$gst_summary = [];
 foreach ($orderItems as $item) {
-    $item_discount = ($item['mrp'] - $item['selling_price']) * $item['quantity'];
-    $item_total = $item['selling_price'] * $item['quantity'];
-    $html .= '<tr>
-    <td>' . htmlspecialchars($item['name']) . '</td>
-    <td>' . htmlspecialchars($item['hsn']) . '</td>
-    <td>' . htmlspecialchars($item['quantity']) . '</td>
-    <td>₹' . number_format($item['mrp'], 2) . '</td>
-    <td>₹' . number_format($item['selling_price'], 2) . '</td>
-    <td>₹' . number_format($item_discount, 2) . '</td>
-    <td>₹' . number_format($item_total, 2) . '</td>
-    </tr>';
+    $gst_rate = isset($item['gst_rate']) ? (float)$item['gst_rate'] : 0;
+    // Force IGST if not Maharashtra
+    $gst_type = $is_maharashtra ? ($item['gst_type'] ?? 'sgst_cgst') : 'igst';
+    $qty = (int)$item['quantity'];
+    $unit = 'No.';
+    if (stripos($item['name'], 'shoes') !== false) $unit = 'Pair';
+    $item_mrp = (float)$item['mrp'];
+    $item_sp = (float)$item['selling_price'];
+    $item_price = $item_sp / (1 + ($gst_rate / 100));
+    $item_gst = $item_sp - $item_price;
+    $net_price = $item_price * $qty;
+    $net_gst = $item_gst * $qty;
+    $total = $net_price + $net_gst;
+    $savings = ($item_mrp - $item_sp) * $qty;
+    $total_net_price += $net_price;
+    $total_net_gst += $net_gst;
+    $total_total += $total;
+    $total_savings += $savings;
+    // GST summary by HSN
+    if (!isset($gst_summary[$item['hsn']])) {
+        $gst_summary[$item['hsn']] = [
+            'gst_rate' => $gst_rate,
+            'net_gst' => 0,
+            'cgst' => 0,
+            'sgst' => 0,
+            'igst' => 0
+        ];
+    }
+    if ($gst_type === 'sgst_cgst') {
+        $gst_summary[$item['hsn']]['cgst'] += $net_gst / 2;
+        $gst_summary[$item['hsn']]['sgst'] += $net_gst / 2;
+    } else {
+        $gst_summary[$item['hsn']]['igst'] += $net_gst;
+    }
+    $gst_summary[$item['hsn']]['net_gst'] += $net_gst;
+    $img_html = $item['main_image'] ? '<img src="./' . htmlspecialchars($item['main_image']) . '" style="height:40px;max-width:60px;object-fit:contain;" />' : '';
+    $html .= '<tr>';
+    $html .= '<td>' . $sr . '</td>';
+    $html .= '<td>' . $img_html . '</td>';
+    $html .= '<td>' . nl2br(htmlspecialchars($item['name'])) . '</td>';
+    $html .= '<td>' . htmlspecialchars($item['hsn']) . '</td>';
+    $html .= '<td>' . $qty . '</td>';
+    $html .= '<td>' . $unit . '</td>';
+    $html .= '<td>' . number_format($gst_rate, 2) . '%</td>';
+    $html .= '<td>' . number_format($item_mrp, 2) . '</td>';
+    $html .= '<td>' . number_format($item_price, 2) . '</td>';
+    $html .= '<td>' . number_format($item_gst, 2) . '</td>';
+    $html .= '<td>' . number_format($net_price, 2) . '</td>';
+    $html .= '<td>' . number_format($net_gst, 2) . '</td>';
+    $html .= '<td>' . number_format($total, 2) . '</td>';
+    $html .= '<td>' . number_format($savings, 2) . '</td>';
+    $html .= '</tr>';
+    $sr++;
 }
+$html .= '<tr style="font-weight:bold;background:#f5f5f5;"><td colspan="10" align="right">Total</td><td>' . number_format($total_net_price, 2) . '</td><td>' . number_format($total_net_gst, 2) . '</td><td>' . number_format($total_total, 2) . '</td><td>' . number_format($total_savings, 2) . '</td></tr>';
 $html .= '</table>';
 
-// Note: GST is included in the selling price
-$html .= '<p><b>Order Subtotal:</b> ₹' . number_format($order['subtotal'], 2) . '<br>';
-$html .= '<b>Shipping:</b> ₹' . number_format($order['shipping_charge'], 2) . '<br>';
-$html .= '<b>Total Paid:</b> ₹' . number_format($total, 2) . '</p>';
+// GST Summary Table
+$html .= '<br><h3>GST Summary</h3>';
+$html .= '<table border="1" cellpadding="5" cellspacing="0" width="60%"><tr><th>HSN Code</th><th>GST</th><th>CGST</th><th>SGST</th><th>IGST</th><th>Net GST</th></tr>';
+$total_cgst = $total_sgst = $total_igst = $total_gst = 0;
+foreach ($gst_summary as $hsn => $row) {
+    $html .= '<tr>';
+    $html .= '<td>' . htmlspecialchars($hsn) . '</td>';
+    $html .= '<td>' . number_format($row['gst_rate'], 2) . '%</td>';
+    $html .= '<td>' . number_format($row['cgst'], 2) . '</td>';
+    $html .= '<td>' . number_format($row['sgst'], 2) . '</td>';
+    $html .= '<td>' . ($row['igst'] > 0 ? number_format($row['igst'], 2) : '-') . '</td>';
+    $html .= '<td>' . number_format($row['net_gst'], 2) . '</td>';
+    $html .= '</tr>';
+    $total_cgst += $row['cgst'];
+    $total_sgst += $row['sgst'];
+    $total_igst += $row['igst'];
+    $total_gst += $row['net_gst'];
+}
+$html .= '<tr style="font-weight:bold;background:#f5f5f5;"><td colspan="2">Total GST</td><td>' . number_format($total_cgst, 2) . '</td><td>' . number_format($total_sgst, 2) . '</td><td>' . ($total_igst > 0 ? number_format($total_igst, 2) : '-') . '</td><td>' . number_format($total_gst, 2) . '</td></tr>';
+$html .= '</table>';
+
+// Total Invoice Value
+$html .= '<br><b>Total Invoice Value:</b> ' . number_format($total_total, 2) . '<br>';
+$html .= '<b>Total Invoice Value in Words:</b> ' . numberToWords($total_total) . ' Rupees Only<br>';
 
 // Helper function to convert number to words (Indian style)
 function numberToWords($number)

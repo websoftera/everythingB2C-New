@@ -336,24 +336,45 @@ document.body.addEventListener('click', function(e) {
 
 // Global handler for direct quantity input changes
 // (for cart items, update cart via AJAX)
-document.body.addEventListener('change', function(e) {
+document.body.addEventListener('change', async function(e) {
   const input = e.target;
-  if (!input.classList.contains('quantity-input')) return;
-  let value = parseInt(input.value, 10) || 1;
-  input.value = value;
-  const cartId = input.dataset.cartId;
-  if (cartId) {
-    fetch('ajax/update-cart.php', {
+  if (!input.classList.contains('cart-qty-input')) return;
+  const value = parseInt(input.value, 10) || 1;
+  // Try to get product_id from data attribute or parent
+  let productId = input.dataset.productId;
+  if (!productId) {
+    // Try to find from parent card or container
+    const card = input.closest('[data-product-id]');
+    if (card) productId = card.getAttribute('data-product-id');
+  }
+  if (!productId) return;
+  // Check max quantity via AJAX
+  try {
+    const formData = new URLSearchParams();
+    formData.append('product_id', productId);
+    formData.append('quantity', value);
+    const response = await fetch('ajax/check_max_quantity.php', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ cart_id: cartId, quantity: value })
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data.success) {
-        window.dispatchEvent(new Event('cart-updated'));
-      }
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: formData.toString()
     });
+    const result = await response.json();
+    if (result.error && result.max_quantity) {
+      input.value = result.max_quantity;
+      if (typeof Swal !== 'undefined') {
+        Swal.fire({
+          icon: 'error',
+          title: 'Maximum quantity reached',
+          text: result.message,
+          timer: 4000,
+          showConfirmButton: false
+        });
+      } else {
+        alert(result.message);
+      }
+    }
+  } catch (err) {
+    console.error('Error checking max quantity:', err);
   }
 });
 

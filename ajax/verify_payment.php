@@ -11,6 +11,7 @@ if (!isLoggedIn()) {
         echo json_encode(['success' => false, 'message' => 'Unauthorized']);
         exit;
     } else {
+        $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
         header('Location: ../login.php');
         exit;
     }

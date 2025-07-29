@@ -85,7 +85,7 @@ require_once 'includes/header.php';
                                     </a>
                                 </div>
                                 <div style="flex:0 0 90px; min-width:60px; font-size:0.93em; color:#888; text-align:center;"> <s><?php echo formatPrice($item['mrp']); ?></s> </div>
-                                <div style="flex:0 0 90px; min-width:60px; font-size:0.97em; color:#007bff; font-weight:500; text-align:center;"> <?php echo formatPrice($item['selling_price']); ?> </div>
+                                <div style="flex:0 0 90px; min-width:60px; font-size:0.97em; color:#007bff; font-weight:500; text-align:center;"> <?php echo formatPrice($item['selling_price'] * $item['quantity']); ?> </div>
                                 <div style="flex:0 0 90px; min-width:60px; font-size:0.93em; color:#23a036; text-align:center;"> <?php echo formatPrice(($item['mrp'] - $item['selling_price']) * $item['quantity']); ?> </div>
                                 <div style="flex:0 0 80px; min-width:50px; text-align:center;">
                                     <div class="quantity-control d-inline-flex align-items-center justify-content-center">
@@ -113,9 +113,9 @@ require_once 'includes/header.php';
                     </div>
                     <div class="card-body">
                         <div class="floating-cart-summary-box" style="border:1px solid #cfd8dc;border-radius:8px;padding:16px 16px 8px 16px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:10px;">
-                                      <div class="d-flex justify-content-between mb-2"><span class="text-muted">Total MRP</span><span style="font-weight:600;text-decoration:line-through;">₹<?php echo number_format($orderTotals['total_mrp'], 0); ?></span></div>
-                                      <div class="d-flex justify-content-between mb-2"><span class="text-muted">You Pay</span><span style="font-weight:600;">₹<?php echo number_format($orderTotals['subtotal'], 0); ?></span></div>
-                                                  <div class="d-flex justify-content-between mb-2"><span class="text-muted">Savings</span><span class="fw-bold" style="color:#2e7d32;">₹<?php
+                                      <div class="d-flex justify-content-between mb-2"><span class="text-muted">Total MRP</span><span class="cart-summary-total-mrp" style="font-weight:600;text-decoration:line-through;">₹<?php echo number_format($orderTotals['total_mrp'], 0); ?></span></div>
+                                      <div class="d-flex justify-content-between mb-2"><span class="text-muted">You Pay</span><span class="cart-summary-you-pay" style="font-weight:600;">₹<?php echo number_format($orderTotals['subtotal'], 0); ?></span></div>
+                                                  <div class="d-flex justify-content-between mb-2"><span class="text-muted">Savings</span><span class="cart-summary-savings fw-bold" style="color:#2e7d32;">₹<?php
                                 $total_savings = 0;
                                 foreach ($cartItems as $item) {
                                     $total_savings += ($item['mrp'] - $item['selling_price']) * $item['quantity'];
@@ -210,19 +210,52 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Update item total
-                    if (itemTotalElem && unitPrice) {
-                        itemTotalElem.textContent = formatPrice(unitPrice * quantity);
-                    }
-                    updateCartPageSummary();
-                    updateFloatingCartCount();
+                    // Fetch updated cart summary and items
+                    fetch('ajax/get-cart-summary.php?details=1')
+                        .then(res => res.json())
+                        .then(summary => {
+                            if (summary.success && summary.cartItems) {
+                                summary.cartItems.forEach(function(item) {
+                                    // Find the cart row by cart id
+                                    var row = document.querySelector('.cart-item-row input[data-cart-id="' + item.id + '"]').closest('.cart-item-row');
+                                    if (row) {
+                                        // Update You Pay (total)
+                                        var youPayCell = row.children[3];
+                                        if (youPayCell) {
+                                            youPayCell.textContent = item.selling_price * item.quantity;
+                                        }
+                                        // Update You Save
+                                        var youSaveCell = row.children[4];
+                                        if (youSaveCell) {
+                                            youSaveCell.textContent = (item.mrp - item.selling_price) * item.quantity;
+                                        }
+                                        // Update Total
+                                        var totalCell = row.children[6];
+                                        if (totalCell) {
+                                            totalCell.textContent = item.selling_price * item.quantity;
+                                        }
+                                    }
+                                });
+                                // Update summary
+                                document.querySelectorAll('.cart-summary-you-pay').forEach(function(el) {
+                                    el.textContent = '₹' + Number(summary.totals.subtotal).toLocaleString('en-IN');
+                                });
+                                document.querySelectorAll('.cart-summary-total-mrp').forEach(function(el) {
+                                    el.textContent = '₹' + Number(summary.totals.total_mrp).toLocaleString('en-IN');
+                                });
+                                document.querySelectorAll('.cart-summary-savings').forEach(function(el) {
+                                    el.textContent = '₹' + Number(summary.totals.total_savings).toLocaleString('en-IN');
+                                });
+                            }
+                        });
+                    // updateCartPageSummary();
+                    // updateFloatingCartCount();
                     // Update order summary
                     // fetch('ajax/get-cart-summary.php') // This line is now handled by updateCartPageSummary()
                     //     .then(res => res.json())
                     //     .then(summary => {
                     //         if (summary.success) {
                     //             const totals = summary.totals;
-                    //             document.getElementById('cart-subtotal').textContent = formatPrice(totals.subtotal);
                     //             document.getElementById('cart-shipping').textContent = (totals.total_shipping > 0) ? formatPrice(totals.total_shipping) : 'Free';
                     //             document.getElementById('cart-gst').textContent = formatPrice(totals.total_gst);
                     //             document.getElementById('cart-grandtotal').textContent = isNaN(totals.grand_total) ? formatPrice(0) : formatPrice(totals.grand_total);

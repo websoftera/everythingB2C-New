@@ -4,6 +4,13 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require_once 'includes/functions.php';
 
+// Helper: Use this snippet for authentication checks
+// if (!isLoggedIn()) {
+//     $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
+//     header('Location: login.php');
+//     exit;
+// }
+
 // Build $wishlist_ids for both logged-in and guest users
 $wishlist_ids = [];
 if (isLoggedIn()) {
