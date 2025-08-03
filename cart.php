@@ -242,13 +242,13 @@ document.addEventListener('DOMContentLoaded', function() {
                                 });
                                 // Update summary
                                 document.querySelectorAll('.cart-summary-you-pay').forEach(function(el) {
-                                    el.textContent = '₹' + Number(summary.totals.subtotal).toLocaleString('en-IN');
+                                    el.textContent = '₹ ' + Number(summary.totals.subtotal).toLocaleString('en-IN');
                                 });
                                 document.querySelectorAll('.cart-summary-total-mrp').forEach(function(el) {
-                                    el.textContent = '₹' + Number(summary.totals.total_mrp).toLocaleString('en-IN');
+                                    el.textContent = '₹ ' + Number(summary.totals.total_mrp).toLocaleString('en-IN');
                                 });
                                 document.querySelectorAll('.cart-summary-savings').forEach(function(el) {
-                                    el.textContent = '₹' + Number(summary.totals.total_savings).toLocaleString('en-IN');
+                                    el.textContent = '₹ ' + Number(summary.totals.total_savings).toLocaleString('en-IN');
                                 });
                             }
                         });
@@ -334,8 +334,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function formatPrice(amount) {
-    if (isNaN(amount) || amount === null || amount === undefined) return '₹0';
-    return '₹' + parseFloat(amount).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+    if (isNaN(amount) || amount === null || amount === undefined) return '₹ 0';
+    return '₹ ' + parseFloat(amount).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0});
 }
 
 // Add this helper function to update the price summary on the cart page
@@ -352,9 +352,9 @@ function updateCartPageSummary() {
             if (summary.success) {
                 const totals = summary.totals;
                 summaryBox.innerHTML = `
-                  <div class="d-flex justify-content-between mb-2"><span class="text-muted">Total MRP</span><span style="font-weight:600;text-decoration:line-through;">₹${parseFloat(totals.total_mrp || totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-                  <div class="d-flex justify-content-between mb-2"><span class="text-muted">You Pay</span><span style="font-weight:600;">₹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-                  <div class="d-flex justify-content-between mb-2"><span class="text-muted">Savings</span><span class="fw-bold" style="color:#2e7d32;">₹${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+                  <div class="d-flex justify-content-between mb-2"><span class="text-muted">Total MRP</span><span style="font-weight:600;text-decoration:line-through;">₹ ${parseFloat(totals.total_mrp || totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+                  <div class="d-flex justify-content-between mb-2"><span class="text-muted">You Pay</span><span style="font-weight:600;">₹ ${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+                  <div class="d-flex justify-content-between mb-2"><span class="text-muted">Savings</span><span class="fw-bold" style="color:#2e7d32;">₹ ${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
                   <div class="d-flex justify-content-between mb-2"><span class="text-muted">Delivery Charge <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
                   <div class="d-grid mt-3 mb-2">
                     <a href='checkout.php' class='btn btn-success btn-lg fw-bold' style='font-size:1.08rem;'>PROCEED TO CHECKOUT</a>

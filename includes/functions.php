@@ -1,6 +1,33 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
 
+// Function to get cart summary for header display
+function getCartSummary() {
+    $total_items = 0;
+    $total_amount = 0;
+    
+    if (isset($_SESSION['user_id'])) {
+        // User is logged in, get cart from database
+        $cartItems = getCartItems($_SESSION['user_id']);
+        foreach ($cartItems as $item) {
+            $total_items += $item['quantity'];
+            $total_amount += ($item['selling_price'] * $item['quantity']);
+        }
+    } else {
+        // User is not logged in, get cart from session
+        $sessionCart = getSessionCartItems();
+        foreach ($sessionCart as $item) {
+            $total_items += $item['quantity'];
+            $total_amount += ($item['selling_price'] * $item['quantity']);
+        }
+    }
+    
+    return [
+        'total_items' => $total_items,
+        'total_amount' => $total_amount
+    ];
+}
+
 // Function to get all categories
 function getAllCategories() {
     global $pdo;
@@ -17,6 +44,52 @@ function getAllCategoriesWithProductCount() {
                          GROUP BY c.id 
                          ORDER BY c.name");
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// Function to get all categories with recursive product counts (including subcategories)
+function getAllCategoriesWithRecursiveProductCount() {
+    global $pdo;
+    
+    // First, get all categories
+    $stmt = $pdo->query("SELECT * FROM categories ORDER BY name");
+    $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Create a map of category IDs to their recursive product counts
+    $categoryProductCounts = [];
+    
+    foreach ($categories as $category) {
+        $categoryProductCounts[$category['id']] = getRecursiveProductCount($category['id']);
+    }
+    
+    // Update the categories array with recursive counts
+    foreach ($categories as &$category) {
+        $category['product_count'] = $categoryProductCounts[$category['id']];
+    }
+    
+    return $categories;
+}
+
+// Helper function to recursively count products in a category and all its subcategories
+function getRecursiveProductCount($categoryId) {
+    global $pdo;
+    
+    // Get direct products in this category
+    $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM products WHERE category_id = ? AND is_active = 1");
+    $stmt->execute([$categoryId]);
+    $directCount = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
+    
+    // Get all subcategories
+    $stmt = $pdo->prepare("SELECT id FROM categories WHERE parent_id = ?");
+    $stmt->execute([$categoryId]);
+    $subcategories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Recursively count products in subcategories
+    $subcategoryCount = 0;
+    foreach ($subcategories as $subcategory) {
+        $subcategoryCount += getRecursiveProductCount($subcategory['id']);
+    }
+    
+    return $directCount + $subcategoryCount;
 }
 
 // Function to get parent categories only (categories with no parent or parent_id is null)
@@ -159,12 +232,22 @@ function getRelatedProducts($productId, $categoryId, $limit = 4) {
 function searchProducts($query, $limit = 20) {
     global $pdo;
     $searchTerm = "%$query%";
+    
+    // Enhanced search query that includes category names and their parent/grandparent categories
     $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug FROM products p 
             LEFT JOIN categories c ON p.category_id = c.id 
-            WHERE (p.name LIKE ? OR p.description LIKE ?) AND p.is_active = 1 
+            WHERE (p.name LIKE ? OR p.description LIKE ? OR c.name LIKE ? OR EXISTS (
+                SELECT 1 FROM categories parent 
+                WHERE parent.id = c.parent_id AND parent.name LIKE ?
+            ) OR EXISTS (
+                SELECT 1 FROM categories grandparent 
+                JOIN categories parent ON parent.parent_id = grandparent.id 
+                WHERE parent.id = c.parent_id AND grandparent.name LIKE ?
+            )) AND p.is_active = 1 
             ORDER BY p.name LIMIT " . (int)$limit;
+    
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$searchTerm, $searchTerm]);
+    $stmt->execute([$searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
@@ -174,9 +257,19 @@ function calculateDiscountPercentage($mrp, $sellingPrice) {
     return round((($mrp - $sellingPrice) / $mrp) * 100);
 }
 
+// Function to clean product name (remove HTML entities and tags)
+function cleanProductName($name) {
+    // Decode HTML entities first
+    $cleaned = html_entity_decode($name, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    // Remove any remaining HTML tags
+    $cleaned = strip_tags($cleaned);
+    // Trim whitespace
+    return trim($cleaned);
+}
+
 // Function to format price
 function formatPrice($price) {
-    return '₹' . number_format($price, 0);
+    return '₹ ' . number_format($price, 0, '.', '');
 }
 
 // Function to check if user is logged in

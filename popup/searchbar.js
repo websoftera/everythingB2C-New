@@ -66,8 +66,26 @@
     debounceTimeout = setTimeout(doSearch, 300);
   });
 
-  // Search on button click
-  searchBtn.addEventListener('click', doSearch);
+  // Search on button click - redirect to search page
+  searchBtn.addEventListener('click', function() {
+    const query = searchInput.value.trim();
+    if (query) {
+      // Redirect to search page with the query
+      window.location.href = 'search.php?q=' + encodeURIComponent(query);
+    }
+  });
+
+  // Also handle Enter key press to redirect to search page
+  searchInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const query = searchInput.value.trim();
+      if (query) {
+        // Redirect to search page with the query
+        window.location.href = 'search.php?q=' + encodeURIComponent(query);
+      }
+    }
+  });
 
   // Navigate to product page on result click
   resultsPopup.addEventListener('click', function(e) {

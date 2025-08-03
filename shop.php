@@ -148,15 +148,15 @@ echo renderBreadcrumb($breadcrumbs);
                   <div class="discount-banner">SAVE ₹<?php echo $product['mrp'] - $product['selling_price']; ?> (<?php echo $product['discount_percentage']; ?>% OFF)</div>
                 <?php endif; ?>
                 <div class="product-image">
-                  <a href="product.php?slug=<?php echo $product['slug']; ?>">
-                    <img src="./<?php echo $product['main_image']; ?>" alt="<?php echo $product['name']; ?>">
-                  </a>
-                  <?php if ($isOutOfStock): ?>
-                    <div class="out-of-stock">OUT OF STOCK</div>
-                  <?php endif; ?>
+                    <a href="product.php?slug=<?php echo $product['slug']; ?>">
+                        <img src="./<?php echo $product['main_image']; ?>" alt="<?php echo cleanProductName($product['name']); ?>">
+                    </a>
+                    <?php if ($isOutOfStock): ?>
+                        <div class="out-of-stock">OUT OF STOCK</div>
+                    <?php endif; ?>
                 </div>
                 <div class="product-details">
-                  <h3><?php echo strtoupper($product['name']); ?></h3>
+                    <h3><?php echo strtoupper(cleanProductName($product['name'])); ?></h3>
                   <div class="price-buttons">
                     <button class="mrp"><span class="label">MRP</span> <span class="value">₹<?php echo number_format($product['mrp'],0); ?></span></button>
                     <button class="pay"><span class="label">PAY</span> <span class="value">₹<?php echo number_format($product['selling_price'],0); ?></span></button>

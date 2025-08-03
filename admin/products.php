@@ -262,9 +262,9 @@ $parentCategories = getParentCategories();
                                                         </td>
                                                         <td>
                                                             <?php if ($product['main_image']): ?>
-                                                                <img src="../<?php echo $product['main_image']; ?>" 
-                                                                     alt="<?php echo htmlspecialchars($product['name']); ?>"
-                                                                     class="img-preview">
+                                                                <img src="../../<?php echo $product['main_image']; ?>" 
+                                                                     alt="<?php echo cleanProductName($product['name']); ?>" 
+                                                                     style="width:50px;height:50px;object-fit:cover;border-radius:4px;">
                                                             <?php else: ?>
                                                                 <div class="img-preview bg-light d-flex align-items-center justify-content-center">
                                                                     <i class="fas fa-image text-muted"></i>
@@ -272,7 +272,7 @@ $parentCategories = getParentCategories();
                                                             <?php endif; ?>
                                                         </td>
                                                         <td>
-                                                            <strong><?php echo htmlspecialchars($product['name']); ?></strong>
+                                                            <strong><?php echo cleanProductName($product['name']); ?></strong>
                                                             <br>
                                                             <small class="text-muted">SKU: <?php echo htmlspecialchars($product['sku']); ?></small>
                                                             <br>

@@ -59,14 +59,14 @@ foreach ($products as $product):
   <?php endif; ?>
   <div class="shop-page-product-image">
     <a href="product.php?slug=<?php echo $product['slug']; ?>">
-      <img src="./<?php echo $product['main_image']; ?>" alt="<?php echo $product['name']; ?>">
+      <img src="./<?php echo $product['main_image']; ?>" alt="<?php echo cleanProductName($product['name']); ?>">
     </a>
     <?php if ($isOutOfStock): ?>
       <div class="shop-page-out-of-stock">OUT OF STOCK</div>
     <?php endif; ?>
   </div>
   <div class="shop-page-product-details">
-    <h3><?php echo strtoupper($product['name']); ?></h3>
+    <h3><?php echo strtoupper(cleanProductName($product['name'])); ?></h3>
     <div class="shop-page-price-buttons">
       <div class="shop-page-price-btn mrp">
         <span class="label">MRP</span>

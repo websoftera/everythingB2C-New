@@ -272,12 +272,12 @@ foreach ($daily_sales as $day) {
                                                             <td>
                                                                 <div class="d-flex align-items-center">
                                                                     <?php if ($product['main_image']): ?>
-                                                                        <img src="../<?php echo $product['main_image']; ?>" 
-                                                                             alt="<?php echo htmlspecialchars($product['name']); ?>"
-                                                                             class="img-preview me-3">
+                                                                        <img src="../../<?php echo $product['main_image']; ?>" 
+                                                                             alt="<?php echo cleanProductName($product['name']); ?>" 
+                                                                             style="width:50px;height:50px;object-fit:cover;border-radius:4px;">
                                                                     <?php endif; ?>
                                                                     <div>
-                                                                        <strong><?php echo htmlspecialchars($product['name']); ?></strong>
+                                                                        <strong><?php echo cleanProductName($product['name']); ?></strong>
                                                                     </div>
                                                                 </div>
                                                             </td>
@@ -405,8 +405,4 @@ foreach ($daily_sales as $day) {
         function exportReport() {
             const dateFrom = document.querySelector('input[name="date_from"]').value;
             const dateTo = document.querySelector('input[name="date_to"]').value;
-            window.open(`export_report.php?date_from=${dateFrom}&date_to=${dateTo}`, '_blank');
-        }
-    </script>
-</body>
-</html> 
+            window.open(`

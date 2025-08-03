@@ -43,10 +43,10 @@ try {
         echo '<td>';
         echo '<div class="d-flex align-items-center">';
         if ($item['main_image']) {
-            echo '<img src="../../' . htmlspecialchars($item['main_image']) . '" alt="' . htmlspecialchars($item['product_name']) . '" class="img-preview me-2">';
+            echo '<img src="../../' . htmlspecialchars($item['main_image']) . '" alt="' . cleanProductName($item['product_name']) . '" class="img-preview me-2">';
         }
         echo '<div>';
-        echo '<strong>' . htmlspecialchars($item['product_name']) . '</strong><br>';
+        echo '<strong>' . cleanProductName($item['product_name']) . '</strong><br>';
         echo '<small class="text-muted">SKU: ' . htmlspecialchars($item['slug']) . '</small>';
         echo '</div>';
         echo '</div>';

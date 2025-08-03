@@ -674,7 +674,7 @@ h3{
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
+  padding: 3rem;
   color: white;
   font-weight: normal;
   font-size: 14px; /* default font size */
@@ -733,12 +733,18 @@ h3{
   box-shadow: none !important;
 }
 
+.index-main-section{
+  background:#e5f8fd;
+}
 /* Product Carousel Wrapper - Matching Live Site */
 .product-carousel-wrapper {
   position: relative;
   width: 100%;
-  max-width: 95vw;
-  margin: 0 auto 30px;
+  max-width: 100%;
+  margin: 0 auto;
+  max-width: 1300px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* Navigation Buttons - Matching Live Site */
@@ -770,11 +776,13 @@ h3{
 }
 
 .nav-btn.prev {
-  left: 10px;
+  left: 0px;
+  color: rgb(215, 215, 215) !important;
 }
 
 .nav-btn.next {
-  right: 10px;
+  right: 0px;
+  color: rgb(215, 215, 215) !important;
 }
 
 /* Container for all cards */
@@ -1068,8 +1076,9 @@ input[type="checkbox"]:checked + .wishlist-label i {
 
 /* Category Section - Matching Live Site */
 .category-section {
-  padding: 10px;
+  padding: 10px 0;
   width: auto;
+  background: #faffe8;
 }
 
 .category-wrapper {
@@ -1077,6 +1086,9 @@ input[type="checkbox"]:checked + .wishlist-label i {
   align-items: center;
   overflow: hidden;
   position: relative;
+  max-width: 1300px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .category-container {
@@ -1116,6 +1128,7 @@ input[type="checkbox"]:checked + .wishlist-label i {
   display: block;
   margin: 0 auto;
   flex-shrink: 0;
+  border-radius: 50%;
 }
 
 .category-card p{
@@ -1138,13 +1151,13 @@ input[type="checkbox"]:checked + .wishlist-label i {
 }
 
 .nav-btn {
-  background-color: white;
-  border: 1px solid #aaa;
-  border-radius: 50%;
-  font-size: 2rem;
+  background: rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid #16BAE4;
+  border-radius: 2px !important;
+  font-size: 22px;
   cursor: pointer;
-  width: 40px;
-  height: 40px;
+  width: 20px;
+  height: 30px;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -1152,11 +1165,13 @@ input[type="checkbox"]:checked + .wishlist-label i {
 }
 
 .prev-btn {
-  left: 5px;
+  left: 0;
+  color: white !important;
 }
 
 .next-btn {
-  right: 5px;
+  right: 0;
+  color: white !important;
 }
 
 /* Hide nav buttons on small screens */
@@ -1173,7 +1188,7 @@ input[type="checkbox"]:checked + .wishlist-label i {
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 20px;
-  padding: 20px 40px;
+  padding: 70px 40px;
   margin: auto;
 }
 

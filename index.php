@@ -3,9 +3,9 @@ $pageTitle = 'Home';
 require_once 'includes/header.php';
 
 // Get data from database
-$categories = getAllCategoriesWithProductCount();
+$categories = getAllCategoriesWithRecursiveProductCount();
 $featuredProducts = getFeaturedProducts(8);
-$discountedProducts = getDiscountedProducts(8);
+$discountedProducts = getDiscountedProducts(4);
 
 // Get user's wishlist for quick lookup
 $wishlist_ids = [];
@@ -118,10 +118,10 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
     <h5 class="header-title">Products Offering Discount</h5>
     <a href="products.php?discounted=1"><button class="P-Button">View All<span> &gt;</span></button></a>
 </section>
-
+<div class="index-main-section">
 <div class="product-carousel-wrapper">
     <button class="nav-btn prev">&#10094;</button>
-    <section id="product">
+    <section id="discounted-products">
         <?php foreach ($discountedProducts as $product): 
             $inWishlist = in_array($product['id'], $wishlist_ids);
             $isOutOfStock = ($product['stock_quantity'] <= 0);
@@ -132,14 +132,20 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                 <?php endif; ?>
                 <div class="product-image">
                     <a href="product.php?slug=<?php echo $product['slug']; ?>">
-                        <img src="./<?php echo $product['main_image']; ?>" alt="<?php echo $product['name']; ?>">
+                        <?php if (!empty($product['main_image']) && file_exists('./' . $product['main_image'])): ?>
+                            <img src="./<?php echo $product['main_image']; ?>" alt="<?php echo cleanProductName($product['name']); ?>">
+                        <?php else: ?>
+                            <div style="background: #f8f9fa; height: 200px; display: flex; align-items: center; justify-content: center; border: 1px dashed #dee2e6;">
+                                <small style="color: #6c757d;">Image not found: <?php echo $product['main_image'] ?? 'No image path'; ?></small>
+                            </div>
+                        <?php endif; ?>
                     </a>
                     <?php if ($isOutOfStock): ?>
                         <div class="out-of-stock">OUT OF STOCK</div>
                     <?php endif; ?>
                 </div>
                 <div class="product-details">
-                    <h3><?php echo strtoupper($product['name']); ?></h3>
+                    <h3><?php echo strtoupper(cleanProductName($product['name'])); ?></h3>
                     <div class="price-buttons">
                         <div class="price-btn mrp">
                             <span class="label">MRP</span>
@@ -150,8 +156,8 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                             <span class="value"><?php echo formatPrice($product['selling_price']); ?></span>
                         </div>
                         <div class="wishlist">
-                            <input type="checkbox" class="heart-checkbox" id="wishlist-checkbox-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>" <?php if ($inWishlist) echo 'checked'; ?>>
-                            <label for="wishlist-checkbox-<?php echo $product['id']; ?>" class="wishlist-label"><i class="fas fa-heart"></i></label>
+                            <input type="checkbox" class="heart-checkbox" id="wishlist-checkbox-discounted-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>" <?php if ($inWishlist) echo 'checked'; ?>>
+                            <label for="wishlist-checkbox-discounted-<?php echo $product['id']; ?>" class="wishlist-label"><i class="fas fa-heart"></i></label>
                         </div>
                     </div>
                     <?php if ($isOutOfStock): ?>
@@ -163,7 +169,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                                 <input type="number" class="quantity-input" value="1" min="1" max="99" data-product-id="<?php echo $product['id']; ?>">
                                 <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
                             </div>
-                            <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">Add to Cart</button>
+                            <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">ADD TO CART</button>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -171,6 +177,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
         <?php endforeach; ?>
     </section>
     <button class="nav-btn next">&#10095;</button>
+</div>
 </div>
 
 <!-- Featured Products Section -->
@@ -191,6 +198,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
     </div>
 <?php endif; ?>
 
+<div class="index-main-section">
 <div class="product-carousel-wrapper">
     <button class="nav-btn prev">&#10094;</button>
     <section id="featured-products">
@@ -205,7 +213,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                 <div class="product-image">
                     <a href="product.php?slug=<?php echo $product['slug']; ?>">
                         <?php if (!empty($product['main_image']) && file_exists('./' . $product['main_image'])): ?>
-                            <img src="./<?php echo $product['main_image']; ?>" alt="<?php echo $product['name']; ?>">
+                            <img src="./<?php echo $product['main_image']; ?>" alt="<?php echo cleanProductName($product['name']); ?>">
                         <?php else: ?>
                             <div style="background: #f8f9fa; height: 200px; display: flex; align-items: center; justify-content: center; border: 1px dashed #dee2e6;">
                                 <small style="color: #6c757d;">Image not found: <?php echo $product['main_image'] ?? 'No image path'; ?></small>
@@ -217,7 +225,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                     <?php endif; ?>
                 </div>
                 <div class="product-details">
-                    <h3><?php echo strtoupper($product['name']); ?></h3>
+                    <h3><?php echo strtoupper(cleanProductName($product['name'])); ?></h3>
                     <div class="price-buttons">
                         <div class="price-btn mrp">
                             <span class="label">MRP</span>
@@ -249,6 +257,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
         <?php endforeach; ?>
     </section>
     <button class="nav-btn next">&#10095;</button>
+</div>
 </div>
 
 <section class="service-section">
@@ -435,6 +444,87 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   }
   
   #featured-products .product-card .product-image {
+    height: 180px !important;
+  }
+}
+
+/* Discounted Products - Same structure as Featured Products */
+#discounted-products {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  overflow-x: auto !important;
+  scroll-behavior: smooth !important;
+  gap: 15px !important;
+  padding: 20px !important;
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+#discounted-products::-webkit-scrollbar {
+  display: none !important;
+}
+
+#discounted-products .product-card {
+  flex: 0 0 auto !important;
+  width: 280px !important;
+  min-width: 280px !important;
+  max-width: 280px !important;
+}
+
+/* Mobile responsive for discounted products */
+@media (max-width: 767.98px) {
+  #discounted-products .product-card {
+    width: 250px !important;
+    min-width: 250px !important;
+    max-width: 250px !important;
+  }
+}
+
+/* Discounted Products - Image Display Fix */
+#discounted-products .product-card .product-image {
+  width: 100% !important;
+  height: 200px !important;
+  overflow: hidden !important;
+  position: relative !important;
+  display: block !important;
+}
+
+#discounted-products .product-card .product-image img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+#discounted-products .product-card .product-image a {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  text-decoration: none !important;
+}
+
+/* Ensure product cards are visible */
+#discounted-products .product-card {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  width: 280px !important;
+  min-width: 280px !important;
+  max-width: 280px !important;
+  margin: 0 10px !important;
+}
+
+/* Mobile responsive for discounted products */
+@media (max-width: 767.98px) {
+  #discounted-products .product-card {
+    width: 250px !important;
+    min-width: 250px !important;
+    max-width: 250px !important;
+  }
+  
+  #discounted-products .product-card .product-image {
     height: 180px !important;
   }
 }

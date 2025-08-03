@@ -49,16 +49,16 @@ function abs_img($rel) {
       <?php if ($discount > 0): ?>
         <div style="color:#23a036;font-weight:600;font-size:1.05em;margin-bottom:6px;">SAVE ₹<?php echo number_format($discount,0); ?><?php if ($discountPercent > 0): ?> (<?php echo $discountPercent; ?>% OFF)<?php endif; ?></div>
       <?php endif; ?>
-      <img id="popupMainImage" src="<?php echo abs_img($product['main_image']); ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" style="width:160px;height:160px;object-fit:contain;border-radius:8px;box-shadow:0 2px 8px #eee;">
+      <img id="popupMainImage" src="<?php echo abs_img($product['main_image']); ?>" alt="<?php echo cleanProductName($product['name']); ?>" style="width:160px;height:160px;object-fit:contain;border-radius:8px;box-shadow:0 2px 8px #eee;">
       <div style="display:flex;gap:6px;margin-top:10px;justify-content:center;flex-wrap:wrap;">
-        <img class="popup-thumb" src="<?php echo abs_img($product['main_image']); ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" style="width:38px;height:38px;object-fit:cover;border-radius:5px;border:2px solid #007bff;cursor:pointer;" onclick="document.getElementById('popupMainImage').src=this.src;">
+        <img class="popup-thumb" src="<?php echo abs_img($product['main_image']); ?>" alt="<?php echo cleanProductName($product['name']); ?>" style="width:38px;height:38px;object-fit:cover;border-radius:5px;border:2px solid #007bff;cursor:pointer;" onclick="document.getElementById('popupMainImage').src=this.src;">
         <?php foreach ($productImages as $img): if ($img['image_path'] !== $product['main_image']): ?>
-          <img class="popup-thumb" src="<?php echo abs_img($img['image_path']); ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" style="width:38px;height:38px;object-fit:cover;border-radius:5px;border:2px solid #eee;cursor:pointer;" onclick="document.getElementById('popupMainImage').src=this.src;">
+          <img class="popup-thumb" src="<?php echo abs_img($img['image_path']); ?>" alt="<?php echo cleanProductName($product['name']); ?>" style="width:38px;height:38px;object-fit:cover;border-radius:5px;border:2px solid #eee;cursor:pointer;" onclick="document.getElementById('popupMainImage').src=this.src;">
         <?php endif; endforeach; ?>
       </div>
     </div>
     <div style="flex:1 1 220px;min-width:0;">
-      <h2 style="margin:0 0 6px 0;font-size:1.35rem;font-weight:700;line-height:1.2;white-space:normal;"> <?php echo htmlspecialchars($product['name']); ?> </h2>
+      <h2 style="margin:0 0 6px 0;font-size:1.35rem;font-weight:700;line-height:1.2;white-space:normal;"> <?php echo cleanProductName($product['name']); ?> </h2>
       <div style="font-size:1em;color:#222;margin-bottom:2px;">
         <?php if (!empty($product['sku'])): ?><span><b>SKU:</b> <?php echo htmlspecialchars($product['sku']); ?></span><br><?php endif; ?>
         <?php if (!empty($product['hsn'])): ?><span><b>HSN:</b> <?php echo htmlspecialchars($product['hsn']); ?></span><br><?php endif; ?>

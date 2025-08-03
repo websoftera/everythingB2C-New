@@ -215,7 +215,7 @@ $pageTitle = 'Admin Dashboard';
                                             <?php foreach ($low_stock_products as $product): ?>
                                                 <div class="list-group-item d-flex justify-content-between align-items-center">
                                                     <div>
-                                                        <h6 class="mb-1"><?php echo htmlspecialchars($product['name']); ?></h6>
+                                                        <h6 class="mb-1"><?php echo cleanProductName($product['name']); ?></h6>
                                                         <small class="text-muted">Stock: <?php echo $product['stock_quantity']; ?></small>
                                                     </div>
                                                     <a href="edit_product.php?id=<?php echo $product['id']; ?>" class="btn btn-sm btn-warning">

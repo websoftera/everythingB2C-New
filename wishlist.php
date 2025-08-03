@@ -53,14 +53,14 @@ echo renderBreadcrumb($breadcrumbs);
                         <?php endif; ?>
                         <div class="product-image">
                             <a href="product.php?slug=<?php echo $item['slug']; ?>">
-                                <img src="./<?php echo $item['main_image']; ?>" alt="<?php echo $item['name']; ?>" class="img-fluid">
+                                <img src="./<?php echo $item['main_image']; ?>" alt="<?php echo cleanProductName($item['name']); ?>">
                             </a>
                             <?php if ($isOutOfStock): ?>
                                 <div class="out-of-stock">OUT OF STOCK</div>
                             <?php endif; ?>
                         </div>
                         <div class="product-details">
-                            <h3><?php echo strtoupper($item['name']); ?></h3>
+                            <h3><?php echo cleanProductName($item['name']); ?></h3>
                             <div class="price-buttons">
                                 <div class="price-btn mrp">
                                     <span class="label">MRP</span>

@@ -68,20 +68,20 @@ echo renderBreadcrumb($breadcrumbs);
         <?php endif; ?>
         <button class="zoom-icon-btn modern-zoom" id="zoomBtn" title="Zoom"><i class="fas fa-search-plus"></i></button>
         <div class="img-magnifier-container" id="mainImageContainer" style="position:relative;">
-            <img id="mainImage" src="<?php echo $product['main_image']; ?>" alt="<?php echo $product['name']; ?>" data-index="0" style="width:100%;max-width:400px;" />
+            <img id="mainImage" src="<?php echo $product['main_image']; ?>" alt="<?php echo cleanProductName($product['name']); ?>" data-index="0" style="width:100%;max-width:400px;" />
             <div id="magnifier" class="img-magnifier-glass" style="display:none;"></div>
         </div>
         <div class="thumbnail-row">
-            <img class="thumbnail" src="<?php echo $product['main_image']; ?>" alt="<?php echo $product['name']; ?>">
+            <img class="thumbnail" src="<?php echo $product['main_image']; ?>" alt="<?php echo cleanProductName($product['name']); ?>">
             <?php foreach ($productImages as $image): ?>
                 <?php if ($image['image_path'] !== $product['main_image']): ?>
-                    <img class="thumbnail" src="<?php echo $image['image_path']; ?>" alt="<?php echo $product['name']; ?>">
+                    <img class="thumbnail" src="<?php echo $image['image_path']; ?>" alt="<?php echo cleanProductName($product['name']); ?>">
                 <?php endif; ?>
             <?php endforeach; ?>
         </div>
     </div>
     <div class="product-info-section modern-info">
-        <h2 class="title"><?php echo $product['name']; ?></h2>
+        <h2 class="title"><?php echo cleanProductName($product['name']); ?></h2>
         <p><strong>SKU:</strong> <?php echo htmlspecialchars($product['sku']); ?></p>
         <?php if (!empty($product['hsn'])): ?>
             <div class="product-hsn"><strong>HSN:</strong> <?php echo htmlspecialchars($product['hsn']); ?></div>
@@ -344,11 +344,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     <?php endif; ?>
                     <div class="product-image">
                         <a href="product.php?slug=<?php echo $relatedProduct['slug']; ?>">
-                            <img src="./<?php echo $relatedProduct['main_image']; ?>" alt="<?php echo $relatedProduct['name']; ?>">
+                            <img src="./<?php echo $relatedProduct['main_image']; ?>" alt="<?php echo cleanProductName($relatedProduct['name']); ?>">
                         </a>
                     </div>
                     <div class="product-details">
-                        <h3><?php echo $relatedProduct['name']; ?></h3>
+                        <h3><?php echo cleanProductName($relatedProduct['name']); ?></h3>
                         <div class="price-buttons">
                             <button class="mrp" data-mrp="<?php echo $relatedProduct['mrp']; ?>">MRP <?php echo formatPrice($relatedProduct['mrp']); ?></button>
                             <button class="pay" data-pay="<?php echo $relatedProduct['selling_price']; ?>">PAY <?php echo formatPrice($relatedProduct['selling_price']); ?></button>

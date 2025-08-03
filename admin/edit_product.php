@@ -228,7 +228,7 @@ function uploadImage($file, $folder) {
                     <div class="row mb-4">
                         <div class="col-12">
                             <div class="d-flex justify-content-between align-items-center">
-                                <h1 class="h3 mb-0">Edit Product: <?php echo htmlspecialchars($product['name']); ?></h1>
+                                <h1 class="h3 mb-0">Edit Product: <?php echo cleanProductName($product['name']); ?></h1>
                                 <a href="products.php" class="btn btn-secondary">
                                     <i class="fas fa-arrow-left"></i> Back to Products
                                 </a>
@@ -256,7 +256,7 @@ function uploadImage($file, $folder) {
                                             <div class="col-md-4">
                                                 <label for="edit_name" class="form-label">Product Name *</label>
                                                 <input type="text" class="form-control" id="edit_name" name="name" 
-                                                       value="<?php echo htmlspecialchars($product['name']); ?>" required>
+                                                       value="<?php echo cleanProductName($product['name']); ?>" required>
                                             </div>
                                             <div class="col-md-4">
                                                 <label for="parent_category_id" class="form-label">Category *</label>

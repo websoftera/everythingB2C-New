@@ -54,7 +54,17 @@ if ($selectedCategory !== null && $selectedCategory !== '') {
 
 // Search term filter
 if (!empty($searchTerm)) {
-    $whereConditions[] = '(p.name LIKE ? OR p.description LIKE ? OR p.keywords LIKE ?)';
+    // Search in product name, description, and category names (including parent categories)
+    $whereConditions[] = '(p.name LIKE ? OR p.description LIKE ? OR c.name LIKE ? OR EXISTS (
+        SELECT 1 FROM categories parent 
+        WHERE parent.id = c.parent_id AND parent.name LIKE ?
+    ) OR EXISTS (
+        SELECT 1 FROM categories grandparent 
+        JOIN categories parent ON parent.parent_id = grandparent.id 
+        WHERE parent.id = c.parent_id AND grandparent.name LIKE ?
+    ))';
+    $params[] = '%' . $searchTerm . '%';
+    $params[] = '%' . $searchTerm . '%';
     $params[] = '%' . $searchTerm . '%';
     $params[] = '%' . $searchTerm . '%';
     $params[] = '%' . $searchTerm . '%';
@@ -123,14 +133,6 @@ echo renderBreadcrumb($breadcrumbs);
         <!-- Search Header -->
         <div class="search-header">
           <h2>Search Results</h2>
-          <?php if (!empty($searchTerm)): ?>
-            <div class="search-term">
-              Results for "<strong><?php echo htmlspecialchars($searchTerm); ?></strong>"
-            </div>
-          <?php endif; ?>
-          <div class="results-count">
-            <?php echo count($products); ?> product<?php echo count($products) != 1 ? 's' : ''; ?> found
-          </div>
         </div>
         
         <!-- Products Grid -->
@@ -158,15 +160,15 @@ echo renderBreadcrumb($breadcrumbs);
                   <div class="discount-banner">SAVE ₹<?php echo $product['mrp'] - $product['selling_price']; ?> (<?php echo $product['discount_percentage']; ?>% OFF)</div>
                 <?php endif; ?>
                 <div class="product-image">
-                  <a href="product.php?slug=<?php echo $product['slug']; ?>">
-                    <img src="./<?php echo $product['main_image']; ?>" alt="<?php echo $product['name']; ?>">
-                  </a>
-                  <?php if ($isOutOfStock): ?>
-                    <div class="out-of-stock">OUT OF STOCK</div>
-                  <?php endif; ?>
+                    <a href="product.php?slug=<?php echo $product['slug']; ?>">
+                        <img src="./<?php echo $product['main_image']; ?>" alt="<?php echo cleanProductName($product['name']); ?>">
+                    </a>
+                    <?php if ($isOutOfStock): ?>
+                        <div class="out-of-stock">OUT OF STOCK</div>
+                    <?php endif; ?>
                 </div>
                 <div class="product-details">
-                  <h3><?php echo strtoupper($product['name']); ?></h3>
+                    <h3><?php echo strtoupper(cleanProductName($product['name'])); ?></h3>
                   <div class="price-buttons">
                     <button class="mrp"><span class="label">MRP</span> <span class="value">₹<?php echo number_format($product['mrp'],0); ?></span></button>
                     <button class="pay"><span class="label">PAY</span> <span class="value">₹<?php echo number_format($product['selling_price'],0); ?></span></button>

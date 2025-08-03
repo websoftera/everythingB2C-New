@@ -83,10 +83,12 @@ try {
             echo '<tr>';
             echo '<td>';
             if ($item['main_image']) {
-                echo '<img src="../../'.htmlspecialchars($item['main_image']).'" alt="'.htmlspecialchars($item['product_name']).'" style="height:40px;width:40px;object-fit:cover;margin-right:8px;">';
+                echo '<img src="../../'.htmlspecialchars($item['main_image']).'" alt="'.cleanProductName($item['product_name']).'" style="height:40px;width:40px;object-fit:cover;margin-right:8px;">';
             }
-            echo htmlspecialchars($item['product_name']);
+            echo '<div>';
+            echo cleanProductName($item['product_name']);
             echo '<br><small class="text-muted">SKU: '.htmlspecialchars($item['slug']).'</small>';
+            echo '</div>';
             echo '</td>';
             echo '<td>' . htmlspecialchars($item['hsn'] ?? '') . '</td>';
             echo '<td>₹'.number_format($mrp,0).'</td>';
