@@ -179,6 +179,18 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
     <a href="products.php?featured=1"><button class="P-Button">View All<span> &gt;</span></button></a>
 </section>
 
+<!-- Debug: Check if featured products exist -->
+<?php if (empty($featuredProducts)): ?>
+    <div style="background: #f8f9fa; padding: 20px; margin: 20px; border: 1px solid #dee2e6; border-radius: 5px;">
+        <h6>Debug: No Featured Products Found</h6>
+        <p>Featured Products Count: <?php echo count($featuredProducts); ?></p>
+    </div>
+<?php else: ?>
+    <div style="background: #e8f5e8; padding: 10px; margin: 10px; border: 1px solid #28a745; border-radius: 5px; display: none;">
+        <small>Debug: Found <?php echo count($featuredProducts); ?> featured products</small>
+    </div>
+<?php endif; ?>
+
 <div class="product-carousel-wrapper">
     <button class="nav-btn prev">&#10094;</button>
     <section id="featured-products">
@@ -192,7 +204,13 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                 <?php endif; ?>
                 <div class="product-image">
                     <a href="product.php?slug=<?php echo $product['slug']; ?>">
-                        <img src="./<?php echo $product['main_image']; ?>" alt="<?php echo $product['name']; ?>">
+                        <?php if (!empty($product['main_image']) && file_exists('./' . $product['main_image'])): ?>
+                            <img src="./<?php echo $product['main_image']; ?>" alt="<?php echo $product['name']; ?>">
+                        <?php else: ?>
+                            <div style="background: #f8f9fa; height: 200px; display: flex; align-items: center; justify-content: center; border: 1px dashed #dee2e6;">
+                                <small style="color: #6c757d;">Image not found: <?php echo $product['main_image'] ?? 'No image path'; ?></small>
+                            </div>
+                        <?php endif; ?>
                     </a>
                     <?php if ($isOutOfStock): ?>
                         <div class="out-of-stock">OUT OF STOCK</div>
@@ -372,12 +390,52 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   max-width: 280px !important;
 }
 
+/* Featured Products - Image Display Fix */
+#featured-products .product-card .product-image {
+  width: 100% !important;
+  height: 200px !important;
+  overflow: hidden !important;
+  position: relative !important;
+  display: block !important;
+}
+
+#featured-products .product-card .product-image img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+#featured-products .product-card .product-image a {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  text-decoration: none !important;
+}
+
+/* Ensure product cards are visible */
+#featured-products .product-card {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  width: 280px !important;
+  min-width: 280px !important;
+  max-width: 280px !important;
+  margin: 0 10px !important;
+}
+
 /* Mobile responsive for featured products */
 @media (max-width: 767.98px) {
   #featured-products .product-card {
     width: 250px !important;
     min-width: 250px !important;
     max-width: 250px !important;
+  }
+  
+  #featured-products .product-card .product-image {
+    height: 180px !important;
   }
 }
 
