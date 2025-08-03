@@ -159,8 +159,8 @@ echo renderBreadcrumb($breadcrumbs);
   border-radius: 50%;
   cursor: none;
   /*set the size of the magnifier glass:*/
-  width: 120px;
-  height: 120px;
+  width: 320px;
+  height: 320px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
   background-repeat: no-repeat;
   background-size: 200% 200%;

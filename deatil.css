@@ -194,7 +194,7 @@
   position: absolute;
   border: 2px solid #000;
   cursor: none;
-  width: 300px;
+  width: 350px;
   height: 250px;
   z-index: 10;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
