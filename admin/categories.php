@@ -170,23 +170,23 @@ $categoryTree = buildCategoryTree($categories);
     <link href="assets/css/admin.css" rel="stylesheet">
 </head>
 <body>
-    <div class="admin-container">
+    <div class="everythingb2c-admin-container">
         <!-- Sidebar -->
         <?php include 'includes/sidebar.php'; ?>
 
         <!-- Main Content -->
-        <div class="main-content">
+        <div class="everythingb2c-main-content">
             <!-- Header -->
             <?php include 'includes/header.php'; ?>
 
             <!-- Categories Content -->
-            <div class="dashboard-content">
+            <div class="everythingb2c-dashboard-content">
                 <div class="container-fluid">
                     <div class="row mb-4">
                         <div class="col-12">
                             <div class="d-flex justify-content-between align-items-center">
                                 <h1 class="h3 mb-0">Categories Management</h1>
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+                                <button type="button" class="everythingb2c-btn-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
                                     <i class="fas fa-plus"></i> Add New Category
                                 </button>
                             </div>
@@ -201,11 +201,11 @@ $categoryTree = buildCategoryTree($categories);
                         <div class="alert alert-danger"><?php echo htmlspecialchars($error_message); ?></div>
                     <?php endif; ?>
 
-                    <div class="card">
-                        <div class="card-header">
+                    <div class="everythingb2c-card">
+                        <div class="everythingb2c-card-header">
                             <h5 class="mb-0">Categories (<?php echo count($categories); ?>)</h5>
                         </div>
-                        <div class="card-body">
+                        <div class="everythingb2c-card-body">
                             <?php if (empty($categories)): ?>
                                 <div class="text-center py-4">
                                     <i class="fas fa-tags fa-3x text-muted mb-3"></i>
@@ -214,7 +214,7 @@ $categoryTree = buildCategoryTree($categories);
                                 </div>
                             <?php else: ?>
                                 <div class="table-responsive">
-                                    <table class="table table-hover">
+                                    <table class="everythingb2c-table everythingb2c-categories-table">
                                         <thead>
                                             <tr>
                                                 <th>Image</th>
@@ -254,8 +254,8 @@ $categoryTree = buildCategoryTree($categories);
                                                     echo '<td>' . date('M d, Y', strtotime($category['created_at'])) . '</td>';
                                                     echo '<td>';
                                                     echo '<div class="action-buttons">';
-                                                    echo '<button type="button" class="btn btn-warning btn-sm" onclick="editCategory(' . htmlspecialchars(json_encode($category)) . ')" title="Edit"><i class="fas fa-edit"></i></button>';
-                                                    echo '<button type="button" class="btn btn-danger btn-sm" onclick="deleteCategory(' . $category['id'] . ', \'' . htmlspecialchars($category['name']) . '\')" title="Delete"><i class="fas fa-trash"></i></button>';
+                                                    echo '<button type="button" class="everythingb2c-btn-warning everythingb2c-btn-sm" onclick="editCategory(' . htmlspecialchars(json_encode($category)) . ')" title="Edit"><i class="fas fa-edit"></i></button>';
+                                                    echo '<button type="button" class="everythingb2c-btn-danger everythingb2c-btn-sm" onclick="deleteCategory(' . $category['id'] . ', \'' . htmlspecialchars($category['name']) . '\')" title="Delete"><i class="fas fa-trash"></i></button>';
                                                     echo '</div>';
                                                     echo '</td>';
                                                     echo '</tr>';
@@ -332,10 +332,10 @@ $categoryTree = buildCategoryTree($categories);
                             <div class="form-text">Upload an image for this category (optional)</div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Add Category</button>
-                    </div>
+                                                <div class="modal-footer">
+                                <button type="button" class="everythingb2c-btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="everythingb2c-btn-primary">Add Category</button>
+                            </div>
                 </form>
             </div>
         </div>
@@ -398,10 +398,10 @@ $categoryTree = buildCategoryTree($categories);
                             <div id="current_image_preview" class="mt-2"></div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Update Category</button>
-                    </div>
+                                                <div class="modal-footer">
+                                <button type="button" class="everythingb2c-btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="everythingb2c-btn-primary">Update Category</button>
+                            </div>
                 </form>
             </div>
         </div>

@@ -92,17 +92,17 @@ foreach ($daily_sales as $day) {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div class="admin-container">
+    <div class="everythingb2c-admin-container">
         <!-- Sidebar -->
         <?php include 'includes/sidebar.php'; ?>
 
         <!-- Main Content -->
-        <div class="main-content">
+        <div class="everythingb2c-main-content">
             <!-- Header -->
             <?php include 'includes/header.php'; ?>
 
             <!-- Reports Content -->
-            <div class="dashboard-content">
+            <div class="everythingb2c-dashboard-content">
                 <div class="container-fluid">
                     <div class="row mb-4">
                         <div class="col-12">

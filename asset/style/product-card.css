@@ -79,22 +79,22 @@
     top: 50% !important;
     left: 50% !important;
     transform: translate(-50%, -50%) !important;
-    background: #f7caca !important;
-    color: #a94442 !important;
-    font-size: 1.18rem !important;
-    font-weight: 800 !important;
-    padding: 16px 48px !important;
-    border-radius: 6px !important;
+    background: #f9c9c9 !important;
+    color: #000000 !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    padding: 16px 12px !important;
+    border-radius: 2px !important;
     z-index: 10 !important;
     text-align: center !important;
     text-transform: capitalize !important;
     letter-spacing: 1.2px !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.10) !important;
     line-height: 1.1 !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     min-width: 220px !important;
+    width: 100% !important;
 }
 
 /* --- Product Details --- */

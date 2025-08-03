@@ -120,17 +120,17 @@ $statuses = getAllOrderStatuses();
     <link href="assets/css/admin.css" rel="stylesheet">
 </head>
 <body>
-    <div class="admin-container">
+    <div class="everythingb2c-admin-container">
         <!-- Sidebar -->
         <?php include 'includes/sidebar.php'; ?>
 
         <!-- Main Content -->
-        <div class="main-content">
+        <div class="everythingb2c-main-content">
             <!-- Header -->
             <?php include 'includes/header.php'; ?>
 
             <!-- Orders Content -->
-            <div class="dashboard-content">
+            <div class="everythingb2c-dashboard-content">
                 <div class="container-fluid">
                     <div class="row mb-4">
                         <div class="col-12">
