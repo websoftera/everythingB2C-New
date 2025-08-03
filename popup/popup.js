@@ -93,6 +93,25 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(error => console.error('Error updating cart count:', error));
     }
 
+    // Update wishlist count in header
+    function updateWishlistCount() {
+        fetch('ajax/list_wishlist.php')
+            .then(response => response.json())
+            .then(data => {
+                const wishlistCountElement = document.querySelector('.wishlist-count');
+                if (wishlistCountElement) {
+                    const count = data.wishlistItems ? data.wishlistItems.length : 0;
+                    if (count > 0) {
+                        wishlistCountElement.textContent = count;
+                        wishlistCountElement.style.display = 'block';
+                    } else {
+                        wishlistCountElement.style.display = 'none';
+                    }
+                }
+            })
+            .catch(error => console.error('Error updating wishlist count:', error));
+    }
+
     // Helper to re-initialize quantity controls for all product cards and re-attach event handlers
     function reinitQuantityControlsWithDebug() {
         document.querySelectorAll('.product-card, .card, .shop-page-product-card, .product-detail-card').forEach(card => {
@@ -237,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // Add/Remove from Wishlist
-        if (event.target.matches('.heart-checkbox')) {
+        if (event.target.matches('.heart-checkbox, .shop-page-heart-checkbox')) {
              const checkbox = event.target;
              const productId = checkbox.dataset.productId;
              const label = checkbox.nextElementSibling;
@@ -259,8 +278,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         checkbox.checked = false; // Revert checkbox on failure
                         if(label) label.classList.remove('wishlist-active');
                     } else {
+                        checkbox.checked = true; // Ensure checkbox is checked
                         if(label) label.classList.add('wishlist-active');
                     }
+                    updateWishlistCount(); // Update wishlist count in header
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -283,8 +304,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         checkbox.checked = true; // Revert checkbox on failure
                         if(label) label.classList.add('wishlist-active');
                     } else {
+                        checkbox.checked = false; // Ensure checkbox is unchecked
                         if(label) label.classList.remove('wishlist-active');
                     }
+                    updateWishlistCount(); // Update wishlist count in header
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -296,8 +319,28 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
     
+    // Initialize wishlist states on page load
+    function initializeWishlistStates() {
+        document.querySelectorAll('.heart-checkbox, .shop-page-heart-checkbox').forEach(checkbox => {
+            const productId = checkbox.dataset.productId;
+            const label = checkbox.nextElementSibling;
+            
+            if (checkbox.checked) {
+                if (label) label.classList.add('wishlist-active');
+            } else {
+                if (label) label.classList.remove('wishlist-active');
+            }
+        });
+    }
+
+    // Initialize wishlist states when DOM is loaded
+    initializeWishlistStates();
+
     // Initial cart count update
     updateCartCount();
+    
+    // Initial wishlist count update
+    updateWishlistCount();
 });
 
 // Global handler for all quantity plus/minus buttons (event delegation)

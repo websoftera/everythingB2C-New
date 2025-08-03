@@ -258,6 +258,16 @@ body {
   margin: 10px 0;
   font-size: 16px;
   font-weight: bold;
+  min-height: 32px !important;
+  max-height: 32px !important;
+  height: 32px !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  word-wrap: break-word !important;
+  word-break: break-word !important;
 }
 
 .price-buttons {
@@ -289,7 +299,8 @@ body {
 
 /* ---------------------- Wishlist Button ---------------------- */
 .wishlist {
-  background-color: #007bff;
+  border: 1px solid #DE0085;
+  background: none !important;
   border-radius: 6px;
   width: 36px;
   height: 36px;
@@ -695,9 +706,9 @@ box-shadow: #000;
 }
 
 .price-buttons .mrp {
-  background: #007bff;
-  color: #fff;
-  border: none;
+  border: 1px solid #007bff !important;
+  color: #007bff !important;
+  background: none !important;
   padding: 4px 10px;
   margin-right: 5px;
   border-radius: 5px;
@@ -705,9 +716,9 @@ box-shadow: #000;
 }
 
 .price-buttons .pay {
-  background: #28a745;
-  color: #fff;
-  border: none;
+  border: 1px solid #28a745 !important;
+  color: #28a745 !important;
+  background: none !important;
   padding: 4px 10px;
   border-radius: 5px;
 }
@@ -1132,5 +1143,30 @@ flex-direction: row-reverse;
   border-radius: 8px;
   text-align: center;
   display: inline-block;
+}
+
+.card {
+  background: #fff;
+  border-radius: 0 !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin: 0 auto 8px auto;
+  padding-bottom: 6px !important;
+}
+
+#wishlist-container .card {
+  padding-bottom: 6px !important;
+  border-radius: 0 !important;
+}
+
+.card, .product-card {
+  background: #fff;
+  border-radius: 0 !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin: 0 auto 8px auto;
+  padding-bottom: 6px !important;
 }
 

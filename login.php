@@ -85,6 +85,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 require_once 'includes/header.php';
+
+// Breadcrumb Navigation
+$breadcrumbs = generateBreadcrumb($pageTitle);
+echo renderBreadcrumb($breadcrumbs);
 ?>
 <link rel="stylesheet" href="asset/style/login.css">
 <div class="account-page">

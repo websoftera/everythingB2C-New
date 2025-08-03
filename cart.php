@@ -30,6 +30,10 @@ if (isLoggedIn()) {
 $orderTotals = calculateOrderTotal($cartItems, $delivery_state, $delivery_city, $delivery_pincode);
 
 require_once 'includes/header.php';
+
+// Breadcrumb Navigation
+$breadcrumbs = generateBreadcrumb($pageTitle);
+echo renderBreadcrumb($breadcrumbs);
 ?>
 
 <!-- Banner/Breadcrumb (skip homepage) -->

@@ -13,16 +13,19 @@ require_once 'includes/functions.php';
 
 // Build $wishlist_ids for both logged-in and guest users
 $wishlist_ids = [];
+$wishlistCount = 0;
 if (isLoggedIn()) {
     $wishlistItems = getWishlistItems($_SESSION['user_id']);
     foreach ($wishlistItems as $item) {
         $wishlist_ids[] = $item['product_id'];
     }
+    $wishlistCount = count($wishlistItems);
 } else {
     $wishlistItems = getWishlistItems();
     foreach ($wishlistItems as $item) {
         $wishlist_ids[] = $item['product_id'];
     }
+    $wishlistCount = count($wishlistItems);
 }
 
 $categories = getAllCategoriesWithProductCount();
@@ -83,6 +86,45 @@ html, body {
 .cart-qty-input {
   -moz-appearance: textfield;
 }
+
+/* Force breadcrumb separator to be ">" only */
+.breadcrumb-item::before,
+.breadcrumb-item::after {
+  content: none !important;
+}
+.breadcrumb-item:not(:last-child)::after {
+  content: ">" !important;
+  margin-left: 4px !important;
+  color: #adb5bd !important;
+  font-weight: bold !important;
+}
+
+/* Breadcrumb item colors */
+.breadcrumb-item a {
+  color: #99d052 !important;
+  text-decoration: none !important;
+  font-weight: bold !important;
+}
+.breadcrumb-item a:hover {
+  color: #99d052 !important;
+  text-decoration: none !important;
+  font-weight: bold !important;
+}
+.breadcrumb-item.active {
+  color: #28a745 !important;
+  font-weight: bold !important;
+}
+
+/* Universal card bottom padding for entire site */
+.card,
+.product-card,
+.products .card,
+#wishlist-container .card,
+.swiper-slide .card {
+  padding-bottom: 6px !important;
+  border-radius: 0 !important;
+}
+
 #floatingCartPanel.fixed-panel {
   display: flex;
   flex-direction: column;
@@ -300,19 +342,7 @@ html, body {
   </div>
 </div>
 
-<section class="header2">
-    <div class="nav-links">
-        <a href="index.php">HOME</a><span>|</span>
-        <a href="shop.php">SHOP</a><span>|</span>
-        <a href="wishlist.php">WISHLIST</a><span>|</span>
-        <?php if (isLoggedIn()): ?>
-            <a href="myaccount.php">MY ACCOUNT</a><span>|</span>
-            <a href="logout.php">LOGOUT</a>
-        <?php else: ?>
-            <a href="login.php">LOGIN</a>
-        <?php endif; ?>
-    </div>
-</section>
+
 
 <!-- NAVBAR START -->
 <nav class="navbar navbar-expand-lg sticky-top bg-white">
@@ -351,8 +381,8 @@ html, body {
                         foreach ($tree as $cat) {
                             $indent = str_repeat('&nbsp;&nbsp;&nbsp;', $level);
                             if (!empty($cat['children'])) {
-                                // Main category as non-selectable header
-                                echo '<li><span class="dropdown-header" style="font-weight:bold;">' . $indent . htmlspecialchars($cat['name']) . '</span></li>';
+                                // Parent category as clickable item
+                                echo '<li><a class="dropdown-item category-option" href="#" data-category="' . $cat['slug'] . '">' . $indent . '<strong>' . htmlspecialchars($cat['name']) . '</strong></a></li>';
                                 renderCategoryDropdown($cat['children'], $level + 1);
                             } else {
                                 // Selectable category
@@ -384,12 +414,31 @@ html, body {
         
         <!-- Desktop Right Section -->
         <div class="d-none d-lg-flex align-items-center">
-            <!-- Customer Support Section -->
-            <div class="customer-support-section">
-                <a href="Customer-Support.html" class="text-decoration-none text-dark">
-                    <i class="bi bi-headset fs-4 me-2"></i>
-                    <span class="me-4 fw-semibold customer-support">Customer Support</span>
+            <!-- Topbar Navigation Items -->
+            <div class="topbar-nav-items d-flex align-items-center me-3">
+                <a href="index.php" title="Home" class="text-decoration-none text-dark me-3">
+                    <i class="bi bi-house-door-fill"></i>
                 </a>
+                <a href="wishlist.php" title="Wishlist" class="text-decoration-none text-dark me-3 position-relative">
+                    <div class="wishlist-icon-container">
+                        <i class="bi bi-heart-fill"></i>
+                        <?php if ($wishlistCount > 0): ?>
+                            <span class="wishlist-count"><?php echo $wishlistCount; ?></span>
+                        <?php endif; ?>
+                    </div>
+                </a>
+                <?php if (isLoggedIn()): ?>
+                    <a href="myaccount.php" title="My Account" class="text-decoration-none text-dark me-3">
+                        <i class="bi bi-person-circle"></i>
+                    </a>
+                    <a href="logout.php" title="Logout" class="text-decoration-none text-dark me-3">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </a>
+                <?php else: ?>
+                    <a href="login.php" title="Login" class="text-decoration-none text-dark me-3">
+                        <i class="bi bi-box-arrow-in-right"></i>
+                    </a>
+                <?php endif; ?>
             </div>
             <!-- Cart Section -->
             <div class="cart-section">
@@ -432,22 +481,41 @@ html, body {
 function renderCategoryMenu($tree, $level = 0) {
     foreach ($tree as $cat) {
         $hasChildren = !empty($cat['children']);
-        $liClass = $hasChildren ? 'nav-item dropdown d-flex align-items-center dropdown-submenu' : 'nav-item';
+        $liClass = $hasChildren ? 'nav-item dropdown' : 'nav-item';
         echo '<li class="' . $liClass . '">';
-        // Main category link (always clickable)
-        echo '<a class="nav-link" href="category.php?slug=' . $cat['slug'] . '">' . strtoupper(htmlspecialchars($cat['name'])) . '</a>';
+        
         if ($hasChildren) {
-            // Arrow button for toggling submenu (mobile/touch)
-            echo '<button class="submenu-arrow btn btn-link p-0 ms-1 align-self-center" 
-             data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fa-solid fa-chevron-down" style="color: black; font-size: 12px;"></i>
-      </button>';
-
+            // Main category as dropdown toggle
+            echo '<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">' . strtoupper(htmlspecialchars($cat['name'])) . '</a>';
             echo '<ul class="dropdown-menu">';
-            renderCategoryMenu($cat['children'], $level + 1);
+            // Parent category as clickable item
+            echo '<li><a class="dropdown-item parent-category" href="category.php?slug=' . $cat['slug'] . '">' . strtoupper(htmlspecialchars($cat['name'])) . '</a></li>';
+            echo '<li><hr class="dropdown-divider"></li>';
+            // Render all subcategories recursively
+            renderSubcategories($cat['children'], $level + 1);
             echo '</ul>';
+        } else {
+            // Main category link (no children)
+            echo '<a class="nav-link" href="category.php?slug=' . $cat['slug'] . '">' . strtoupper(htmlspecialchars($cat['name'])) . '</a>';
         }
         echo '</li>';
+    }
+}
+
+function renderSubcategories($subcategories, $level = 1) {
+    foreach ($subcategories as $subcat) {
+        $hasGrandchildren = !empty($subcat['children']);
+        $indentClass = 'subcategory-level-' . $level;
+        
+        if ($hasGrandchildren) {
+            // Subcategory with its own children
+            echo '<li><a class="dropdown-item ' . $indentClass . ' subcategory-with-children" href="category.php?slug=' . $subcat['slug'] . '">' . htmlspecialchars($subcat['name']) . '</a></li>';
+            // Render grandchildren
+            renderSubcategories($subcat['children'], $level + 1);
+        } else {
+            // Regular subcategory
+            echo '<li><a class="dropdown-item ' . $indentClass . '" href="category.php?slug=' . $subcat['slug'] . '">' . htmlspecialchars($subcat['name']) . '</a></li>';
+        }
     }
 }
 renderCategoryMenu($categoryTree);
@@ -474,8 +542,6 @@ document.addEventListener('DOMContentLoaded', function() {
         navbar.style.backgroundColor = '#fff';
         navbar.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
         navbar.style.width = '100%';
-        
-        console.log('Sticky header initialized');
     }
 });
 </script>

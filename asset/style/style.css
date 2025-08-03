@@ -3,10 +3,14 @@ body, html {
   font-family: 'Arial', 'Helvetica Neue', Helvetica, sans-serif;
   line-height: 1.6;
   font-size: 15px;
-  text-transform: uppercase !important;
+  text-transform: capitalize !important;
   text-decoration: none;
   color: #222;
   background: #fff;
+}
+
+.translate-middle{
+  transform: translate(-166%, -90%) !important;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -30,7 +34,7 @@ h2{
 h3{
   font-size: 12px;
   font-weight: bold;
-  text-transform: uppercase;
+  text-transform: capitalize !important;
 }
 
 /* Brand Colors - Matching Live Site */
@@ -66,8 +70,11 @@ h3{
 }
 
 #cart-count{
-  color: #99d052;
-  font-size: 15px;
+  color: #fff !important;
+  background: #99d052 !important;
+  border-radius: 50px !important;
+  /* padding: 2px; */
+  font-size: 12px;
   font-weight: bold;
 
   border-radius: 100%;
@@ -876,6 +883,16 @@ h3{
   margin: 10px 0;
   font-weight: bold;
   font-family: 12px;
+  min-height: 32px !important;
+  max-height: 32px !important;
+  height: 32px !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  word-wrap: break-word !important;
+  word-break: break-word !important;
 }
 
 .price-buttons, .price-buttons1, .modern-prices {
@@ -907,7 +924,8 @@ h3{
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #007bff;
+  border: 1px solid #DE0085;
+  background: none !important;
   border-radius: 6px;
   width: 36px;
   height: 36px;
@@ -931,8 +949,9 @@ h3{
   transition: color 0.3s ease;
 }
 
-input[type="checkbox"]:checked + .heart-icon {
-  color: red;
+input[type="checkbox"]:checked + .heart-icon,
+input[type="checkbox"]:checked + .wishlist-label i {
+  color: #DE0085 !important;
 }
 
 .cart-actions, .cart-controls {
@@ -948,7 +967,7 @@ input[type="checkbox"]:checked + .heart-icon {
   gap: 4px;
   flex: 1 1 0;
   min-width: 0;
-  border: 1px solid #007bff;
+  border: 1px solid #b3b3b3;
   border-radius: 2px;
   background: #fff;
   overflow: hidden;
@@ -1042,10 +1061,7 @@ input[type="checkbox"]:checked + .heart-icon {
 
 /* Ensure single product card on pages like wishlist doesn't stretch */
 .products .card {
-  margin: 0 auto 1.5rem;
-  max-width: 200px;
-  min-width: 200px;
-  float: none; /* Override any potential floats */
+  padding-bottom: 6px !important;
 }
 
 /*-----------------------------------------Product Categories css---------------------------------------------------------*/
@@ -1587,7 +1603,7 @@ box-shadow: #000;
 }
 
 .wishlist .heart-checkbox:checked + .wishlist-label {
-    color: #ffc107; /* Yellow for items in wishlist */
+    color: #DE0085; /* Pink/magenta for items in wishlist */
 }
 
 /* --- Definitive Card Width Solution --- */
@@ -1617,6 +1633,13 @@ box-shadow: #000;
     margin-bottom: 20px;
     float: none;
     display: inline-block;
+    background: #fff;
+    border-radius: 0 !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin: 0 auto 8px auto;
+    padding-bottom: 6px !important;
 }
 /* --- End Definitive Solution --- */
 
@@ -1641,7 +1664,7 @@ input, select, textarea, button {
   border: none !important;
   border-radius: 2px !important;
   box-shadow: none !important;
-  border: 1px solid #007bff !important;
+  border: 1px solid #b3b3b3 !important;
 }
 .quantity-control .btn-qty {
   width: 100% !important;
@@ -1649,9 +1672,9 @@ input, select, textarea, button {
   font-size: 1.1rem !important;
   border: none !important;
   border-radius: 0 !important;
+  border: 1px solid #b3b3b3 !important;
   padding: 0 !important;
-  background: #007bff !important;
-  color: #222 !important;
+  background: none!important;
   box-shadow: none !important;
 }
 .quantity-control input[type="number"] {

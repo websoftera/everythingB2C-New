@@ -77,7 +77,15 @@ foreach ($products as $product):
         <span class="value">₹<?php echo number_format($product['selling_price'],2); ?></span>
       </div>
       <div class="shop-page-wishlist">
-        <input type="checkbox" class="shop-page-heart-checkbox" id="wishlist-checkbox-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>">
+        <input type="checkbox" class="shop-page-heart-checkbox" id="wishlist-checkbox-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>" <?php 
+          $inWishlist = false;
+          if (isLoggedIn()) {
+              $inWishlist = isInWishlist($_SESSION['user_id'], $product['id']);
+          } else {
+              $inWishlist = in_array($product['id'], isset($_SESSION['wishlist']) ? $_SESSION['wishlist'] : []);
+          }
+          echo $inWishlist ? 'checked' : '';
+        ?>>
         <label for="wishlist-checkbox-<?php echo $product['id']; ?>" class="shop-page-wishlist-label"><i class="fas fa-heart"></i></label>
       </div>
     </div>

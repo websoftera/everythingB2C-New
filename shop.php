@@ -1,336 +1,277 @@
 <?php
+require_once 'config/database.php';
 require_once 'includes/functions.php';
 require_once 'includes/header.php';
+
+// Function to get all descendant category IDs recursively
+function getAllDescendantCategoryIdsRecursive($pdo, $parentId) {
+    $descendants = [$parentId];
+    
+    $stmt = $pdo->prepare('SELECT id FROM categories WHERE parent_id = ?');
+    $stmt->execute([$parentId]);
+    $children = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    
+    foreach ($children as $childId) {
+        $descendants = array_merge($descendants, getAllDescendantCategoryIdsRecursive($pdo, $childId));
+    }
+    
+    return $descendants;
+}
+
+$pdo = $GLOBALS['pdo'];
 
 // Fetch all categories and build tree
 $categories = getAllCategories();
 $categoryTree = buildCategoryTree($categories);
 
-// Get selected filters
-$selectedCategory = isset($_GET['category']) ? intval($_GET['category']) : null;
+// Get filter parameters
+$selectedCategory = isset($_GET['category']) ? $_GET['category'] : null;
 $selectedSubcategory = isset($_GET['subcategory']) ? intval($_GET['subcategory']) : null;
-$maxPrice = isset($_GET['max_price']) ? floatval($_GET['max_price']) : 0;
+$minPrice = isset($_GET['min_price']) ? floatval($_GET['min_price']) : 0;
+$maxPrice = isset($_GET['max_price']) ? floatval($_GET['max_price']) : 10000;
+$searchTerm = isset($_GET['q']) ? trim($_GET['q']) : '';
+$sortBy = isset($_GET['sort']) ? $_GET['sort'] : 'newest';
 
-// Build product query
-$where = ['p.is_active = 1'];
-$params = [];
-if ($selectedSubcategory) {
-    $where[] = 'p.category_id = ?';
-    $params[] = $selectedSubcategory;
-} elseif ($selectedCategory) {
-    // Get all subcategories for this category
-    $subcatIds = array_map(function($cat) { return $cat['id']; }, array_merge(
-        isset($categoryTree[$selectedCategory]['children']) ? $categoryTree[$selectedCategory]['children'] : [],
-        [ ['id' => $selectedCategory] ]
-    ));
-    $where[] = 'p.category_id IN (' . implode(',', array_fill(0, count($subcatIds), '?')) . ')';
-    $params = array_merge($params, $subcatIds);
+// Fix: Handle empty string category parameter properly
+if (isset($_GET['category']) && $_GET['category'] === '') {
+    $selectedCategory = '';
 }
-if ($maxPrice > 0) {
-    $where[] = 'p.selling_price <= ?';
+
+// Get site-wide price range for comparison
+$priceStmt = $pdo->query('SELECT MIN(selling_price) as min_price, MAX(selling_price) as max_price FROM products WHERE is_active = 1');
+$priceRow = $priceStmt->fetch(PDO::FETCH_ASSOC);
+$siteMinPrice = $priceRow['min_price'] ?: 0;
+$siteMaxPrice = $priceRow['max_price'] ?: 10000;
+
+// Build the WHERE clause
+$whereConditions = ['p.is_active = 1'];
+$params = [];
+
+// Category filtering - if a category is selected, include all its descendants
+if ($selectedCategory !== null && $selectedCategory !== '') {
+    // Get all descendant category IDs for the selected category
+    $categoryIds = getAllDescendantCategoryIdsRecursive($pdo, intval($selectedCategory));
+    $placeholders = str_repeat('?,', count($categoryIds) - 1) . '?';
+    $whereConditions[] = "p.category_id IN ($placeholders)";
+    $params = array_merge($params, $categoryIds);
+}
+
+// Price filter
+if ($minPrice > 0) {
+    $whereConditions[] = 'p.selling_price >= ?';
+    $params[] = $minPrice;
+}
+if ($maxPrice < 10000) {
+    $whereConditions[] = 'p.selling_price <= ?';
     $params[] = $maxPrice;
 }
-$sql = 'SELECT p.*, c.name as category_name FROM products p LEFT JOIN categories c ON p.category_id = c.id';
-if ($where) {
-    $sql .= ' WHERE ' . implode(' AND ', $where);
+
+// Search filter
+if (!empty($searchTerm)) {
+    $whereConditions[] = '(p.name LIKE ? OR p.description LIKE ?)';
+    $params[] = '%' . $searchTerm . '%';
+    $params[] = '%' . $searchTerm . '%';
 }
-$sql .= ' ORDER BY p.created_at DESC';
-$pdo = $GLOBALS['pdo'];
+
+// Build SQL query
+$sql = 'SELECT p.*, c.name as category_name FROM products p LEFT JOIN categories c ON p.category_id = c.id';
+if ($whereConditions) {
+    $sql .= ' WHERE ' . implode(' AND ', $whereConditions);
+}
+
+// Add sorting
+switch ($sortBy) {
+    case 'oldest':
+        $sql .= ' ORDER BY p.created_at ASC';
+        break;
+    case 'price_low':
+        $sql .= ' ORDER BY p.selling_price ASC';
+        break;
+    case 'price_high':
+        $sql .= ' ORDER BY p.selling_price DESC';
+        break;
+    case 'name_asc':
+        $sql .= ' ORDER BY p.name ASC';
+        break;
+    case 'name_desc':
+        $sql .= ' ORDER BY p.name DESC';
+        break;
+    default:
+        $sql .= ' ORDER BY p.created_at DESC';
+}
+
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Get min/max price for slider
-$priceStmt = $pdo->query('SELECT MIN(selling_price) as min_price, MAX(selling_price) as max_price FROM products WHERE is_active = 1');
-$priceRow = $priceStmt->fetch(PDO::FETCH_ASSOC);
-$siteMinPrice = 0;
-$siteMaxPrice = 10000;
-$maxPriceValue = $maxPrice ?: $siteMaxPrice;
+// Set page title for breadcrumb
+$pageTitle = 'Shop';
+$breadcrumbs = generateBreadcrumb($pageTitle);
+echo renderBreadcrumb($breadcrumbs);
 ?>
-<link rel="stylesheet" href="asset/style/shop.css">
 
-<div class="container shop-page-container">
-  <!-- Static Filter Bar at Top (Desktop Only) -->
-  <div class="shop-page-filter-bar d-none d-md-block">
-    <form method="get" id="filterFormDesktop">
-      <div class="shop-page-filter-content">
-        <div class="shop-page-search-box">
-          <input type="text" id="shopSearchInputDesktop" name="search" placeholder="Search products..." autocomplete="off">
-        </div>
-        <div class="shop-page-category-filter">
-          <select name="category" id="categorySelectDesktop">
-            <option value="">All Categories</option>
-            <?php foreach ($categoryTree as $cat): ?>
-              <option value="<?php echo $cat['id']; ?>" <?php if ($selectedCategory == $cat['id']) echo 'selected'; ?>>
-                <?php echo htmlspecialchars($cat['name']); ?>
-              </option>
-              <?php if (!empty($cat['children'])): ?>
-                <?php foreach ($cat['children'] as $subcat): ?>
-                  <option value="<?php echo $subcat['id']; ?>" <?php if ($selectedSubcategory == $subcat['id']) echo 'selected'; ?>>
-                    &nbsp;&nbsp;— <?php echo htmlspecialchars($subcat['name']); ?>
-                  </option>
-                <?php endforeach; ?>
-              <?php endif; ?>
-            <?php endforeach; ?>
-          </select>
-        </div>
-        <div class="shop-page-price-range" style="flex-direction:column;align-items:flex-start;min-width:220px;">
-          <div style="font-size:13px;margin-bottom:2px;">
-            Price: ₹0 - ₹<span id="maxPriceDisplayDesktop"><?php echo $maxPriceValue; ?></span>
-          </div>
-          <div style="width:100%;display:flex;align-items:center;gap:8px;">
-            <input type="range" id="maxPriceRangeDesktop" name="max_price" min="<?php echo $siteMinPrice; ?>" max="<?php echo $siteMaxPrice; ?>" value="<?php echo $maxPriceValue; ?>" step="1">
-          </div>
-        </div>
-        <button type="submit" class="shop-page-filter-btn">Apply Filters</button>
-        <button type="button" id="clearFilterBtnDesktop" class="shop-page-filter-btn" style="background:#eee;color:#333;margin-left:8px;">Clear Filter</button>
-      </div>
-    </form>
-  </div>
-
-  <!-- Mobile Filter Button -->
-  <button class="shop-page-mobile-filter-btn d-md-none" id="openMobileFilter" aria-label="Show Filters">
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;margin:auto;">
-      <path d="M3 5h18M6 10h12M10 15h4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  </button>
-
-  <!-- Mobile Filter Panel (Bottom Sheet) -->
-  <div class="shop-page-mobile-filter-panel" id="mobileFilterPanel">
-    <button class="close-btn" id="closeMobileFilter" aria-label="Close">&times;</button>
-    <form method="get" id="filterFormMobile">
-      <div class="shop-page-filter-content" style="flex-direction:column;gap:18px;">
-        <div class="shop-page-search-box">
-          <input type="text" id="shopSearchInputMobile" name="search" placeholder="Search products..." autocomplete="off">
-        </div>
-        <div class="shop-page-category-filter">
-          <select name="category" id="categorySelectMobile">
-            <option value="">All Categories</option>
-            <?php foreach ($categoryTree as $cat): ?>
-              <option value="<?php echo $cat['id']; ?>" <?php if ($selectedCategory == $cat['id']) echo 'selected'; ?>>
-                <?php echo htmlspecialchars($cat['name']); ?>
-              </option>
-              <?php if (!empty($cat['children'])): ?>
-                <?php foreach ($cat['children'] as $subcat): ?>
-                  <option value="<?php echo $subcat['id']; ?>" <?php if ($selectedSubcategory == $subcat['id']) echo 'selected'; ?>>
-                    &nbsp;&nbsp;— <?php echo htmlspecialchars($subcat['name']); ?>
-                  </option>
-                <?php endforeach; ?>
-              <?php endif; ?>
-            <?php endforeach; ?>
-          </select>
-        </div>
-        <div class="shop-page-price-range" style="flex-direction:column;align-items:flex-start;min-width:220px;">
-          <div style="font-size:13px;margin-bottom:2px;">
-            Price: ₹0 - ₹<span id="maxPriceDisplayMobile"><?php echo $maxPriceValue; ?></span>
-          </div>
-          <div style="width:100%;display:flex;align-items:center;gap:8px;">
-            <input type="range" id="maxPriceRangeMobile" name="max_price" min="<?php echo $siteMinPrice; ?>" max="<?php echo $siteMaxPrice; ?>" value="<?php echo $maxPriceValue; ?>" step="1">
-          </div>
-        </div>
-        <button type="submit" class="shop-page-filter-btn">Apply Filters</button>
-        <button type="button" id="clearFilterBtnMobile" class="shop-page-filter-btn" style="background:#eee;color:#333;margin-left:8px;">Clear Filter</button>
-      </div>
-    </form>
-  </div>
-
-  <!-- Products Section -->
-  <section class="shop-page-products">
-    <div class="shop-page-product-grid">
-      <?php if (empty($products)): ?>
-        <div class="shop-page-no-products">No products found for selected filters.</div>
-      <?php else: ?>
-        <?php foreach ($products as $product): 
-          $isOutOfStock = ($product['stock_quantity'] <= 0);
-        ?>
-          <div class="card product-card" data-id="prod-<?php echo $product['id']; ?>">
-            <?php if ($product['is_discounted']): ?>
-              <div class="discount-banner">SAVE ₹<?php echo $product['mrp'] - $product['selling_price']; ?> (<?php echo $product['discount_percentage']; ?>% OFF)</div>
-            <?php endif; ?>
-            <div class="product-image">
-              <a href="product.php?slug=<?php echo $product['slug']; ?>">
-                <img src="./<?php echo $product['main_image']; ?>" alt="<?php echo $product['name']; ?>">
-              </a>
-              <?php if ($isOutOfStock): ?>
-                <div class="out-of-stock">OUT OF STOCK</div>
-              <?php endif; ?>
-            </div>
-            <div class="product-details">
-              <h3><?php echo strtoupper($product['name']); ?></h3>
-              <div class="price-buttons">
-                <button class="mrp"><span class="label">MRP</span> <span class="value">₹<?php echo number_format($product['mrp'],0); ?></span></button>
-                <button class="pay"><span class="label">PAY</span> <span class="value">₹<?php echo number_format($product['selling_price'],0); ?></span></button>
-                <label class="wishlist">
-                  <input type="checkbox" class="heart-checkbox" id="wishlist-checkbox-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>">
-                  <span class="heart-icon">&#10084;</span>
-                </label>
-              </div>
-              <?php if ($isOutOfStock): ?>
-                <a href="product.php?slug=<?php echo $product['slug']; ?>" class="read-more">READ MORE</a>
-              <?php else: ?>
-                <div class="cart-actions">
-                  <div class="quantity-control">
-                    <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
-                    <input type="number" class="quantity-input" value="1" min="1" max="99" data-product-id="<?php echo $product['id']; ?>">
-                    <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
-                  <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">ADD TO CART</button>
-                </div>
-              <?php endif; ?>
-            </div>
-          </div>
-        <?php endforeach; ?>
-      <?php endif; ?>
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar Filter -->
+    <div class="col-lg-3 col-md-4">
+      <?php include 'includes/sidebar-filter.php'; ?>
     </div>
-  </section>
+    
+    <!-- Products Section -->
+    <div class="col-lg-9 col-md-8">
+      <div class="products-container">
+        <!-- Results Header -->
+        <div class="results-header">
+          <h2>Products</h2>
+          <div class="results-count">
+            <?php echo count($products); ?> product<?php echo count($products) != 1 ? 's' : ''; ?> found
+          </div>
+        </div>
+        
+        <!-- Products Grid -->
+        <div class="products-grid">
+          <?php if (empty($products)): ?>
+            <div class="no-products">
+              <div class="no-products-icon">
+                <i class="bi bi-search"></i>
+              </div>
+              <h3>No products found</h3>
+              <p>Try adjusting your filters or search terms.</p>
+              <a href="shop.php" class="filter-clear-btn">Clear All Filters</a>
+            </div>
+          <?php else: ?>
+            <?php foreach ($products as $product): 
+              $isOutOfStock = ($product['stock_quantity'] <= 0);
+            ?>
+              <div class="card product-card" data-id="prod-<?php echo $product['id']; ?>">
+                <?php if ($product['is_discounted']): ?>
+                  <div class="discount-banner">SAVE ₹<?php echo $product['mrp'] - $product['selling_price']; ?> (<?php echo $product['discount_percentage']; ?>% OFF)</div>
+                <?php endif; ?>
+                <div class="product-image">
+                  <a href="product.php?slug=<?php echo $product['slug']; ?>">
+                    <img src="./<?php echo $product['main_image']; ?>" alt="<?php echo $product['name']; ?>">
+                  </a>
+                  <?php if ($isOutOfStock): ?>
+                    <div class="out-of-stock">OUT OF STOCK</div>
+                  <?php endif; ?>
+                </div>
+                <div class="product-details">
+                  <h3><?php echo strtoupper($product['name']); ?></h3>
+                  <div class="price-buttons">
+                    <button class="mrp"><span class="label">MRP</span> <span class="value">₹<?php echo number_format($product['mrp'],0); ?></span></button>
+                    <button class="pay"><span class="label">PAY</span> <span class="value">₹<?php echo number_format($product['selling_price'],0); ?></span></button>
+                    <label class="wishlist">
+                      <input type="checkbox" class="heart-checkbox" id="wishlist-checkbox-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>" <?php 
+                        $inWishlist = false;
+                        if (isLoggedIn()) {
+                            $inWishlist = isInWishlist($_SESSION['user_id'], $product['id']);
+                        } else {
+                            $inWishlist = in_array($product['id'], isset($_SESSION['wishlist']) ? $_SESSION['wishlist'] : []);
+                        }
+                        echo $inWishlist ? 'checked' : '';
+                      ?>>
+                      <span class="heart-icon">&#10084;</span>
+                    </label>
+                  </div>
+                  <?php if ($isOutOfStock): ?>
+                    <a href="product.php?slug=<?php echo $product['slug']; ?>" class="read-more">READ MORE</a>
+                  <?php else: ?>
+                    <div class="cart-actions">
+                      <div class="quantity-control">
+                        <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
+                        <input type="number" class="quantity-input" value="1" min="1" max="99" data-product-id="<?php echo $product['id']; ?>">
+                        <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
+                      </div>
+                      <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">ADD TO CART</button>
+                    </div>
+                  <?php endif; ?>
+                </div>
+              </div>
+            <?php endforeach; ?>
+          <?php endif; ?>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<!-- Toast Notification for Add to Cart -->
-<div id="toastNotification" class="toast-notification"></div>
-<script>
-function showToast(message) {
-  var toast = document.getElementById('toastNotification');
-  if (!toast) return;
-  toast.textContent = message;
-  toast.style.opacity = '1';
-  toast.style.visibility = 'visible';
-  toast.style.transform = 'translateY(0)';
-  setTimeout(function() {
-    toast.style.opacity = '0';
-    toast.style.visibility = 'hidden';
-    toast.style.transform = 'translateY(-20px)';
-  }, 2200);
+<style>
+/* Shop Page Layout Styles */
+.products-container {
+  padding: 20px 0;
 }
 
-// --- Desktop Filter Logic ---
-const maxPriceRangeDesktop = document.getElementById('maxPriceRangeDesktop');
-const maxPriceDisplayDesktop = document.getElementById('maxPriceDisplayDesktop');
-if (maxPriceRangeDesktop) {
-  maxPriceRangeDesktop.addEventListener('input', function() {
-    maxPriceDisplayDesktop.textContent = maxPriceRangeDesktop.value;
-  });
-}
-const searchInputDesktop = document.getElementById('shopSearchInputDesktop');
-const categorySelectDesktop = document.getElementById('categorySelectDesktop');
-const filterFormDesktop = document.getElementById('filterFormDesktop');
-const clearFilterBtnDesktop = document.getElementById('clearFilterBtnDesktop');
-
-// --- Mobile Filter Logic ---
-const openMobileFilter = document.getElementById('openMobileFilter');
-const closeMobileFilter = document.getElementById('closeMobileFilter');
-const mobileFilterPanel = document.getElementById('mobileFilterPanel');
-const maxPriceRangeMobile = document.getElementById('maxPriceRangeMobile');
-const maxPriceDisplayMobile = document.getElementById('maxPriceDisplayMobile');
-const searchInputMobile = document.getElementById('shopSearchInputMobile');
-const categorySelectMobile = document.getElementById('categorySelectMobile');
-const filterFormMobile = document.getElementById('filterFormMobile');
-const clearFilterBtnMobile = document.getElementById('clearFilterBtnMobile');
-
-if (maxPriceRangeMobile) {
-  maxPriceRangeMobile.addEventListener('input', function() {
-    maxPriceDisplayMobile.textContent = maxPriceRangeMobile.value;
-  });
-}
-if (openMobileFilter && mobileFilterPanel) {
-  openMobileFilter.addEventListener('click', function() {
-    mobileFilterPanel.classList.add('show');
-    document.body.style.overflow = 'hidden';
-  });
-}
-if (closeMobileFilter && mobileFilterPanel) {
-  closeMobileFilter.addEventListener('click', function() {
-    mobileFilterPanel.classList.remove('show');
-    document.body.style.overflow = '';
-  });
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e9ecef;
 }
 
-// --- AJAX search and price filter (shared) ---
-const productGrid = document.querySelector('.shop-page-product-grid');
-let searchTimeout = null;
+.results-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+}
 
-function fetchProductsAJAX(form) {
-  const formData = new FormData(form);
-  const params = new URLSearchParams();
-  for (const [key, value] of formData.entries()) {
-    if (value) params.append(key, value);
+.results-count {
+  font-size: 14px;
+  color: #666;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.no-products {
+  text-align: center;
+  padding: 60px 20px;
+  grid-column: 1 / -1;
+}
+
+.no-products-icon {
+  font-size: 48px;
+  color: #ccc;
+  margin-bottom: 20px;
+}
+
+.no-products h3 {
+  font-size: 20px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.no-products p {
+  color: #666;
+  margin-bottom: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 991.98px) {
+  .results-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
   }
-  productGrid.innerHTML = '<div class="shop-page-loading"><span class="spinner-border spinner-border-sm"></span> Loading...</div>';
-  fetch('ajax/shop_filter.php?' + params.toString())
-    .then(res => res.text())
-    .then(html => {
-      productGrid.innerHTML = html;
-      if (mobileFilterPanel) {
-        mobileFilterPanel.classList.remove('show');
-        document.body.style.overflow = '';
-      }
-      // Re-initialize quantity controls and handlers after AJAX update
-      if (window.reinitQuantityControlsWithDebug) {
-        window.reinitQuantityControlsWithDebug();
-      } else if (typeof reinitQuantityControlsWithDebug === 'function') {
-        reinitQuantityControlsWithDebug();
-      }
-      console.log('[shop.php][DEBUG] Called reinitQuantityControlsWithDebug after AJAX product grid update');
-    });
+  
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+  }
 }
 
-if (searchInputDesktop) {
-  searchInputDesktop.addEventListener('input', function() {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => fetchProductsAJAX(filterFormDesktop), 350);
-  });
+@media (max-width: 767.98px) {
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+  }
 }
-if (categorySelectDesktop && maxPriceRangeDesktop) {
-  [categorySelectDesktop, maxPriceRangeDesktop].forEach(input => {
-    input.addEventListener('change', function() {
-      fetchProductsAJAX(filterFormDesktop);
-    });
-  });
-}
-if (filterFormDesktop) {
-  filterFormDesktop.addEventListener('submit', function(e) {
-    e.preventDefault();
-    fetchProductsAJAX(filterFormDesktop);
-  });
-}
-if (clearFilterBtnDesktop) {
-  clearFilterBtnDesktop.addEventListener('click', function() {
-    searchInputDesktop.value = '';
-    categorySelectDesktop.selectedIndex = 0;
-    maxPriceRangeDesktop.value = <?php echo $siteMaxPrice; ?>;
-    maxPriceDisplayDesktop.textContent = <?php echo $siteMaxPrice; ?>;
-    fetchProductsAJAX(filterFormDesktop);
-  });
-}
-
-// Mobile filter events
-if (searchInputMobile) {
-  searchInputMobile.addEventListener('input', function() {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => fetchProductsAJAX(filterFormMobile), 350);
-  });
-}
-if (categorySelectMobile && maxPriceRangeMobile) {
-  [categorySelectMobile, maxPriceRangeMobile].forEach(input => {
-    input.addEventListener('change', function() {
-      fetchProductsAJAX(filterFormMobile);
-    });
-  });
-}
-if (filterFormMobile) {
-  filterFormMobile.addEventListener('submit', function(e) {
-    e.preventDefault();
-    fetchProductsAJAX(filterFormMobile);
-  });
-}
-if (clearFilterBtnMobile) {
-  clearFilterBtnMobile.addEventListener('click', function() {
-    searchInputMobile.value = '';
-    categorySelectMobile.selectedIndex = 0;
-    maxPriceRangeMobile.value = <?php echo $siteMaxPrice; ?>;
-    maxPriceDisplayMobile.textContent = <?php echo $siteMaxPrice; ?>;
-    fetchProductsAJAX(filterFormMobile);
-  });
-}
-</script>
+</style>
 
 <?php include 'includes/footer.php'; ?> 

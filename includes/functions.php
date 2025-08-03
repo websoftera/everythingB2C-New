@@ -770,6 +770,101 @@ function getCategoryPath($categoryId, $categories = null) {
     return $path;
 }
 
+// Generate breadcrumb navigation
+function generateBreadcrumb($pageTitle, $categoryPath = null, $productName = null) {
+    $breadcrumbs = [];
+    
+    // Always start with Home
+    $breadcrumbs[] = [
+        'title' => 'Home',
+        'url' => 'index.php',
+        'active' => false
+    ];
+    
+    // Add category path if provided
+    if ($categoryPath && is_array($categoryPath)) {
+        foreach ($categoryPath as $category) {
+            $breadcrumbs[] = [
+                'title' => $category['name'],
+                'url' => 'category.php?slug=' . $category['slug'],
+                'active' => false
+            ];
+        }
+    }
+    
+    // Add current page/product - avoid repetition
+    if ($productName) {
+        // Check if the product name is already in the breadcrumb (from category path)
+        $lastCategoryName = null;
+        if ($categoryPath && !empty($categoryPath)) {
+            $lastCategoryName = end($categoryPath)['name'];
+        }
+        
+        // Only add product name if it's different from the last category
+        if ($productName !== $lastCategoryName) {
+            $breadcrumbs[] = [
+                'title' => $productName,
+                'url' => '#',
+                'active' => true
+            ];
+        } else {
+            // Mark the last category as active instead
+            if (!empty($breadcrumbs)) {
+                $breadcrumbs[count($breadcrumbs) - 1]['active'] = true;
+            }
+        }
+    } else {
+        // Check if page title is already in breadcrumb (from category path)
+        $lastCategoryName = null;
+        if ($categoryPath && !empty($categoryPath)) {
+            $lastCategoryName = end($categoryPath)['name'];
+        }
+        
+        // Only add page title if it's different from the last category
+        if ($pageTitle !== $lastCategoryName) {
+            $breadcrumbs[] = [
+                'title' => $pageTitle,
+                'url' => '#',
+                'active' => true
+            ];
+        } else {
+            // Mark the last category as active instead
+            if (!empty($breadcrumbs)) {
+                $breadcrumbs[count($breadcrumbs) - 1]['active'] = true;
+            }
+        }
+    }
+    
+    return $breadcrumbs;
+}
+
+// Render breadcrumb HTML
+function renderBreadcrumb($breadcrumbs) {
+    $html = '<nav aria-label="breadcrumb" class="breadcrumb-nav">';
+    $html .= '<ol class="breadcrumb">';
+    
+    foreach ($breadcrumbs as $index => $crumb) {
+        $isLast = $index === count($breadcrumbs) - 1;
+        
+        if ($isLast || $crumb['active']) {
+            $html .= '<li class="breadcrumb-item active" aria-current="page">';
+            $html .= htmlspecialchars($crumb['title']);
+            $html .= '</li>';
+        } else {
+            $html .= '<li class="breadcrumb-item">';
+            $html .= '<a href="' . htmlspecialchars($crumb['url']) . '">';
+            $html .= htmlspecialchars($crumb['title']);
+            $html .= '</a>';
+            $html .= '</li>';
+        }
+    }
+    
+    $html .= '</ol>';
+    $html .= '</nav>';
+    
+    return $html;
+}
+
 // Merge session cart into user cart after login
 function mergeSessionCartToUserCart($userId) {
     if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) return;
