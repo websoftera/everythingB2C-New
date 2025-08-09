@@ -55,7 +55,7 @@ if (isLoggedIn()) {
     <title><?php echo $pageTitle ?? 'EverythingB2C'; ?></title>
 
     <!-- Favicon -->
-    <link rel="icon" href="./logo.webp" type="image/webp">
+    <link rel="icon" href="./sitelogo.png" type="image/webp">
 
     <!-- Font Awesome Preload for better performance -->
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -71,7 +71,7 @@ if (isLoggedIn()) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="Header.css">
-    <link rel="stylesheet" href="asset/style/footer.css">
+
     <link rel="stylesheet" href="asset/style/popup.css">
     <link rel="stylesheet" href="asset/style/style.css">
     <link rel="stylesheet" href="asset/style/product-card.css">
@@ -544,8 +544,79 @@ renderCategoryMenu($categoryTree);
 <script src="js/real-time-max-quantity.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-// Ensure sticky header works
+// Initialize Bootstrap dropdowns
 document.addEventListener('DOMContentLoaded', function() {
+    // Wait for Bootstrap to be fully loaded
+    setTimeout(function() {
+        // Initialize Bootstrap 5 dropdowns with explicit configuration
+        if (typeof bootstrap !== 'undefined' && bootstrap.Dropdown) {
+            const dropdownElementList = [].slice.call(document.querySelectorAll('[data-bs-toggle="dropdown"]'));
+            dropdownElementList.map(function (dropdownToggleEl) {
+                // Ensure dropdown isn't already initialized
+                if (!dropdownToggleEl.hasAttribute('data-bs-dropdown-initialized')) {
+                    dropdownToggleEl.setAttribute('data-bs-dropdown-initialized', 'true');
+                    return new bootstrap.Dropdown(dropdownToggleEl, {
+                        autoClose: true,
+                        boundary: 'viewport'
+                    });
+                }
+            });
+        }
+        
+        // Force re-initialization specifically for category navigation dropdowns
+        const categoryDropdowns = document.querySelectorAll('.category-navbar .dropdown-toggle');
+        categoryDropdowns.forEach(dropdown => {
+            // Remove any existing Bootstrap instance
+            const existingInstance = bootstrap.Dropdown.getInstance(dropdown);
+            if (existingInstance) {
+                existingInstance.dispose();
+            }
+            
+            // Create new Bootstrap dropdown instance
+            if (typeof bootstrap !== 'undefined' && bootstrap.Dropdown) {
+                new bootstrap.Dropdown(dropdown, {
+                    autoClose: true,
+                    boundary: 'viewport'
+                });
+            }
+            
+            // Add manual fallback handler
+            if (!dropdown.hasAttribute('data-manual-initialized')) {
+                dropdown.setAttribute('data-manual-initialized', 'true');
+                dropdown.addEventListener('click', function(e) {
+                    // Let Bootstrap handle it first, fallback only if needed
+                    setTimeout(() => {
+                        const dropdownMenu = this.nextElementSibling;
+                        if (dropdownMenu && dropdownMenu.classList.contains('dropdown-menu')) {
+                            // Check if Bootstrap handled it
+                            if (!dropdownMenu.classList.contains('show') && !e.defaultPrevented) {
+                                e.preventDefault();
+                                // Close other open dropdowns first
+                                document.querySelectorAll('.category-navbar .dropdown-menu.show').forEach(menu => {
+                                    if (menu !== dropdownMenu) {
+                                        menu.classList.remove('show');
+                                    }
+                                });
+                                // Toggle current dropdown
+                                dropdownMenu.classList.toggle('show');
+                            }
+                        }
+                    }, 10);
+                });
+            }
+        });
+        
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.dropdown')) {
+                document.querySelectorAll('.category-navbar .dropdown-menu.show').forEach(menu => {
+                    menu.classList.remove('show');
+                });
+            }
+        });
+    }, 100); // Small delay to ensure Bootstrap is ready
+
+    // Ensure sticky header works
     const navbar = document.querySelector('.navbar.sticky-top');
     if (navbar) {
         // Force sticky positioning

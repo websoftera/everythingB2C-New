@@ -149,6 +149,23 @@
   display: inline-block !important;
 }
 
+/* Bootstrap components with proper font inheritance */
+.dropdown-menu, .dropdown-item, .nav-link, .navbar-nav {
+  font-family: 'Mulish', sans-serif !important;
+}
+
+/* Ensure Bootstrap dropdown functionality is not overridden */
+.dropdown-toggle::after {
+  display: inline-block !important;
+  margin-left: 0.255em !important;
+  vertical-align: 0.255em !important;
+  content: "" !important;
+  border-top: 0.3em solid !important;
+  border-right: 0.3em solid transparent !important;
+  border-bottom: 0 !important;
+  border-left: 0.3em solid transparent !important;
+}
+
 /* User link container styling */
 .user-signin-link,
 .user-signout-link,
@@ -654,7 +671,36 @@ h3{
 
 .navbar .dropdown-menu {
   position: absolute;
-  z-index: 1060; /* Dropdown above both navbars */
+  z-index: 1060 !important; /* Dropdown above both navbars */
+}
+
+/* Ensure dropdown menus are clickable and visible */
+.navbar-nav .dropdown-menu {
+  display: none;
+  position: absolute;
+  z-index: 1060 !important;
+  min-width: 200px;
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.navbar-nav .dropdown-menu.show {
+  display: block !important;
+}
+
+/* Ensure dropdown toggles are clickable */
+.navbar-nav .dropdown-toggle {
+  cursor: pointer;
+  text-decoration: none;
+  pointer-events: auto !important;
+}
+
+.navbar-nav .dropdown-toggle:focus,
+.navbar-nav .dropdown-toggle:active {
+  outline: none;
+  box-shadow: none;
 }
 
 .navbar form .btn-primary {

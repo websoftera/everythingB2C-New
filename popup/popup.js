@@ -95,12 +95,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Update wishlist count in header
     function updateWishlistCount() {
-        fetch('ajax/list_wishlist.php')
+        fetch('ajax/get_wishlist_count.php')
             .then(response => response.json())
             .then(data => {
                 const wishlistCountElement = document.querySelector('.wishlist-count');
                 if (wishlistCountElement) {
-                    const count = data.wishlistItems ? data.wishlistItems.length : 0;
+                    const count = data.wishlist_count || 0;
                     if (count > 0) {
                         wishlistCountElement.textContent = count;
                         wishlistCountElement.style.display = 'block';
