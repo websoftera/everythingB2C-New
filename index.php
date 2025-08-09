@@ -1,5 +1,5 @@
 <?php
-$pageTitle = 'Home';
+$pageTitle = 'EverythingB2C';
 require_once 'includes/header.php';
 
 // Get data from database
