@@ -2,7 +2,7 @@
 
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
+  
 }
 
 
@@ -241,7 +241,7 @@ body {
 .add-to-cart button {
   background-color: #1b2d50;
   color: white;
-  padding: 8px 10px;
+  padding: 7px 10px;;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -294,7 +294,7 @@ body {
   background-color: #223459;
   color: white;
   padding: 40px 30px 20px;
-  font-family: Arial, sans-serif;
+  
 }
 
 .footer-container {
@@ -541,12 +541,10 @@ body {
   flex-wrap: wrap;
   justify-content: center;
   width: 100%;
-  background: #EEEEEE;
- box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background: #fff;
   padding-left: 0;
   padding-right: 0;
   margin-bottom: 0px;
-box-shadow: #000;
 
 
 }
@@ -584,20 +582,6 @@ box-shadow: #000;
     justify-content: center;
     align-items: center;
     gap: 1rem; /* Better spacing between items */
-  }
-
-
-
-  /* Optional pipe separator */
-  .category-navbar .nav-item:not(:last-child)::after {
-    content: "|";
-    position: absolute;
-    right: -8px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #ccc;
-    font-size: 14px;
-    font-weight: normal;
   }
 }
 
@@ -674,7 +658,8 @@ box-shadow: #000;
 }
 
 .product-details h3 {
-  margin: 10px 0;
+
+  margin: 10px 2px !important;
   font-size: 15px;
   font-weight: bold;
   text-transform: capitalize !important;

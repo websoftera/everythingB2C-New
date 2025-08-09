@@ -1,17 +1,5 @@
 // popup.js
-console.log('popup.js loaded');
-
-// Test event listener registration
-window.addEventListener('cart-item-removed', function(event) {
-    console.log('TEST: Cart item removed event received:', event.detail);
-});
-
-// Additional test to ensure event listener is working
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('popup.js: DOMContentLoaded - Event listeners should be attached');
-});
 function showPopup() {
-  console.log('showPopup called');
   var overlay = document.getElementById("popupOverlay");
   var form = document.getElementById("popupForm");
   if (overlay) overlay.style.display = "block";
@@ -37,7 +25,13 @@ function checkPincode() {
                 showConfirmButton: false
             });
         } else {
-            alert("Delivery available in your area.");
+            Swal.fire({
+                icon: 'success',
+                title: 'Delivery Available',
+                text: 'Delivery available in your area.',
+                timer: 3000,
+                showConfirmButton: false
+            });
         }
   } else {
           if (typeof Swal !== 'undefined') {
@@ -49,7 +43,13 @@ function checkPincode() {
               showConfirmButton: false
           });
       } else {
-          alert("Sorry, we do not deliver in this area.");
+          Swal.fire({
+              icon: 'error',
+              title: 'Delivery Not Available',
+              text: 'Sorry, we do not deliver in this area.',
+              timer: 4000,
+              showConfirmButton: false
+          });
       }
   }
 }
@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     let val = parseInt(this.value, 10) || 1;
                     if (val < 1) val = 1;
                     this.value = val;
-                    console.log('[popup.js][DEBUG] Quantity input changed:', this, 'value:', val);
+
                 };
                 input.addEventListener('input', handler);
                 input._debugInputHandler = handler;
@@ -143,15 +143,115 @@ document.addEventListener('DOMContentLoaded', function () {
                     input.value = value;
                     input.dispatchEvent(new Event('input', { bubbles: true }));
                     input.dispatchEvent(new Event('change', { bubbles: true }));
-                    console.log('[popup.js][DEBUG] Qty button clicked:', btn, 'new value:', value);
+
                 };
                 btn.addEventListener('click', handler);
                 btn._debugClickHandler = handler;
             });
         });
-        console.log('[popup.js][DEBUG] Re-initialized all quantity controls and handlers after add-to-cart');
+
     }
 
+
+    // Function to load current cart quantity for a product
+    function loadCurrentCartQuantity(productId, quantityInput) {
+        if (!productId || !quantityInput) {
+            return;
+        }
+        
+        fetch(`ajax/check-product-in-cart.php?product_id=${productId}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.in_cart && data.quantity > 0) {
+                    quantityInput.value = data.quantity;
+                }
+            })
+            .catch(err => {});
+    }
+
+    // Global function to initialize quantity inputs (accessible from anywhere)
+    window.initializeQuantityInputs = function(force = false) {
+
+        
+        // Find all quantity inputs across the site with comprehensive selectors
+        const quantityInputs = document.querySelectorAll(`
+            .quantity-input, 
+            .shop-page-quantity-input, 
+            input[name="quantity"], 
+            .product-quantity-input,
+            input[type="number"][min="1"],
+            .quantity-control input[type="number"],
+            .cart-actions input[type="number"],
+            .cart-controls input[type="number"]
+        `);
+
+        
+        quantityInputs.forEach((input, index) => {
+            // Try multiple ways to find the product ID
+            let productId = null;
+            
+            // Method 1: Check data attributes on the input itself
+            productId = input.dataset.productId || input.getAttribute('data-product-id');
+            
+            // Method 2: Check parent containers
+            if (!productId) {
+                const productCard = input.closest('.product-card, .card, .shop-page-product-card, .product-detail-card, [data-product-id]');
+                if (productCard) {
+                    productId = productCard.dataset.productId || productCard.getAttribute('data-product-id');
+                }
+            }
+            
+            // Method 3: Check for add to cart button in same container
+            if (!productId) {
+                const container = input.closest('.product-form, .cart-actions, .cart-controls, .shop-page-cart-actions');
+                if (container) {
+                    const addButton = container.querySelector('.add-to-cart-btn, .add-to-cart, .shop-page-add-to-cart-btn, [data-product-id]');
+                    if (addButton) {
+                        productId = addButton.dataset.productId || addButton.getAttribute('data-product-id');
+                    }
+                }
+            }
+            
+            // Method 4: Check siblings for add to cart button
+            if (!productId) {
+                const parentContainer = input.closest('.product-card, .card, .shop-page-product-card, .product-detail-card');
+                if (parentContainer) {
+                    const addButton = parentContainer.querySelector('.add-to-cart-btn, .add-to-cart, .shop-page-add-to-cart-btn');
+                    if (addButton) {
+                        productId = addButton.dataset.productId || addButton.getAttribute('data-product-id');
+                    }
+                }
+            }
+            
+            // Method 5: Check for any element with data-product-id in the same parent
+            if (!productId) {
+                const anyParent = input.closest('div, section, article');
+                if (anyParent) {
+                    const elementWithId = anyParent.querySelector('[data-product-id]');
+                    if (elementWithId) {
+                        productId = elementWithId.dataset.productId || elementWithId.getAttribute('data-product-id');
+                    }
+                }
+            }
+            
+
+            
+            if (productId) {
+                // Only update if forced or if input value is 1 (default)
+                if (force || input.value == "1") {
+                    loadCurrentCartQuantity(productId, input);
+                }
+            } else {
+
+            }
+        });
+        
+        // Also update popup quantity input if popup is open
+        const popupQtyInput = document.getElementById('popupQtyInput');
+        if (popupQtyInput && window.currentPopupProductId) {
+            loadCurrentCartQuantity(window.currentPopupProductId, popupQtyInput);
+        }
+    };
 
     document.body.addEventListener('click', function(event) {
         const target = event.target;
@@ -209,7 +309,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             cardRoot.querySelectorAll('.btn-qty-minus, .btn-qty-plus').forEach(el => el.disabled = false);
                         }
                         reinitQuantityControlsWithDebug();
-                        console.log('[popup.js][DEBUG] Re-enabled quantity controls for product card:', cardRoot);
+
                     })
                     .catch(error => {
                         console.error('Error checking cart status:', error);
@@ -228,7 +328,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 cardRoot.querySelectorAll('.quantity-input, .shop-page-quantity-input').forEach(el => el.disabled = false);
                 cardRoot.querySelectorAll('.btn-qty-minus, .btn-qty-plus').forEach(el => el.disabled = false);
             }
-            console.log('[popup.js][DEBUG] Add to cart clicked for productId:', productId, 'quantity:', quantity, 'cardRoot:', cardRoot);
+
             fetch('ajax/add-to-cart.php', {
                 method: 'POST',
                 headers: {
@@ -245,8 +345,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 showToast(data.message, statusType);
                 if (data.success) {
                     updateCartCount();
-                    window.dispatchEvent(new Event('cart-updated'));
                     reinitQuantityControlsWithDebug();
+                    // Refresh quantity inputs to show updated cart quantities
+                    window.initializeQuantityInputs();
+                    
+                    // Dispatch cart-updated event with animation info
+                    window.dispatchEvent(new CustomEvent('cart-updated', {
+                      detail: { action: 'updated' }
+                    }));
                 }
             })
             .catch(error => {
@@ -339,8 +445,142 @@ document.addEventListener('DOMContentLoaded', function () {
     // Initial cart count update
     updateCartCount();
     
-    // Initial wishlist count update
+    // Function to initialize all quantity inputs with current cart quantities
+    function initializeQuantityInputs() {
+        // Find all quantity inputs across the site
+        const quantityInputs = document.querySelectorAll('.quantity-input, .shop-page-quantity-input, input[name="quantity"], .product-quantity-input');
+        
+        quantityInputs.forEach(input => {
+            // Try multiple ways to find the product ID
+            let productId = null;
+            
+            // Method 1: Check data attributes on the input itself
+            productId = input.dataset.productId || input.getAttribute('data-product-id');
+            
+            // Method 2: Check parent containers
+            if (!productId) {
+                const productCard = input.closest('.product-card, .card, .shop-page-product-card, .product-detail-card, [data-product-id]');
+                if (productCard) {
+                    productId = productCard.dataset.productId || productCard.getAttribute('data-product-id');
+                }
+            }
+            
+            // Method 3: Check for add to cart button in same container
+            if (!productId) {
+                const container = input.closest('.product-form, .cart-actions, .cart-controls, .shop-page-cart-actions');
+                if (container) {
+                    const addButton = container.querySelector('.add-to-cart-btn, .add-to-cart, .shop-page-add-to-cart-btn, [data-product-id]');
+                    if (addButton) {
+                        productId = addButton.dataset.productId || addButton.getAttribute('data-product-id');
+                    }
+                }
+            }
+            
+            // Method 4: Check siblings for add to cart button
+            if (!productId) {
+                const parentContainer = input.closest('.product-card, .card, .shop-page-product-card, .product-detail-card');
+                if (parentContainer) {
+                    const addButton = parentContainer.querySelector('.add-to-cart-btn, .add-to-cart, .shop-page-add-to-cart-btn');
+                    if (addButton) {
+                        productId = addButton.dataset.productId || addButton.getAttribute('data-product-id');
+                    }
+                }
+            }
+            
+            if (productId) {
+                loadCurrentCartQuantity(productId, input);
+            }
+        });
+        
+        // Also update popup quantity input if popup is open
+        const popupQtyInput = document.getElementById('popupQtyInput');
+        if (popupQtyInput && window.currentPopupProductId) {
+            loadCurrentCartQuantity(window.currentPopupProductId, popupQtyInput);
+        }
+    }
+
+    // Initial setup
     updateWishlistCount();
+    
+    // Multiple initialization points to ensure it runs
+    
+    // 1. Immediate initialization
+    initializeQuantityInputs();
+    
+    // 2. After a short delay
+    setTimeout(() => {
+        initializeQuantityInputs();
+    }, 100);
+    
+    // 3. When DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                initializeQuantityInputs();
+            }, 200);
+        });
+    } else {
+        // DOM is already loaded
+        setTimeout(() => {
+            initializeQuantityInputs();
+        }, 200);
+    }
+    
+    // 4. When window is fully loaded
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            initializeQuantityInputs(true); // Force update on window load
+        }, 300);
+    });
+    
+    // 5. Force initialization after additional delay (fallback)
+    setTimeout(() => {
+        initializeQuantityInputs(true);
+    }, 1000);
+    
+    // Add manual refresh function for debugging
+    window.refreshQuantities = function() {
+
+        initializeQuantityInputs(true);
+    };
+    
+    // Initialize quantity inputs when new content is dynamically added
+    const observer = new MutationObserver((mutations) => {
+        let shouldReinitialize = false;
+        mutations.forEach((mutation) => {
+            if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                // Check if any added nodes contain quantity inputs
+                mutation.addedNodes.forEach((node) => {
+                    if (node.nodeType === 1) { // Element node
+                        if (node.querySelector && node.querySelector('.quantity-input, .shop-page-quantity-input, input[name="quantity"]')) {
+                            shouldReinitialize = true;
+                        }
+                    }
+                });
+            }
+        });
+        
+        if (shouldReinitialize) {
+            setTimeout(() => {
+                initializeQuantityInputs();
+            }, 50);
+        }
+    });
+    
+    // Start observing
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+});
+
+// Listen for cart updates to refresh quantity inputs
+window.addEventListener('cart-updated', function() {
+    setTimeout(() => {
+        if (window.initializeQuantityInputs) {
+            window.initializeQuantityInputs();
+        }
+    }, 100);
 });
 
 // Global handler for all quantity plus/minus buttons (event delegation)
@@ -413,7 +653,12 @@ document.body.addEventListener('change', async function(e) {
           showConfirmButton: false
         });
       } else {
-        alert(result.message);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: result.message,
+            confirmButtonText: 'OK'
+        });
       }
     }
   } catch (err) {
@@ -445,7 +690,7 @@ document.body.addEventListener('click', function(e) {
     const productId = btn.dataset.productId || btn.getAttribute('data-product-id') || window.currentPopupProductId;
     if (!productId) return;
     btn.disabled = true;
-    btn.textContent = 'ADDING...';
+    btn.textContent = 'UPDATING...';
     fetch('ajax/add-to-cart.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -456,9 +701,15 @@ document.body.addEventListener('click', function(e) {
       btn.disabled = false;
       btn.textContent = 'ADD TO CART';
       if (data.success) {
-        window.dispatchEvent(new Event('cart-updated'));
-        btn.textContent = 'ADDED!';
+        btn.textContent = 'UPDATED!';
         setTimeout(function(){ btn.textContent = 'ADD TO CART'; }, 1200);
+        // Refresh quantity inputs on the page
+        initializeQuantityInputs();
+        
+        // Dispatch cart-updated event with animation info
+        window.dispatchEvent(new CustomEvent('cart-updated', {
+          detail: { action: 'added' }
+        }));
       } else {
         if (typeof Swal !== 'undefined') {
             Swal.fire({
@@ -469,7 +720,12 @@ document.body.addEventListener('click', function(e) {
                 showConfirmButton: false
             });
         } else {
-            alert(data.message || 'Could not add to cart.');
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message || 'Could not add to cart.',
+                confirmButtonText: 'OK'
+            });
         }
       }
     });
@@ -504,7 +760,12 @@ document.body.addEventListener('click', function(e) {
                 showConfirmButton: false
             });
         } else {
-            alert(data.message || 'Could not update wishlist.');
+            Swal.fire({
+                icon: 'error',
+                title: 'Wishlist Error',
+                text: data.message || 'Could not update wishlist.',
+                confirmButtonText: 'OK'
+            });
         }
       }
     });

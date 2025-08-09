@@ -1,3 +1,38 @@
+/* Google Font Import - Mulish */
+@import url('https://fonts.googleapis.com/css2?family=Mulish:wght@200;300;400;500;600;700;800;900&display=swap');
+
+/* Font Awesome Import - Ensure icons are always available in admin */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
+
+/* Global font family for admin area - EXCEPT Font Awesome icons */
+.everythingb2c-admin-container * {
+    font-family: 'Mulish', sans-serif !important;
+}
+
+/* Preserve Font Awesome icon fonts in admin area */
+.everythingb2c-admin-container .fa, 
+.everythingb2c-admin-container .fas, 
+.everythingb2c-admin-container .far, 
+.everythingb2c-admin-container .fal, 
+.everythingb2c-admin-container .fab, 
+.everythingb2c-admin-container .fad,
+.everythingb2c-admin-container [class^="fa-"], 
+.everythingb2c-admin-container [class*=" fa-"],
+.everythingb2c-admin-container .fa:before, 
+.everythingb2c-admin-container .fas:before, 
+.everythingb2c-admin-container .far:before, 
+.everythingb2c-admin-container .fal:before, 
+.everythingb2c-admin-container .fab:before, 
+.everythingb2c-admin-container .fad:before,
+.everythingb2c-admin-container [class^="fa-"]:before, 
+.everythingb2c-admin-container [class*=" fa-"]:before {
+    font-family: "Font Awesome 6 Free", "Font Awesome 6 Pro", "Font Awesome 6 Brands", "Font Awesome 5 Free", "Font Awesome 5 Pro", "FontAwesome" !important;
+    font-style: normal !important;
+    font-variant: normal !important;
+    text-rendering: auto !important;
+    -webkit-font-smoothing: antialiased !important;
+}
+
 /* Admin Dashboard Styles - Custom Classes to Avoid Conflicts */
 .everythingb2c-admin-container {
     display: flex;

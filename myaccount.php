@@ -2,6 +2,13 @@
 if (session_status() === PHP_SESSION_NONE) session_start();
 require_once 'includes/functions.php';
 
+// Handle logout BEFORE any output
+if (isset($_GET['logout'])) {
+    session_destroy();
+    header('Location: index.php');
+    exit;
+}
+
 if (!isLoggedIn()) {
     $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
     header('Location: login.php');
@@ -17,11 +24,9 @@ $userOrders = getUserOrders($userId, 5);
 $userAddresses = getUserAddresses($userId);
 $wishlistItems = getWishlistItems($userId);
 
-if (isset($_GET['logout'])) {
-    session_destroy();
-    header('Location: index.php');
-    exit;
-}
+// Breadcrumb Navigation
+$breadcrumbs = generateBreadcrumb($pageTitle);
+echo renderBreadcrumb($breadcrumbs);
 
 if (isset($_POST['add_address'])) {
     $data = [
@@ -339,11 +344,6 @@ if (isset($_POST['delete_address'])) {
 
 </style>
 
-<div class="account-banner">
-    <div class="custom-container">
-        <h2>My Account</h2>
-    </div>
-</div>
 
 <div class="custom-container account-wrapper">
     <div class="account-sidebar">
@@ -365,7 +365,7 @@ if (isset($_POST['delete_address'])) {
                 <a href="#profile" class="account-menu-item" onclick="showSection('profile')">
                     <i class="fas fa-user"></i> Account Info
                 </a>
-                <a href="?logout=1" class="account-menu-item logout" onclick="return confirm('Are you sure you want to logout?')">
+                <a href="#" class="account-menu-item logout" onclick="confirmLogout(); return false;">
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </a>
             </div>
@@ -568,7 +568,7 @@ if (isset($_POST['delete_address'])) {
                                         </form>
                                     <?php endif; ?>
                                     <button type="button" class="btn small" onclick="handleEditAddressClick(<?php echo $address['id']; ?>)">Edit</button>
-                                    <form method="post" style="display:inline;" onsubmit="return confirm('Delete this address?');">
+                                    <form method="post" style="display:inline;" onsubmit="return confirmDeleteAddress(this);">
                                         <input type="hidden" name="delete_address" value="1">
                                         <input type="hidden" name="address_id" value="<?php echo $address['id']; ?>">
                                         <button type="submit" class="btn small danger">Delete</button>
@@ -599,7 +599,7 @@ if (isset($_POST['delete_address'])) {
                                 <h6><?php echo htmlspecialchars($item['name']); ?></h6>
                                 <p>₹<?php echo number_format($item['selling_price'], 0); ?></p>
                                 <a href="product.php?slug=<?php echo $item['slug']; ?>" class="btn small">View</a>
-                                <a href="ajax/remove-from-wishlist.php?product_id=<?php echo $item['id']; ?>" class="btn small danger" onclick="return confirm('Remove from wishlist?')">Remove</a>
+                                <a href="#" class="btn small danger" onclick="confirmRemoveWishlist('<?php echo $item['id']; ?>'); return false;">Remove</a>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -728,4 +728,57 @@ window.onclick = function(event) {
 }
 </script>
 
+<script>
+function confirmLogout() {
+    Swal.fire({
+        title: 'Logout?',
+        text: 'Are you sure you want to logout?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, logout!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = '?logout=1';
+        }
+    });
+}
+
+function confirmDeleteAddress(form) {
+    Swal.fire({
+        title: 'Delete Address?',
+        text: 'Are you sure you want to delete this address?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.submit();
+        }
+    });
+    return false;
+}
+
+function confirmRemoveWishlist(productId) {
+    Swal.fire({
+        title: 'Remove from Wishlist?',
+        text: 'Are you sure you want to remove this item from your wishlist?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, remove it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = 'ajax/remove-from-wishlist.php?product_id=' + productId;
+        }
+    });
+}
+</script>
 <?php include 'includes/footer.php'; ?>

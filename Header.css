@@ -1,6 +1,26 @@
+/* Google Font Import - Mulish */
+@import url('https://fonts.googleapis.com/css2?family=Mulish:wght@200;300;400;500;600;700;800;900&display=swap');
+
+/* Global font family for entire website - EXCEPT Font Awesome icons */
+* {
+  font-family: 'Mulish', sans-serif !important;
+}
+
+/* Preserve Font Awesome icon fonts */
+.fa, .fas, .far, .fal, .fab, .fad, .fass, .fasr, .fatl, .fatr,
+[class^="fa-"], [class*=" fa-"],
+.fa:before, .fas:before, .far:before, .fal:before, .fab:before, .fad:before, .fass:before, .fasr:before, .fatl:before, .fatr:before,
+[class^="fa-"]:before, [class*=" fa-"]:before {
+  font-family: "Font Awesome 6 Free", "Font Awesome 6 Pro", "Font Awesome 6 Brands", "Font Awesome 5 Free", "Font Awesome 5 Pro", "FontAwesome" !important;
+  font-style: normal !important;
+  font-variant: normal !important;
+  text-rendering: auto !important;
+  -webkit-font-smoothing: antialiased !important;
+}
+
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
+  font-family: 'Mulish', sans-serif;
 }
 
 
@@ -136,7 +156,7 @@ body {
 .add-to-cart button {
   background-color: #1b2d50;
   color: white;
-  padding: 8px 10px;
+  padding: 7px 10px;;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -198,7 +218,7 @@ body {
   background-color: #223459;
   color: white;
   padding: 40px 30px 20px;
-  font-family: Arial, sans-serif;
+  
 }
 
 .footer-container {
@@ -445,12 +465,10 @@ body {
   flex-wrap: wrap;
   justify-content: center;
   width: 100%;
-  background: #EEEEEE;
- box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background: #fff;
   padding-left: 0;
   padding-right: 0;
   margin-bottom: 0px;
-box-shadow: #000;
 
 
 }
@@ -479,7 +497,6 @@ box-shadow: #000;
     z-index: 900; /* Keeps it below primary nav (z-index ~1050) */
     background-color: #ffffff;
     border-top: 1px solid #e0e0e0;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
     padding: 0; /* Remove default padding */
   }
 
@@ -506,17 +523,7 @@ box-shadow: #000;
     color: red;
   }
 
-  /* Optional pipe separator */
-  .category-navbar .nav-item:not(:last-child)::after {
-    content: "|";
-    position: absolute;
-    right: -8px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #ccc;
-    font-size: 14px;
-    font-weight: normal;
-  }
+
 }
 
 .nav-btn.prev,
@@ -554,7 +561,7 @@ box-shadow: #000;
   border: 1px solid #ccc;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
   background-color: #fff;
-  font-family: Arial, sans-serif;
+  
   transition: box-shadow 0.3s ease;
   display: flex;
   flex-direction: column;
@@ -577,7 +584,7 @@ box-shadow: #000;
   color: white;
   text-align: center;
   width: 100%;
-  padding: 6px 10px;
+  padding: 7px 10px;
   font-weight: bold;
   font-size: 14px;
 }
@@ -601,7 +608,8 @@ box-shadow: #000;
 }
 
 .product-details h3 {
-  margin: 10px 0;
+
+  margin: 10px 2px !important;
   font-size: 15px;
   font-weight: bold;
   text-transform: capitalize;
@@ -875,7 +883,6 @@ input[type="checkbox"]:checked + .heart-icon {
 
 .cart-icon {
   font-size: 32px;
-  margin-bottom: 16px;
 }
 
 .cart-message {
@@ -911,9 +918,29 @@ input[type="checkbox"]:checked + .heart-icon {
 /*--------------------------------------------------------------*/
 
 
+/* Google Font Import - Mulish */
+@import url('https://fonts.googleapis.com/css2?family=Mulish:wght@200;300;400;500;600;700;800;900&display=swap');
+
+/* Global font family for entire website - EXCEPT Font Awesome icons */
+* {
+  font-family: 'Mulish', sans-serif !important;
+}
+
+/* Preserve Font Awesome icon fonts */
+.fa, .fas, .far, .fal, .fab, .fad, .fass, .fasr, .fatl, .fatr,
+[class^="fa-"], [class*=" fa-"],
+.fa:before, .fas:before, .far:before, .fal:before, .fab:before, .fad:before, .fass:before, .fasr:before, .fatl:before, .fatr:before,
+[class^="fa-"]:before, [class*=" fa-"]:before {
+  font-family: "Font Awesome 6 Free", "Font Awesome 6 Pro", "Font Awesome 6 Brands", "Font Awesome 5 Free", "Font Awesome 5 Pro", "FontAwesome" !important;
+  font-style: normal !important;
+  font-variant: normal !important;
+  text-rendering: auto !important;
+  -webkit-font-smoothing: antialiased !important;
+}
+
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
+  font-family: 'Mulish', sans-serif;
 }
 
 
@@ -1068,7 +1095,7 @@ padding-right: 20px;
 .add-to-cart button {
   background-color: #1b2d50;
   color: white;
-  padding: 8px 10px;
+  padding: 7px 10px;;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -1121,7 +1148,7 @@ padding-right: 20px;
   background-color: #223459;
   color: white;
   padding: 40px 30px 20px;
-  font-family: Arial, sans-serif;
+  
 }
 
 .footer-container {
@@ -1442,12 +1469,10 @@ padding-right: 20px;
   flex-wrap: wrap;
   justify-content: center;
   width: 100%;
-  background: #EEEEEE;
- box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background: #fff;
   padding-left: 0;
   padding-right: 0;
   margin-bottom: 0px;
-box-shadow: #000;
 
 
 }
@@ -1476,7 +1501,6 @@ box-shadow: #000;
     z-index: 900; /* Keeps it below primary nav (z-index ~1050) */
     background-color: #ffffff;
     border-top: 1px solid #e0e0e0;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
     padding: 0; /* Remove default padding */
   }
 
@@ -1503,17 +1527,6 @@ box-shadow: #000;
     color: red;
   }
 
-  /* Optional pipe separator */
-  .category-navbar .nav-item:not(:last-child)::after {
-    content: "|";
-    position: absolute;
-    right: -8px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #ccc;
-    font-size: 14px;
-    font-weight: normal;
-  }
 }
 
 .nav-btn.prev,
@@ -1564,7 +1577,7 @@ box-shadow: #000;
   border: 1px solid #ccc;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
   background-color: #fff;
-  font-family: Arial, sans-serif;
+  
   transition: box-shadow 0.3s ease;
   display: flex;
   flex-direction: column;
@@ -1587,7 +1600,7 @@ box-shadow: #000;
   color: white;
   text-align: center;
   width: 100%;
-  padding: 6px 10px;
+  padding: 7px 10px;
   font-weight: bold;
   font-size: 14px;
 }
@@ -1596,7 +1609,7 @@ box-shadow: #000;
   color: white;
   text-align: center;
   width: 100%;
-  padding: 6px 10px;
+  padding: 7px 10px;
   font-weight: bold;
   font-size: 14px;
 
@@ -1607,7 +1620,7 @@ box-shadow: #000;
   color: white;
   text-align: center;
   width: 100%;
-  padding: 6px 10px;
+  padding: 7px 10px;
   font-weight: bold;
   font-size: 14px;
 
@@ -1620,7 +1633,7 @@ box-shadow: #000;
   color: white;
   text-align: center;
   width: 100%;
-  padding: 6px 10px;
+  padding: 7px 10px;
   font-weight: bold;
   font-size: 14px;
 
@@ -1648,7 +1661,8 @@ box-shadow: #000;
 }
 
 .product-details h3 {
-  margin: 10px 0;
+
+  margin: 10px 2px !important;
   font-size: 15px;
   font-weight: bold;
   text-transform: capitalize;
@@ -2472,12 +2486,6 @@ html, body {
     color: #007bff;
   }
   
-  .category-navbar .nav-item:not(:last-child)::after {
-    content: '|';
-    color: #dee2e6;
-    margin-left: 5px;
-    margin-right: 5px;
-  }
 }
 
 /* Mobile connected search bar styles */
@@ -2726,8 +2734,6 @@ input[type="checkbox"]:checked + .heart-icon,
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
 }
 
 .wishlist-count {
@@ -3016,6 +3022,7 @@ input[type="checkbox"]:checked + .heart-icon,
 
 /* Ensure consistent product title heights for uniform card appearance */
 .product-details h3 {
+
   min-height: 32px !important;
   max-height: 32px !important;
   height: 32px !important;

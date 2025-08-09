@@ -37,13 +37,6 @@ echo renderBreadcrumb($breadcrumbs);
 ?>
 
 <!-- Banner/Breadcrumb (skip homepage) -->
-<div class="page-banner" style="background: url('asset/images/internalpage-bg.webp') center/cover no-repeat; min-height: 240px; display: flex; align-items: center;">
-    <div class="container">
-        <h2 style="color: #fff; font-size: 2rem; font-weight: bold; text-shadow: 0 2px 8px rgba(0,0,0,0.3); margin: 0; padding: 32px 0;">
-            <?php echo htmlspecialchars($pageTitle); ?>
-        </h2>
-    </div>
-</div>
 
 <div class="container mt-4">
     <!-- <h1>Shopping Cart</h1> -->
@@ -185,7 +178,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         showConfirmButton: false
                     });
                 } else {
-                    alert('Please enter a valid quantity (1 or more).');
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Invalid Quantity',
+                        text: 'Please enter a valid quantity (1 or more).',
+                        confirmButtonText: 'OK'
+                    });
                 }
                 this.value = lastValid;
                 this.classList.remove('is-invalid');
@@ -275,7 +273,12 @@ document.addEventListener('DOMContentLoaded', function() {
                             showConfirmButton: false
                         });
                     } else {
-                        alert('Error: ' + data.message);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Error: ' + data.message,
+                            confirmButtonText: 'OK'
+                        });
                     }
                 }
             });
@@ -288,7 +291,17 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', function() {
             const cartId = this.getAttribute('data-cart-id');
             
-            if (confirm('Are you sure you want to remove this item?')) {
+            Swal.fire({
+                title: 'Remove Item?',
+                text: 'Are you sure you want to remove this item?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, remove it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
                 fetch('ajax/remove-from-cart.php', {
                     method: 'POST',
                     headers: {
@@ -324,11 +337,17 @@ document.addEventListener('DOMContentLoaded', function() {
                                 showConfirmButton: false
                             });
                         } else {
-                            alert('Error: ' + data.message);
+                            Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Error: ' + data.message,
+                            confirmButtonText: 'OK'
+                        });
                         }
                     }
                 });
-            }
+                }
+            });
         });
     });
 });
@@ -455,7 +474,17 @@ document.getElementById('cartProductDetailModal').onclick = function(e) {
 
 // Remove All Items functionality
 document.getElementById('removeAllItems').addEventListener('click', function() {
-    if (confirm('Are you sure you want to remove all items from your cart? This action cannot be undone.')) {
+    Swal.fire({
+        title: 'Remove All Items?',
+        text: 'Are you sure you want to remove all items from your cart? This action cannot be undone.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, remove all!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
         // Show loading state
         const button = this;
         const originalText = button.innerHTML;
@@ -490,7 +519,12 @@ document.getElementById('removeAllItems').addEventListener('click', function() {
                         showConfirmButton: false
                     });
                 } else {
-                    alert('All items have been removed from your cart.');
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Cart Cleared',
+                        text: 'All items have been removed from your cart.',
+                        confirmButtonText: 'OK'
+                    });
                 }
                 // Redirect to empty cart page or reload
                 window.location.reload();
@@ -504,7 +538,12 @@ document.getElementById('removeAllItems').addEventListener('click', function() {
                         showConfirmButton: false
                     });
                 } else {
-                    alert('Failed to remove items: ' + (data.message || 'Unknown error'));
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Remove Failed',
+                        text: 'Failed to remove items: ' + (data.message || 'Unknown error'),
+                        confirmButtonText: 'OK'
+                    });
                 }
                 // Reset button
                 button.innerHTML = originalText;
@@ -522,12 +561,18 @@ document.getElementById('removeAllItems').addEventListener('click', function() {
                     showConfirmButton: false
                 });
             } else {
-                alert('An error occurred while removing items from cart.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while removing items from cart.',
+                    confirmButtonText: 'OK'
+                });
             }
             // Reset button
             button.innerHTML = originalText;
             button.disabled = false;
         });
-    }
+        }
+    });
 });
 </script> 

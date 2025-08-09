@@ -83,7 +83,7 @@ $qrPngData = ob_get_clean();
 $qrBase64 = 'data:image/png;base64,' . base64_encode($qrPngData);
 
 $html = '<html><head><style>
-body { font-family: Arial, sans-serif; font-size: 12px; color: #222; }
+body {  font-size: 12px; color: #222; }
 .header { border-bottom: 1px solid #000; margin-bottom: 10px; padding-bottom: 10px; }
 .header-table { width: 100%; }
 .header-left { text-align: left; vertical-align: top; }

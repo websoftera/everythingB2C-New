@@ -117,6 +117,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $pageTitle = 'Checkout';
 include 'includes/header.php';
 
+// Breadcrumb Navigation
+$breadcrumbs = generateBreadcrumb($pageTitle);
+echo renderBreadcrumb($breadcrumbs);
+
 $addresses = getUserAddresses($userId);
 $defaultAddress = getDefaultAddress($userId);
 $cartItems = getCartItems($userId);
@@ -202,14 +206,6 @@ foreach ($cartItems as $item) {
 }
 </style>
 
-<div class="page-banner" style="background: url('asset/images/internalpage-bg.webp') center/cover no-repeat; min-height: 240px; display: flex; align-items: center;">
-    <div class="container">
-        <h2 style="color: #fff; font-size: 2rem; font-weight: bold; text-shadow: 0 2px 8px rgba(0,0,0,0.3); margin: 0; padding: 32px 0;">
-            Checkout
-        </h2>
-    </div>
-</div>
-
 <?php if (isset($error_message)): ?>
 <div class="container mt-3">
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -263,7 +259,7 @@ foreach ($cartItems as $item) {
                   <button type="button" class="btn btn-outline-primary btn-sm" onclick="editAddress(<?php echo $addr['id']; ?>)">
                     <i class="fas fa-edit"></i> Edit
                   </button>
-                  <form method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this address?');">
+                  <form method="post" style="display:inline;" onsubmit="return confirmDeleteCheckoutAddress(this);">
                     <input type="hidden" name="delete_address" value="<?php echo $addr['id']; ?>">
                     <button type="submit" class="btn btn-outline-danger btn-sm"><i class="fas fa-trash"></i> Delete</button>
                   </form>
@@ -582,7 +578,12 @@ document.querySelectorAll('input[name="selected_address_left"]').forEach(functio
                         showConfirmButton: false
                     });
                 } else {
-                    alert('Payment verification failed: ' + (vresp.message || ''));
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Payment Verification Failed',
+                        text: 'Payment verification failed: ' + (vresp.message || ''),
+                        confirmButtonText: 'OK'
+                    });
                 }
                   window.location.reload();
                 }
@@ -607,7 +608,12 @@ document.querySelectorAll('input[name="selected_address_left"]').forEach(functio
                         showConfirmButton: false
                     });
                 } else {
-                    alert('Error: ' + (resp.message || 'Could not initiate payment.'));
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Payment Error',
+                        text: 'Error: ' + (resp.message || 'Could not initiate payment.'),
+                        confirmButtonText: 'OK'
+                    });
                 }
         }
       });
@@ -996,4 +1002,23 @@ if (window.history.replaceState) {
   font-weight: bold;
 }
 </style>
+<script>
+function confirmDeleteCheckoutAddress(form) {
+    Swal.fire({
+        title: 'Delete Address?',
+        text: 'Are you sure you want to delete this address?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.submit();
+        }
+    });
+    return false;
+}
+</script>
 <?php include 'includes/footer.php'; ?> 

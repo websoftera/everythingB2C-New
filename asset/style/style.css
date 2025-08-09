@@ -1,6 +1,413 @@
+/* Google Font Import - Mulish */
+@import url('https://fonts.googleapis.com/css2?family=Mulish:wght@200;300;400;500;600;700;800;900&display=swap');
+
+/* Font Awesome Import - Ensure icons are always available */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
+
+/* Global font family for entire website - EXCEPT Font Awesome icons */
+* {
+  font-family: 'Mulish', sans-serif !important;
+}
+
+/* Preserve Font Awesome icon fonts */
+.fa, .fas, .far, .fal, .fab, .fad, .fass, .fasr, .fatl, .fatr,
+[class^="fa-"], [class*=" fa-"],
+.fa:before, .fas:before, .far:before, .fal:before, .fab:before, .fad:before, .fass:before, .fasr:before, .fatl:before, .fatr:before,
+[class^="fa-"]:before, [class*=" fa-"]:before {
+  font-family: "Font Awesome 6 Free", "Font Awesome 6 Pro", "Font Awesome 6 Brands", "Font Awesome 5 Free", "Font Awesome 5 Pro", "FontAwesome" !important;
+  font-style: normal !important;
+  font-variant: normal !important;
+  text-rendering: auto !important;
+  -webkit-font-smoothing: antialiased !important;
+  display: inline-block !important;
+  font-weight: 900 !important; /* Ensure solid icons have proper weight */
+}
+
+/* Specific Font Awesome icon debugging and fixes */
+.fas {
+  font-weight: 900 !important; /* Solid icons need 900 weight */
+}
+
+.far {
+  font-weight: 400 !important; /* Regular icons need 400 weight */
+}
+
+.fab {
+  font-weight: 400 !important; /* Brand icons need 400 weight */
+}
+
+/* Ensure service section icons are visible */
+.service-section .fas,
+.feature .fas,
+.features .fas {
+  font-family: "Font Awesome 6 Free" !important;
+  font-weight: 900 !important;
+  display: inline-block !important;
+}
+
+/* User Sign In/Sign Out Icon and Text Styles */
+.user-signin-icon {
+  color: #28a745 !important; /* Green color for sign-in */
+  font-size: 20px !important;
+  transition: color 0.3s ease, transform 0.2s ease !important;
+}
+
+.user-signin-text {
+  color: #28a745 !important; /* Green color for sign-in text */
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  transition: color 0.3s ease !important;
+}
+
+.user-signin-link:hover .user-signin-icon {
+  color: #20c997 !important; /* Lighter green on hover */
+  transform: scale(1.1) !important;
+}
+
+.user-signin-link:hover .user-signin-text {
+  color: #20c997 !important; /* Lighter green on hover */
+}
+
+.user-signout-icon {
+  color: #dc3545 !important; /* Red color for sign-out/logout */
+  font-size: 20px !important;
+  transition: color 0.3s ease, transform 0.2s ease !important;
+}
+
+.user-signout-text {
+  color: #dc3545 !important; /* Red color for sign-out text */
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  transition: color 0.3s ease !important;
+}
+
+.user-signout-link:hover .user-signout-icon {
+  color: #e74c3c !important; /* Lighter red on hover */
+  transform: scale(1.1) !important;
+}
+
+.user-signout-link:hover .user-signout-text {
+  color: #e74c3c !important; /* Lighter red on hover */
+}
+
+/* User Account Icon and Welcome Text Styles */
+.user-account-icon {
+  color: #007bff !important; /* Blue color for account icon */
+  font-size: 20px !important;
+  vertical-align: middle !important;
+  line-height: 1 !important;
+}
+
+.user-account-link:hover .user-account-icon {
+  color: #0056b3 !important; /* Darker blue on hover */
+  transform: scale(1.1) !important;
+}
+
+.user-welcome-text {
+  display: flex !important;
+  flex-direction: column !important;
+  line-height: 1.1 !important;
+  text-align: left !important;
+}
+
+.welcome-line-1 {
+  font-size: 10px !important;
+  font-weight: 400 !important;
+  color: #666 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.welcome-line-2 {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: #333 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-transform: capitalize !important;
+}
+
+.user-account-link:hover .welcome-line-1 {
+  color: #0056b3 !important; /* Blue on hover */
+}
+
+.user-account-link:hover .welcome-line-2 {
+  color: #0056b3 !important; /* Blue on hover */
+}
+
+/* Ensure user icons maintain proper font family */
+.user-signin-icon,
+.user-signout-icon {
+  font-family: "Font Awesome 6 Free" !important;
+  font-weight: 900 !important;
+  display: inline-block !important;
+}
+
+/* User link container styling */
+.user-signin-link,
+.user-signout-link,
+.user-account-link {
+  white-space: nowrap !important;
+  align-items: center !important;
+  gap: 0.25rem !important;
+  padding: 0.25rem 0.5rem !important;
+  border-radius: 0.25rem !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.user-signin-link:hover,
+.user-signout-link:hover,
+.user-account-link:hover {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Home Icon Styles */
+.home-icon {
+  color: #16BAE4 !important; /* Use the same blue color as hover */
+  font-size: 24px !important;
+  transition: all 0.3s ease !important;
+}
+
+.home-link:hover .home-icon {
+  color: #16BAE4 !important; /* Same color on hover */
+}
+
+/* Wishlist Icon Styles */
+.wishlist-icon-container {
+  position: relative !important;
+  display: inline-block !important;
+}
+
+.wishlist-icon {
+  font-size: 22px !important;
+  transition: all 0.3s ease !important;
+}
+
+/* Default wishlist icon (outline) */
+.wishlist-icon.bi-heart {
+  color: #DE0085 !important; /* Pink color for outline */
+}
+
+/* Filled wishlist icon (when items exist) */
+.wishlist-icon.bi-heart-fill {
+  color: #DE0085 !important; /* Pink color when filled */
+}
+
+/* Hover effects for wishlist */
+.wishlist-link:hover .wishlist-icon.bi-heart {
+  color: #DE0085 !important; /* Pink color on hover */
+}
+
+.wishlist-link:hover .wishlist-icon.bi-heart-fill {
+  color: #B8006B !important; /* Darker pink on hover when already filled */
+}
+
+/* Cart Icon Styles */
+.cart-icon {
+  transition: transform 0.3s ease !important;
+  vertical-align: middle !important;
+}
+
+.cart-icon:hover {
+  transform: scale(1.1) !important;
+}
+
+/* Floating Cart Button Styles */
+.floating-cart-btn {
+  position: fixed !important;
+  bottom: 32px !important;
+  right: 32px !important;
+  z-index: 1050 !important;
+  display: flex;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 75px !important;
+  height: 75px !important;
+  background: #28a745 !important;
+  border-radius: 50% !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18) !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+}
+
+.floating-cart-icon {
+  width: 50px !important;
+  height: 40px !important;
+  transition: transform 0.3s ease !important;
+}
+
+.floating-cart-btn:hover {
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25) !important;
+}
+
+.floating-cart-btn:hover .floating-cart-icon {
+  transform: scale(1.1) !important;
+}
+
+/* Professional Floating Cart Animation Classes */
+.floating-cart-btn.cart-updated {
+  animation: cartBounceSubtle 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
+}
+
+.floating-cart-btn.cart-added {
+  animation: cartPulseSubtle 0.9s ease-out !important;
+}
+
+.floating-cart-btn.cart-removed {
+  animation: cartShakeSubtle 0.6s ease-out !important;
+}
+
+/* Professional Cart Animations */
+@keyframes cartBounceSubtle {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  }
+  50% {
+    transform: scale(1.15);
+    box-shadow: 0 8px 32px rgba(40, 167, 69, 0.25);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  }
+}
+
+@keyframes cartPulseSubtle {
+  0% {
+    transform: scale(1);
+    background: #28a745;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  }
+  30% {
+    transform: scale(1.2);
+    background: #20c997;
+    box-shadow: 0 8px 32px rgba(32, 201, 151, 0.3);
+  }
+  60% {
+    transform: scale(1.1);
+    background: #17a2b8;
+    box-shadow: 0 6px 24px rgba(23, 162, 184, 0.25);
+  }
+  100% {
+    transform: scale(1);
+    background: #28a745;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  }
+}
+
+@keyframes cartShakeSubtle {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-3px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(3px);
+  }
+}
+
+/* Professional Count Badge Animation */
+#floatingCartCount {
+  transition: all 0.3s ease !important;
+}
+
+#floatingCartCount.count-updated {
+  animation: countBounceSubtle 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
+}
+
+@keyframes countBounceSubtle {
+  0% {
+    transform: scale(1);
+    color: #fff;
+  }
+  50% {
+    transform: scale(1.3);
+    color: #ffd700;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+  }
+  100% {
+    transform: scale(1);
+    color: #fff;
+  }
+}
+
+
+
+/* Mobile responsive styles for navigation icons */
+@media (max-width: 768px) {
+  .user-signin-icon,
+  .user-signout-icon {
+    font-size: 18px !important;
+  }
+  
+  .user-signin-text,
+  .user-signout-text {
+    font-size: 10px !important;
+    letter-spacing: 0.3px !important;
+  }
+  
+  .welcome-line-1 {
+    font-size: 9px !important;
+  }
+  
+  .welcome-line-2 {
+    font-size: 10px !important;
+  }
+  
+  .user-account-icon {
+    font-size: 18px !important;
+  }
+  
+  .home-icon {
+    font-size: 22px !important;
+  }
+  
+  .wishlist-icon {
+    font-size: 20px !important;
+  }
+  
+  .cart-icon {
+    width: 26px !important;
+    height: 26px !important;
+  }
+  
+  .floating-cart-btn {
+    width: 65px !important;
+    height: 65px !important;
+    bottom: 20px !important;
+    right: 20px !important;
+  }
+  
+  .floating-cart-icon {
+    width: 36px !important;
+    height: 28px !important;
+  }
+  
+  .user-signin-link:hover .user-signin-icon,
+  .user-signout-link:hover .user-signout-icon {
+    transform: scale(1.05) !important; /* Smaller scale on mobile */
+  }
+}
+
+/* Extra small mobile devices */
+@media (max-width: 480px) {
+  .user-signin-text,
+  .user-signout-text {
+    display: none !important; /* Hide text on very small screens, show only icon */
+  }
+}
+
 body, html {
   margin: 0;
-  font-family: 'Arial', 'Helvetica Neue', Helvetica, sans-serif;
+  font-family: 'Mulish', sans-serif;
   line-height: 1.6;
   font-size: 15px;
   text-transform: capitalize !important;
@@ -14,7 +421,7 @@ body, html {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Arial', 'Helvetica Neue', Helvetica, sans-serif;
+  font-family: 'Mulish', sans-serif;
   color: #222;
   font-weight: bold;
   margin-bottom: 0.5em;
@@ -649,19 +1056,6 @@ h3{
     align-items: center;
     gap: 1rem; /* Better spacing between items */
   }
-
-
-  /* Optional pipe separator */
-  .category-navbar .nav-item:not(:last-child)::after {
-    content: "|";
-    position: absolute;
-    right: -8px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #ccc;
-    font-size: 14px;
-    font-weight: normal;
-  }
 }
 
 /*---------------------------------------------------------------------------------------------------------------*/
@@ -888,9 +1282,10 @@ h3{
 }
 
 .product-details h3 {
-  margin: 10px 0;
+
+  margin: 10px 2px !important;
   font-weight: bold;
-  font-family: 12px;
+  
   min-height: 32px !important;
   max-height: 32px !important;
   height: 32px !important;
@@ -1078,7 +1473,9 @@ input[type="checkbox"]:checked + .wishlist-label i {
 .category-section {
   padding: 10px 0;
   width: auto;
-  background: #faffe8;
+  background: #fff;
+  margin: 20px 20px;
+  border: 1px solid #ddd;
 }
 
 .category-wrapper {
@@ -1094,7 +1491,7 @@ input[type="checkbox"]:checked + .wishlist-label i {
 .category-container {
   display: flex;
   gap: 16px;
-  overflow-x: auto;
+  /* overflow-x: auto; */
   scroll-behavior: smooth;
   padding: 10px 0;
   scroll-snap-type: x mandatory;
@@ -1111,8 +1508,9 @@ input[type="checkbox"]:checked + .wishlist-label i {
   text-align: center;
   padding: 10px;
   scroll-snap-align: start;
-  width: 220px;
-  min-width: 220px;
+  width: 160px;
+  height: 160px;
+  min-width: 160px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -1128,7 +1526,6 @@ input[type="checkbox"]:checked + .wishlist-label i {
   display: block;
   margin: 0 auto;
   flex-shrink: 0;
-  border-radius: 50%;
 }
 
 .category-card p{
@@ -1467,12 +1864,10 @@ overflow-x: auto;
   flex-wrap: wrap;
   justify-content: center;
   width: 100%;
-  background: #EEEEEE;
- box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background: #fff;
   padding-left: 0;
   padding-right: 0;
   margin-bottom: 0px;
-box-shadow: #000;
 }
 .navbar-nav a:hover{
   text-decoration: underline;
@@ -1525,18 +1920,6 @@ box-shadow: #000;
   .category-navbar .nav-link:hover {
     text-decoration: none;
     color: #000;
-  }
-
-  /* Optional pipe separator */
-  .category-navbar .nav-item:not(:last-child)::after {
-    content: "|";
-    position: absolute;
-    right: -8px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #ccc;
-    font-size: 14px;
-    font-weight: normal;
   }
 }
 
@@ -1666,7 +2049,7 @@ box-shadow: #000;
 /* Add any other general styles here */
 
 input, select, textarea, button {
-  font-family: inherit;
+  font-family: 'Mulish', sans-serif !important;
   color: #222;
   font-size: 1em;
 }

@@ -5,7 +5,7 @@ require_once 'includes/header.php';
 // Get data from database
 $categories = getAllCategoriesWithRecursiveProductCount();
 $featuredProducts = getFeaturedProducts(8);
-$discountedProducts = getDiscountedProducts(4);
+$discountedProducts = getDiscountedProducts(8);
 
 // Get user's wishlist for quick lookup
 $wishlist_ids = [];
@@ -88,41 +88,49 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 </section>
 
 <!-- Product Categories Section -->
-<!-- <section class="header0">
-    <h5>Product Categories</h5>
-</section> -->
-<section class="header0">
-    <h5 class="header-title">Product Categories</h5>
-    <a href=""><button class="P-Button"><span> &gt;</span></button></a>
-</section>
-
-<section class="category-section">
-    <div class="category-wrapper">
-        <button class="nav-btn prev-btn" aria-label="Scroll Left">&#10094;</button>
-        <div class="category-container" id="slider">
+<section class="popular-categories-section">
+    <div class="categories-card">
+        <h2 class="categories-title">Popular Categories</h2>
+        <div class="categories-slider-wrapper">
+                         <button class="category-nav-btn prev-btn" aria-label="Scroll Left">&#8249;</button>
+            <div class="categories-container" id="slider">
             <?php foreach ($main_categories as $category): ?>
-                <div class="category-card">
+                    <div class="category-item">
                     <a href="category.php?slug=<?php echo $category['slug']; ?>">
+                            <div class="category-illustration">
+                                <?php if (!empty($category['image']) && file_exists('./' . $category['image'])): ?>
                         <img src="./<?php echo $category['image']; ?>" alt="<?php echo $category['name']; ?>" />
-                        <p><?php echo strtoupper($category['name']); ?> <span>(<?php echo $category['product_count']; ?>)</span></p>
+                                <?php else: ?>
+                                    <div class="category-placeholder">
+                                        <i class="fas fa-box"></i>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                            <p class="category-label"><?php echo ucfirst($category['name']); ?></p>
                     </a>
                 </div>
             <?php endforeach; ?>
         </div>
-        <button class="nav-btn next-btn" aria-label="Scroll Right">&#10095;</button>
+                         <button class="category-nav-btn next-btn" aria-label="Scroll Right">&#8250;</button>
+        </div>
     </div>
 </section>
 
 <!-- Products Offering Discount Section -->
-<section class="header0">
-    <h5 class="header-title">Products Offering Discount</h5>
-    <a href="products.php?discounted=1"><button class="P-Button">View All<span> &gt;</span></button></a>
-</section>
-<div class="index-main-section">
-<div class="product-carousel-wrapper">
-    <button class="nav-btn prev">&#10094;</button>
-    <section id="discounted-products">
-        <?php foreach ($discountedProducts as $product): 
+<section class="discounted-products-section">
+    <div class="discounted-products-card">
+        <div class="discounted-products-header">
+            <h2 class="discounted-products-title">Products Offering Discount</h2>
+            <a href="products.php?discounted=1" class="view-all-link">View All<span> &gt;</span></a>
+        </div>
+        <div class="discounted-products-slider-wrapper">
+            <button class="discounted-nav-btn prev-btn" aria-label="Scroll Left">&#8249;</button>
+            <div class="discounted-products-container" id="discounted-slider">
+        <?php 
+        // Debug: Show how many discounted products we have
+        echo '<!-- DEBUG: Found ' . count($discountedProducts) . ' discounted products -->';
+        
+        foreach ($discountedProducts as $product): 
             $inWishlist = in_array($product['id'], $wishlist_ids);
             $isOutOfStock = ($product['stock_quantity'] <= 0);
         ?>
@@ -175,34 +183,27 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                 </div>
             </div>
         <?php endforeach; ?>
-    </section>
-    <button class="nav-btn next">&#10095;</button>
 </div>
+            <button class="discounted-nav-btn next-btn" aria-label="Scroll Right">&#8250;</button>
 </div>
-
-<!-- Featured Products Section -->
-<section class="header0">
-    <h5 class="header-title">Top 100 Products with Higher Discounts</h5>
-    <a href="products.php?featured=1"><button class="P-Button">View All<span> &gt;</span></button></a>
+    </div>
 </section>
 
-<!-- Debug: Check if featured products exist -->
-<?php if (empty($featuredProducts)): ?>
-    <div style="background: #f8f9fa; padding: 20px; margin: 20px; border: 1px solid #dee2e6; border-radius: 5px;">
-        <h6>Debug: No Featured Products Found</h6>
-        <p>Featured Products Count: <?php echo count($featuredProducts); ?></p>
-    </div>
-<?php else: ?>
-    <div style="background: #e8f5e8; padding: 10px; margin: 10px; border: 1px solid #28a745; border-radius: 5px; display: none;">
-        <small>Debug: Found <?php echo count($featuredProducts); ?> featured products</small>
-    </div>
-<?php endif; ?>
-
-<div class="index-main-section">
-<div class="product-carousel-wrapper">
-    <button class="nav-btn prev">&#10094;</button>
-    <section id="featured-products">
-        <?php foreach ($featuredProducts as $product): 
+<!-- Featured Products Section -->
+<section class="featured-products-section">
+    <div class="featured-products-card">
+        <div class="featured-products-header">
+            <h2 class="featured-products-title">Top 100 Products with Higher Discounts</h2>
+            <a href="products.php?featured=1" class="view-all-link">View All<span> &gt;</span></a>
+        </div>
+        <div class="featured-products-slider-wrapper">
+            <button class="featured-nav-btn prev-btn" aria-label="Scroll Left">&#8249;</button>
+            <div class="featured-products-container" id="featured-slider">
+        <?php 
+        // Debug: Show how many featured products we have
+        echo '<!-- DEBUG: Found ' . count($featuredProducts) . ' featured products -->';
+        
+        foreach ($featuredProducts as $product): 
             $inWishlist = in_array($product['id'], $wishlist_ids);
             $isOutOfStock = ($product['stock_quantity'] <= 0);
         ?>
@@ -255,10 +256,11 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                 </div>
             </div>
         <?php endforeach; ?>
-    </section>
-    <button class="nav-btn next">&#10095;</button>
 </div>
+            <button class="featured-nav-btn next-btn" aria-label="Scroll Right">&#8250;</button>
 </div>
+    </div>
+</section>
 
 <section class="service-section">
   <div class="features">
@@ -297,11 +299,1087 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 <link rel="stylesheet" href="./asset/style/style.css">
 
 <style>
+/* Popular Categories Section - Modern Design */
+.popular-categories-section {
+  padding: 20px;
+  padding-top: 40px;
+  background: #f5f5f5;
+  margin-top: 0;
+}
+
+.categories-card {
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 0 25px;
+  position: relative;
+}
+
+.categories-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  margin: 0 0 20px 0;
+  text-align: left;
+}
+
+.categories-slider-wrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: visible;
+  padding: 0 30px;
+  margin: 0 -10px;
+}
+
+.categories-container {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 10px 0;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  flex: 1;
+}
+
+.categories-container::-webkit-scrollbar {
+  display: none;
+}
+
+.category-item {
+  flex: 0 0 auto;
+  width: 160px;
+  min-width: 160px;
+  scroll-snap-align: start;
+  text-align: center;
+}
+
+.category-item a {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.category-illustration {
+  width: 140px;
+  height: 140px;
+  margin: 0 auto 8px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+}
+
+.category-illustration:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.category-illustration img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.category-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e9ecef;
+  border-radius: 8px;
+  color: #6c757d;
+}
+
+.category-placeholder i {
+  font-size: 48px;
+}
+
+.category-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.category-nav-btn {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 50%;
+  color: #16BAE4;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 30px;
+  height: 40px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  opacity: 1;
+  pointer-events: auto;
+  text-decoration: none;
+  line-height: 1;
+  user-select: none;
+}
+
+.category-nav-btn:hover {
+  background: #ffffff;
+  color: #16BAE4;
+  border-color: #16BAE4;
+  box-shadow: 0 4px 12px rgba(22, 186, 228, 0.3);
+  transform: translateY(-50%) scale(1.05);
+}
+
+.category-nav-btn:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.category-nav-btn.prev-btn {
+  left: -24px;
+}
+
+.category-nav-btn.next-btn {
+  right: -24px;
+}
+
+/* Ensure arrows are always visible */
+.category-nav-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #ffffff;
+  z-index: -1;
+}
+
+/* Force arrow visibility */
+.category-nav-btn {
+  color: #16BAE4 !important;
+  background: #ffffff !important;
+  border: 1px solid #e0e0e0 !important;
+}
+
+/* Discounted Products Section - Modern Design */
+.discounted-products-section {
+  padding: 20px;
+  background: #f5f5f5;
+  margin: 0;
+  overflow: visible;
+}
+
+.discounted-products-card {
+  background: rgb(255, 216, 192);
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 0 25px;
+  position: relative;
+  overflow: visible;
+}
+
+.discounted-products-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.discounted-products-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+.view-all-link {
+  text-decoration: none;
+  color: #16BAE4;
+  font-weight: 600;
+  font-size: 14px;
+  transition: color 0.2s ease;
+}
+
+.view-all-link:hover {
+  color: #0d8ba8;
+}
+
+.discounted-products-slider-wrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: visible;
+  padding: 0 15px;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 1400px;
+}
+
+/* Desktop: Show 4 full cards + 0.5 card */
+@media (min-width: 1200px) {
+  .discounted-products-container {
+    width: calc(4.5 * 280px + 4 * 12px) !important; /* 4.5 cards + gaps */
+    max-width: calc(4.5 * 280px + 4 * 12px) !important;
+  }
+}
+
+/* Large tablet: Show 3.5 cards */
+@media (min-width: 992px) and (max-width: 1199px) {
+  .discounted-products-container {
+    width: calc(3.5 * 280px + 3 * 12px) !important;
+    max-width: calc(3.5 * 280px + 3 * 12px) !important;
+  }
+}
+
+/* Medium tablet: Show 2.5 cards */
+@media (min-width: 768px) and (max-width: 991px) {
+  .discounted-products-container {
+    width: calc(2.5 * 280px + 2 * 12px) !important;
+    max-width: calc(2.5 * 280px + 2 * 12px) !important;
+  }
+  .discounted-products-container .card.product-card {
+    flex: 0 0 260px !important;
+    width: 260px !important;
+    min-width: 260px !important;
+    max-width: 260px !important;
+  }
+  .discounted-products-container {
+    width: calc(2.5 * 260px + 2 * 12px) !important;
+    max-width: calc(2.5 * 260px + 2 * 12px) !important;
+  }
+}
+
+/* Small tablet: Show 1.8 cards */
+@media (min-width: 576px) and (max-width: 767px) {
+  .discounted-products-container {
+    width: calc(1.8 * 240px + 1 * 12px) !important;
+    max-width: calc(1.8 * 240px + 1 * 12px) !important;
+  }
+  .discounted-products-container .card.product-card {
+    flex: 0 0 240px !important;
+    width: 240px !important;
+    min-width: 240px !important;
+    max-width: 240px !important;
+  }
+}
+
+/* Mobile: Show 1.3 cards */
+@media (max-width: 575px) {
+  .discounted-products-container {
+    width: calc(1.3 * 220px + 0.3 * 12px) !important;
+    max-width: calc(1.3 * 220px + 0.3 * 12px) !important;
+  }
+  .discounted-products-container .card.product-card {
+    flex: 0 0 220px !important;
+    width: 220px !important;
+    min-width: 220px !important;
+    max-width: 220px !important;
+  }
+}
+
+.discounted-products-container {
+  display: flex !important;
+  gap: 12px;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  scroll-behavior: smooth;
+  padding: 10px 5px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  flex: 1;
+  /* Ensure proper containment */
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  /* Force container to not wrap */
+  flex-wrap: nowrap !important;
+  /* Remove any text formatting */
+  white-space: normal !important;
+  /* Box model */
+  box-sizing: border-box;
+  /* Ensure container takes full width when not constrained by breakpoints */
+  min-width: 100%;
+}
+
+/* Ensure product cards in discounted section maintain their width */
+.discounted-products-container .card.product-card {
+  flex: 0 0 280px !important;
+  width: 280px !important;
+  min-width: 280px !important;
+  max-width: 280px !important;
+  flex-shrink: 0 !important;
+  flex-grow: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.discounted-products-container::-webkit-scrollbar {
+  display: none;
+}
+
+.discounted-nav-btn {
+  background: #ffffff;
+  border: none;
+  color: #16BAE4;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 30px;
+  height: 40px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  opacity: 1;
+  pointer-events: auto;
+  text-decoration: none;
+  line-height: 1;
+  user-select: none;
+}
+
+.discounted-nav-btn:hover {
+  background: #ffffff;
+  color: #16BAE4;
+  border-color: #16BAE4;
+  box-shadow: 0 4px 12px rgba(22, 186, 228, 0.3);
+  transform: translateY(-50%) scale(1.05);
+}
+
+.discounted-nav-btn:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.discounted-nav-btn.prev-btn {
+  left: -35px;
+  z-index: 10;
+}
+
+.discounted-nav-btn.next-btn {
+  right: -35px;
+  z-index: 10;
+}
+
+/* Ensure discounted arrows are always visible */
+.discounted-nav-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 50%;
+  background: #ffffff;
+  z-index: -1;
+}
+
+/* Force discounted arrow visibility */
+.discounted-nav-btn {
+  color: #16BAE4 !important;
+  background: #ffffff !important;
+  border: 1px solid #e0e0e0 !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  position: absolute !important;
+  z-index: 100 !important;
+}
+
+/* Ensure discounted arrows are clickable */
+.discounted-nav-btn:hover {
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  background: #f8f9fa !important;
+}
+
+.discounted-nav-btn:active {
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  transform: translateY(-50%) scale(0.95) !important;
+}
+
+/* Additional debugging styles for discounted arrows */
+.discounted-nav-btn::after {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  background: transparent;
+  z-index: 99;
+}
+
+/* Mobile Responsive Design */
+@media (max-width: 768px) {
+  .popular-categories-section {
+    padding: 15px;
+    margin: 15px 0;
+  }
+  
+  .categories-card {
+    padding: 15px;
+    border-radius: 6px;
+  }
+  
+  .categories-title {
+    font-size: 14px;
+    margin-bottom: 15px;
+  }
+  
+  .categories-container {
+    gap: 12px;
+    padding: 8px 0;
+  }
+  
+  .category-item {
+    width: 140px;
+    min-width: 140px;
+  }
+  
+  .category-illustration {
+    width: 120px;
+    height: 120px;
+    margin-bottom: 6px;
+  }
+  
+  .category-illustration img {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .category-placeholder {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .category-placeholder i {
+    font-size: 40px;
+  }
+  
+  .category-label {
+    font-size: 11px;
+  }
+  
+  .category-nav-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+    color: #16BAE4 !important;
+    background: #ffffff !important;
+    border: 1px solid #e0e0e0 !important;
+  }
+  
+  .category-nav-btn.prev-btn {
+    left: -22px;
+  }
+  
+  .category-nav-btn.next-btn {
+    right: -22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .popular-categories-section {
+    padding: 10px;
+    margin: 10px 0;
+  }
+  
+  .categories-card {
+    padding: 12px;
+  }
+  
+  .categories-title {
+    font-size: 12px;
+    margin-bottom: 12px;
+  }
+  
+  .categories-container {
+    gap: 10px;
+  }
+  
+  .category-item {
+    width: 130px;
+    min-width: 130px;
+  }
+  
+  .category-illustration {
+    width: 110px;
+    height: 110px;
+  }
+  
+  .category-illustration img {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .category-placeholder {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .category-placeholder i {
+    font-size: 36px;
+  }
+  
+  .category-label {
+    font-size: 10px;
+  }
+  
+  .category-nav-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    color: #16BAE4 !important;
+    background: #ffffff !important;
+    border: 1px solid #e0e0e0 !important;
+  }
+  
+  .category-nav-btn.prev-btn {
+    left: -20px;
+  }
+  
+  .category-nav-btn.next-btn {
+    right: -20px;
+  }
+  
+  /* Discounted Products Mobile Responsive */
+  .discounted-products-section {
+    padding: 15px;
+    margin: 15px 0;
+  }
+  
+  .discounted-products-card {
+    padding: 15px;
+    border-radius: 6px;
+    max-width: 100%;
+  }
+  
+  .discounted-products-header {
+    margin-bottom: 15px;
+  }
+  
+  .discounted-products-title {
+    font-size: 14px;
+  }
+  
+  .discounted-products-slider-wrapper {
+    padding: 0 50px;
+    max-width: 100%;
+  }
+  
+  .discounted-products-container .card.product-card {
+    flex: 0 0 220px !important;
+    width: 220px !important;
+    min-width: 220px !important;
+    max-width: 220px !important;
+  }
+  
+  .discounted-nav-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+    color: #16BAE4 !important;
+    background: #ffffff !important;
+    border: 1px solid #e0e0e0 !important;
+  }
+  
+  .discounted-nav-btn.prev-btn {
+    left: 5px;
+  }
+  
+  .discounted-nav-btn.next-btn {
+    right: 5px;
+  }
+}
+
+/* Tablet Responsive (768px - 1024px) */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .discounted-products-section {
+    padding: 18px;
+    margin: 18px 0;
+  }
+  
+  .discounted-products-card {
+    padding: 18px;
+    max-width: 100%;
+  }
+  
+  .discounted-products-title {
+    font-size: 18px;
+  }
+  
+  .discounted-products-slider-wrapper {
+    padding: 0 55px;
+    max-width: 100%;
+  }
+  
+  .discounted-products-container .card.product-card {
+    flex: 0 0 280px !important;
+    width: 280px !important;
+    min-width: 280px !important;
+    max-width: 280px !important;
+  }
+  
+  .discounted-nav-btn {
+    width: 48px;
+    height: 48px;
+    font-size: 22px;
+  }
+}
+
+/* Medium Mobile Responsive (481px - 768px) */
+@media (max-width: 768px) and (min-width: 481px) {
+  .discounted-products-section {
+    padding: 16px;
+    margin: 16px 0;
+  }
+  
+  .discounted-products-card {
+    padding: 16px;
+    max-width: 100%;
+  }
+  
+  .discounted-products-title {
+    font-size: 16px;
+  }
+  
+  .discounted-products-slider-wrapper {
+    padding: 0 52px;
+    max-width: 100%;
+  }
+  
+  .discounted-products-container .card.product-card {
+    flex: 0 0 240px !important;
+    width: 240px !important;
+    min-width: 240px !important;
+    max-width: 240px !important;
+  }
+  
+  .discounted-nav-btn {
+    width: 46px;
+    height: 46px;
+    font-size: 21px;
+  }
+}
+
+/* Featured Products Section - Same Design as Discounted Products */
+.featured-products-section {
+  padding: 20px;
+  padding-bottom: 45px;
+  background-color: #f5f5f5;
+  margin: 0;
+  overflow: visible;
+}
+
+.featured-products-card {
+  background: rgb(206, 229, 239);
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 0 25px;
+  position: relative;
+  overflow: visible;
+}
+
+.featured-products-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.featured-products-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+.featured-products-slider-wrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: visible;
+  padding: 0 15px;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 1400px;
+}
+
+/* Desktop: Show 4 full cards + 0.5 card for featured products */
+@media (min-width: 1200px) {
+  .featured-products-container {
+    width: calc(4.5 * 280px + 4 * 12px) !important; /* 4.5 cards + gaps */
+    max-width: calc(4.5 * 280px + 4 * 12px) !important;
+  }
+}
+
+/* Large tablet: Show 3.5 cards for featured products */
+@media (min-width: 992px) and (max-width: 1199px) {
+  .featured-products-container {
+    width: calc(3.5 * 280px + 3 * 12px) !important;
+    max-width: calc(3.5 * 280px + 3 * 12px) !important;
+  }
+}
+
+/* Medium tablet: Show 2.5 cards for featured products */
+@media (min-width: 768px) and (max-width: 991px) {
+  .featured-products-container {
+    width: calc(2.5 * 280px + 2 * 12px) !important;
+    max-width: calc(2.5 * 280px + 2 * 12px) !important;
+  }
+  .featured-products-container .card.product-card {
+    flex: 0 0 260px !important;
+    width: 260px !important;
+    min-width: 260px !important;
+    max-width: 260px !important;
+  }
+  .featured-products-container {
+    width: calc(2.5 * 260px + 2 * 12px) !important;
+    max-width: calc(2.5 * 260px + 2 * 12px) !important;
+  }
+}
+
+/* Small tablet: Show 1.8 cards for featured products */
+@media (min-width: 576px) and (max-width: 767px) {
+  .featured-products-container {
+    width: calc(1.8 * 240px + 1 * 12px) !important;
+    max-width: calc(1.8 * 240px + 1 * 12px) !important;
+  }
+  .featured-products-container .card.product-card {
+    flex: 0 0 240px !important;
+    width: 240px !important;
+    min-width: 240px !important;
+    max-width: 240px !important;
+  }
+}
+
+/* Mobile: Show 1.3 cards for featured products */
+@media (max-width: 575px) {
+  .featured-products-container {
+    width: calc(1.3 * 220px + 0.3 * 12px) !important;
+    max-width: calc(1.3 * 220px + 0.3 * 12px) !important;
+  }
+  .featured-products-container .card.product-card {
+    flex: 0 0 220px !important;
+    width: 220px !important;
+    min-width: 220px !important;
+    max-width: 220px !important;
+  }
+}
+
+.featured-products-container {
+  display: flex !important;
+  gap: 12px;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  scroll-behavior: smooth;
+  padding: 10px 5px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  flex: 1;
+  /* Ensure proper containment */
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  /* Force container to not wrap */
+  flex-wrap: nowrap !important;
+  /* Remove any text formatting */
+  white-space: normal !important;
+  /* Box model */
+  box-sizing: border-box;
+  /* Ensure container takes full width when not constrained by breakpoints */
+  min-width: 100%;
+}
+
+/* Ensure product cards in featured section maintain their width */
+.featured-products-container .card.product-card {
+  flex: 0 0 280px !important;
+  width: 280px !important;
+  min-width: 280px !important;
+  max-width: 280px !important;
+  flex-shrink: 0 !important;
+  flex-grow: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.featured-products-container::-webkit-scrollbar {
+  display: none;
+}
+
+.featured-nav-btn {
+  background: #ffffff !important;
+  /* border-radius: 50% !important; */
+  color: #16BAE4 !important;
+  font-size: 24px !important;
+  font-weight: bold !important;
+  cursor: pointer !important;
+  width: 30px !important;
+  height: 40px !important;
+  position: absolute !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  z-index: 1000 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+  transition: all 0.3s ease !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  text-decoration: none !important;
+  line-height: 1 !important;
+  user-select: none !important;
+  border: none !important;
+}
+
+.featured-nav-btn:hover {
+  background: #ffffff !important;
+  color: #16BAE4 !important;
+  border-color: #16BAE4 !important;
+  box-shadow: 0 4px 12px rgba(22, 186, 228, 0.3) !important;
+  transform: translateY(-50%) scale(1.05) !important;
+}
+
+.featured-nav-btn:active {
+  transform: translateY(-50%) scale(0.95) !important;
+}
+
+.featured-nav-btn.prev-btn {
+  left: -35px !important;
+  z-index: 1000 !important;
+}
+
+.featured-nav-btn.next-btn {
+  right: -35px !important;
+  z-index: 1000 !important;
+}
+
+/* Featured Products Mobile Responsive */
+@media (max-width: 480px) {
+  .featured-products-section {
+    padding: 15px;
+    margin: 15px 0;
+  }
+  
+  .featured-products-card {
+    padding: 15px;
+    border-radius: 6px;
+    max-width: 100%;
+  }
+  
+  .featured-products-header {
+    margin-bottom: 15px;
+  }
+  
+  .featured-products-title {
+    font-size: 14px;
+  }
+  
+  .featured-products-slider-wrapper {
+    padding: 0 50px;
+    max-width: 100%;
+  }
+  
+  .featured-products-container .card.product-card {
+    flex: 0 0 220px !important;
+    width: 220px !important;
+    min-width: 220px !important;
+    max-width: 220px !important;
+  }
+  
+  .featured-nav-btn {
+    width: 44px !important;
+    height: 44px !important;
+    font-size: 20px !important;
+    color: #16BAE4 !important;
+    background: #ffffff !important;
+    border: 2px solid #16BAE4 !important;
+  }
+  
+  .featured-nav-btn.prev-btn {
+    left: 5px !important;
+  }
+  
+  .featured-nav-btn.next-btn {
+    right: 5px !important;
+  }
+}
+
+/* Featured Products Tablet Responsive (768px - 1024px) */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .featured-products-section {
+    padding: 18px;
+    margin: 18px 0;
+  }
+  
+  .featured-products-card {
+    padding: 18px;
+    max-width: 100%;
+  }
+  
+  .featured-products-title {
+    font-size: 18px;
+  }
+  
+  .featured-products-slider-wrapper {
+    padding: 0 55px;
+    max-width: 100%;
+  }
+  
+  .featured-products-container .card.product-card {
+    flex: 0 0 280px !important;
+    width: 280px !important;
+    min-width: 280px !important;
+    max-width: 280px !important;
+  }
+  
+  .featured-nav-btn {
+    width: 48px !important;
+    height: 48px !important;
+    font-size: 22px !important;
+  }
+}
+
+/* Featured Products Medium Mobile Responsive (481px - 768px) */
+@media (max-width: 768px) and (min-width: 481px) {
+  .featured-products-section {
+    padding: 16px;
+    margin: 16px 0;
+  }
+  
+  .featured-products-card {
+    padding: 16px;
+    max-width: 100%;
+  }
+  
+  .featured-products-title {
+    font-size: 16px;
+  }
+  
+  .featured-products-slider-wrapper {
+    padding: 0 52px;
+    max-width: 100%;
+  }
+  
+  .featured-products-container .card.product-card {
+    flex: 0 0 240px !important;
+    width: 240px !important;
+    min-width: 240px !important;
+    max-width: 240px !important;
+  }
+  
+  .featured-nav-btn {
+    width: 46px !important;
+    height: 46px !important;
+    font-size: 21px !important;
+  }
+}
+
+/* Force Featured Arrow Visibility - Override any conflicts */
+.featured-nav-btn,
+.featured-nav-btn.prev-btn,
+.featured-nav-btn.next-btn {
+  visibility: visible !important;
+  display: flex !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  position: absolute !important;
+  z-index: 9999 !important;
+}
+
+/* Ensure featured section containers don't hide arrows */
+.featured-products-section,
+.featured-products-card,
+.featured-products-slider-wrapper {
+  overflow: visible !important;
+  position: relative !important;
+}
+
+/* Additional arrow styling to ensure visibility */
+.featured-nav-btn::before {
+  content: '';
+  position: absolute !important;
+  top: -2px !important;
+  left: -2px !important;
+  right: -2px !important;
+  bottom: -2px !important;
+  background: transparent !important;
+  border-radius: 50% !important;
+  z-index: -1 !important;
+}
+
 /* Hero Banner Carousel - Responsive Fix */
 .hero-slider-section {
   width: 100% !important;
   overflow: hidden !important;
   position: relative !important;
+}
+
+/* Additional Responsive Container Fixes */
+@media (max-width: 1200px) {
+  .discounted-products-card,
+  .featured-products-card {
+    max-width: 95% !important;
+  }
+  
+  .discounted-products-slider-wrapper,
+  .featured-products-slider-wrapper {
+    max-width: 95% !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .discounted-products-card,
+  .featured-products-card {
+    max-width: 100% !important;
+    margin: 0 10px !important;
+  }
+  
+  .discounted-products-slider-wrapper,
+  .featured-products-slider-wrapper {
+    max-width: 100% !important;
+    padding: 0 40px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .discounted-products-card,
+  .featured-products-card {
+    margin: 0 5px !important;
+  }
+  
+  .discounted-products-slider-wrapper,
+  .featured-products-slider-wrapper {
+    padding: 0 35px !important;
+  }
 }
 
 #heroCarousel {
@@ -613,7 +1691,9 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 </style>
 
 <script>
+console.log('JavaScript loading...');
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM Content Loaded');
     // Hero Carousel functionality
     const heroCarousel = document.getElementById('heroCarousel');
     if (heroCarousel) {
@@ -650,28 +1730,218 @@ document.addEventListener('DOMContentLoaded', function() {
         setInterval(nextSlide, 3000);
     }
     
-    // Category slider functionality
+    // Category slider functionality - Simplified
+    console.log('🔍 Looking for category slider elements...');
     const categoryContainer = document.getElementById('slider');
-    const prevBtn = document.querySelector('.prev-btn');
-    const nextBtn = document.querySelector('.next-btn');
+    const prevBtn = document.querySelector('.category-nav-btn.prev-btn');
+    const nextBtn = document.querySelector('.category-nav-btn.next-btn');
+    
+    console.log('Category elements:', {
+        container: categoryContainer ? 'FOUND' : 'NOT FOUND',
+        prevBtn: prevBtn ? 'FOUND' : 'NOT FOUND',
+        nextBtn: nextBtn ? 'FOUND' : 'NOT FOUND'
+    });
     
     if (categoryContainer && prevBtn && nextBtn) {
-        const scrollAmount = 300; // Adjust scroll amount as needed
+        console.log('✅ All category slider elements found - Setting up slider...');
         
-        prevBtn.addEventListener('click', () => {
+        // Simple scroll function
+        const scrollAmount = 200; // Fixed scroll amount
+        
+        prevBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('⬅️ CATEGORY PREV button clicked');
             categoryContainer.scrollBy({
                 left: -scrollAmount,
                 behavior: 'smooth'
             });
+            console.log('Category scrolled left by', scrollAmount, 'px');
         });
         
-        nextBtn.addEventListener('click', () => {
+        nextBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('➡️ CATEGORY NEXT button clicked');
             categoryContainer.scrollBy({
                 left: scrollAmount,
                 behavior: 'smooth'
             });
+            console.log('Category scrolled right by', scrollAmount, 'px');
         });
+        
+        console.log('✅ Category slider event listeners added');
+        
+    } else {
+        console.error('❌ Category slider setup failed - missing elements');
+        if (!categoryContainer) console.error('Missing: slider container');
+        if (!prevBtn) console.error('Missing: category prev button');
+        if (!nextBtn) console.error('Missing: category next button');
     }
+    
+    // Discounted Products slider functionality - SIMPLE & RELIABLE VERSION
+    console.log('🔍 Setting up discounted products slider...');
+    
+    const discountedContainer = document.getElementById('discounted-slider');
+    const discountedPrevBtn = document.querySelector('.discounted-nav-btn.prev-btn');
+    const discountedNextBtn = document.querySelector('.discounted-nav-btn.next-btn');
+    
+    if (discountedContainer && discountedPrevBtn && discountedNextBtn) {
+        console.log('✅ Discount slider elements found - initializing...');
+        
+        // Dynamic scroll amount based on screen size
+        function getDiscountedScrollAmount() {
+            const width = window.innerWidth;
+            if (width <= 575) {
+                return 232; // 220px card + 12px gap
+            } else if (width <= 767) {
+                return 252; // 240px card + 12px gap
+            } else if (width <= 991) {
+                return 272; // 260px card + 12px gap
+            } else {
+                return 292; // 280px card + 12px gap
+            }
+        }
+        
+        // Previous button
+        discountedPrevBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const scrollAmount = getDiscountedScrollAmount();
+            console.log('⬅️ Scrolling left by', scrollAmount, 'px');
+            discountedContainer.scrollLeft -= scrollAmount;
+        });
+        
+        // Next button
+        discountedNextBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const scrollAmount = getDiscountedScrollAmount();
+            console.log('➡️ Scrolling right by', scrollAmount, 'px');
+            discountedContainer.scrollLeft += scrollAmount;
+        });
+        
+        console.log('✅ Discount slider setup complete');
+        
+        // Simple diagnostic
+        setTimeout(() => {
+            console.log('📊 Slider info:', {
+                containerWidth: discountedContainer.clientWidth,
+                contentWidth: discountedContainer.scrollWidth,
+                canScroll: discountedContainer.scrollWidth > discountedContainer.clientWidth,
+                cardCount: discountedContainer.querySelectorAll('.product-card').length
+            });
+        }, 1000);
+        
+    } else {
+        console.error('❌ Discount slider elements not found');
+    }
+    
+    // Featured Products slider functionality - SAME AS DISCOUNT PRODUCTS
+    console.log('🔍 Setting up featured products slider...');
+    
+    const featuredContainer = document.getElementById('featured-slider');
+    const featuredPrevBtn = document.querySelector('.featured-nav-btn.prev-btn');
+    const featuredNextBtn = document.querySelector('.featured-nav-btn.next-btn');
+    
+    console.log('Featured elements check:', {
+        container: featuredContainer ? 'FOUND' : 'NOT FOUND',
+        prevBtn: featuredPrevBtn ? 'FOUND' : 'NOT FOUND',
+        nextBtn: featuredNextBtn ? 'FOUND' : 'NOT FOUND'
+    });
+    
+    // Force make arrows visible
+    if (featuredPrevBtn) {
+        featuredPrevBtn.style.display = 'flex';
+        featuredPrevBtn.style.visibility = 'visible';
+        featuredPrevBtn.style.opacity = '1';
+        featuredPrevBtn.style.zIndex = '9999';
+        console.log('🔧 Forced prev arrow visibility');
+    }
+    
+    if (featuredNextBtn) {
+        featuredNextBtn.style.display = 'flex';
+        featuredNextBtn.style.visibility = 'visible';
+        featuredNextBtn.style.opacity = '1';
+        featuredNextBtn.style.zIndex = '9999';
+        console.log('🔧 Forced next arrow visibility');
+    }
+    
+    if (featuredContainer && featuredPrevBtn && featuredNextBtn) {
+        console.log('✅ Featured slider elements found - initializing...');
+        
+        // Dynamic scroll amount based on screen size
+        function getFeaturedScrollAmount() {
+            const width = window.innerWidth;
+            if (width <= 575) {
+                return 232; // 220px card + 12px gap
+            } else if (width <= 767) {
+                return 252; // 240px card + 12px gap
+            } else if (width <= 991) {
+                return 272; // 260px card + 12px gap
+            } else {
+                return 292; // 280px card + 12px gap
+            }
+        }
+        
+        // Previous button
+        featuredPrevBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const scrollAmount = getFeaturedScrollAmount();
+            console.log('⬅️ Featured scrolling left by', scrollAmount, 'px');
+            featuredContainer.scrollLeft -= scrollAmount;
+        });
+        
+        // Next button
+        featuredNextBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const scrollAmount = getFeaturedScrollAmount();
+            console.log('➡️ Featured scrolling right by', scrollAmount, 'px');
+            featuredContainer.scrollLeft += scrollAmount;
+        });
+        
+        console.log('✅ Featured slider setup complete');
+        
+        // Simple diagnostic
+        setTimeout(() => {
+            console.log('📊 Featured slider info:', {
+                containerWidth: featuredContainer.clientWidth,
+                contentWidth: featuredContainer.scrollWidth,
+                canScroll: featuredContainer.scrollWidth > featuredContainer.clientWidth,
+                cardCount: featuredContainer.querySelectorAll('.product-card').length
+            });
+        }, 1000);
+        
+    } else {
+        console.error('❌ Featured slider elements not found');
+    }
+    
+    // Handle window resize for responsive sliders
+    window.addEventListener('resize', function() {
+        console.log('🔄 Window resized - updating slider diagnostics...');
+        
+        // Update discounted slider info
+        if (discountedContainer) {
+            setTimeout(() => {
+                console.log('📊 Updated Discount slider info:', {
+                    containerWidth: discountedContainer.clientWidth,
+                    contentWidth: discountedContainer.scrollWidth,
+                    canScroll: discountedContainer.scrollWidth > discountedContainer.clientWidth,
+                    cardCount: discountedContainer.querySelectorAll('.product-card').length,
+                    screenWidth: window.innerWidth
+                });
+            }, 100);
+        }
+        
+        // Update featured slider info
+        if (featuredContainer) {
+            setTimeout(() => {
+                console.log('📊 Updated Featured slider info:', {
+                    containerWidth: featuredContainer.clientWidth,
+                    contentWidth: featuredContainer.scrollWidth,
+                    canScroll: featuredContainer.scrollWidth > featuredContainer.clientWidth,
+                    cardCount: featuredContainer.querySelectorAll('.product-card').length,
+                    screenWidth: window.innerWidth
+                });
+            }, 100);
+        }
+    });
     
     // Product carousel functionality
     const productCarousels = document.querySelectorAll('.product-carousel-wrapper');

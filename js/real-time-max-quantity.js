@@ -149,7 +149,12 @@ class RealTimeMaxQuantityChecker {
                         showConfirmButton: false
                     });
                 } else {
-                    alert(result.message);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Quantity Error',
+                        text: result.message,
+                        confirmButtonText: 'OK'
+                    });
                 }
             }
         } catch (error) {

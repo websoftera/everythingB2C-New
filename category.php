@@ -372,6 +372,7 @@ echo renderBreadcrumb($breadcrumbs);
 }
 
 .product-card .product-details h3 {
+
   font-size: 14px;
   line-height: 1.3;
   margin-bottom: 8px;
@@ -505,6 +506,7 @@ echo renderBreadcrumb($breadcrumbs);
   }
   
   .product-card .product-details h3 {
+
     font-size: 12px;
     margin-bottom: 6px;
     max-width: 100%;
@@ -549,6 +551,7 @@ echo renderBreadcrumb($breadcrumbs);
 /* Tablet adjustments */
 @media (min-width: 576px) and (max-width: 991.98px) {
   .product-card .product-details h3 {
+
     font-size: 13px;
   }
   
@@ -566,6 +569,7 @@ echo renderBreadcrumb($breadcrumbs);
 /* Desktop adjustments */
 @media (min-width: 992px) {
   .product-card .product-details h3 {
+
     font-size: 14px;
   }
   

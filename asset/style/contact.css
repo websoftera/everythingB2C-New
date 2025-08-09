@@ -50,7 +50,7 @@
     background: #f6f5f7; /* Light background for the whole page */
     display: grid;
     place-content: center; /* Centers the main-container horizontally and vertically */
-    font-family: 'Poppins', sans-serif;
+    
     padding: 20px; /* Padding around the container */
     position: relative;
     z-index: 1;
@@ -548,7 +548,7 @@
   border-radius: 20px;
 
   overflow: hidden;
-  font-family: 'Poppins', sans-serif;
+  
 }
 
 .chatbot-header {
@@ -645,7 +645,7 @@
   border: none;
   outline: none;
   resize: vertical;
-  font-family: 'Poppins', sans-serif;
+  
   font-size: 14px;
   color: var(--text-color);
 }

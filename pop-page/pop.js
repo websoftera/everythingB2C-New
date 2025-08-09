@@ -26,7 +26,13 @@ function checkPincode() {
             showConfirmButton: false
         });
     } else {
-        alert("Delivery available in your area.");
+        Swal.fire({
+            icon: 'success',
+            title: 'Delivery Available',
+            text: 'Delivery available in your area.',
+            timer: 3000,
+            showConfirmButton: false
+        });
     }
   } else {
     if (typeof Swal !== 'undefined') {
@@ -38,7 +44,13 @@ function checkPincode() {
             showConfirmButton: false
         });
     } else {
-        alert("Sorry, we do not deliver in this area.");
+        Swal.fire({
+            icon: 'error',
+            title: 'Delivery Not Available',
+            text: 'Sorry, we do not deliver in this area.',
+            timer: 4000,
+            showConfirmButton: false
+        });
     }
   }
 }

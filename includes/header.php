@@ -57,9 +57,18 @@ if (isLoggedIn()) {
     <!-- Favicon -->
     <link rel="icon" href="./logo.webp" type="image/webp">
 
+    <!-- Font Awesome Preload for better performance -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
+    
+    <!-- Google Fonts - Mulish -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
     <!-- CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="Header.css">
     <link rel="stylesheet" href="asset/style/footer.css">
@@ -101,17 +110,17 @@ html, body {
 
 /* Breadcrumb item colors */
 .breadcrumb-item a {
-  color: #99d052 !important;
+  color: #878787 !important;
   text-decoration: none !important;
   font-weight: bold !important;
 }
 .breadcrumb-item a:hover {
-  color: #99d052 !important;
+  color: #878787 !important;
   text-decoration: none !important;
   font-weight: bold !important;
 }
 .breadcrumb-item.active {
-  color: #28a745 !important;
+  color: #878787 !important;
   font-weight: bold !important;
 }
 
@@ -171,7 +180,7 @@ html, body {
   box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
 }
 #floatingCartPanel.fixed-panel .floating-cart-summary-box {
-  padding: 8px 10px 4px 10px !important;
+  padding: 7px 10px; 4px 10px !important;
   margin-bottom: 6px !important;
 }
 #floatingCartPanel.fixed-panel .floating-cart-summary-box > div {
@@ -320,10 +329,15 @@ html, body {
 <body>
 
 <!-- Floating Cart Icon and Panel -->
-<div id="floatingCartBtn" style="position:fixed;bottom:32px;right:32px;z-index:1050;display:flex;align-items:center;justify-content:center;width:60px;height:60px;background:#28a745;border-radius:50%;box-shadow:0 4px 16px rgba(0,0,0,0.18);cursor:pointer;transition:box-shadow 0.2s;">
+<?php 
+// Hide floating cart on checkout page, otherwise show/hide based on cart count
+$isCheckoutPage = (basename($_SERVER['PHP_SELF']) === 'checkout.php');
+$displayStyle = $isCheckoutPage ? 'none' : ($cartCount > 0 ? 'flex' : 'none');
+?>
+<div id="floatingCartBtn" class="floating-cart-btn" style="display: <?php echo $displayStyle; ?>;">
   <span style="position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:100%;">
-    <i class="bi bi-cart4" style="font-size:2rem;color:#fff;"></i>
-    <span id="floatingCartCount" style="position:absolute;top:0px;right:10px;background:none;color:#fff;font-weight:bold;font-size:0.95rem;padding:2px 7px;border-radius:12px;min-width:22px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,0.12);">0</span>
+    <img src="./asset/images/Cart_Icon.png" alt="Cart" class="floating-cart-icon">
+    <span id="floatingCartCount" style="position:absolute;top:0px;right:10px;background:none;color:#fff;font-weight:bold;font-size:0.95rem;padding:2px 7px;border-radius:12px;min-width:22px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,0.12);"><?php echo $cartCount; ?></span>
   </span>
   <!-- Floating Cart Panel (dropdown style) -->
   <div id="floatingCartPanel" class="fixed-panel" style="display:none;">
@@ -358,7 +372,7 @@ html, body {
             <!-- Mobile Cart Icon -->
             <div class="d-lg-none ms-auto cart-section-mobile">
                 <a href="cart.php" class="text-decoration-none text-dark cart-link position-relative">
-                    <i class="bi bi-cart4 fs-4 cart-icon"></i>
+                    <img src="./asset/images/Cart_Icon.png" alt="Cart" class="cart-icon" style="width:28px;height:28px;">
                     <span id="cart-count-mobile" class="position-absolute top-0 start-100 translate-middle badge rounded-pill" style="display:<?php echo $cartCount > 0 ? 'inline-block' : 'none'; ?>;">
                         <?php echo $cartCount > 0 ? $cartCount : ''; ?>
                     </span>
@@ -416,34 +430,33 @@ html, body {
         <div class="d-none d-lg-flex align-items-center">
             <!-- Topbar Navigation Items -->
             <div class="topbar-nav-items d-flex align-items-center me-3">
-                <a href="index.php" title="Home" class="text-decoration-none text-dark me-3">
-                    <i class="bi bi-house-door-fill"></i>
+                <a href="index.php" title="Home" class="text-decoration-none me-3 home-link">
+                    <i class="bi bi-house-door home-icon"></i>
                 </a>
-                <a href="wishlist.php" title="Wishlist" class="text-decoration-none text-dark me-3 position-relative">
+                <a href="wishlist.php" title="Wishlist" class="text-decoration-none me-3 position-relative wishlist-link">
                     <div class="wishlist-icon-container">
-                        <i class="bi bi-heart-fill"></i>
-                        <?php if ($wishlistCount > 0): ?>
-                            <span class="wishlist-count"><?php echo $wishlistCount; ?></span>
-                        <?php endif; ?>
+                        <i class="bi <?php echo $wishlistCount > 0 ? 'bi-heart-fill' : 'bi-heart'; ?> wishlist-icon"></i>
                     </div>
                 </a>
                 <?php if (isLoggedIn()): ?>
-                    <a href="myaccount.php" title="My Account" class="text-decoration-none text-dark me-3">
-                        <i class="bi bi-person-circle"></i>
-                    </a>
-                    <a href="logout.php" title="Logout" class="text-decoration-none text-dark me-3">
-                        <i class="bi bi-box-arrow-right"></i>
+                    <a href="myaccount.php" title="My Account" class="text-decoration-none me-3 user-account-link d-flex align-items-center">
+                        <i class="fas fa-user user-account-icon me-2"></i>
+                        <div class="user-welcome-text">
+                            <div class="welcome-line-1">Welcome</div>
+                            <div class="welcome-line-2"><?php echo htmlspecialchars($currentUser['name']); ?></div>
+                        </div>
                     </a>
                 <?php else: ?>
-                    <a href="login.php" title="Login" class="text-decoration-none text-dark me-3">
-                        <i class="bi bi-box-arrow-in-right"></i>
+                    <a href="login.php" title="Sign In" class="text-decoration-none me-3 user-signin-link d-flex align-items-center">
+                        <i class="fas fa-user user-signin-icon me-1"></i>
+                        <span class="user-signin-text">Sign In</span>
                     </a>
                 <?php endif; ?>
             </div>
             <!-- Cart Section -->
             <div class="cart-section">
                 <a href="cart.php" class="text-decoration-none text-dark cart-link position-relative">
-                    <i class="bi bi-cart4 fs-4 cart-icon"></i>
+                    <img src="./asset/images/Cart_Icon.png" alt="Cart" class="cart-icon" style="width:45px;height:35px;">
                     <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill" style="display:<?php echo $cartCount > 0 ? 'inline-block' : 'none'; ?>;">
                         <?php echo $cartCount > 0 ? $cartCount : ''; ?>
                     </span>
@@ -575,29 +588,100 @@ function updateCartQuantity(cartId, qty, inputElem, btnElem, callback) {
     }
   });
 }
-function updateFloatingCartCount() {
+// Animation functions for floating cart
+function animateFloatingCart(animationType = 'updated') {
+  const floatingCartBtn = document.getElementById('floatingCartBtn');
+  const floatingCartCount = document.getElementById('floatingCartCount');
+  const floatingCartPanel = document.getElementById('floatingCartPanel');
+  
+  if (!floatingCartBtn) return;
+  
+  // Don't animate if cart panel is open
+  if (floatingCartPanel && floatingCartPanel.style.display === 'block') {
+    return;
+  }
+  
+  // Remove any existing animation classes
+  floatingCartBtn.classList.remove('cart-updated', 'cart-added', 'cart-removed');
+  floatingCartCount.classList.remove('count-updated');
+  
+  // Add the appropriate animation class
+  setTimeout(() => {
+    switch(animationType) {
+      case 'added':
+        floatingCartBtn.classList.add('cart-added');
+        break;
+      case 'removed':
+        floatingCartBtn.classList.add('cart-removed');
+        break;
+      case 'updated':
+      default:
+        floatingCartBtn.classList.add('cart-updated');
+        break;
+    }
+    
+    // Animate the count badge
+    floatingCartCount.classList.add('count-updated');
+    
+    // Remove animation classes after animation completes
+    setTimeout(() => {
+      floatingCartBtn.classList.remove('cart-updated', 'cart-added', 'cart-removed');
+      floatingCartCount.classList.remove('count-updated');
+    }, 1000); // Professional animation duration
+  }, 50);
+}
+
+function updateFloatingCartCount(animationType = null) {
   fetch('ajax/get_cart_count.php')
     .then(res => res.json())
     .then(data => {
-      document.getElementById('floatingCartCount').textContent = data.cart_count || 0;
+      const oldCount = parseInt(document.getElementById('floatingCartCount').textContent) || 0;
+      const newCount = data.cart_count || 0;
+      
+      document.getElementById('floatingCartCount').textContent = newCount;
       var headerCartCount = document.getElementById('cart-count');
       if (headerCartCount) {
-        headerCartCount.textContent = data.cart_count > 0 ? data.cart_count : '';
-        headerCartCount.style.display = data.cart_count > 0 ? 'inline-block' : 'none';
+        headerCartCount.textContent = newCount > 0 ? newCount : '';
+        headerCartCount.style.display = newCount > 0 ? 'inline-block' : 'none';
       }
       // Update mobile cart count
       var mobileCartCount = document.getElementById('cart-count-mobile');
       if (mobileCartCount) {
-        mobileCartCount.textContent = data.cart_count > 0 ? data.cart_count : '';
-        mobileCartCount.style.display = data.cart_count > 0 ? 'inline-block' : 'none';
-        console.log('Updated mobile cart count:', data.cart_count);
+        mobileCartCount.textContent = newCount > 0 ? newCount : '';
+        mobileCartCount.style.display = newCount > 0 ? 'inline-block' : 'none';
+        console.log('Updated mobile cart count:', newCount);
       } else {
         console.log('Mobile cart count element not found');
       }
-      // Hide or show floating cart icon
+      // Hide or show floating cart icon (but not on checkout page)
       var floatingCartBtn = document.getElementById('floatingCartBtn');
       if (floatingCartBtn) {
-        floatingCartBtn.style.display = (data.cart_count > 0) ? '' : 'none';
+        // Always hide on checkout page, regardless of cart count
+        if (window.location.pathname.endsWith('checkout.php')) {
+          floatingCartBtn.style.display = 'none';
+        } else {
+          // On other pages, show/hide based on cart count
+          const shouldShow = newCount > 0;
+          const wasVisible = floatingCartBtn.style.display !== 'none';
+          
+          floatingCartBtn.style.display = shouldShow ? 'flex' : 'none';
+          
+          // Trigger animation if cart count changed and cart is visible
+          if (shouldShow && (oldCount !== newCount)) {
+            // Determine animation type if not provided
+            if (!animationType) {
+              if (newCount > oldCount) {
+                animationType = oldCount === 0 ? 'added' : 'updated';
+              } else if (newCount < oldCount) {
+                animationType = newCount === 0 ? 'removed' : 'updated';
+              }
+            }
+            
+            if (animationType) {
+              animateFloatingCart(animationType);
+            }
+          }
+        }
       }
     });
 }
@@ -719,10 +803,15 @@ function renderFloatingCart() {
                         showConfirmButton: false
                     });
                 } else {
-                    alert('Could not update cart.');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Cart Error',
+                        text: 'Could not update cart.',
+                        confirmButtonText: 'OK'
+                    });
                 }
               } else {
-                updateFloatingCartCount();
+                updateFloatingCartCount('updated');
                 // Update the per-item total directly
                 const unitPrice = parseFloat(priceSpan.textContent.match(/₹(\d+\.?\d*)/)?.[1] || 0);
                 if (unitPrice > 0) {
@@ -781,7 +870,12 @@ function renderFloatingCart() {
                     showConfirmButton: false
                   });
                 } else {
-                  alert(result.message);
+                  Swal.fire({
+                      icon: 'error',
+                      title: 'Error',
+                      text: result.message,
+                      confirmButtonText: 'OK'
+                  });
                 }
                 return; // Don't proceed with the update
               }
@@ -815,7 +909,12 @@ function renderFloatingCart() {
                       showConfirmButton: false
                   });
               } else {
-                  alert('Could not update cart.');
+                  Swal.fire({
+                      icon: 'error',
+                      title: 'Cart Error',
+                      text: 'Could not update cart.',
+                      confirmButtonText: 'OK'
+                  });
               }
             } else {
               updateFloatingCartCount();
@@ -864,10 +963,10 @@ function renderFloatingCart() {
               // If cart is now empty, reload floating cart
               if (!content.querySelector('.d-flex.align-items-center')) {
                 renderFloatingCart();
-                updateFloatingCartCount();
+                updateFloatingCartCount('updated');
               } else {
                 updateFloatingCartSummary();
-                updateFloatingCartCount();
+                updateFloatingCartCount('updated');
               }
             } else {
               // Restore row if error
@@ -881,7 +980,12 @@ function renderFloatingCart() {
                       showConfirmButton: false
                   });
               } else {
-                  alert(resp.message || 'Could not remove item.');
+                  Swal.fire({
+                      icon: 'error',
+                      title: 'Remove Error',
+                      text: resp.message || 'Could not remove item.',
+                      confirmButtonText: 'OK'
+                  });
               }
             }
           });
@@ -937,7 +1041,12 @@ function renderFloatingCart() {
                     showConfirmButton: false
                   });
                 } else {
-                  alert(result.message);
+                  Swal.fire({
+                      icon: 'error',
+                      title: 'Error',
+                      text: result.message,
+                      confirmButtonText: 'OK'
+                  });
                 }
                 // Reset to original user input and don't proceed with update
                 console.log('Validation failed, resetting to:', originalUserInput);
@@ -1083,13 +1192,15 @@ if (closeFloatingCartPanel) {
   };
 }
 // Update cart count on page load and every 30s
-updateFloatingCartCount();
-setInterval(updateFloatingCartCount, 30000);
+updateFloatingCartCount(); // No animation on initial load
+setInterval(() => updateFloatingCartCount(), 30000); // No animation on periodic updates
 // Optionally update on add-to-cart events if available
 // Listen for global cart updates (from add-to-cart or other actions)
-window.addEventListener('cart-updated', function() {
+window.addEventListener('cart-updated', function(event) {
   renderFloatingCart();
-  updateFloatingCartCount();
+  // Use animation type from event detail if provided
+  const animationType = event.detail && event.detail.action ? event.detail.action : 'updated';
+  updateFloatingCartCount(animationType);
 });
 
 // Floating Cart Remove All functionality
@@ -1097,7 +1208,17 @@ document.addEventListener('DOMContentLoaded', function() {
   const floatingRemoveAllBtn = document.getElementById('floatingRemoveAll');
   if (floatingRemoveAllBtn) {
     floatingRemoveAllBtn.addEventListener('click', function() {
-      if (confirm('Are you sure you want to remove all items from your cart? This action cannot be undone.')) {
+      Swal.fire({
+        title: 'Remove All Items?',
+        text: 'Are you sure you want to remove all items from your cart? This action cannot be undone.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, remove all!',
+        cancelButtonText: 'Cancel'
+      }).then((result) => {
+        if (result.isConfirmed) {
         // Show loading state
         const button = this;
         const originalText = button.innerHTML;
@@ -1132,7 +1253,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         showConfirmButton: false
                     });
                 } else {
-                    alert('All items have been removed from your cart.');
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Cart Cleared',
+                        text: 'All items have been removed from your cart.',
+                        confirmButtonText: 'OK'
+                    });
                 }
             // Update floating cart
             renderFloatingCart();
@@ -1152,7 +1278,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         showConfirmButton: false
                     });
                 } else {
-                    alert('Failed to remove items: ' + (data.message || 'Unknown error'));
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Remove Failed',
+                        text: 'Failed to remove items: ' + (data.message || 'Unknown error'),
+                        confirmButtonText: 'OK'
+                    });
                 }
             // Reset button
             button.innerHTML = originalText;
@@ -1170,13 +1301,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     showConfirmButton: false
                 });
             } else {
-                alert('An error occurred while removing items from cart.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while removing items from cart.',
+                    confirmButtonText: 'OK'
+                });
             }
           // Reset button
           button.innerHTML = originalText;
           button.disabled = false;
         });
-      }
+        }
+      });
     });
   }
 });
@@ -1494,6 +1631,101 @@ function smoothUpdatePerItemTotal(cartId, newTotal) {
 </script>
 <main>
 
+<!-- Quantity Initialization Script -->
+<script>
+// Direct initialization script to ensure quantity inputs show current cart quantities
+(function() {
+    'use strict';
+    
+    // Function to load current cart quantity for a product
+    function loadCartQuantity(productId, input) {
+        if (!productId || !input) return;
+        
+        fetch(`ajax/check-product-in-cart.php?product_id=${productId}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.in_cart && data.quantity > 0) {
+                    input.value = data.quantity;
+                }
+            })
+            .catch(err => {});
+    }
+    
+    // Function to initialize all quantity inputs
+    function initQuantityInputs() {
+        // Find all possible quantity inputs
+        const inputs = document.querySelectorAll(`
+            input[type="number"][min="1"],
+            .quantity-input,
+            .shop-page-quantity-input,
+            input[name="quantity"],
+            .product-quantity-input,
+            .quantity-control input[type="number"],
+            .cart-actions input[type="number"],
+            .cart-controls input[type="number"]
+        `);
+        
+        inputs.forEach((input, i) => {
+            let productId = null;
+            
+            // Try multiple ways to find product ID
+            productId = input.dataset.productId || input.getAttribute('data-product-id');
+            
+            if (!productId) {
+                const card = input.closest('[data-product-id]');
+                if (card) productId = card.dataset.productId || card.getAttribute('data-product-id');
+            }
+            
+            if (!productId) {
+                const addBtn = input.closest('*').querySelector('[data-product-id]');
+                if (addBtn) productId = addBtn.dataset.productId || addBtn.getAttribute('data-product-id');
+            }
+            
+            if (!productId) {
+                // Look in parent elements
+                let parent = input.parentElement;
+                while (parent && !productId) {
+                    const elementWithId = parent.querySelector('[data-product-id]');
+                    if (elementWithId) {
+                        productId = elementWithId.dataset.productId || elementWithId.getAttribute('data-product-id');
+                        break;
+                    }
+                    parent = parent.parentElement;
+                    if (!parent || parent === document.body) break;
+                }
+            }
+            
+            if (productId && input.value == "1") {
+                loadCartQuantity(productId, input);
+            }
+        });
+    }
+    
+    // Run initialization at multiple points
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(initQuantityInputs, 100);
+        });
+    } else {
+        setTimeout(initQuantityInputs, 100);
+    }
+    
+    // Also run when window is fully loaded
+    window.addEventListener('load', () => {
+        setTimeout(initQuantityInputs, 200);
+    });
+    
+    // Run after longer delays as fallbacks
+    setTimeout(initQuantityInputs, 1000);
+    setTimeout(initQuantityInputs, 2000);
+    setTimeout(initQuantityInputs, 3000);
+    
+    // Make function globally available
+    window.headerInitQuantities = initQuantityInputs;
+    
+})();
+</script>
+
 <!-- Go to Top Button -->
 <button id="goToTopBtn" style="display:none; position:fixed; bottom:30px; right:30px; z-index:9999; background:#b2d235; color:white; border:none; border-radius:12px; width:56px; height:56px; box-shadow:0 2px 8px rgba(0,0,0,0.15); font-size:2rem; cursor:pointer; transition:background 0.2s;">
     <span style="display:flex; align-items:center; justify-content:center;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg></span>
@@ -1514,5 +1746,43 @@ if(document.getElementById('goToTopBtn')){
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 }
+
+// Home and Wishlist Icon Hover Effects
+document.addEventListener('DOMContentLoaded', function() {
+    // Home icon hover effects
+    const homeLink = document.querySelector('.home-link');
+    const homeIcon = document.querySelector('.home-icon');
+    
+    if (homeLink && homeIcon) {
+        homeLink.addEventListener('mouseenter', function() {
+            homeIcon.classList.remove('bi-house-door');
+            homeIcon.classList.add('bi-house-door-fill');
+        });
+        
+        homeLink.addEventListener('mouseleave', function() {
+            homeIcon.classList.remove('bi-house-door-fill');
+            homeIcon.classList.add('bi-house-door');
+        });
+    }
+    
+    // Wishlist icon hover effects
+    const wishlistLink = document.querySelector('.wishlist-link');
+    const wishlistIcon = document.querySelector('.wishlist-icon');
+    
+    if (wishlistLink && wishlistIcon) {
+        // Only apply hover effect if it's currently outline (bi-heart)
+        if (wishlistIcon.classList.contains('bi-heart')) {
+            wishlistLink.addEventListener('mouseenter', function() {
+                wishlistIcon.classList.remove('bi-heart');
+                wishlistIcon.classList.add('bi-heart-fill');
+            });
+            
+            wishlistLink.addEventListener('mouseleave', function() {
+                wishlistIcon.classList.remove('bi-heart-fill');
+                wishlistIcon.classList.add('bi-heart');
+            });
+        }
+    }
+});
 </script>
 

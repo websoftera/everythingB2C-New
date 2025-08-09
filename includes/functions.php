@@ -297,8 +297,8 @@ function addToCart($userId, $productId, $quantity = 1) {
     $existing = $stmt->fetch();
     
     if ($existing) {
-        // Update quantity
-        $stmt = $pdo->prepare("UPDATE cart SET quantity = quantity + ? WHERE user_id = ? AND product_id = ?");
+        // Update quantity (replace, don't add)
+        $stmt = $pdo->prepare("UPDATE cart SET quantity = ? WHERE user_id = ? AND product_id = ?");
         return $stmt->execute([$quantity, $userId, $productId]);
     } else {
         // Add new item
@@ -375,11 +375,8 @@ function generateRandomString($length = 10) {
 // --- SESSION-BASED CART & WISHLIST FOR GUESTS ---
 function addToSessionCart($productId, $quantity = 1) {
     if (!isset($_SESSION['cart'])) $_SESSION['cart'] = [];
-    if (isset($_SESSION['cart'][$productId])) {
-        $_SESSION['cart'][$productId] += $quantity;
-    } else {
-        $_SESSION['cart'][$productId] = $quantity;
-    }
+    // Always set the quantity (replace, don't add)
+    $_SESSION['cart'][$productId] = $quantity;
     return true;
 }
 
