@@ -19,16 +19,8 @@ echo renderBreadcrumb($breadcrumbs);
 ?>
 
 <!-- Banner/Breadcrumb (skip homepage) -->
-<div class="page-banner" style="background: url('asset/images/internalpage-bg.webp') center/cover no-repeat; min-height: 240px; display: flex; align-items: center;">
-    <div class="container">
-        <h2 style="color: #fff; font-size: 2rem; font-weight: bold; text-shadow: 0 2px 8px rgba(0,0,0,0.3); margin: 0; padding: 32px 0;">
-            <?php echo htmlspecialchars($pageTitle); ?>
-        </h2>
-    </div>
-</div>
 <?php
 ?>
-<h1>My Wishlist</h1>
 <div class="container mt-4 wishlist-container">
     <!-- <h1>My Wishlist</h1> -->
     
@@ -79,12 +71,12 @@ echo renderBreadcrumb($breadcrumbs);
                                 <a href="product.php?slug=<?php echo $item['slug']; ?>" class="read-more">READ MORE</a>
                             <?php else: ?>
                                 <div class="cart-actions">
-                                    <button class="add-to-cart add-to-cart-btn btn btn-primary btn-sm" data-product-id="<?php echo $item['product_id']; ?>">ADD TO CART</button>
                                     <div class="quantity-control d-inline-flex align-items-center">
                                         <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
                                         <input type="number" class="quantity-input form-control form-control-sm" value="1" min="1">
                                         <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
                                     </div>
+                                    <button class="add-to-cart add-to-cart-btn btn btn-primary btn-sm" data-product-id="<?php echo $item['product_id']; ?>">ADD TO CART</button>
                                 </div>
                             <?php endif; ?>
                         </div>

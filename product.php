@@ -68,7 +68,7 @@ echo renderBreadcrumb($breadcrumbs);
         <?php endif; ?>
         <button class="zoom-icon-btn modern-zoom" id="zoomBtn" title="Zoom"><i class="fas fa-search-plus"></i></button>
         <div class="img-magnifier-container" id="mainImageContainer" style="position:relative;">
-            <img id="mainImage" src="<?php echo $product['main_image']; ?>" alt="<?php echo cleanProductName($product['name']); ?>" data-index="0" style="width:100%;max-width:400px;" />
+                         <img id="mainImage" src="<?php echo $product['main_image']; ?>" alt="<?php echo cleanProductName($product['name']); ?>" data-index="0" style="width:100%;height:100%;object-fit:contain;border-radius:8px;display:block;" />
             <div id="magnifier" class="img-magnifier-glass" style="display:none;"></div>
         </div>
         <div class="thumbnail-row">
@@ -94,6 +94,7 @@ echo renderBreadcrumb($breadcrumbs);
                 <label for="wishlist-checkbox-main-<?php echo $product['id']; ?>" class="wishlist-label"><i class="fas fa-heart"></i></label>
             </div>
         </div>
+        <?php if ($product['stock_quantity'] > 0): ?>
         <div class="cart-controls d-flex align-items-center gap-2">
             <div class="quantity-control d-inline-flex align-items-center">
                 <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
@@ -102,6 +103,11 @@ echo renderBreadcrumb($breadcrumbs);
             </div>
             <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">ADD TO CART</button>
         </div>
+        <?php else: ?>
+        <div class="out-of-stock-message">
+            <button class="btn btn-secondary" disabled style="background-color: #6c757d; color: #fff; padding: 10px 20px; border: none; border-radius: 5px; cursor: not-allowed;">OUT OF STOCK</button>
+        </div>
+        <?php endif; ?>
         <p><strong>CATEGORY:</strong> 
             <?php foreach ($categoryPath as $i => $cat): ?>
                 <a href="category.php?slug=<?php echo $cat['slug']; ?>"><?php echo htmlspecialchars($cat['name']); ?></a><?php if ($i < count($categoryPath) - 1) echo ' &raquo; '; ?>
@@ -151,7 +157,7 @@ echo renderBreadcrumb($breadcrumbs);
 .product-info-section { flex: 2 1 400px; min-width: 320px; }
 .modern-zoom { position: absolute; top: 16px; right: 16px; background: #fff; border: none; border-radius: 50%; width: 40px; height: 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; color: #007bff; cursor: pointer; z-index: 2; transition: background 0.2s; }
 .modern-zoom:hover { background: #f0f8ff; }
-.img-magnifier-container { position: relative; display: flex; }
+.img-magnifier-container { position: relative; display: block; width: 400px; height: 400px; max-width: 100%; background: #f8f9fa; border-radius: 8px; overflow: hidden; }
 .img-magnifier-glass {
   display: none;
   position: absolute;
@@ -167,8 +173,9 @@ echo renderBreadcrumb($breadcrumbs);
   z-index: 10;
 }
 .thumbnail-row { display: flex; gap: 10px; margin-top: 16px; }
-.thumbnail { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 2px solid transparent; cursor: pointer; transition: border 0.2s; }
+.thumbnail { width: 80px; height: 80px; object-fit: contain; border-radius: 8px; border: 2px solid transparent; cursor: pointer; transition: border 0.2s; background: #f8f9fa; }
 .thumbnail.active, .thumbnail:hover { border: 2px solid #007bff; }
+#mainImage { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; display: block; }
 .modern-info h2.title { text-align: left; font-size: 20px; font-weight: 700; margin-bottom: 12px; }
 .modern-prices { margin-bottom: 18px; }
 .modern-cart { margin-bottom: 18px; }
@@ -176,13 +183,15 @@ echo renderBreadcrumb($breadcrumbs);
 .product-hsn{margin-bottom: 10px;}
 /* Zoom Modal Styles */
 .zoom-modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100vw; height: 100vh; overflow: auto; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; }
-.zoom-modal-content { margin: auto; display: block; max-width: 90vw; max-height: 90vh; border-radius: 12px; box-shadow: 0 4px 32px rgba(0,0,0,0.25); background: #fff; }
-.zoom-close { position: absolute; top: 40px; right: 60px; color: #fff; font-size: 2.5rem; font-weight: bold; cursor: pointer; z-index: 10001; text-shadow: 0 2px 8px rgba(0,0,0,0.5); }
+.zoom-modal-content { margin: auto; display: block; width: 600px; height: 600px; max-width: 90vw; max-height: 90vh; border-radius: 12px; box-shadow: 0 4px 32px rgba(0,0,0,0.25); background: #f8f9fa; object-fit: contain; }
+.zoom-close { position: absolute; top: 10px; right: 10px; color: #fff; font-size: 2rem; font-weight: bold; cursor: pointer; z-index: 10001; text-shadow: 0 2px 8px rgba(0,0,0,0.5); background: rgba(0,0,0,0.5); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
 .zoom-nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: #fff; border: none; border-radius: 50%; width: 48px; height: 48px; font-size: 2rem; cursor: pointer; z-index: 10001; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
 .zoom-prev { left: 40px; }
 .zoom-next { right: 40px; }
 .zoom-nav-btn:hover { background: #007bff; }
-@media (max-width: 900px) { .modern-card { flex-direction: column; padding: 18px 6px; } .product-image-section, .product-info-section { min-width: 0; } .zoom-modal-content { max-width: 98vw; max-height: 70vh; } .zoom-prev { left: 10px; } .zoom-next { right: 10px; } .img-magnifier-glass { display: none !important; } }
+@media (max-width: 900px) { .modern-card { flex-direction: column; padding: 18px 6px; } .product-image-section, .product-info-section { min-width: 0; } .img-magnifier-container { width: 100%; height: 350px; } .zoom-modal-content { width: 500px; height: 500px; max-width: 98vw; max-height: 70vh; } .zoom-prev { left: 10px; } .zoom-next { right: 10px; } .zoom-close { top: 5px; right: 5px; width: 35px; height: 35px; font-size: 1.5rem; } .img-magnifier-glass { display: none !important; } }
+@media (max-width: 600px) { .img-magnifier-container { height: 300px; } .thumbnail { width: 60px; height: 60px; } .zoom-modal-content { width: 400px; height: 400px; } }
+@media (max-width: 480px) { .img-magnifier-container { height: 250px; } .thumbnail { width: 50px; height: 50px; } .zoom-modal-content { width: 350px; height: 350px; } }
 .qty-minus, .qty-plus {
   width: 36px;
   height: 36px;

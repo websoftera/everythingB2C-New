@@ -330,9 +330,10 @@ html, body {
 
 <!-- Floating Cart Icon and Panel -->
 <?php 
-// Hide floating cart on checkout page, otherwise show/hide based on cart count
+// Hide floating cart on checkout page and cart page, otherwise show/hide based on cart count
 $isCheckoutPage = (basename($_SERVER['PHP_SELF']) === 'checkout.php');
-$displayStyle = $isCheckoutPage ? 'none' : ($cartCount > 0 ? 'flex' : 'none');
+$isCartPage = (basename($_SERVER['PHP_SELF']) === 'cart.php');
+$displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'flex' : 'none');
 ?>
 <div id="floatingCartBtn" class="floating-cart-btn" style="display: <?php echo $displayStyle; ?>;">
   <span style="position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:100%;">
@@ -449,7 +450,7 @@ $displayStyle = $isCheckoutPage ? 'none' : ($cartCount > 0 ? 'flex' : 'none');
                 <?php else: ?>
                     <a href="login.php" title="Sign In" class="text-decoration-none me-3 user-signin-link d-flex align-items-center">
                         <i class="fas fa-user user-signin-icon me-1"></i>
-                        <span class="user-signin-text">Sign In</span>
+                        <span class="user-signin-text">Sign In / Register</span>
                     </a>
                 <?php endif; ?>
             </div>
@@ -473,7 +474,7 @@ $displayStyle = $isCheckoutPage ? 'none' : ($cartCount > 0 ? 'flex' : 'none');
             foreach ($tree as $cat) {
                 echo '<a href="category.php?slug=' . $cat['slug'] . '" class="category-item text-center mx-2">';
                 echo '<img src="./' . $cat['image'] . '" alt="' . htmlspecialchars($cat['name']) . '" class="category-img mb-1">';
-                echo '<div class="category-label">' . strtoupper($cat['name']) . '</div>';
+                echo '<div class="category-label">' . htmlspecialchars($cat['name']) . '</div>';
                 echo '</a>';
                 if (!empty($cat['children'])) {
                     renderMobileCategoryMenu($cat['children']);
@@ -494,22 +495,22 @@ $displayStyle = $isCheckoutPage ? 'none' : ($cartCount > 0 ? 'flex' : 'none');
 function renderCategoryMenu($tree, $level = 0) {
     foreach ($tree as $cat) {
         $hasChildren = !empty($cat['children']);
-        $liClass = $hasChildren ? 'nav-item dropdown' : 'nav-item';
+        $liClass = $hasChildren ? 'nav-item navigationtext dropdown' : 'navigationtext nav-item';
         echo '<li class="' . $liClass . '">';
         
         if ($hasChildren) {
             // Main category as dropdown toggle
-            echo '<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">' . strtoupper(htmlspecialchars($cat['name'])) . '</a>';
+            echo '<a class="nav-link navigationtext dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">' . htmlspecialchars($cat['name']) . '</a>';
             echo '<ul class="dropdown-menu">';
             // Parent category as clickable item
-            echo '<li><a class="dropdown-item parent-category" href="category.php?slug=' . $cat['slug'] . '">' . strtoupper(htmlspecialchars($cat['name'])) . '</a></li>';
+            echo '<li><a class="dropdown-item navigationtext parent-category" href="category.php?slug=' . $cat['slug'] . '">' . htmlspecialchars($cat['name']) . '</a></li>';
             echo '<li><hr class="dropdown-divider"></li>';
             // Render all subcategories recursively
             renderSubcategories($cat['children'], $level + 1);
             echo '</ul>';
         } else {
             // Main category link (no children)
-            echo '<a class="nav-link" href="category.php?slug=' . $cat['slug'] . '">' . strtoupper(htmlspecialchars($cat['name'])) . '</a>';
+            echo '<a class="nav-link navigationtext" href="category.php?slug=' . $cat['slug'] . '">' . htmlspecialchars($cat['name']) . '</a>';
         }
         echo '</li>';
     }
@@ -543,6 +544,117 @@ renderCategoryMenu($categoryTree);
 <script src="popup/searchbar.js"></script>
 <script src="js/real-time-max-quantity.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+// Store the original SweetAlert before overriding
+const OriginalSwal = window.Swal;
+
+// Global SweetAlert configuration with logo
+const SwalWithLogo = {
+    fire: function(options) {
+        // Add logo to all SweetAlert dialogs
+        const defaultOptions = {
+            customClass: {
+                popup: 'swal-with-logo'
+            },
+            showClass: {
+                popup: 'swal2-show swal2-noanimation'
+            },
+            customClass: {
+                popup: 'swal-with-logo',
+                icon: 'swal-logo-icon'
+            },
+                        didOpen: function(popup) {
+                // Replace the default SweetAlert icon with our logo
+                console.log('SweetAlert didOpen triggered, popup:', popup);
+                
+                // Try different selectors to find the popup element
+                let popupElement = popup.querySelector('.swal2-popup');
+                if (!popupElement) {
+                    popupElement = popup;
+                }
+                
+                console.log('Popup element found:', popupElement);
+                
+                const iconElement = popupElement.querySelector('.swal2-icon');
+                console.log('Icon element found:', iconElement);
+                
+                if (popupElement) {
+                    // Hide the default icon if it exists
+                    if (iconElement) {
+                        iconElement.style.display = 'none';
+                    }
+                    
+                    // Create logo container
+                    const logoContainer = document.createElement('div');
+                    logoContainer.className = 'swal-logo-container';
+                    logoContainer.style.cssText = `
+                        position: absolute;
+                        top: 20px;
+                        left: 0;
+                        right: 0;
+                        width: 100%;
+                        height: 60px;
+                        background: transparent;
+                        padding: 0;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        z-index: 10002;
+                    `;
+                    
+                    // Create logo image
+                    const logoImg = document.createElement('img');
+                    logoImg.src = './asset/images/logo.webp';
+                    logoImg.alt = 'EverythingB2C';
+                    logoImg.style.cssText = `
+                        max-width: 200px;
+                        height: auto;
+                        object-fit: contain;
+                        border-radius: 0;
+                    `;
+                    
+                    // Error handling
+                    logoImg.onerror = function() {
+                        console.log('Logo image failed to load, using text fallback');
+                        logoContainer.innerHTML = '<span style="color: #007bff; font-size: 18px; font-weight: bold; text-align: center;">EverythingB2C</span>';
+                    };
+                    
+                    logoImg.onload = function() {
+                        console.log('Logo image loaded successfully');
+                    };
+                    
+                    logoContainer.appendChild(logoImg);
+                    popupElement.appendChild(logoContainer);
+                    
+                    // Adjust title position
+                    const titleElement = popupElement.querySelector('.swal2-title');
+                    if (titleElement) {
+                        titleElement.style.marginTop = '100px';
+                    }
+                    
+                    console.log('Logo added to SweetAlert popup successfully');
+                } else {
+                    console.log('Popup element not found, cannot add logo');
+                }
+            }
+        };
+        
+        // Merge options
+        const mergedOptions = { ...defaultOptions, ...options };
+        return OriginalSwal.fire(mergedOptions);
+    }
+};
+
+// Copy all other SweetAlert methods to our wrapper
+Object.keys(OriginalSwal).forEach(key => {
+    if (key !== 'fire') {
+        SwalWithLogo[key] = OriginalSwal[key];
+    }
+});
+
+// Override the global Swal.fire to use our custom version
+window.Swal = SwalWithLogo;
+</script>
 <script>
 // Initialize Bootstrap dropdowns
 document.addEventListener('DOMContentLoaded', function() {
@@ -727,8 +839,8 @@ function updateFloatingCartCount(animationType = null) {
       // Hide or show floating cart icon (but not on checkout page)
       var floatingCartBtn = document.getElementById('floatingCartBtn');
       if (floatingCartBtn) {
-        // Always hide on checkout page, regardless of cart count
-        if (window.location.pathname.endsWith('checkout.php')) {
+        // Always hide on checkout page and cart page, regardless of cart count
+        if (window.location.pathname.endsWith('checkout.php') || window.location.pathname.endsWith('cart.php')) {
           floatingCartBtn.style.display = 'none';
         } else {
           // On other pages, show/hide based on cart count

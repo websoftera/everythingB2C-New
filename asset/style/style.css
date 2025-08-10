@@ -53,10 +53,10 @@
 }
 
 .user-signin-text {
-  color: #28a745 !important; /* Green color for sign-in text */
-  font-size: 12px !important;
+  color: #000 !important; /* Green color for sign-in text */
+  font-size: 14px !important;
   font-weight: 600 !important;
-  text-transform: uppercase !important;
+  text-transform: capitalize !important;
   letter-spacing: 0.5px !important;
   transition: color 0.3s ease !important;
 }
@@ -80,7 +80,7 @@
   color: #dc3545 !important; /* Red color for sign-out text */
   font-size: 12px !important;
   font-weight: 600 !important;
-  text-transform: uppercase !important;
+  text-transform: capitalize !important;
   letter-spacing: 0.5px !important;
   transition: color 0.3s ease !important;
 }
@@ -118,7 +118,7 @@
   font-size: 10px !important;
   font-weight: 400 !important;
   color: #666 !important;
-  text-transform: uppercase !important;
+  text-transform: capitalize !important;
   letter-spacing: 0.5px !important;
   margin: 0 !important;
   padding: 0 !important;
@@ -882,6 +882,24 @@ h3{
   display: inline-block;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   transition: all 0.3s ease;
+}
+
+.nav-item{
+  text-transform: capitalize !important;
+  font-size: 14px !important;
+  color: #373737 !important;
+}
+
+.nav-link{
+  text-transform: capitalize !important;
+  font-size: 14px !important;
+  color: #373737 !important;
+}
+
+.navigationtext{
+  text-transform: capitalize !important;
+  font-size: 14px !important;
+  color: #373737 !important;
 }
 
 /* =========== Tablet View (2 Columns) ============ */
@@ -1958,7 +1976,7 @@ overflow-x: auto;
     font-size: 12px;
     font-weight: bold;
     color: #000;
-    text-transform: uppercase !important;
+    text-transform: none !important;
     text-decoration: none;
     line-height: 25px;
   }
@@ -2180,10 +2198,6 @@ input, select, textarea, button {
   transition: box-shadow 0.2s, border 0.2s, background 0.2s, color 0.2s;
 }
 
-
-
-
-
-
-
-
+.discount-banner{
+  padding: 10px 14px !important;
+}

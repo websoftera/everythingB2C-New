@@ -143,7 +143,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                         <?php if (!empty($product['main_image']) && file_exists('./' . $product['main_image'])): ?>
                             <img src="./<?php echo $product['main_image']; ?>" alt="<?php echo cleanProductName($product['name']); ?>">
                         <?php else: ?>
-                            <div style="background: #f8f9fa; height: 200px; display: flex; align-items: center; justify-content: center; border: 1px dashed #dee2e6;">
+                            <div style="background: #f8f9fa; height: 155px; display: flex; align-items: center; justify-content: center; border: 1px dashed #dee2e6;">
                                 <small style="color: #6c757d;">Image not found: <?php echo $product['main_image'] ?? 'No image path'; ?></small>
                             </div>
                         <?php endif; ?>
@@ -216,7 +216,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                         <?php if (!empty($product['main_image']) && file_exists('./' . $product['main_image'])): ?>
                             <img src="./<?php echo $product['main_image']; ?>" alt="<?php echo cleanProductName($product['name']); ?>">
                         <?php else: ?>
-                            <div style="background: #f8f9fa; height: 200px; display: flex; align-items: center; justify-content: center; border: 1px dashed #dee2e6;">
+                            <div style="background: #f8f9fa; height: 155px; display: flex; align-items: center; justify-content: center; border: 1px dashed #dee2e6;">
                                 <small style="color: #6c757d;">Image not found: <?php echo $product['main_image'] ?? 'No image path'; ?></small>
                             </div>
                         <?php endif; ?>
@@ -511,6 +511,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   font-weight: bold;
   color: #333;
   margin: 0;
+  padding-left: 8px;
 }
 
 .view-all-link {
@@ -530,7 +531,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   align-items: center;
   position: relative;
   overflow: visible;
-  padding: 0 15px;
+  padding: 0 0px;
   margin: 0 auto;
   width: 100%;
   max-width: 1400px;
@@ -885,6 +886,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   
   .discounted-products-title {
     font-size: 14px;
+    padding-left: 8px;
   }
   
   .discounted-products-slider-wrapper {
@@ -1019,6 +1021,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   font-weight: bold;
   color: #333;
   margin: 0;
+  padding-left: 8px;
 }
 
 .featured-products-slider-wrapper {
@@ -1026,7 +1029,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   align-items: center;
   position: relative;
   overflow: visible;
-  padding: 0 15px;
+  padding: 0 0px;
   margin: 0 auto;
   width: 100%;
   max-width: 1400px;

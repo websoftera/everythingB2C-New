@@ -515,11 +515,12 @@ body {
     transition: color 0.2s ease-in-out, text-decoration 0.2s;
     white-space: nowrap;
     position: relative;
+    text-transform: capitalize !important;
   }
 
   .category-navbar .nav-link:hover {
-    
-    text-decoration: underline;
+
+    text-decoration: none !important;
     color: red;
   }
 
@@ -584,7 +585,7 @@ body {
   color: white;
   text-align: center;
   width: 100%;
-  padding: 7px 10px;
+  padding: 10px 10px;
   font-weight: bold;
   font-size: 14px;
 }
@@ -1519,6 +1520,7 @@ padding-right: 20px;
     transition: color 0.2s ease-in-out, text-decoration 0.2s;
     white-space: nowrap;
     position: relative;
+    text-transform: capitalize !important;
   }
 
   .category-navbar .nav-link:hover {
@@ -1600,7 +1602,7 @@ padding-right: 20px;
   color: white;
   text-align: center;
   width: 100%;
-  padding: 7px 10px;
+  padding: 10px 14px;
   font-weight: bold;
   font-size: 14px;
 }
@@ -2480,6 +2482,7 @@ html, body {
     font-weight: 500;
     padding: 10px 15px;
     transition: color 0.3s ease;
+    text-transform: none !important;
   }
   
   .category-navbar .nav-link:hover {
@@ -2816,6 +2819,7 @@ input[type="checkbox"]:checked + .heart-icon,
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-transform: capitalize !important;
 }
 
 .category-navbar .dropdown-menu .dropdown-item:hover,
@@ -2841,6 +2845,7 @@ input[type="checkbox"]:checked + .heart-icon,
   color: #495057;
   background-color: #f8f9fa;
   border-bottom: 2px solid #dee2e6;
+  text-transform: capitalize !important;
 }
 
 .category-navbar .dropdown-menu .dropdown-item.parent-category:hover {
@@ -2854,6 +2859,7 @@ input[type="checkbox"]:checked + .heart-icon,
   color: #6c757d;
   font-size: 0.875rem !important;
   position: relative;
+  text-transform: capitalize !important;
 }
 
 .category-navbar .dropdown-menu .dropdown-item.subcategory::before {
@@ -2868,6 +2874,7 @@ input[type="checkbox"]:checked + .heart-icon,
 .category-navbar .dropdown-menu .dropdown-item.subcategory-level-1 {
   padding-left: 45px !important;
   font-size: 0.875rem !important;
+  text-transform: capitalize !important;
 }
 
 .category-navbar .dropdown-menu .dropdown-item.subcategory-level-1::before {
@@ -2881,6 +2888,7 @@ input[type="checkbox"]:checked + .heart-icon,
 .category-navbar .dropdown-menu .dropdown-item.subcategory-level-2 {
   padding-left: 65px !important;
   font-size: 0.875rem !important;
+  text-transform: capitalize !important;
 }
 
 .category-navbar .dropdown-menu .dropdown-item.subcategory-level-2::before {
@@ -2894,6 +2902,7 @@ input[type="checkbox"]:checked + .heart-icon,
 .category-navbar .dropdown-menu .dropdown-item.subcategory-level-3 {
   padding-left: 85px !important;
   font-size: 0.875rem !important;
+  text-transform: capitalize !important;
 }
 
 .category-navbar .dropdown-menu .dropdown-item.subcategory-level-3::before {
@@ -2907,6 +2916,7 @@ input[type="checkbox"]:checked + .heart-icon,
 /* Subcategories with children styling */
 .category-navbar .dropdown-menu .dropdown-item.subcategory-with-children {
   font-weight: 500;
+  text-transform: capitalize !important;
   color: #495057;
 }
 
