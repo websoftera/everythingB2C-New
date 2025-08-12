@@ -1,6 +1,11 @@
 <?php
 $pageTitle = 'EverythingB2C';
 require_once 'includes/header.php';
+require_once 'includes/delivery_popup_functions.php';
+
+// Check if popup should be shown
+$showPopup = shouldShowDeliveryPopup();
+$popupSettings = getPopupSettings();
 
 // Get data from database
 $categories = getAllCategoriesWithRecursiveProductCount();
@@ -64,21 +69,21 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
             <p>ONLINE SHOPPING</p>
         </div>
         <div class="arrow">
-            <img src="./asset/images/work-progress.webp" alt="Arrow">
+            <!-- <img src="./asset/images/work-progress.webp" alt="Arrow"> -->
         </div>
         <div class="step">
             <img src="./asset/images/work-2.webp" alt="Warehouse">
             <p>WAREHOUSE</p>
         </div>
         <div class="arrow">
-            <img src="./asset/images/work-progress.webp" alt="Arrow">
+            <!-- <img src="./asset/images/work-progress.webp" alt="Arrow"> -->
         </div>
         <div class="step">
             <img src="./asset/images/work-3.webp" alt="Shipping">
             <p>SHIPPING</p>
         </div>
         <div class="arrow">
-            <img src="./asset/images/work-progress.webp" alt="Arrow">
+            <!-- <img src="./asset/images/work-progress.webp" alt="Arrow"> -->
         </div>
         <div class="step">
             <img src="./asset/images/work-01.webp" alt="Home Delivery">
@@ -90,7 +95,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 <!-- Product Categories Section -->
 <section class="popular-categories-section">
     <div class="categories-card">
-        <h2 class="categories-title">Popular Categories</h2>
+        <h2 class="categories-title">Product Categories</h2>
         <div class="categories-slider-wrapper">
                          <button class="category-nav-btn prev-btn" aria-label="Scroll Left">&#8249;</button>
             <div class="categories-container" id="slider">
@@ -121,7 +126,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
     <div class="discounted-products-card">
         <div class="discounted-products-header">
             <h2 class="discounted-products-title">Products Offering Discount</h2>
-            <a href="products.php?discounted=1" class="view-all-link">View All<span> &gt;</span></a>
+            <a href="products.php?discounted=1" class="view-all-link">View All</a>
         </div>
         <div class="discounted-products-slider-wrapper">
             <button class="discounted-nav-btn prev-btn" aria-label="Scroll Left">&#8249;</button>
@@ -194,7 +199,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
     <div class="featured-products-card">
         <div class="featured-products-header">
             <h2 class="featured-products-title">Top 100 Products with Higher Discounts</h2>
-            <a href="products.php?featured=1" class="view-all-link">View All<span> &gt;</span></a>
+            <a href="products.php?featured=1" class="view-all-link">View All</a>
         </div>
         <div class="featured-products-slider-wrapper">
             <button class="featured-nav-btn prev-btn" aria-label="Scroll Left">&#8249;</button>
@@ -308,7 +313,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 }
 
 .categories-card {
-  background: #fff;
+  background: #9FBF1C;
   border-radius: 8px;
   border: 1px solid #e0e0e0;
   padding: 20px;
@@ -320,7 +325,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 .categories-title {
   font-size: 16px;
   font-weight: bold;
-  color: #333;
+  color: #fff;
   margin: 0 0 20px 0;
   text-align: left;
 }
@@ -352,8 +357,8 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 
 .category-item {
   flex: 0 0 auto;
-  width: 160px;
-  min-width: 160px;
+  width: 220px;
+  min-width: 220px;
   scroll-snap-align: start;
   text-align: center;
 }
@@ -365,9 +370,9 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 }
 
 .category-illustration {
-  width: 140px;
-  height: 140px;
-  margin: 0 auto 8px;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 10px;
   background: #f8f9fa;
   border-radius: 8px;
   border: 1px solid #e9ecef;
@@ -407,9 +412,9 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 }
 
 .category-label {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
-  color: #333;
+  color: #fff;
   margin: 0;
   line-height: 1.2;
   text-align: center;
@@ -489,7 +494,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 }
 
 .discounted-products-card {
-  background: rgb(255, 216, 192);
+  background: #038CC3;
   border-radius: 8px;
   border: 1px solid #e0e0e0;
   padding: 20px;
@@ -509,21 +514,21 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 .discounted-products-title {
   font-size: 16px;
   font-weight: bold;
-  color: #333;
+  color: #fff;
   margin: 0;
   padding-left: 8px;
 }
 
 .view-all-link {
   text-decoration: none;
-  color: #16BAE4;
+  color: #000;
   font-weight: 600;
   font-size: 14px;
   transition: color 0.2s ease;
 }
 
 .view-all-link:hover {
-  color: #0d8ba8;
+  color: #000;
 }
 
 .discounted-products-slider-wrapper {
@@ -758,14 +763,14 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   }
   
   .category-item {
-    width: 140px;
-    min-width: 140px;
+    width: 180px;
+    min-width: 180px;
   }
   
   .category-illustration {
-    width: 120px;
-    height: 120px;
-    margin-bottom: 6px;
+    width: 160px;
+    height: 160px;
+    margin-bottom: 8px;
   }
   
   .category-illustration img {
@@ -783,7 +788,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   }
   
   .category-label {
-    font-size: 11px;
+    font-size: 12px;
   }
   
   .category-nav-btn {
@@ -824,13 +829,13 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   }
   
   .category-item {
-    width: 130px;
-    min-width: 130px;
+    width: 160px;
+    min-width: 160px;
   }
   
   .category-illustration {
-    width: 110px;
-    height: 110px;
+    width: 140px;
+    height: 140px;
   }
   
   .category-illustration img {
@@ -999,7 +1004,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 }
 
 .featured-products-card {
-  background: rgb(206, 229, 239);
+  background: #9ebf1c90;
   border-radius: 8px;
   border: 1px solid #e0e0e0;
   padding: 20px;
@@ -1019,7 +1024,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 .featured-products-title {
   font-size: 16px;
   font-weight: bold;
-  color: #333;
+  color: #000;
   margin: 0;
   padding-left: 8px;
 }
@@ -1974,6 +1979,419 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
+<!-- Delivery Availability Popup -->
+<?php if ($showPopup && ($popupSettings['popup_enabled'] ?? '1') == '1'): ?>
+<div id="deliveryPopup" class="delivery-popup-overlay">
+    <div class="delivery-popup">
+        <div class="delivery-popup-header">
+            <div class="delivery-logo">
+                <img src="asset/images/logo.webp" alt="EverythingB2C Logo" class="site-logo">
+            </div>
+            <button class="delivery-popup-close" onclick="closeDeliveryPopup()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="delivery-popup-content">
+            <div class="delivery-message">
+                <?php echo htmlspecialchars($popupSettings['popup_message'] ?? 'We Deliver Orders In Maharashtra, Gujarat, Bangalore, And Hyderabad Only.'); ?>
+            </div>
+            <div class="delivery-instruction">
+                <?php echo htmlspecialchars($popupSettings['popup_instruction'] ?? 'Please Enter Your Pincode To Check Delivery Availability.'); ?>
+            </div>
+            
+            <div class="delivery-input-section">
+                <div class="delivery-input-group">
+                    <input type="text" id="pincodeInput" class="delivery-pincode-input" 
+                           placeholder="Enter your pincode" maxlength="6" pattern="[0-9]{6}">
+                    <button type="button" class="delivery-check-btn" onclick="checkPincode()">
+                        Check
+                    </button>
+                </div>
+                <button type="button" class="delivery-start-shopping-btn" onclick="startShopping()">
+                    START SHOPPING
+                </button>
+            </div>
+            
+            <div id="deliveryResult" class="delivery-result" style="display: none;">
+                <div class="delivery-result-message"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Delivery Popup Styles */
+.delivery-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    backdrop-filter: blur(5px);
+}
+
+.delivery-popup {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 380px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    position: relative;
+    padding-top: 40px;
+}
+
+.delivery-popup-header {
+    text-align: center;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.delivery-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+}
+
+.site-logo {
+    height: 50px;
+    width: auto;
+    max-width: 250px;
+}
+
+.delivery-tagline {
+    font-size: 11px;
+    color: #28a745;
+    margin-top: 3px;
+    font-weight: 500;
+}
+
+.delivery-popup-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: none;
+    border: none;
+    font-size: 16px;
+    color: #999;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.delivery-popup-close:hover {
+    background-color: #f5f5f5;
+    color: #666;
+}
+
+.delivery-popup-content {
+    text-align: center;
+}
+
+.delivery-message,
+.delivery-instruction {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 12px;
+    line-height: 1.3;
+}
+
+.delivery-input-section {
+    margin-bottom: 15px;
+}
+
+.delivery-input-group {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.delivery-pincode-input {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.delivery-pincode-input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.delivery-check-btn {
+    padding: 10px 16px;
+    background-color: #9FBF1C;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.delivery-check-btn:hover {
+    background-color: #9ebf1c9d;
+}
+
+.delivery-start-shopping-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #9FBF1C;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.delivery-start-shopping-btn:hover {
+    background-color: #9FBF1C;
+}
+
+.delivery-result {
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.delivery-result.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.delivery-result.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.delivery-result-message {
+    font-size: 13px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .delivery-popup {
+        padding: 15px;
+        padding-top: 35px;
+        margin: 15px;
+        max-width: 350px;
+    }
+    
+    .delivery-message,
+    .delivery-instruction {
+        font-size: 12px;
+    }
+    
+    .delivery-input-group {
+        flex-direction: column;
+    }
+    
+    .delivery-check-btn {
+        width: 100%;
+    }
+    
+    .site-logo {
+        height: 45px;
+    }
+    
+    .delivery-popup-close {
+        top: 6px;
+        right: 6px;
+        font-size: 14px;
+        width: 20px;
+        height: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .delivery-popup {
+        padding: 12px;
+        padding-top: 30px;
+        margin: 10px;
+        max-width: 320px;
+    }
+    
+    .delivery-message,
+    .delivery-instruction {
+        font-size: 11px;
+    }
+    
+    .delivery-pincode-input {
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+    
+    .delivery-check-btn,
+    .delivery-start-shopping-btn {
+        padding: 10px;
+        font-size: 13px;
+    }
+    
+    .site-logo {
+        height: 40px;
+    }
+    
+    .delivery-popup-close {
+        top: 5px;
+        right: 5px;
+        font-size: 12px;
+        width: 18px;
+        height: 18px;
+    }
+}
+</style>
+
+<script>
+// Delivery Popup JavaScript
+function closeDeliveryPopup() {
+    document.getElementById('deliveryPopup').style.display = 'none';
+    // Mark popup as shown in session
+    fetch('ajax/mark_popup_shown.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({ action: 'mark_shown' })
+    })
+    .then(response => {
+        if (!response.ok) {
+            console.error('Failed to mark popup as shown');
+            // Fallback to form submission if AJAX fails
+            markPopupAsShownFallback();
+        } else {
+            console.log('Popup marked as shown successfully');
+        }
+    })
+    .catch(error => {
+        console.error('Error marking popup as shown:', error);
+        // Fallback to form submission if AJAX fails
+        markPopupAsShownFallback();
+    });
+}
+
+function checkPincode() {
+    const pincode = document.getElementById('pincodeInput').value.trim();
+    const resultDiv = document.getElementById('deliveryResult');
+    const resultMessage = resultDiv.querySelector('.delivery-result-message');
+    
+    if (!pincode || pincode.length !== 6 || !/^\d{6}$/.test(pincode)) {
+        resultDiv.className = 'delivery-result error';
+        resultMessage.textContent = 'Please enter a valid 6-digit pincode.';
+        resultDiv.style.display = 'block';
+        return;
+    }
+    
+    // Show loading state
+    const checkBtn = document.querySelector('.delivery-check-btn');
+    const originalText = checkBtn.textContent;
+    checkBtn.textContent = 'Checking...';
+    checkBtn.disabled = true;
+    
+    fetch('ajax/check_pincode.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ pincode: pincode })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            resultDiv.className = `delivery-result ${data.status}`;
+            resultMessage.textContent = data.message;
+        } else {
+            resultDiv.className = 'delivery-result error';
+            resultMessage.textContent = data.message || 'An error occurred. Please try again.';
+        }
+        resultDiv.style.display = 'block';
+    })
+    .catch(error => {
+        resultDiv.className = 'delivery-result error';
+        resultMessage.textContent = 'Network error. Please try again.';
+        resultDiv.style.display = 'block';
+    })
+    .finally(() => {
+        checkBtn.textContent = originalText;
+        checkBtn.disabled = false;
+    });
+}
+
+function startShopping() {
+    closeDeliveryPopup();
+    // Optionally scroll to products section
+    const productsSection = document.querySelector('.discounted-products-section');
+    if (productsSection) {
+        productsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+// Alternative method to mark popup as shown using a simple form submission
+function markPopupAsShownFallback() {
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = 'ajax/mark_popup_shown.php';
+    form.style.display = 'none';
+    
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'mark_shown';
+    input.value = '1';
+    form.appendChild(input);
+    
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+}
+
+// Handle Enter key in pincode input
+document.addEventListener('DOMContentLoaded', function() {
+    const pincodeInput = document.getElementById('pincodeInput');
+    if (pincodeInput) {
+        pincodeInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPincode();
+            }
+        });
+        
+        // Only allow numbers
+        pincodeInput.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+    }
+});
+</script>
+<?php endif; ?>
 
 </body>
 </html> 

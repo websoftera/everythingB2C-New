@@ -694,7 +694,8 @@ body {
 
 .pay {
   border: 1px solid #28a745;
-  color: #28a745;
+  color: #9FBF1C;
+  background: #28a7469a !important;
   background: none !important;
 }
 

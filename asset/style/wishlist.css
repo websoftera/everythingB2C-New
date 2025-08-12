@@ -692,9 +692,9 @@ overflow-x: auto;
 }
 
 .price-buttons .mrp {
-  border: 1px solid #007bff !important;
-  color: #007bff !important;
-  background: none !important;
+border: 1px solid #038CC3 !important;
+color: #038CC3 !important;
+  background: #038dc38e !important;
   padding: 4px 10px;
   margin-right: 5px;
   border-radius: 5px;
@@ -702,8 +702,9 @@ overflow-x: auto;
 }
 
 .price-buttons .pay {
-  border: 1px solid #28a745 !important;
-  color: #28a745 !important;
+  border: 1px solid #28a745;
+  color: #9FBF1C;
+  background: #28a7469a !important;
   background: none !important;
   padding: 4px 10px;
   border-radius: 5px;

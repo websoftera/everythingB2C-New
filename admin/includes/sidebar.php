@@ -30,6 +30,12 @@
             </li>
             
             <li class="everythingb2c-nav-item">
+                <a class="everythingb2c-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'manage_pincodes.php' ? 'active' : ''; ?>" href="manage_pincodes.php">
+                    <i class="fas fa-map-marker-alt everythingb2c-nav-icon"></i> Manage Pincodes
+                </a>
+            </li>
+            
+            <li class="everythingb2c-nav-item">
                 <a class="everythingb2c-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'orders.php' ? 'active' : ''; ?>" href="orders.php">
                     <i class="fas fa-shopping-cart everythingb2c-nav-icon"></i> Orders
                 </a>

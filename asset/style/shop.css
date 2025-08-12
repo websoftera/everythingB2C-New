@@ -131,7 +131,7 @@
     margin: 0 auto 8px auto;
     overflow: hidden !important;
     position: relative;
-    padding: 0 2px 0 2px !important;
+    padding: 0 !important;
     box-sizing: border-box !important;
     padding-bottom: 6px !important;
 }
@@ -230,8 +230,8 @@
     box-sizing: border-box !important;
 }
 .shop-page-price-btn.mrp {
-    border: 1px solid #007bff !important;
-    color: #007bff !important;
+    border: 1px solid #038CC3 !important;
+    color: #038CC3 !important;
     background: none !important;
     margin-right: 0px !important;
 }
@@ -243,8 +243,9 @@
     text-decoration: line-through !important;
 }
 .shop-page-price-btn.pay {
-    border: 1px solid #28a745 !important;
-    color: #28a745 !important;
+  border: 1px solid #28a745;
+  color: #9FBF1C;
+  background: #28a7469a !important;
     background: none !important;
     margin-left: 0px !important;
 }
@@ -687,7 +688,7 @@
   overflow: hidden !important;
   border: none !important;
   margin: 0 !important;
-  background: none !important;
+  background: #b3b3b387 !important;
   border: 1px solid #b3b3b3 !important;
 }
 
@@ -714,7 +715,7 @@
   font-size: 13px !important;
   font-weight: bold !important;
   color: #fff !important;
-  background-color: #007bff !important;
+  background-color: #fff !important;
   border: none !important;
   border-radius: 2px !important;
   text-align: center !important;

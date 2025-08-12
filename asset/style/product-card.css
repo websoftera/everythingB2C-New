@@ -21,7 +21,7 @@
     margin: 0 auto 8px auto;
     overflow: hidden !important;
     position: relative;
-    padding: 0 2px 0 2px !important;
+    padding: 0 !important;
     box-sizing: border-box !important;
     background: #fff;
     border-radius: 0 !important;
@@ -40,7 +40,7 @@
 /* --- Discount Banner --- */
 .discount-banner {
     width: 100% !important;
-    background: #28a745 !important;
+    background: #9FBF1C !important;
     color: #fff !important;
     font-weight: bold !important;
     font-size: 11px !important;
@@ -170,9 +170,9 @@
     box-sizing: border-box !important;
 }
 .price-btn.mrp {
-    /* border: 1px solid #007bff !important; */
+    /* border: 1px solid #038CC3 !important; */
     background: #007bff44 !important;
-    color: #007bff !important;
+    color: #038CC3 !important;
     margin-right: 0px !important;
 }
 .price-btn.mrp .label {
@@ -241,7 +241,7 @@
   min-width: 0 !important;
   border: 1px solid #b3b3b3 !important;
   border-radius: 4px !important;
-  background: #fff !important;
+  background: #b3b3b382 !important;
   overflow: hidden !important;
 }
 .quantity-input {
@@ -577,9 +577,9 @@
     margin-bottom: 10px;
 }
 .price-btn.mrp {
-    /* border: 1px solid #007bff !important; */
+    /* border: 1px solid #038CC3 !important; */
     background: #007bff44 !important;
-    color: #007bff !important;
+    color: #038CC3 !important;
     border-radius: 6px;
     padding: 3px 10px;
     text-decoration: line-through;
