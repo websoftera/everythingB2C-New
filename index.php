@@ -35,37 +35,41 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 
 <!-- Hero Section -->
 <section class="hero-slider-section">
-    <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4000">
+    <div id="heroCarousel" class="custom-carousel">
         <div class="carousel-inner">
-            <div class="carousel-item active hero-slide hero-slide-1">
+            <div class="carousel-item active">
+                <img src="asset/images/banner_1.webp" alt="Banner 1" class="carousel-image">
                 <div class="carousel-caption d-block text-start">
                     <!-- Optional caption content -->
                 </div>
             </div>
-            <div class="carousel-item hero-slide hero-slide-2">
+            <div class="carousel-item">
+                <img src="asset/images/banner_2.webp" alt="Banner 2" class="carousel-image">
                 <div class="carousel-caption d-block text-end">
                     <!-- Optional caption content -->
                 </div>
             </div>
-            <div class="carousel-item hero-slide hero-slide-3">
+            <div class="carousel-item">
+                <img src="asset/images/banner_3.webp" alt="Banner 3" class="carousel-image">
                 <div class="carousel-caption d-block text-end">
                     <!-- Optional caption content -->
                 </div>
             </div>
         </div>
         <!-- Carousel Controls -->
-        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+        <button class="carousel-control-prev" type="button" aria-label="Previous">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Previous</span>
         </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+        <button class="carousel-control-next" type="button" aria-label="Next">
             <span class="carousel-control-next-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Next</span>
         </button>
         <!-- Carousel Indicators -->
         <div class="carousel-indicators">
-            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" class="indicator active" data-slide="0" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" class="indicator" data-slide="1" aria-label="Slide 2"></button>
+            <button type="button" class="indicator" data-slide="2" aria-label="Slide 3"></button>
         </div>
     </div>
 </section>
@@ -1921,107 +1925,182 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   z-index: -1 !important;
 }
 
-/* Hero Banner Carousel - Enhanced Smooth Transitions */
+/* Custom Hero Banner Carousel - Ultra Smooth Transitions */
 .hero-slider-section {
   width: 100% !important;
   overflow: hidden !important;
   position: relative !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 0 !important;
 }
 
-/* Enhanced carousel transitions */
-#heroCarousel {
-  width: 100% !important;
-  overflow: hidden !important;
-}
-
-#heroCarousel .carousel-inner {
-  width: 100% !important;
-  overflow: hidden !important;
-}
-
-#heroCarousel .carousel-item {
-  width: 100% !important;
+/* Custom carousel container */
+.custom-carousel {
   position: relative !important;
-  transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out !important;
-  opacity: 0 !important;
-  transform: scale(1.05) !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 380px !important;
+  overflow: hidden !important;
+  background-color: transparent !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
-#heroCarousel .carousel-item.active {
+.custom-carousel .carousel-inner {
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 0 !important;
+}
+
+/* Custom carousel items with smooth transitions */
+.custom-carousel .carousel-item {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transition: opacity 1.5s ease-in-out, visibility 1.5s ease-in-out !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 0 !important;
+  background: transparent !important;
+}
+
+.custom-carousel .carousel-item.active {
   opacity: 1 !important;
-  transform: scale(1) !important;
+  visibility: visible !important;
   z-index: 2 !important;
 }
 
-#heroCarousel .carousel-item:not(.active) {
+.custom-carousel .carousel-item:not(.active) {
   z-index: 1 !important;
 }
 
-/* Smooth fade transition for carousel items */
-.carousel-item {
-  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
+/* Carousel images with smooth transitions */
+.custom-carousel .carousel-image {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center 20% !important;
+  transition: transform 1.5s ease-in-out !important;
+  will-change: transform !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+  transform: translateZ(0) !important;
+  -webkit-transform: translateZ(0) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: block !important;
+  vertical-align: top !important;
 }
 
-.carousel-item.active {
-  opacity: 1 !important;
-  transform: scale(1) !important;
+.custom-carousel .carousel-item.active .carousel-image {
+  transform: scale(1) translateZ(0) !important;
+  -webkit-transform: scale(1) translateZ(0) !important;
 }
 
-.carousel-item:not(.active) {
-  opacity: 0 !important;
-  transform: scale(1.05) !important;
+.custom-carousel .carousel-item:not(.active) .carousel-image {
+  transform: scale(1.05) translateZ(0) !important;
+  -webkit-transform: scale(1.05) translateZ(0) !important;
+}
+
+/* Ensure smooth transitions */
+.custom-carousel .carousel-item {
+  will-change: opacity, visibility !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
 }
 
 /* Enhanced carousel controls */
-.carousel-control-prev,
-.carousel-control-next {
+.custom-carousel .carousel-control-prev,
+.custom-carousel .carousel-control-next {
+  position: absolute !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
   background: rgba(0, 0, 0, 0.3) !important;
+  border: none !important;
   border-radius: 50% !important;
   width: 50px !important;
   height: 50px !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
   transition: all 0.3s ease !important;
   z-index: 10 !important;
+  color: white !important;
 }
 
-.carousel-control-prev:hover,
-.carousel-control-next:hover {
+.custom-carousel .carousel-control-prev:hover,
+.custom-carousel .carousel-control-next:hover {
   background: rgba(0, 0, 0, 0.6) !important;
   transform: translateY(-50%) scale(1.1) !important;
 }
 
-.carousel-control-prev {
+.custom-carousel .carousel-control-prev {
   left: 20px !important;
 }
 
-.carousel-control-next {
+.custom-carousel .carousel-control-next {
   right: 20px !important;
 }
 
+.custom-carousel .carousel-control-prev-icon,
+.custom-carousel .carousel-control-next-icon {
+  width: 20px !important;
+  height: 20px !important;
+  background-size: 100% 100% !important;
+  background-repeat: no-repeat !important;
+}
+
+.custom-carousel .carousel-control-prev-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23fff' viewBox='0 0 8 8'%3e%3cpath d='M5.25 0l-4 4 4 4 1.5-1.5-2.5-2.5 2.5-2.5-1.5-1.5z'/%3e%3c/svg%3e") !important;
+}
+
+.custom-carousel .carousel-control-next-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23fff' viewBox='0 0 8 8'%3e%3cpath d='M2.75 0l-1.5 1.5 2.5 2.5-2.5 2.5 1.5 1.5 4-4-4-4z'/%3e%3c/svg%3e") !important;
+}
+
 /* Enhanced carousel indicators */
-.carousel-indicators {
+.custom-carousel .carousel-indicators {
+  position: absolute !important;
   bottom: 20px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  display: flex !important;
+  gap: 8px !important;
   z-index: 10 !important;
 }
 
-.carousel-indicators button {
+.custom-carousel .carousel-indicators .indicator {
   width: 12px !important;
   height: 12px !important;
   border-radius: 50% !important;
   background: rgba(255, 255, 255, 0.5) !important;
   border: 2px solid rgba(255, 255, 255, 0.3) !important;
-  margin: 0 4px !important;
+  cursor: pointer !important;
   transition: all 0.3s ease !important;
+  padding: 0 !important;
 }
 
-.carousel-indicators button.active {
+.custom-carousel .carousel-indicators .indicator.active {
   background: rgba(255, 255, 255, 0.9) !important;
   border-color: rgba(255, 255, 255, 0.9) !important;
   transform: scale(1.2) !important;
 }
 
-.carousel-indicators button:hover {
+.custom-carousel .carousel-indicators .indicator:hover {
   background: rgba(255, 255, 255, 0.7) !important;
   transform: scale(1.1) !important;
 }
@@ -2097,57 +2176,50 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
     overflow: hidden !important;
   }
   
-  #heroCarousel {
+  .custom-carousel {
+    height: 100% !important;
+    min-height: 350px !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  .custom-carousel .carousel-inner {
     overflow: hidden !important;
   }
   
-  #heroCarousel .carousel-inner {
-    overflow: hidden !important;
+  .custom-carousel .carousel-item {
+    transition: opacity 1.2s ease-in-out, visibility 1.2s ease-in-out !important;
   }
   
-  #heroCarousel .carousel-item {
-    width: 100% !important;
-    position: relative !important;
-    transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out !important;
-  }
-  
-  #heroCarousel .carousel-item.active {
-    opacity: 1 !important;
-    transform: scale(1) !important;
-    z-index: 2 !important;
-  }
-  
-  #heroCarousel .carousel-item:not(.active) {
-    opacity: 0 !important;
-    transform: scale(1.02) !important;
-    z-index: 1 !important;
+  .custom-carousel .carousel-image {
+    transition: transform 1.2s ease-in-out !important;
   }
   
   /* Enhanced mobile carousel controls */
-  .carousel-control-prev,
-  .carousel-control-next {
+  .custom-carousel .carousel-control-prev,
+  .custom-carousel .carousel-control-next {
     width: 40px !important;
     height: 40px !important;
     background: rgba(0, 0, 0, 0.4) !important;
   }
   
-  .carousel-control-prev {
+  .custom-carousel .carousel-control-prev {
     left: 10px !important;
   }
   
-  .carousel-control-next {
+  .custom-carousel .carousel-control-next {
     right: 10px !important;
   }
   
   /* Enhanced mobile carousel indicators */
-  .carousel-indicators {
+  .custom-carousel .carousel-indicators {
     bottom: 15px !important;
   }
   
-  .carousel-indicators button {
+  .custom-carousel .carousel-indicators .indicator {
     width: 10px !important;
     height: 10px !important;
-    margin: 0 3px !important;
   }
 }
 
@@ -2157,29 +2229,33 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
     overflow: hidden !important;
   }
   
-  #heroCarousel {
+  .custom-carousel {
     overflow: hidden !important;
   }
   
-  #heroCarousel .carousel-inner {
+  .custom-carousel .carousel-inner {
     overflow: hidden !important;
   }
   
   /* Enhanced desktop carousel transitions */
-  #heroCarousel .carousel-item {
-    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  .custom-carousel .carousel-item {
+    transition: opacity 1.5s ease-in-out, visibility 1.5s ease-in-out !important;
+  }
+  
+  .custom-carousel .carousel-image {
+    transition: transform 1.5s ease-in-out !important;
   }
   
   /* Enhanced desktop carousel controls */
-  .carousel-control-prev,
-  .carousel-control-next {
+  .custom-carousel .carousel-control-prev,
+  .custom-carousel .carousel-control-next {
     width: 60px !important;
     height: 60px !important;
     background: rgba(0, 0, 0, 0.2) !important;
   }
   
-  .carousel-control-prev:hover,
-  .carousel-control-next:hover {
+  .custom-carousel .carousel-control-prev:hover,
+  .custom-carousel .carousel-control-next:hover {
     background: rgba(0, 0, 0, 0.5) !important;
     transform: translateY(-50%) scale(1.15) !important;
   }
@@ -2428,45 +2504,66 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Hero Carousel functionality
+    // Custom Hero Carousel functionality with ultra-smooth transitions
     const heroCarousel = document.getElementById('heroCarousel');
     if (heroCarousel) {
-        // Initialize Bootstrap carousel with smooth transitions
-        if (typeof bootstrap !== 'undefined' && bootstrap.Carousel) {
-            const carousel = new bootstrap.Carousel(heroCarousel, {
-                interval: 4000,
-                wrap: true,
-                keyboard: false,
-                pause: 'hover',
-                touch: true,
-                ride: 'carousel'
+        const carouselItems = heroCarousel.querySelectorAll('.carousel-item');
+        const indicators = heroCarousel.querySelectorAll('.indicator');
+        const prevBtn = heroCarousel.querySelector('.carousel-control-prev');
+        const nextBtn = heroCarousel.querySelector('.carousel-control-next');
+        const images = heroCarousel.querySelectorAll('.carousel-image');
+        
+        let currentIndex = 0;
+        let isTransitioning = false;
+        let autoPlayInterval;
+        let imagesLoaded = 0;
+        
+        // Preload all images for smooth transitions
+        function preloadImages() {
+            images.forEach((img, index) => {
+                const newImg = new Image();
+                newImg.onload = () => {
+                    imagesLoaded++;
+                    if (imagesLoaded === images.length) {
+                        // All images loaded, start carousel
+                        initializeCarousel();
+                    }
+                };
+                newImg.onerror = () => {
+                    imagesLoaded++;
+                    if (imagesLoaded === images.length) {
+                        // All images processed, start carousel
+                        initializeCarousel();
+                    }
+                };
+                newImg.src = img.src;
             });
         }
         
-        // Enhanced fallback carousel functionality with smooth transitions
-        const carouselItems = heroCarousel.querySelectorAll('.carousel-item');
-        let currentIndex = 0;
-        let isTransitioning = false;
+        function initializeCarousel() {
+            // Initialize first slide
+            carouselItems[0].classList.add('active');
+            indicators[0].classList.add('active');
+            
+            // Start auto-play
+            startAutoPlay();
+        }
         
         function showSlide(index) {
-            if (isTransitioning) return;
+            if (isTransitioning || index === currentIndex) return;
             isTransitioning = true;
             
             const currentItem = carouselItems[currentIndex];
             const nextItem = carouselItems[index];
+            const currentIndicator = indicators[currentIndex];
+            const nextIndicator = indicators[index];
             
-            // Add transition classes
-            currentItem.style.transition = 'opacity 0.8s ease-in-out, transform 0.8s ease-in-out';
-            nextItem.style.transition = 'opacity 0.8s ease-in-out, transform 0.8s ease-in-out';
+            // Update indicators
+            currentIndicator.classList.remove('active');
+            nextIndicator.classList.add('active');
             
-            // Fade out current slide
-            currentItem.style.opacity = '0';
-            currentItem.style.transform = 'scale(1.05)';
+            // Smooth transition between slides
             currentItem.classList.remove('active');
-            
-            // Fade in next slide
-            nextItem.style.opacity = '1';
-            nextItem.style.transform = 'scale(1)';
             nextItem.classList.add('active');
             
             currentIndex = index;
@@ -2474,9 +2571,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Reset transition state after animation
             setTimeout(() => {
                 isTransitioning = false;
-                currentItem.style.transition = '';
-                nextItem.style.transition = '';
-            }, 800);
+            }, 1500);
         }
         
         function nextSlide() {
@@ -2489,26 +2584,82 @@ document.addEventListener('DOMContentLoaded', function() {
             showSlide(prevIndex);
         }
         
-        // Auto-advance slides with smooth timing
-        setInterval(nextSlide, 4000);
+        function startAutoPlay() {
+            autoPlayInterval = setInterval(nextSlide, 5000);
+        }
         
-        // Add manual navigation
-        const prevBtn = heroCarousel.querySelector('.carousel-control-prev');
-        const nextBtn = heroCarousel.querySelector('.carousel-control-next');
+        function stopAutoPlay() {
+            if (autoPlayInterval) {
+                clearInterval(autoPlayInterval);
+            }
+        }
         
+        // Event listeners for manual navigation
         if (prevBtn) {
             prevBtn.addEventListener('click', (e) => {
                 e.preventDefault();
+                stopAutoPlay();
                 prevSlide();
+                startAutoPlay();
             });
         }
         
         if (nextBtn) {
             nextBtn.addEventListener('click', (e) => {
                 e.preventDefault();
+                stopAutoPlay();
                 nextSlide();
+                startAutoPlay();
             });
         }
+        
+        // Event listeners for indicators
+        indicators.forEach((indicator, index) => {
+            indicator.addEventListener('click', () => {
+                stopAutoPlay();
+                showSlide(index);
+                startAutoPlay();
+            });
+        });
+        
+        // Pause auto-play on hover
+        heroCarousel.addEventListener('mouseenter', stopAutoPlay);
+        heroCarousel.addEventListener('mouseleave', startAutoPlay);
+        
+        // Touch/swipe support for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        heroCarousel.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        
+        heroCarousel.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+        
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    // Swipe left - next slide
+                    stopAutoPlay();
+                    nextSlide();
+                    startAutoPlay();
+                } else {
+                    // Swipe right - previous slide
+                    stopAutoPlay();
+                    prevSlide();
+                    startAutoPlay();
+                }
+            }
+        }
+        
+        // Start preloading images
+        preloadImages();
     }
     
     // Category slider functionality - Simplified
