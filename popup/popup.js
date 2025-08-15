@@ -361,7 +361,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
 
-        // Add/Remove from Wishlist
+        // Add/Remove from Wishlist (Toggle functionality)
         if (event.target.matches('.heart-checkbox, .shop-page-heart-checkbox')) {
              const checkbox = event.target;
              const productId = checkbox.dataset.productId;
@@ -369,59 +369,52 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if(!productId) return;
 
-            if (checkbox.checked) {
-                // Add to Wishlist
-                 fetch('ajax/add-to-wishlist.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ product_id: productId })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    const statusType = data.success ? 'success' : 'error';
-                    showToast(data.message, statusType);
-                    if(!data.success) {
-                        checkbox.checked = false; // Revert checkbox on failure
-                        if(label) label.classList.remove('wishlist-active');
-                    } else {
-                        checkbox.checked = true; // Ensure checkbox is checked
+            // Use single endpoint for both add and remove
+            fetch('ajax/add-to-wishlist.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ product_id: productId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const statusType = data.success ? 'success' : 'error';
+                showToast(data.message, statusType);
+                
+                if(data.success) {
+                    // Update checkbox and label based on action
+                    if(data.action === 'added') {
+                        checkbox.checked = true;
                         if(label) label.classList.add('wishlist-active');
-                    }
-                    updateWishlistCount(); // Update wishlist count in header
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showToast('An error occurred.', 'error');
-                    checkbox.checked = false; // Revert checkbox on failure
-                    if(label) label.classList.remove('wishlist-active');
-                });
-            } else {
-                // Remove from Wishlist
-                fetch('ajax/remove-from-wishlist.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ product_id: productId })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    const statusType = data.success ? 'success' : 'error';
-                    showToast(data.message, statusType);
-                    if(!data.success) {
-                        checkbox.checked = true; // Revert checkbox on failure
-                        if(label) label.classList.add('wishlist-active');
-                    } else {
-                        checkbox.checked = false; // Ensure checkbox is unchecked
+                    } else if(data.action === 'removed') {
+                        checkbox.checked = false;
                         if(label) label.classList.remove('wishlist-active');
                     }
-                    updateWishlistCount(); // Update wishlist count in header
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showToast('An error occurred.', 'error');
-                    checkbox.checked = true; // Revert checkbox on failure
-                    if(label) label.classList.add('wishlist-active');
-                });
-            }
+                } else {
+                    // Revert checkbox state on failure
+                    checkbox.checked = !checkbox.checked;
+                    if(label) {
+                        if(checkbox.checked) {
+                            label.classList.add('wishlist-active');
+                        } else {
+                            label.classList.remove('wishlist-active');
+                        }
+                    }
+                }
+                updateWishlistCount(); // Update wishlist count in header
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('An error occurred.', 'error');
+                // Revert checkbox state on error
+                checkbox.checked = !checkbox.checked;
+                if(label) {
+                    if(checkbox.checked) {
+                        label.classList.add('wishlist-active');
+                    } else {
+                        label.classList.remove('wishlist-active');
+                    }
+                }
+            });
         }
     });
     
@@ -730,46 +723,52 @@ document.body.addEventListener('click', function(e) {
       }
     });
   }
-  // Wishlist in popup
-  if (e.target.id === 'popupWishlistBtn' || (e.target.closest && e.target.closest('#popupWishlistBtn'))) {
-    e.preventDefault();
-    const wishlistBtn = document.getElementById('popupWishlistBtn');
-    if (!wishlistBtn) return;
-    const icon = wishlistBtn.querySelector('i');
-    wishlistBtn.disabled = true;
-    // Try to get productId from data attribute or fallback to global
-    const productId = wishlistBtn.dataset.productId || window.currentPopupProductId;
-    const action = icon && icon.style.color === 'orange' ? 'remove' : 'add';
-    fetch('ajax/' + (action === 'add' ? 'add-to-wishlist.php' : 'remove-from-wishlist.php'), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ product_id: productId })
-    })
-    .then(res => res.json())
-    .then(data => {
-      wishlistBtn.disabled = false;
-      if (data.success) {
-        if (icon) icon.style.color = action === 'add' ? 'orange' : '#fff';
-      } else {
-        if (typeof Swal !== 'undefined') {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: data.message || 'Could not update wishlist.',
-                timer: 4000,
-                showConfirmButton: false
-            });
+      // Wishlist in popup
+    if (e.target.id === 'popupWishlistBtn' || (e.target.closest && e.target.closest('#popupWishlistBtn'))) {
+      e.preventDefault();
+      const wishlistBtn = document.getElementById('popupWishlistBtn');
+      if (!wishlistBtn) return;
+      const icon = wishlistBtn.querySelector('i');
+      wishlistBtn.disabled = true;
+      // Try to get productId from data attribute or fallback to global
+      const productId = wishlistBtn.dataset.productId || window.currentPopupProductId;
+      
+      fetch('ajax/add-to-wishlist.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ product_id: productId })
+      })
+      .then(res => res.json())
+      .then(data => {
+        wishlistBtn.disabled = false;
+        if (data.success) {
+          if (icon) {
+            if (data.action === 'added') {
+              icon.style.color = '#DE0085'; // Pink color when added
+            } else if (data.action === 'removed') {
+              icon.style.color = '#fff'; // White color when removed
+            }
+          }
         } else {
-            Swal.fire({
-                icon: 'error',
-                title: 'Wishlist Error',
-                text: data.message || 'Could not update wishlist.',
-                confirmButtonText: 'OK'
-            });
+          if (typeof Swal !== 'undefined') {
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: data.message || 'Could not update wishlist.',
+                  timer: 4000,
+                  showConfirmButton: false
+              });
+          } else {
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Wishlist Error',
+                  text: data.message || 'Could not update wishlist.',
+                  confirmButtonText: 'OK'
+              });
+          }
         }
-      }
-    });
-  }
+      });
+    }
 });
 
 // Function to initialize button states for products already in cart
@@ -876,4 +875,35 @@ window.addEventListener('cart-removed-all', function(event) {
     console.log('Cart removed all event received');
     // Reinitialize all buttons to remove highlighting
     initializeCartButtonStates();
+});
+
+// Force pink color on page load for wishlist items
+document.addEventListener('DOMContentLoaded', function() {
+    // Find all wishlist labels with wishlist-active class
+    const activeWishlistLabels = document.querySelectorAll('.wishlist-label.wishlist-active');
+    
+    activeWishlistLabels.forEach(function(label) {
+        const heartIcon = label.querySelector('.heart-icon');
+        if (heartIcon) {
+            heartIcon.style.color = '#DE0085';
+            heartIcon.style.webkitTextStroke = '2px #DE0085';
+            heartIcon.style.textStroke = '2px #DE0085';
+            heartIcon.style.filter = 'drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3))';
+        }
+    });
+    
+    // Also check for checked checkboxes
+    const checkedCheckboxes = document.querySelectorAll('.heart-checkbox:checked');
+    checkedCheckboxes.forEach(function(checkbox) {
+        const label = checkbox.nextElementSibling;
+        if (label && label.classList.contains('wishlist-label')) {
+            const heartIcon = label.querySelector('.heart-icon');
+            if (heartIcon) {
+                heartIcon.style.color = '#DE0085';
+                heartIcon.style.webkitTextStroke = '2px #DE0085';
+                heartIcon.style.textStroke = '2px #DE0085';
+                heartIcon.style.filter = 'drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3))';
+            }
+        }
+    });
 });

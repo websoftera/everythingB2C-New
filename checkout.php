@@ -540,7 +540,7 @@ document.querySelectorAll('input[name="selected_address_left"]').forEach(functio
             key: resp.key_id,
             amount: resp.amount,
             currency: resp.currency,
-            name: 'EverythingB2C',
+            name: 'Demo-site',
             description: 'Order Payment',
             order_id: resp.razorpay_order_id,
             handler: function(paymentResp) {
@@ -721,7 +721,7 @@ function mockVerifyUpiId(upiId) {
 function generateUpiQrCode(upiId, amount) {
   // Always use the fixed payee UPI ID
   const payeeUpiId = 'samir.bvm@okicici';
-  const upiUrl = `upi://pay?pa=${encodeURIComponent(payeeUpiId)}&pn=EverythingB2C&am=${amount}&cu=INR`;
+  const upiUrl = `upi://pay?pa=${encodeURIComponent(payeeUpiId)}&pn=Demo-site&am=${amount}&cu=INR`;
   var qrDiv = document.getElementById('upiQrCode');
   if (qrDiv) {
     qrDiv.innerHTML = '';

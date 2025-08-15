@@ -1011,14 +1011,21 @@ h3{
 }
 /* Desktop styles (unchanged) */
 .hero-slide-1 {
-    background-image: url('../images/slide.webp');
+    background-image: url('../images/banner_1.webp');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
 }
 
 .hero-slide-2 {
-    background-image: url('../images/slide_2.webp');
+    background-image: url('../images/banner_2.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.hero-slide-3 {
+    background-image: url('../images/banner_3.webp');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -1350,17 +1357,17 @@ h3{
 .product-image img {
   max-width: 100%;
   height: auto;
-  max-height: 155px;
+  max-height: 140px;
+  min-height: 140px;
 }
 
 .product-details h3 {
-
-  margin: 10px 2px !important;
+  margin: 2px 2px !important;
   font-weight: bold;
   
-  min-height: 32px !important;
+  /* min-height: 32px !important;
   max-height: 32px !important;
-  height: 32px !important;
+  height: 32px !important; */
   display: -webkit-box !important;
   -webkit-line-clamp: 2 !important;
   -webkit-box-orient: vertical !important;
@@ -1399,7 +1406,6 @@ h3{
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #DE0085;
   background: none !important;
   border-radius: 6px;
   width: 36px;
@@ -1420,7 +1426,7 @@ h3{
 .heart-icon {
   font-size: 18px;
   pointer-events: none;
-  color: #ccc; /* default color */
+  color: #fff; /* default color */
   transition: color 0.3s ease;
 }
 
@@ -1442,9 +1448,7 @@ input[type="checkbox"]:checked + .wishlist-label i {
   gap: 4px;
   flex: 1 1 0;
   min-width: 0;
-  border: 1px solid #b3b3b3;
   border-radius: 2px;
-  background: #b3b3b375 !important;
   overflow: hidden;
 }
 .quantity-input {
@@ -1454,8 +1458,6 @@ input[type="checkbox"]:checked + .wishlist-label i {
 }
 .add-to-cart-btn, .add-to-cart {
   flex: 1 1 0;
-  min-width: 0;
-  max-width: 200px;
   height: 30px;
   min-height: 30px;
   max-height: 30px;
@@ -2034,7 +2036,10 @@ overflow-x: auto;
 /* Wishlist Icon Styling */
 .wishlist {
     display: inline-block;
-    position: relative;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
 }
 
 .wishlist .heart-checkbox {
@@ -2044,16 +2049,99 @@ overflow-x: auto;
 .wishlist .wishlist-label {
     cursor: pointer;
     font-size: 1.2rem; /* Smaller icon size */
-    color: #dbdbdb; /* Default light gray color */
-    transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
+    color: transparent; /* Transparent fill */
+    -webkit-text-stroke: 2px #666; /* Dark grey border */
+    text-stroke: 2px #666; /* Dark grey border for non-webkit browsers */
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2)); /* Subtle shadow */
+    transition: all 0.3s ease-in-out;
+    display: inline-block;
+    line-height: 1;
+}
+
+/* Ensure heart icon styling */
+.wishlist .heart-icon {
+    color: transparent !important;
+    -webkit-text-stroke: 2px #666 !important;
+    text-stroke: 2px #666 !important;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2)) !important;
+    transition: all 0.3s ease-in-out !important;
 }
 
 .wishlist .wishlist-label:hover {
     transform: scale(1.1);
+    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.3)); /* Enhanced shadow on hover */
 }
 
 .wishlist .heart-checkbox:checked + .wishlist-label {
-    color: #DE0085; /* Pink/magenta for items in wishlist */
+    color: #DE0085; /* Pink fill when in wishlist */
+    -webkit-text-stroke: 2px #DE0085; /* Pink border when in wishlist */
+    text-stroke: 2px #DE0085; /* Pink border for non-webkit browsers */
+    filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3)); /* Pink shadow when in wishlist */
+}
+
+.wishlist .heart-checkbox:checked + .wishlist-label .heart-icon {
+    color: #DE0085; /* Pink fill when in wishlist */
+    -webkit-text-stroke: 2px #DE0085; /* Pink border when in wishlist */
+    text-stroke: 2px #DE0085; /* Pink border for non-webkit browsers */
+    filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3)); /* Pink shadow when in wishlist */
+}
+
+.wishlist .heart-checkbox:checked + .wishlist-label:hover {
+    filter: drop-shadow(0 3px 6px rgba(222, 0, 133, 0.4)); /* Enhanced pink shadow on hover */
+}
+
+.wishlist .heart-checkbox:checked + .wishlist-label:hover .heart-icon {
+    filter: drop-shadow(0 3px 6px rgba(222, 0, 133, 0.4)); /* Enhanced pink shadow on hover */
+}
+
+/* Additional specific selectors for initial state */
+.wishlist .wishlist-label.wishlist-active .heart-icon {
+    color: #DE0085 !important;
+    -webkit-text-stroke: 2px #DE0085 !important;
+    text-stroke: 2px #DE0085 !important;
+    filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3)) !important;
+}
+
+/* Most specific selectors for page load state */
+.product-info .wishlist .wishlist-label.wishlist-active .heart-icon,
+.product-info .wishlist .heart-checkbox:checked + .wishlist-label .heart-icon,
+.card .wishlist .wishlist-label.wishlist-active .heart-icon,
+.card .wishlist .heart-checkbox:checked + .wishlist-label .heart-icon,
+.product-card .wishlist .wishlist-label.wishlist-active .heart-icon,
+.product-card .wishlist .heart-checkbox:checked + .wishlist-label .heart-icon {
+    color: #DE0085 !important;
+    -webkit-text-stroke: 2px #DE0085 !important;
+    text-stroke: 2px #DE0085 !important;
+    filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3)) !important;
+}
+
+/* Force pink color for wishlist-active state on page load */
+.wishlist-label.wishlist-active .heart-icon,
+.wishlist-label.wishlist-active span.heart-icon {
+    color: #DE0085 !important;
+    -webkit-text-stroke: 2px #DE0085 !important;
+    text-stroke: 2px #DE0085 !important;
+    filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3)) !important;
+}
+
+/* Most aggressive selectors for page load state */
+body .product-info .wishlist .wishlist-label.wishlist-active .heart-icon,
+body .product-info .wishlist .heart-checkbox:checked + .wishlist-label .heart-icon,
+body .card .wishlist .wishlist-label.wishlist-active .heart-icon,
+body .card .wishlist .heart-checkbox:checked + .wishlist-label .heart-icon,
+body .product-card .wishlist .wishlist-label.wishlist-active .heart-icon,
+body .product-card .wishlist .heart-checkbox:checked + .wishlist-label .heart-icon,
+html body .product-info .wishlist .wishlist-label.wishlist-active .heart-icon,
+html body .product-info .wishlist .heart-checkbox:checked + .wishlist-label .heart-icon {
+    color: #DE0085 !important;
+    -webkit-text-stroke: 2px #DE0085 !important;
+    text-stroke: 2px #DE0085 !important;
+    filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3)) !important;
+}
+
+/* Ensure product-info has relative positioning for absolute wishlist positioning */
+.product-info {
+    position: relative;
 }
 
 /* --- Definitive Card Width Solution --- */
@@ -2106,54 +2194,109 @@ input, select, textarea, button {
   font-size: 1em;
 }
 
-/* Compact quantity controls for all pages */
+/* UNIFIED QUANTITY CONTROL STYLES FOR ENTIRE SITE */
+/* Override any conflicting styles from Header.css and other files */
 .quantity-control {
-  height: 28px !important;
-  min-height: 28px !important;
-  max-width: 80px !important;
-  border: none !important;
-  border-radius: 2px !important;
-  box-shadow: none !important;
-  border: 1px solid #b3b3b37d !important;
+  display: flex !important;
+  align-items: center !important;
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  border: 1px solid #d1d5db !important; /* Light grey border */
+  border-radius: 4px !important;
+  background: #ffffff !important; /* White background */
+  overflow: hidden !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important; /* Subtle shadow */
+  height: 32px !important;
+  min-height: 32px !important;
+  max-width: 120px !important;
+  gap: 0 !important;
 }
-.quantity-control .btn-qty {
-  width: 100% !important;
-  height: 28px !important;
-  font-size: 1.1rem !important;
+
+/* Override any conflicting button styles */
+.quantity-control .btn-qty,
+.btn-qty {
+  width: 33.33% !important; /* Equal width for each section */
+  height: 32px !important;
+  font-size: 14px !important;
+  font-weight: bold !important;
   border: none !important;
-  border-radius: 0 !important;
-  border: 1px solid #b3b3b3 !important;
+  background: #ffffff !important; /* White background */
+  color: #333333 !important; /* Dark grey text */
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: background-color 0.2s ease !important;
   padding: 0 !important;
-  background: none!important;
-  box-shadow: none !important;
+  margin: 0 !important;
+  border-right: 1px solid #d1d5db !important; /* Light grey border between sections */
+  border-top: none !important;
+  border-bottom: none !important;
+  border-radius: 0 !important; /* Ensure no rounded corners */
+  box-sizing: border-box !important;
 }
-.quantity-control input[type="number"] {
-  width: 24px !important;
-  max-width: 24px !important;
-  min-width: 20px !important;
-  height: 28px !important;
-  font-size: 1rem !important;
-  padding: 0 !important;
+
+.quantity-control .btn-qty:last-child {
+  border-right: none !important; /* Remove border from last button */
+}
+
+.quantity-control .btn-qty:hover {
+  background: #f3f4f6 !important; /* Light grey hover */
+}
+
+.quantity-control .btn-qty:disabled {
+  background: #6c757d !important;
+  cursor: not-allowed !important;
+}
+
+/* Override Header.css quantity-input styles */
+.quantity-control input[type="number"],
+.quantity-control .quantity-input,
+.quantity-input {
+  width: 33.33% !important; /* Equal width for center section */
+  height: 32px !important;
+  font-size: 14px !important;
+  font-weight: bold !important;
+  text-align: center !important;
   border: none !important;
-  border-radius: 0 !important;
-  background: transparent !important;
-  color: #222 !important;
-  box-shadow: none !important;
+  background: #ffffff !important; /* White background - override blue from Header.css */
+  color: #333333 !important; /* Dark grey text - override white from Header.css */
+  padding: 0 !important;
+  margin: 0 !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: textfield !important;
+  appearance: textfield !important;
+  border-left: 1px solid #d1d5db !important; /* Light grey border on left */
+  border-right: 1px solid #d1d5db !important; /* Light grey border on right */
+  border-top: none !important; /* Remove top border */
+  border-bottom: none !important; /* Remove bottom border */
+  border-radius: 0 !important; /* Override rounded corners from Header.css */
+  box-sizing: border-box !important;
+}
+
+.quantity-control input[type="number"]::-webkit-inner-spin-button,
+.quantity-control input[type="number"]::-webkit-outer-spin-button,
+.quantity-control .quantity-input::-webkit-inner-spin-button,
+.quantity-control .quantity-input::-webkit-outer-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0 !important;
 }
 @media (max-width: 600px) {
   .quantity-control {
-    height: 24px !important;
-    min-height: 24px !important;
+    height: 28px !important;
+    min-height: 28px !important;
+    max-width: 100px !important;
   }
   .quantity-control .btn-qty {
-    width: 100% !important;
-    height: 24px !important;
-    font-size: 1rem !important;
+    width: 33.33% !important;
+    height: 28px !important;
+    font-size: 12px !important;
   }
-  .quantity-control input[type="number"] {
-    width: 24px !important;
-    height: 24px !important;
-    font-size: 0.95rem !important;
+  .quantity-control input[type="number"],
+  .quantity-control .quantity-input {
+    width: 33.33% !important;
+    height: 28px !important;
+    font-size: 12px !important;
   }
 }
 

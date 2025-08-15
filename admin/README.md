@@ -1,6 +1,6 @@
-# EverythingB2C EverythingB2C
+# Demo-site Demo-site
 
-A comprehensive EverythingB2C for managing the EverythingB2C e-commerce website. This EverythingB2C provides complete control over products, categories, orders, users, and analytics.
+A comprehensive Demo-site for managing the Demo-site e-commerce website. This Demo-site provides complete control over products, categories, orders, users, and analytics.
 
 ## Features
 
@@ -66,7 +66,7 @@ SOURCE database/admin_schema.sql;
 
 ### 2. Default Admin Account
 The system comes with a default admin account:
-- **Email:** admin@EverythingB2C.com
+- **Email:** admin@Demo-site.com
 - **Password:** admin123
 
 **Important:** Change the default password immediately after first login!
@@ -110,7 +110,7 @@ chmod 755 uploads/products
 
 ## Usage
 
-### Accessing the EverythingB2C
+### Accessing the Demo-site
 1. Navigate to `your-domain.com/admin/`
 2. Login with the default credentials
 3. Change the default password in Settings
@@ -165,7 +165,7 @@ The system supports three roles:
 - `manager` - Limited access (implement restrictions)
 
 ### Customizing Styles
-Edit `assets/css/admin.css` to customize the EverythingB2C appearance.
+Edit `assets/css/admin.css` to customize the Demo-site appearance.
 
 ### Adding New Features
 1. Create new PHP files in the admin directory
@@ -219,7 +219,7 @@ For support and questions:
 
 ## License
 
-This EverythingB2C is part of the EverythingB2C e-commerce system.
+This Demo-site is part of the Demo-site e-commerce system.
 
 ---
 

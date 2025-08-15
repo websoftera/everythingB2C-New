@@ -1,5 +1,5 @@
 <?php
-$pageTitle = 'EverythingB2C';
+$pageTitle = 'Demo-site';
 require_once 'includes/header.php';
 require_once 'includes/delivery_popup_functions.php';
 
@@ -19,7 +19,16 @@ if (isLoggedIn()) {
     foreach ($wishlistItems as $item) {
         $wishlist_ids[] = $item['product_id'];
     }
+} else {
+    // For guests, get wishlist from session
+    $wishlistItems = getSessionWishlistItems();
+    foreach ($wishlistItems as $item) {
+        $wishlist_ids[] = $item['product_id'];
+    }
 }
+
+// Debug: Log wishlist status
+error_log("Wishlist debug - User logged in: " . (isLoggedIn() ? 'Yes' : 'No') . ", Wishlist items count: " . count($wishlist_ids) . ", Wishlist IDs: " . implode(',', $wishlist_ids));
 
 // Filter to only main categories (parent_id is NULL)
 $main_categories = array_filter($categories, function($cat) { return empty($cat['parent_id']); });
@@ -35,6 +44,11 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                 </div>
             </div>
             <div class="carousel-item hero-slide hero-slide-2">
+                <div class="carousel-caption d-block text-end">
+                    <!-- Optional caption content -->
+                </div>
+            </div>
+            <div class="carousel-item hero-slide hero-slide-3">
                 <div class="carousel-caption d-block text-end">
                     <!-- Optional caption content -->
                 </div>
@@ -129,7 +143,9 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
             <a href="products.php?discounted=1" class="view-all-link">View All</a>
         </div>
         <div class="discounted-products-slider-wrapper">
-            <button class="discounted-nav-btn prev-btn" aria-label="Scroll Left">&#8249;</button>
+            <button class="discounted-nav-btn prev-btn" aria-label="Scroll Left">
+          <img src="asset/icons/blue_arrow.png" alt="Previous" style="width: 24px; height: 24px;">
+        </button>
             <div class="discounted-products-container" id="discounted-slider">
         <?php 
         // Debug: Show how many discounted products we have
@@ -143,13 +159,20 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                 <?php if ($product['is_discounted']): ?>
                     <div class="discount-banner">SAVE ₹<?php echo $product['mrp'] - $product['selling_price']; ?> (<?php echo $product['discount_percentage']; ?>% OFF)</div>
                 <?php endif; ?>
+                <div class="product-info">
+                  <div class="wishlist">
+                    <input type="checkbox" class="heart-checkbox" id="wishlist-checkbox-discounted-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>" <?php if ($inWishlist) echo 'checked'; ?>>
+                    <label for="wishlist-checkbox-discounted-<?php echo $product['id']; ?>" class="wishlist-label <?php echo $inWishlist ? 'wishlist-active' : ''; ?>">
+                        <span class="heart-icon">&#10084;</span>
+                    </label>
+                </div>
                 <div class="product-image">
                     <a href="product.php?slug=<?php echo $product['slug']; ?>">
-                        <?php if (!empty($product['main_image']) && file_exists('./' . $product['main_image'])): ?>
-                            <img src="./<?php echo $product['main_image']; ?>" alt="<?php echo cleanProductName($product['name']); ?>">
+                        <?php if (!empty($product['main_image'])): ?>
+                            <img src="<?php echo $product['main_image']; ?>" alt="<?php echo cleanProductName($product['name']); ?>">
                         <?php else: ?>
                             <div style="background: #f8f9fa; height: 155px; display: flex; align-items: center; justify-content: center; border: 1px dashed #dee2e6;">
-                                <small style="color: #6c757d;">Image not found: <?php echo $product['main_image'] ?? 'No image path'; ?></small>
+                                <small style="color: #6c757d;">No image available</small>
                             </div>
                         <?php endif; ?>
                     </a>
@@ -168,28 +191,29 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                             <span class="label">PAY</span>
                             <span class="value"><?php echo formatPrice($product['selling_price']); ?></span>
                         </div>
-                        <div class="wishlist">
-                            <input type="checkbox" class="heart-checkbox" id="wishlist-checkbox-discounted-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>" <?php if ($inWishlist) echo 'checked'; ?>>
-                            <label for="wishlist-checkbox-discounted-<?php echo $product['id']; ?>" class="wishlist-label"><i class="fas fa-heart"></i></label>
-                        </div>
                     </div>
                     <?php if ($isOutOfStock): ?>
                         <a href="product.php?slug=<?php echo $product['slug']; ?>" class="read-more">READ MORE</a>
                     <?php else: ?>
-                        <div class="cart-actions d-flex align-items-center gap-2">
-                            <div class="quantity-control d-inline-flex align-items-center">
+                      <div class="cart-actions d-flex align-items-center gap-2">
+                                                    <div class="quantity-control d-inline-flex align-items-center">
                                 <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
                                 <input type="number" class="quantity-input" value="1" min="1" max="99" data-product-id="<?php echo $product['id']; ?>">
                                 <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
                             </div>
+                    </div>
+                        <div class="cart-actions d-flex align-items-center gap-2">
                             <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">ADD TO CART</button>
                         </div>
                     <?php endif; ?>
                 </div>
             </div>
+            </div>
         <?php endforeach; ?>
 </div>
-            <button class="discounted-nav-btn next-btn" aria-label="Scroll Right">&#8250;</button>
+            <button class="discounted-nav-btn next-btn" aria-label="Scroll Right">
+          <img src="asset/icons/blue_arrow.png" alt="Next" style="transform: rotate(180deg);width: 24px; height: 24px;">
+        </button>
 </div>
     </div>
 </section>
@@ -202,7 +226,9 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
             <a href="products.php?featured=1" class="view-all-link">View All</a>
         </div>
         <div class="featured-products-slider-wrapper">
-            <button class="featured-nav-btn prev-btn" aria-label="Scroll Left">&#8249;</button>
+            <button class="featured-nav-btn prev-btn" aria-label="Scroll Left">
+          <img src="asset/icons/green_arrow.png" alt="Previous" style="width: 24px; height: 24px;">
+        </button>
             <div class="featured-products-container" id="featured-slider">
         <?php 
         // Debug: Show how many featured products we have
@@ -216,13 +242,20 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                 <?php if ($product['is_discounted']): ?>
                     <div class="discount-banner">SAVE ₹<?php echo $product['mrp'] - $product['selling_price']; ?> (<?php echo $product['discount_percentage']; ?>% OFF)</div>
                 <?php endif; ?>
+                <div class="product-info">
+                <div class="wishlist">
+                    <input type="checkbox" class="heart-checkbox" id="wishlist-checkbox-featured-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>" <?php if ($inWishlist) echo 'checked'; ?>>
+                    <label for="wishlist-checkbox-featured-<?php echo $product['id']; ?>" class="wishlist-label <?php echo $inWishlist ? 'wishlist-active' : ''; ?>">
+                        <span class="heart-icon">&#10084;</span>
+                    </label>
+                </div>
                 <div class="product-image">
                     <a href="product.php?slug=<?php echo $product['slug']; ?>">
-                        <?php if (!empty($product['main_image']) && file_exists('./' . $product['main_image'])): ?>
-                            <img src="./<?php echo $product['main_image']; ?>" alt="<?php echo cleanProductName($product['name']); ?>">
+                        <?php if (!empty($product['main_image'])): ?>
+                            <img src="<?php echo $product['main_image']; ?>" alt="<?php echo cleanProductName($product['name']); ?>">
                         <?php else: ?>
                             <div style="background: #f8f9fa; height: 155px; display: flex; align-items: center; justify-content: center; border: 1px dashed #dee2e6;">
-                                <small style="color: #6c757d;">Image not found: <?php echo $product['main_image'] ?? 'No image path'; ?></small>
+                                <small style="color: #6c757d;">No image available</small>
                             </div>
                         <?php endif; ?>
                     </a>
@@ -241,10 +274,6 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                             <span class="label">PAY</span>
                             <span class="value"><?php echo formatPrice($product['selling_price']); ?></span>
                         </div>
-                        <div class="wishlist">
-                            <input type="checkbox" class="heart-checkbox" id="wishlist-checkbox-featured-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>" <?php if ($inWishlist) echo 'checked'; ?>>
-                            <label for="wishlist-checkbox-featured-<?php echo $product['id']; ?>" class="wishlist-label"><i class="fas fa-heart"></i></label>
-                        </div>
                     </div>
                     <?php if ($isOutOfStock): ?>
                         <a href="product.php?slug=<?php echo $product['slug']; ?>" class="read-more">READ MORE</a>
@@ -259,10 +288,13 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                         </div>
                     <?php endif; ?>
                 </div>
+                </div>
             </div>
         <?php endforeach; ?>
 </div>
-            <button class="featured-nav-btn next-btn" aria-label="Scroll Right">&#8250;</button>
+            <button class="featured-nav-btn next-btn" aria-label="Scroll Right">
+          <img src="asset/icons/green_arrow.png" alt="Next" style="transform: rotate(180deg); width: 24px; height: 24px;">
+        </button>
 </div>
     </div>
 </section>
@@ -488,13 +520,13 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 /* Discounted Products Section - Modern Design */
 .discounted-products-section {
   padding: 20px;
-  background: #f5f5f5;
+  background: var(--light-blue); /* Light blue background as per image */
   margin: 0;
   overflow: visible;
 }
 
 .discounted-products-card {
-  background: #038CC3;
+  background: var(--light-blue); /* Light blue background as per image */
   border-radius: 8px;
   border: 1px solid #e0e0e0;
   padding: 20px;
@@ -514,21 +546,38 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 .discounted-products-title {
   font-size: 16px;
   font-weight: bold;
-  color: #fff;
+  color: var(--dark-blue); /* Dark blue color as per image */
   margin: 0;
   padding-left: 8px;
 }
 
 .view-all-link {
   text-decoration: none;
-  color: #000;
+  color: var(--dark-grey); /* Dark gray color */
   font-weight: 600;
   font-size: 14px;
+  background: #ffffff; /* White background for top section */
+  padding: 8px 16px;
+  border-radius: 6px;
   transition: color 0.2s ease;
 }
 
 .view-all-link:hover {
-  color: #000;
+  color: var(--dark-grey);
+}
+
+/* Featured section View All button has different background */
+.featured-products-header .view-all-link {
+  background: var(--light-gray) !important; /* Light gray background as per image */
+  background-color: var(--light-gray) !important;
+  color: var(--dark-grey) !important;
+}
+
+/* Discounted section View All button has white background */
+.discounted-products-header .view-all-link {
+  background: #ffffff !important; /* White background as per image */
+  background-color: #ffffff !important;
+  color: var(--dark-grey) !important;
 }
 
 .discounted-products-slider-wrapper {
@@ -545,42 +594,24 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 /* Desktop: Show 4 full cards + 0.5 card */
 @media (min-width: 1200px) {
   .discounted-products-container {
-    width: calc(4.5 * 280px + 4 * 12px) !important; /* 4.5 cards + gaps */
-    max-width: calc(4.5 * 280px + 4 * 12px) !important;
+    width: calc(4.5 * 220px + 4 * 16px) !important; /* 4.5 cards + gaps */
+    max-width: calc(4.5 * 220px + 4 * 16px) !important;
   }
 }
 
 /* Large tablet: Show 3.5 cards */
 @media (min-width: 992px) and (max-width: 1199px) {
   .discounted-products-container {
-    width: calc(3.5 * 280px + 3 * 12px) !important;
-    max-width: calc(3.5 * 280px + 3 * 12px) !important;
+    width: calc(3.5 * 220px + 3 * 16px) !important;
+    max-width: calc(3.5 * 220px + 3 * 16px) !important;
   }
 }
 
 /* Medium tablet: Show 2.5 cards */
 @media (min-width: 768px) and (max-width: 991px) {
   .discounted-products-container {
-    width: calc(2.5 * 280px + 2 * 12px) !important;
-    max-width: calc(2.5 * 280px + 2 * 12px) !important;
-  }
-  .discounted-products-container .card.product-card {
-    flex: 0 0 260px !important;
-    width: 260px !important;
-    min-width: 260px !important;
-    max-width: 260px !important;
-  }
-  .discounted-products-container {
-    width: calc(2.5 * 260px + 2 * 12px) !important;
-    max-width: calc(2.5 * 260px + 2 * 12px) !important;
-  }
-}
-
-/* Small tablet: Show 1.8 cards */
-@media (min-width: 576px) and (max-width: 767px) {
-  .discounted-products-container {
-    width: calc(1.8 * 240px + 1 * 12px) !important;
-    max-width: calc(1.8 * 240px + 1 * 12px) !important;
+    width: calc(2.5 * 220px + 2 * 16px) !important;
+    max-width: calc(2.5 * 220px + 2 * 16px) !important;
   }
   .discounted-products-container .card.product-card {
     flex: 0 0 240px !important;
@@ -588,67 +619,156 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
     min-width: 240px !important;
     max-width: 240px !important;
   }
+  .discounted-products-container {
+    width: calc(2.5 * 240px + 2 * 16px) !important;
+    max-width: calc(2.5 * 240px + 2 * 16px) !important;
+  }
+}
+
+/* Small tablet: Show 1.8 cards */
+@media (min-width: 576px) and (max-width: 767px) {
+  .discounted-products-container {
+    width: calc(1.8 * 200px + 1 * 16px) !important;
+    max-width: calc(1.8 * 200px + 1 * 16px) !important;
+  }
+  .discounted-products-container .card.product-card {
+    flex: 0 0 200px !important;
+    width: 200px !important;
+    min-width: 200px !important;
+    max-width: 200px !important;
+  }
 }
 
 /* Mobile: Show 1.3 cards */
 @media (max-width: 575px) {
   .discounted-products-container {
-    width: calc(1.3 * 220px + 0.3 * 12px) !important;
-    max-width: calc(1.3 * 220px + 0.3 * 12px) !important;
+    width: calc(1.3 * 180px + 0.3 * 16px) !important;
+    max-width: calc(1.3 * 180px + 0.3 * 16px) !important;
   }
   .discounted-products-container .card.product-card {
-    flex: 0 0 220px !important;
-    width: 220px !important;
-    min-width: 220px !important;
-    max-width: 220px !important;
+    flex: 0 0 180px !important;
+    width: 180px !important;
+    min-width: 180px !important;
+    max-width: 180px !important;
   }
 }
 
 .discounted-products-container {
   display: flex !important;
-  gap: 12px;
+  gap: 20px !important;
   overflow-x: auto !important;
   overflow-y: hidden !important;
-  scroll-behavior: smooth;
-  padding: 10px 5px;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  flex: 1;
+  scroll-behavior: smooth !important;
+  padding: 15px 10px !important;
+  -webkit-overflow-scrolling: touch !important;
+  scrollbar-width: none !important;
+  flex: 1 !important;
   /* Ensure proper containment */
-  position: relative;
-  width: 100%;
-  max-width: 100%;
+  position: relative !important;
+  width: 100% !important;
+  max-width: 100% !important;
   /* Force container to not wrap */
   flex-wrap: nowrap !important;
   /* Remove any text formatting */
   white-space: normal !important;
   /* Box model */
-  box-sizing: border-box;
+  box-sizing: border-box !important;
   /* Ensure container takes full width when not constrained by breakpoints */
-  min-width: 100%;
+  min-width: 100% !important;
 }
 
 /* Ensure product cards in discounted section maintain their width */
 .discounted-products-container .card.product-card {
-  flex: 0 0 280px !important;
-  width: 280px !important;
-  min-width: 280px !important;
-  max-width: 280px !important;
+  flex: 0 0 240px !important;
+  width: 240px !important;
+  min-width: 240px !important;
+  max-width: 240px !important;
   flex-shrink: 0 !important;
   flex-grow: 0 !important;
   margin: 0 !important;
   box-sizing: border-box !important;
+  /* background: var(--light-blue) !important; */
+  background: #fff !important; /* Light blue background as per image */
+  border-radius: 8px !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+  border: 1px solid var(--light-blue) !important;
+  /* Override any global white background */
+  background-image: none !important;
+  /* Ensure border matches background */
+  border-color: var(--light-blue) !important;
+}
+
+/* Discounted Products Section Specific Styles */
+.discounted-products-slider-wrapper {
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.featured-products-slider-wrapper {
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.discounted-products-container .card.product-card .discount-banner {
+  background: var(--site-blue) !important; /* Dark blue banner as per image */
+  color: #fff !important;
+  border-radius: 4px !important;
+}
+
+.discounted-products-container .card.product-card .price-btn.mrp {
+  background: var(--mrp-light-blue) !important; /* Light blue background for MRP */
+  color: var(--dark-blue) !important; /* Blue text */
+}
+
+.discounted-products-container .card.product-card .price-btn.pay {
+  background: var(--pay-light-green) !important; /* Light green background for PAY */
+  color: var(--dark-grey) !important; /* Dark gray text */
+}
+
+.discounted-products-container .card.product-card .add-to-cart-btn,
+.discounted-products-container .card.product-card .add-to-cart {
+  background: var(--cart-button) !important; /* Dark blue for top section */
+  color: #ffffff !important;
+}
+
+.discounted-products-container .card.product-card .add-to-cart-btn:hover,
+.discounted-products-container .card.product-card .add-to-cart:hover {
+  background: var(--dark-blue) !important; /* Slightly lighter blue on hover */
+}
+
+.discounted-products-container .card.product-card .product-details {
+  background-image: none !important;
+}
+
+.discounted-products-container .card.product-card .product-image {
+  background-image: none !important;
 }
 
 .discounted-products-container::-webkit-scrollbar {
   display: none;
 }
 
+.product-info{
+  padding: 5px 6px !important;
+}
+
 .discounted-nav-btn {
   background: #ffffff;
   border: none;
-  color: #16BAE4;
-  font-size: 24px;
+  color: var(--light-blue); /* Light blue color as per image */
+  font-size: 14px;
   font-weight: bold;
   cursor: pointer;
   width: 30px;
@@ -671,9 +791,9 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 
 .discounted-nav-btn:hover {
   background: #ffffff;
-  color: #16BAE4;
-  border-color: #16BAE4;
-  box-shadow: 0 4px 12px rgba(22, 186, 228, 0.3);
+  color: var(--dark-blue); /* Darker blue on hover */
+  border-color: var(--light-blue);
+  box-shadow: 0 4px 12px rgba(206, 229, 239, 0.3);
   transform: translateY(-50%) scale(1.05);
 }
 
@@ -699,20 +819,61 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   left: 0;
   right: 0;
   bottom: 0;
-  border-radius: 50%;
+  /* border-radius: 50%; */
   background: #ffffff;
   z-index: -1;
 }
 
 /* Force discounted arrow visibility */
 .discounted-nav-btn {
-  color: #16BAE4 !important;
+  color: var(--light-blue) !important; /* Light blue color as per image */
   background: #ffffff !important;
   border: 1px solid #e0e0e0 !important;
   cursor: pointer !important;
   pointer-events: auto !important;
   position: absolute !important;
   z-index: 100 !important;
+  /* border-radius: 50% !important; */
+  width: 22px !important;
+  height: 22px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+}
+
+.discounted-nav-btn.prev-btn {
+  left: -30px !important;
+}
+
+.discounted-nav-btn.next-btn {
+  right: -30px !important;
+}
+
+.featured-nav-btn.prev-btn {
+  left: -30px !important;
+}
+
+.featured-nav-btn.next-btn {
+  right: -30px !important;
+}
+
+/* Ensure perfect circular shape */
+.discounted-nav-btn img,
+.featured-nav-btn img {
+  width: 12px !important;
+  height: 22px !important;
+  object-fit: contain !important;
+  display: block !important;
+}
+
+/* Navigation button hover effects */
+.discounted-nav-btn:hover,
+.featured-nav-btn:hover {
+  transform: translateY(-50%) scale(1.05) !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
 }
 
 /* Ensure discounted arrows are clickable */
@@ -720,6 +881,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   cursor: pointer !important;
   pointer-events: auto !important;
   background: #f8f9fa !important;
+  color: var(--dark-blue) !important; /* Darker blue on hover */
 }
 
 .discounted-nav-btn:active {
@@ -895,7 +1057,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   }
   
   .discounted-products-slider-wrapper {
-    padding: 0 50px;
+    padding: 0;
     max-width: 100%;
   }
   
@@ -910,7 +1072,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
     width: 44px;
     height: 44px;
     font-size: 20px;
-    color: #16BAE4 !important;
+    color: var(--light-blue) !important; /* Light blue color as per image */
     background: #ffffff !important;
     border: 1px solid #e0e0e0 !important;
   }
@@ -941,15 +1103,15 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   }
   
   .discounted-products-slider-wrapper {
-    padding: 0 55px;
+    padding: 0;
     max-width: 100%;
   }
   
   .discounted-products-container .card.product-card {
-    flex: 0 0 280px !important;
-    width: 280px !important;
-    min-width: 280px !important;
-    max-width: 280px !important;
+    flex: 0 0 220px !important;
+    width: 220px !important;
+    min-width: 220px !important;
+    max-width: 220px !important;
   }
   
   .discounted-nav-btn {
@@ -976,15 +1138,15 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   }
   
   .discounted-products-slider-wrapper {
-    padding: 0 52px;
+    padding: 0;
     max-width: 100%;
   }
   
   .discounted-products-container .card.product-card {
-    flex: 0 0 240px !important;
-    width: 240px !important;
-    min-width: 240px !important;
-    max-width: 240px !important;
+    flex: 0 0 200px !important;
+    width: 200px !important;
+    min-width: 200px !important;
+    max-width: 200px !important;
   }
   
   .discounted-nav-btn {
@@ -998,13 +1160,13 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 .featured-products-section {
   padding: 20px;
   padding-bottom: 45px;
-  background-color: #f5f5f5;
+  background-color: var(--light-green); /* Light green background as per image */
   margin: 0;
   overflow: visible;
 }
 
 .featured-products-card {
-  background: #9ebf1c90;
+  background: var(--light-green); /* Light green background as per image */
   border-radius: 8px;
   border: 1px solid #e0e0e0;
   padding: 20px;
@@ -1024,7 +1186,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 .featured-products-title {
   font-size: 16px;
   font-weight: bold;
-  color: #000;
+  color: var(--dark-grey); /* Dark gray color as per image */
   margin: 0;
   padding-left: 8px;
 }
@@ -1034,7 +1196,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   align-items: center;
   position: relative;
   overflow: visible;
-  padding: 0 0px;
+  padding: 0;
   margin: 0 auto;
   width: 100%;
   max-width: 1400px;
@@ -1043,56 +1205,24 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 /* Desktop: Show 4 full cards + 0.5 card for featured products */
 @media (min-width: 1200px) {
   .featured-products-container {
-    width: calc(4.5 * 280px + 4 * 12px) !important; /* 4.5 cards + gaps */
-    max-width: calc(4.5 * 280px + 4 * 12px) !important;
+    width: calc(4.5 * 220px + 4 * 16px) !important; /* 4.5 cards + gaps */
+    max-width: calc(4.5 * 220px + 4 * 16px) !important;
   }
 }
 
 /* Large tablet: Show 3.5 cards for featured products */
 @media (min-width: 992px) and (max-width: 1199px) {
   .featured-products-container {
-    width: calc(3.5 * 280px + 3 * 12px) !important;
-    max-width: calc(3.5 * 280px + 3 * 12px) !important;
+    width: calc(3.5 * 220px + 3 * 16px) !important;
+    max-width: calc(3.5 * 220px + 3 * 16px) !important;
   }
 }
 
 /* Medium tablet: Show 2.5 cards for featured products */
 @media (min-width: 768px) and (max-width: 991px) {
   .featured-products-container {
-    width: calc(2.5 * 280px + 2 * 12px) !important;
-    max-width: calc(2.5 * 280px + 2 * 12px) !important;
-  }
-  .featured-products-container .card.product-card {
-    flex: 0 0 260px !important;
-    width: 260px !important;
-    min-width: 260px !important;
-    max-width: 260px !important;
-  }
-  .featured-products-container {
-    width: calc(2.5 * 260px + 2 * 12px) !important;
-    max-width: calc(2.5 * 260px + 2 * 12px) !important;
-  }
-}
-
-/* Small tablet: Show 1.8 cards for featured products */
-@media (min-width: 576px) and (max-width: 767px) {
-  .featured-products-container {
-    width: calc(1.8 * 240px + 1 * 12px) !important;
-    max-width: calc(1.8 * 240px + 1 * 12px) !important;
-  }
-  .featured-products-container .card.product-card {
-    flex: 0 0 240px !important;
-    width: 240px !important;
-    min-width: 240px !important;
-    max-width: 240px !important;
-  }
-}
-
-/* Mobile: Show 1.3 cards for featured products */
-@media (max-width: 575px) {
-  .featured-products-container {
-    width: calc(1.3 * 220px + 0.3 * 12px) !important;
-    max-width: calc(1.3 * 220px + 0.3 * 12px) !important;
+    width: calc(2.5 * 220px + 2 * 16px) !important;
+    max-width: calc(2.5 * 220px + 2 * 16px) !important;
   }
   .featured-products-container .card.product-card {
     flex: 0 0 220px !important;
@@ -1100,42 +1230,123 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
     min-width: 220px !important;
     max-width: 220px !important;
   }
+  .featured-products-container {
+    width: calc(2.5 * 220px + 2 * 16px) !important;
+    max-width: calc(2.5 * 220px + 2 * 16px) !important;
+  }
+}
+
+/* Small tablet: Show 1.8 cards for featured products */
+@media (min-width: 576px) and (max-width: 767px) {
+  .featured-products-container {
+    width: calc(1.8 * 200px + 1 * 16px) !important;
+    max-width: calc(1.8 * 200px + 1 * 16px) !important;
+  }
+  .featured-products-container .card.product-card {
+    flex: 0 0 200px !important;
+    width: 200px !important;
+    min-width: 200px !important;
+    max-width: 200px !important;
+  }
+}
+
+/* Mobile: Show 1.3 cards for featured products */
+@media (max-width: 575px) {
+  .featured-products-container {
+    width: calc(1.3 * 180px + 0.3 * 16px) !important;
+    max-width: calc(1.3 * 180px + 0.3 * 16px) !important;
+  }
+  .featured-products-container .card.product-card {
+    flex: 0 0 180px !important;
+    width: 180px !important;
+    min-width: 180px !important;
+    max-width: 180px !important;
+  }
 }
 
 .featured-products-container {
   display: flex !important;
-  gap: 12px;
+  gap: 20px !important;
   overflow-x: auto !important;
   overflow-y: hidden !important;
-  scroll-behavior: smooth;
-  padding: 10px 5px;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  flex: 1;
+  scroll-behavior: smooth !important;
+  padding: 15px 10px !important;
+  -webkit-overflow-scrolling: touch !important;
+  scrollbar-width: none !important;
+  flex: 1 !important;
   /* Ensure proper containment */
-  position: relative;
-  width: 100%;
-  max-width: 100%;
+  position: relative !important;
+  width: 100% !important;
+  max-width: 100% !important;
   /* Force container to not wrap */
   flex-wrap: nowrap !important;
   /* Remove any text formatting */
   white-space: normal !important;
   /* Box model */
-  box-sizing: border-box;
+  box-sizing: border-box !important;
   /* Ensure container takes full width when not constrained by breakpoints */
-  min-width: 100%;
+  min-width: 100% !important;
 }
 
 /* Ensure product cards in featured section maintain their width */
 .featured-products-container .card.product-card {
-  flex: 0 0 280px !important;
-  width: 280px !important;
-  min-width: 280px !important;
-  max-width: 280px !important;
+  flex: 0 0 240px !important;
+  width: 240px !important;
+  min-width: 240px !important;
+  max-width: 240px !important;
   flex-shrink: 0 !important;
   flex-grow: 0 !important;
   margin: 0 !important;
   box-sizing: border-box !important;
+  background: var(--light-green) !important; /* Light green background as per image */
+  border-radius: 8px !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+  border: 1px solid var(--light-green) !important;
+  /* Override any global white background */
+  background-color: var(--light-green) !important;
+  background-image: none !important;
+  /* Ensure border matches background */
+  border-color: var(--light-green) !important;
+}
+
+/* Featured Products Section Specific Styles */
+.featured-products-container .card.product-card .discount-banner {
+  background: var(--dark-green) !important; /* Dark green banner as per image */
+  color: #fff !important;
+  border-radius: 4px !important;
+}
+
+.featured-products-container .card.product-card .price-btn.mrp {
+  background: var(--mrp-light-blue) !important; /* Light blue background for MRP */
+  color: var(--dark-blue) !important; /* Blue text */
+}
+
+.featured-products-container .card.product-card .price-btn.pay {
+  background: var(--pay-light-green) !important; /* Light green background for PAY */
+  color: var(--dark-grey) !important; /* Dark gray text */
+}
+
+.featured-products-container .card.product-card .add-to-cart-btn,
+.featured-products-container .card.product-card .add-to-cart {
+  background: var(--dark-grey) !important; /* Dark gray for bottom section */
+  color: #ffffff !important;
+}
+
+.featured-products-container .card.product-card .add-to-cart-btn:hover,
+.featured-products-container .card.product-card .add-to-cart:hover {
+  background: #4b5563 !important; /* Slightly lighter gray on hover */
+}
+
+.featured-products-container .card.product-card .product-details {
+  background: var(--light-green) !important; /* Same as card background */
+  background-color: var(--light-green) !important;
+  background-image: none !important;
+}
+
+.featured-products-container .card.product-card .product-image {
+  background: var(--light-green) !important; /* Same as card background */
+  background-color: var(--light-green) !important;
+  background-image: none !important;
 }
 
 .featured-products-container::-webkit-scrollbar {
@@ -1144,13 +1355,13 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 
 .featured-nav-btn {
   background: #ffffff !important;
-  /* border-radius: 50% !important; */
-  color: #16BAE4 !important;
+  border-radius: 50% !important;
+  color: var(--light-green) !important; /* Light green color as per image */
   font-size: 24px !important;
   font-weight: bold !important;
   cursor: pointer !important;
-  width: 30px !important;
-  height: 40px !important;
+  width: 50px !important;
+  height: 50px !important;
   position: absolute !important;
   top: 50% !important;
   transform: translateY(-50%) !important;
@@ -1158,21 +1369,29 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
   transition: all 0.3s ease !important;
   opacity: 1 !important;
   pointer-events: auto !important;
   text-decoration: none !important;
   line-height: 1 !important;
   user-select: none !important;
-  border: none !important;
+  border: 1px solid #e0e0e0 !important;
+}
+
+.featured-nav-btn.prev-btn {
+  left: -25px !important;
+}
+
+.featured-nav-btn.next-btn {
+  right: -25px !important;
 }
 
 .featured-nav-btn:hover {
   background: #ffffff !important;
-  color: #16BAE4 !important;
-  border-color: #16BAE4 !important;
-  box-shadow: 0 4px 12px rgba(22, 186, 228, 0.3) !important;
+  color: var(--dark-green) !important; /* Darker green on hover */
+  border-color: var(--light-green) !important;
+  box-shadow: 0 4px 12px rgba(227, 242, 170, 0.3) !important;
   transform: translateY(-50%) scale(1.05) !important;
 }
 
@@ -1212,24 +1431,24 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   }
   
   .featured-products-slider-wrapper {
-    padding: 0 50px;
+    padding: 0;
     max-width: 100%;
   }
   
   .featured-products-container .card.product-card {
-    flex: 0 0 220px !important;
-    width: 220px !important;
-    min-width: 220px !important;
-    max-width: 220px !important;
+    flex: 0 0 180px !important;
+    width: 180px !important;
+    min-width: 180px !important;
+    max-width: 180px !important;
   }
   
   .featured-nav-btn {
     width: 44px !important;
     height: 44px !important;
     font-size: 20px !important;
-    color: #16BAE4 !important;
+    color: var(--light-green) !important; /* Light green color as per image */
     background: #ffffff !important;
-    border: 2px solid #16BAE4 !important;
+    border: 2px solid var(--light-green) !important;
   }
   
   .featured-nav-btn.prev-btn {
@@ -1258,21 +1477,22 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   }
   
   .featured-products-slider-wrapper {
-    padding: 0 55px;
+    padding: 0;
     max-width: 100%;
   }
   
   .featured-products-container .card.product-card {
-    flex: 0 0 280px !important;
-    width: 280px !important;
-    min-width: 280px !important;
-    max-width: 280px !important;
+    flex: 0 0 220px !important;
+    width: 220px !important;
+    min-width: 220px !important;
+    max-width: 220px !important;
   }
   
   .featured-nav-btn {
     width: 48px !important;
     height: 48px !important;
     font-size: 22px !important;
+    color: var(--light-green) !important; /* Light green color as per image */
   }
 }
 
@@ -1293,21 +1513,22 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   }
   
   .featured-products-slider-wrapper {
-    padding: 0 52px;
+    padding: 0;
     max-width: 100%;
   }
   
   .featured-products-container .card.product-card {
-    flex: 0 0 240px !important;
-    width: 240px !important;
-    min-width: 240px !important;
-    max-width: 240px !important;
+    flex: 0 0 200px !important;
+    width: 200px !important;
+    min-width: 200px !important;
+    max-width: 200px !important;
   }
   
   .featured-nav-btn {
     width: 46px !important;
     height: 46px !important;
     font-size: 21px !important;
+    color: var(--light-green) !important; /* Light green color as per image */
   }
 }
 
@@ -1374,7 +1595,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   .discounted-products-slider-wrapper,
   .featured-products-slider-wrapper {
     max-width: 100% !important;
-    padding: 0 40px !important;
+    padding: 0 !important;
   }
 }
 
@@ -1386,7 +1607,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   
   .discounted-products-slider-wrapper,
   .featured-products-slider-wrapper {
-    padding: 0 35px !important;
+    padding: 0 !important;
   }
 }
 
@@ -1497,6 +1718,8 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 #featured-products .product-card .product-image img {
   width: 100% !important;
   height: 100% !important;
+  max-height: 155px !important;
+  min-height: 155px !important;
   object-fit: cover !important;
   display: block !important;
   visibility: visible !important;
@@ -1578,6 +1801,8 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 #discounted-products .product-card .product-image img {
   width: 100% !important;
   height: 100% !important;
+  max-height: 155px !important;
+  min-height: 155px !important;
   object-fit: cover !important;
   display: block !important;
   visibility: visible !important;
@@ -1642,8 +1867,8 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
-  width: 20px !important;
-  height: 20px !important;
+  width: 25px !important;
+  height: 25px !important;
   filter: brightness(0) invert(1) !important;
 }
 
@@ -1799,13 +2024,13 @@ document.addEventListener('DOMContentLoaded', function() {
         function getDiscountedScrollAmount() {
             const width = window.innerWidth;
             if (width <= 575) {
-                return 232; // 220px card + 12px gap
+                return 196; // 180px card + 16px gap
             } else if (width <= 767) {
-                return 252; // 240px card + 12px gap
+                return 216; // 200px card + 16px gap
             } else if (width <= 991) {
-                return 272; // 260px card + 12px gap
+                return 236; // 220px card + 16px gap
             } else {
-                return 292; // 280px card + 12px gap
+                return 236; // 220px card + 16px gap
             }
         }
         
@@ -1878,13 +2103,13 @@ document.addEventListener('DOMContentLoaded', function() {
         function getFeaturedScrollAmount() {
             const width = window.innerWidth;
             if (width <= 575) {
-                return 232; // 220px card + 12px gap
+                return 196; // 180px card + 16px gap
             } else if (width <= 767) {
-                return 252; // 240px card + 12px gap
+                return 216; // 200px card + 16px gap
             } else if (width <= 991) {
-                return 272; // 260px card + 12px gap
+                return 236; // 220px card + 16px gap
             } else {
-                return 292; // 280px card + 12px gap
+                return 236; // 220px card + 16px gap
             }
         }
         
@@ -1986,7 +2211,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="delivery-popup">
         <div class="delivery-popup-header">
             <div class="delivery-logo">
-                <img src="asset/images/logo.webp" alt="EverythingB2C Logo" class="site-logo">
+                <img src="asset/images/logo.webp" alt="Demo-site Logo" class="site-logo">
             </div>
             <button class="delivery-popup-close" onclick="closeDeliveryPopup()">
                 <i class="fas fa-times"></i>
@@ -2389,9 +2614,219 @@ document.addEventListener('DOMContentLoaded', function() {
             this.value = this.value.replace(/[^0-9]/g, '');
         });
     }
+    
+    // Handle wishlist checkbox changes
+    document.querySelectorAll('.heart-checkbox').forEach(function(checkbox) {
+        checkbox.addEventListener('change', function() {
+            const productId = this.getAttribute('data-product-id');
+            const wishlistLabel = this.nextElementSibling;
+            const isChecked = this.checked;
+            
+            // Update icon immediately for better UX
+            if (isChecked) {
+                wishlistLabel.classList.add('wishlist-active');
+            } else {
+                wishlistLabel.classList.remove('wishlist-active');
+            }
+            
+            // Send AJAX request
+            const url = isChecked ? 'ajax/add-to-wishlist.php' : 'ajax/remove-from-wishlist.php';
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    product_id: productId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    // Revert icon if request failed
+                    if (isChecked) {
+                        wishlistLabel.classList.remove('wishlist-active');
+                        checkbox.checked = false;
+                    } else {
+                        wishlistLabel.classList.add('wishlist-active');
+                        checkbox.checked = true;
+                    }
+                    console.error('Wishlist operation failed:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Revert icon on error
+                if (isChecked) {
+                    wishlistLabel.classList.remove('wishlist-active');
+                    checkbox.checked = false;
+                } else {
+                    wishlistLabel.classList.add('wishlist-active');
+                    checkbox.checked = true;
+                }
+            });
+        });
+    });
+    
+    // Force pink color on page load for wishlist items
+    function applyWishlistStyling() {
+        console.log('applyWishlistStyling function called');
+        
+        // Find all wishlist labels with wishlist-active class
+        const activeWishlistLabels = document.querySelectorAll('.wishlist-label.wishlist-active');
+        console.log('Found active wishlist labels:', activeWishlistLabels.length);
+        
+        activeWishlistLabels.forEach(function(label) {
+            const heartIcon = label.querySelector('.heart-icon');
+            if (heartIcon) {
+                console.log('Applying pink color to heart icon');
+                heartIcon.style.color = '#DE0085';
+                heartIcon.style.webkitTextStroke = '2px #DE0085';
+                heartIcon.style.textStroke = '2px #DE0085';
+                heartIcon.style.filter = 'drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3))';
+            }
+        });
+        
+        // Also check for checked checkboxes
+        const checkedCheckboxes = document.querySelectorAll('.heart-checkbox:checked');
+        console.log('Found checked checkboxes:', checkedCheckboxes.length);
+        
+        checkedCheckboxes.forEach(function(checkbox) {
+            const label = checkbox.nextElementSibling;
+            if (label && label.classList.contains('wishlist-label')) {
+                const heartIcon = label.querySelector('.heart-icon');
+                if (heartIcon) {
+                    console.log('Applying pink color to heart icon from checkbox');
+                    heartIcon.style.color = '#DE0085';
+                    heartIcon.style.webkitTextStroke = '2px #DE0085';
+                    heartIcon.style.textStroke = '2px #DE0085';
+                    heartIcon.style.filter = 'drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3))';
+                }
+            }
+        });
+    }
+    
+    // Apply styling immediately
+    console.log('Applying wishlist styling...');
+    applyWishlistStyling();
+    
+    // Also apply styling after a short delay to ensure all elements are loaded
+    setTimeout(function() {
+        console.log('Applying wishlist styling after 100ms...');
+        applyWishlistStyling();
+    }, 100);
+    setTimeout(function() {
+        console.log('Applying wishlist styling after 500ms...');
+        applyWishlistStyling();
+    }, 500);
 });
 </script>
 <?php endif; ?>
+
+<!-- Force wishlist styling on page load - always runs -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Wishlist styling script loaded');
+    
+    function forceWishlistStyling() {
+        console.log('forceWishlistStyling function called');
+        
+        // Find all wishlist labels with wishlist-active class
+        const activeWishlistLabels = document.querySelectorAll('.wishlist-label.wishlist-active');
+        console.log('Found active wishlist labels:', activeWishlistLabels.length);
+        
+        activeWishlistLabels.forEach(function(label) {
+            const heartIcon = label.querySelector('.heart-icon');
+            if (heartIcon) {
+                console.log('Applying pink color to heart icon');
+                heartIcon.style.color = '#DE0085';
+                heartIcon.style.webkitTextStroke = '2px #DE0085';
+                heartIcon.style.textStroke = '2px #DE0085';
+                heartIcon.style.filter = 'drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3))';
+            }
+        });
+        
+        // Also check for checked checkboxes
+        const checkedCheckboxes = document.querySelectorAll('.heart-checkbox:checked');
+        console.log('Found checked checkboxes:', checkedCheckboxes.length);
+        
+        checkedCheckboxes.forEach(function(checkbox) {
+            const label = checkbox.nextElementSibling;
+            if (label && label.classList.contains('wishlist-label')) {
+                const heartIcon = label.querySelector('.heart-icon');
+                if (heartIcon) {
+                    console.log('Applying pink color to heart icon from checkbox');
+                    heartIcon.style.color = '#DE0085';
+                    heartIcon.style.webkitTextStroke = '2px #DE0085';
+                    heartIcon.style.textStroke = '2px #DE0085';
+                    heartIcon.style.filter = 'drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3))';
+                }
+            }
+        });
+        
+        // Debug: Check all wishlist elements
+        const allWishlistLabels = document.querySelectorAll('.wishlist-label');
+        console.log('Total wishlist labels found:', allWishlistLabels.length);
+        
+        allWishlistLabels.forEach(function(label, index) {
+            const checkbox = label.previousElementSibling;
+            const isChecked = checkbox && checkbox.checked;
+            const hasActiveClass = label.classList.contains('wishlist-active');
+            console.log(`Wishlist label ${index}: checked=${isChecked}, active=${hasActiveClass}`);
+        });
+    }
+    
+    // Apply styling immediately
+    console.log('Applying wishlist styling immediately...');
+    forceWishlistStyling();
+    
+    // Also apply styling after delays to ensure all elements are loaded
+    setTimeout(function() {
+        console.log('Applying wishlist styling after 100ms...');
+        forceWishlistStyling();
+    }, 100);
+    
+    setTimeout(function() {
+        console.log('Applying wishlist styling after 500ms...');
+        forceWishlistStyling();
+    }, 500);
+    
+    setTimeout(function() {
+        console.log('Applying wishlist styling after 1000ms...');
+        forceWishlistStyling();
+    }, 1000);
+    
+    // Test function to manually add an item to wishlist
+    window.testWishlist = function() {
+        console.log('Testing wishlist functionality...');
+        
+        // Find the first wishlist checkbox and check it
+        const firstCheckbox = document.querySelector('.heart-checkbox');
+        if (firstCheckbox) {
+            firstCheckbox.checked = true;
+            const label = firstCheckbox.nextElementSibling;
+            if (label) {
+                label.classList.add('wishlist-active');
+                const heartIcon = label.querySelector('.heart-icon');
+                if (heartIcon) {
+                    heartIcon.style.color = '#DE0085';
+                    heartIcon.style.webkitTextStroke = '2px #DE0085';
+                    heartIcon.style.textStroke = '2px #DE0085';
+                    heartIcon.style.filter = 'drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3))';
+                    console.log('Manually applied pink color to first heart icon');
+                }
+            }
+        }
+    };
+    
+    // Add a test button to the page
+    const testButton = document.createElement('button');
+    testButton.textContent = 'Test Wishlist';
+    testButton.style.cssText = 'position: fixed; top: 10px; right: 10px; z-index: 10000; background: red; color: white; padding: 10px; border: none; cursor: pointer;';
+    testButton.onclick = window.testWishlist;
+    document.body.appendChild(testButton);
+});
+</script>
 
 </body>
 </html> 

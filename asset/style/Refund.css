@@ -521,14 +521,21 @@ a:hover {
 }
 /* Desktop styles (unchanged) */
 .hero-slide-1 {
-    background-image: url('../images/slide.webp');
+    background-image: url('../images/banner_1.webp');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
 }
 
 .hero-slide-2 {
-    background-image: url('../images/slide_2.webp');
+    background-image: url('../images/banner_2.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.hero-slide-3 {
+    background-image: url('../images/banner_3.webp');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;

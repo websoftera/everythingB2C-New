@@ -52,7 +52,7 @@ if (isLoggedIn()) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?php echo $pageTitle ?? 'EverythingB2C'; ?></title>
+    <title><?php echo $pageTitle ?? 'Demo-site'; ?></title>
 
     <!-- Favicon -->
     <link rel="icon" href="./sitelogo.png" type="image/webp">
@@ -72,6 +72,7 @@ if (isLoggedIn()) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="Header.css">
 
+    <link rel="stylesheet" href="asset/style/global-colors.css">
     <link rel="stylesheet" href="asset/style/popup.css">
     <link rel="stylesheet" href="asset/style/style.css">
     <link rel="stylesheet" href="asset/style/product-card.css">
@@ -605,7 +606,7 @@ const SwalWithLogo = {
                     // Create logo image
                     const logoImg = document.createElement('img');
                     logoImg.src = './asset/images/logo.webp';
-                    logoImg.alt = 'EverythingB2C';
+                    logoImg.alt = 'Demo-site';
                     logoImg.style.cssText = `
                         max-width: 200px;
                         height: auto;
@@ -616,7 +617,7 @@ const SwalWithLogo = {
                     // Error handling
                     logoImg.onerror = function() {
                         console.log('Logo image failed to load, using text fallback');
-                        logoContainer.innerHTML = '<span style="color: #007bff; font-size: 18px; font-weight: bold; text-align: center;">EverythingB2C</span>';
+                        logoContainer.innerHTML = '<span style="color: #007bff; font-size: 18px; font-weight: bold; text-align: center;">Demo-site</span>';
                     };
                     
                     logoImg.onload = function() {

@@ -358,6 +358,8 @@ echo renderBreadcrumb($breadcrumbs);
 .product-card .product-image img {
   width: 100%;
   height: auto;
+  max-height: 140px;
+  min-height: 140px;
   object-fit: cover;
 }
 
@@ -372,10 +374,9 @@ echo renderBreadcrumb($breadcrumbs);
 }
 
 .product-card .product-details h3 {
-
   font-size: 14px;
   line-height: 1.3;
-  margin-bottom: 8px;
+  margin-bottom: 2px;
   word-wrap: break-word;
   overflow-wrap: break-word;
   hyphens: auto;
@@ -506,9 +507,8 @@ echo renderBreadcrumb($breadcrumbs);
   }
   
   .product-card .product-details h3 {
-
     font-size: 12px;
-    margin-bottom: 6px;
+    margin-bottom: 2px;
     max-width: 100%;
     width: 100%;
   }
@@ -551,7 +551,6 @@ echo renderBreadcrumb($breadcrumbs);
 /* Tablet adjustments */
 @media (min-width: 576px) and (max-width: 991.98px) {
   .product-card .product-details h3 {
-
     font-size: 13px;
   }
   
@@ -569,7 +568,6 @@ echo renderBreadcrumb($breadcrumbs);
 /* Desktop adjustments */
 @media (min-width: 992px) {
   .product-card .product-details h3 {
-
     font-size: 14px;
   }
   

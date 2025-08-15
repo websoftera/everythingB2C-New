@@ -598,8 +598,9 @@ body {
 
 .product-image img {
   max-width: 100%;
-  max-height: 155px;
   height: auto;
+  max-height: 140px;
+  min-height: 140px;
 }
 
 .product-details {
@@ -609,8 +610,7 @@ body {
 }
 
 .product-details h3 {
-
-  margin: 10px 2px !important;
+margin: 2px 2px !important;
   font-size: 15px;
   font-weight: bold;
   text-transform: capitalize;
@@ -653,14 +653,16 @@ body {
 /* Wishlist inside price-buttons */
 .wishlist {
   background: none !important;
-  border: 1px solid #DE0085 !important;
   border-radius: 6px;
   width: 36px;
   height: 36px;
   display: flex;
   justify-content: center;
   align-items: center;
-  position: relative;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
   cursor: pointer;
 }
 
@@ -676,12 +678,70 @@ body {
 .heart-icon {
   font-size: 18px;
   pointer-events: none;
-  color: #ccc;
-  transition: color 0.3s ease;
+  color: transparent; /* Transparent fill */
+  -webkit-text-stroke: 2px #666; /* Dark grey border */
+  text-stroke: 2px #666; /* Dark grey border for non-webkit browsers */
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2)); /* Subtle shadow */
+  transition: all 0.3s ease;
 }
 
 input[type="checkbox"]:checked + .heart-icon {
-  color: red;
+  color: #DE0085; /* Pink fill when in wishlist */
+  -webkit-text-stroke: 2px #DE0085; /* Pink border when in wishlist */
+  text-stroke: 2px #DE0085; /* Pink border for non-webkit browsers */
+  filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3)); /* Pink shadow when in wishlist */
+}
+
+.heart-checkbox:checked + .wishlist-label .heart-icon {
+  color: #DE0085; /* Pink fill when in wishlist */
+  -webkit-text-stroke: 2px #DE0085; /* Pink border when in wishlist */
+  text-stroke: 2px #DE0085; /* Pink border for non-webkit browsers */
+  filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3)); /* Pink shadow when in wishlist */
+}
+
+/* Additional specific selectors for initial state */
+.wishlist-label.wishlist-active .heart-icon {
+  color: #DE0085 !important;
+  -webkit-text-stroke: 2px #DE0085 !important;
+  text-stroke: 2px #DE0085 !important;
+  filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3)) !important;
+}
+
+/* Most specific selectors for page load state */
+.product-info .wishlist .wishlist-label.wishlist-active .heart-icon,
+.product-info .wishlist .heart-checkbox:checked + .wishlist-label .heart-icon,
+.card .wishlist .wishlist-label.wishlist-active .heart-icon,
+.card .wishlist .heart-checkbox:checked + .wishlist-label .heart-icon,
+.product-card .wishlist .wishlist-label.wishlist-active .heart-icon,
+.product-card .wishlist .heart-checkbox:checked + .wishlist-label .heart-icon {
+  color: #DE0085 !important;
+  -webkit-text-stroke: 2px #DE0085 !important;
+  text-stroke: 2px #DE0085 !important;
+  filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3)) !important;
+}
+
+/* Force pink color for wishlist-active state on page load */
+.wishlist-label.wishlist-active .heart-icon,
+.wishlist-label.wishlist-active span.heart-icon {
+  color: #DE0085 !important;
+  -webkit-text-stroke: 2px #DE0085 !important;
+  text-stroke: 2px #DE0085 !important;
+  filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3)) !important;
+}
+
+/* Most aggressive selectors for page load state */
+body .product-info .wishlist .wishlist-label.wishlist-active .heart-icon,
+body .product-info .wishlist .heart-checkbox:checked + .wishlist-label .heart-icon,
+body .card .wishlist .wishlist-label.wishlist-active .heart-icon,
+body .card .wishlist .heart-checkbox:checked + .wishlist-label .heart-icon,
+body .product-card .wishlist .wishlist-label.wishlist-active .heart-icon,
+body .product-card .wishlist .heart-checkbox:checked + .wishlist-label .heart-icon,
+html body .product-info .wishlist .wishlist-label.wishlist-active .heart-icon,
+html body .product-info .wishlist .heart-checkbox:checked + .wishlist-label .heart-icon {
+  color: #DE0085 !important;
+  -webkit-text-stroke: 2px #DE0085 !important;
+  text-stroke: 2px #DE0085 !important;
+  filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3)) !important;
 }
 
 /* Cart Actions */
@@ -1664,8 +1724,7 @@ padding-right: 20px;
 }
 
 .product-details h3 {
-
-  margin: 10px 2px !important;
+margin: 2px 2px !important;
   font-size: 15px;
   font-weight: bold;
   text-transform: capitalize;
@@ -1706,7 +1765,6 @@ color: #038CC3 !important;
 
 /* Wishlist inside price-buttons */
 .wishlist {
-  border: 1px solid #DE0085;
   background: none;
   border-radius: 6px;
   width: 36px;
@@ -1730,7 +1788,7 @@ color: #038CC3 !important;
 .heart-icon {
   font-size: 18px;
   pointer-events: none;
-  color: #ccc;
+  color: #fff; /* default color */
   transition: color 0.3s ease;
 }
 
@@ -3039,10 +3097,9 @@ input[type="checkbox"]:checked + .heart-icon,
 
 /* Ensure consistent product title heights for uniform card appearance */
 .product-details h3 {
-
-  min-height: 32px !important;
+  /* min-height: 32px !important;
   max-height: 32px !important;
-  height: 32px !important;
+  height: 32px !important; */
   display: -webkit-box !important;
   -webkit-line-clamp: 2 !important;
   -webkit-box-orient: vertical !important;
