@@ -282,7 +282,7 @@ class MaxQuantityChecker {
             // Reset button after 2 seconds
             setTimeout(() => {
                 button.classList.remove('btn-success');
-                button.innerHTML = 'ADD TO CART';
+                button.innerHTML = '<i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>ADD TO CART';
             }, 2000);
             
             // Remove highlight after 3 seconds

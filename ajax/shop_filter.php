@@ -107,7 +107,10 @@ foreach ($products as $product):
               </div>
           </div>
           <div class="cart-actions d-flex align-items-center gap-2">
-              <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">ADD TO CART</button>
+                                                                                      <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">
+                                <i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>
+                                ADD TO CART
+                            </button>
           </div>
         <?php endif; ?>
     </div>

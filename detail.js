@@ -1,10 +1,7 @@
-console.log('detail.js loaded');
 document.querySelectorAll('.product-detail-card').forEach(card => {
-  console.log('Found product-detail-card:', card);
   const qtyInput = card.querySelector('.quantity-input');
   const payButton = card.querySelector('.pay');
   const addBtn = card.querySelector('.add-to-cart');
-  console.log('Found add to cart button:', addBtn);
 
   const unitPrice = parseFloat(payButton.getAttribute('data-pay')) || 0;
 

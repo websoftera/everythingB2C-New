@@ -100,7 +100,10 @@ echo renderBreadcrumb($breadcrumbs);
                 <input type="number" class="quantity-input" value="1" min="1" max="99" data-product-id="<?php echo $product['id']; ?>">
                 <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
             </div>
-            <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">ADD TO CART</button>
+                                        <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">
+                                <i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>
+                                ADD TO CART
+                            </button>
         </div>
         <?php else: ?>
         <div class="out-of-stock-message">
@@ -195,7 +198,10 @@ echo renderBreadcrumb($breadcrumbs);
                                       </div>
                                   </div>
                                   <div class="cart-actions d-flex align-items-center gap-2 justify-content-center">
-                                      <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $relatedProduct['id']; ?>">ADD TO CART</button>
+                                      <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $relatedProduct['id']; ?>">
+                                          <i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>
+                                          ADD TO CART
+                                      </button>
                                   </div>
                               <?php endif; ?>
                           </div>

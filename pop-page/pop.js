@@ -1,6 +1,4 @@
-console.log('pop.js loaded');
 function showPopup() {
-  console.log('showPopup called from pop.js');
   var overlay = document.getElementById("popupOverlay");
   var form = document.getElementById("popupForm");
   if (overlay) overlay.style.display = "block";

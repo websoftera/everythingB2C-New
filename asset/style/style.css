@@ -186,7 +186,7 @@
 
 /* Home Icon Styles */
 .home-icon {
-  color: #16BAE4 !important; /* Use the same blue color as hover */
+  color: var(--dark-grey) !important; /* Use the same blue color as hover */
   font-size: 24px !important;
   transition: all 0.3s ease !important;
 }
@@ -208,7 +208,7 @@
 
 /* Default wishlist icon (outline) */
 .wishlist-icon.bi-heart {
-  color: #DE0085 !important; /* Pink color for outline */
+  color: var(--dark-grey) !important; /* Pink color for outline */
 }
 
 /* Filled wishlist icon (when items exist) */
@@ -858,6 +858,17 @@ h3{
   font-size: 14px;
   display: block;
   border: 1px solid #ddd;
+}
+
+.step img:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 5px 5px var(--pay-light-green);
+  border: 2px solid var(--dark-green);
+}
+
+.step p:hover {
+  background-color: var(--dark-green);
+  color: white;
 }
 
 .arrow img {

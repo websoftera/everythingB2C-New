@@ -76,7 +76,10 @@ echo renderBreadcrumb($breadcrumbs);
                                         <input type="number" class="quantity-input form-control form-control-sm" value="1" min="1">
                                         <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
                                     </div>
-                                    <button class="add-to-cart add-to-cart-btn btn btn-primary btn-sm" data-product-id="<?php echo $item['product_id']; ?>">ADD TO CART</button>
+                                    <button class="add-to-cart add-to-cart-btn btn btn-primary btn-sm" data-product-id="<?php echo $item['product_id']; ?>">
+                                        <i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>
+                                        ADD TO CART
+                                    </button>
                                 </div>
                             <?php endif; ?>
                         </div>

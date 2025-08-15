@@ -594,7 +594,6 @@ const SwalWithLogo = {
             },
                         didOpen: function(popup) {
                 // Replace the default SweetAlert icon with our logo
-                console.log('SweetAlert didOpen triggered, popup:', popup);
                 
                 // Try different selectors to find the popup element
                 let popupElement = popup.querySelector('.swal2-popup');
@@ -602,10 +601,7 @@ const SwalWithLogo = {
                     popupElement = popup;
                 }
                 
-                console.log('Popup element found:', popupElement);
-                
                 const iconElement = popupElement.querySelector('.swal2-icon');
-                console.log('Icon element found:', iconElement);
                 
                 if (popupElement) {
                     // Hide the default icon if it exists
@@ -644,12 +640,10 @@ const SwalWithLogo = {
                     
                     // Error handling
                     logoImg.onerror = function() {
-                        console.log('Logo image failed to load, using text fallback');
                         logoContainer.innerHTML = '<span style="color: #007bff; font-size: 18px; font-weight: bold; text-align: center;">Demo-site</span>';
                     };
                     
                     logoImg.onload = function() {
-                        console.log('Logo image loaded successfully');
                     };
                     
                     logoContainer.appendChild(logoImg);
@@ -661,10 +655,7 @@ const SwalWithLogo = {
                         titleElement.style.marginTop = '100px';
                     }
                     
-                    console.log('Logo added to SweetAlert popup successfully');
-                } else {
-                    console.log('Popup element not found, cannot add logo');
-                }
+
             }
         };
         
@@ -861,10 +852,7 @@ function updateFloatingCartCount(animationType = null) {
       if (mobileCartCount) {
         mobileCartCount.textContent = newCount > 0 ? newCount : '';
         mobileCartCount.style.display = newCount > 0 ? 'inline-block' : 'none';
-        console.log('Updated mobile cart count:', newCount);
-      } else {
-        console.log('Mobile cart count element not found');
-      }
+        
       // Hide or show floating cart icon (but not on checkout page)
       var floatingCartBtn = document.getElementById('floatingCartBtn');
       if (floatingCartBtn) {
@@ -1156,7 +1144,7 @@ function renderFloatingCart() {
             if (resp.success) {
               // Dispatch cart-item-removed event
               if (resp.product_id) {
-                console.log('Dispatching cart-item-removed event for product ID:', resp.product_id);
+
                 window.dispatchEvent(new CustomEvent('cart-item-removed', {
                   detail: { productId: resp.product_id }
                 }));
@@ -1168,9 +1156,7 @@ function renderFloatingCart() {
                 if (typeof updateButtonState === 'function') {
                   updateButtonState(resp.product_id, false);
                 }
-              } else {
-                console.log('No product_id in response:', resp);
-              }
+              
               
               // If cart is now empty, reload floating cart
               if (!content.querySelector('.d-flex.align-items-center')) {
@@ -1261,7 +1247,7 @@ function renderFloatingCart() {
                   });
                 }
                 // Reset to original user input and don't proceed with update
-                console.log('Validation failed, resetting to:', originalUserInput);
+    
                 this.value = originalUserInput;
                 validationFailed = true;
               }
@@ -1448,7 +1434,7 @@ document.addEventListener('DOMContentLoaded', function() {
           if (data.success) {
             // Dispatch cart-removed-all event
             if (data.remove_all) {
-              console.log('Dispatching cart-removed-all event');
+      
               window.dispatchEvent(new CustomEvent('cart-removed-all'));
               
               // Also dispatch cart-updated event to trigger button re-initialization
@@ -1557,7 +1543,7 @@ document.addEventListener('DOMContentLoaded', function() {
           panel.style.right = 'auto';
           panel.style.bottom = 'auto';
         }
-      } catch(e) {console.log('[FloatingCart][DEBUG] Error loading position:', e);}
+      
     }
   }
 
@@ -1568,7 +1554,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Move both elements
   function moveBoth(left, top) {
-    console.log('[FloatingCart][DEBUG] Moving both to:', left, top);
+    
     if (btn) {
       btn.style.left = left + 'px';
       btn.style.top = top + 'px';
@@ -1595,7 +1581,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (btn) btn.style.transition = 'none';
     if (panel) panel.style.transition = 'none';
     document.body.style.userSelect = 'none';
-    console.log('[FloatingCart][DEBUG] MouseDown', {startX, startY});
+    
   }
   function onMouseMove(e) {
     if (!isMouseDown) return;
@@ -1608,7 +1594,7 @@ document.addEventListener('DOMContentLoaded', function() {
       x = Math.max(0, Math.min(window.innerWidth - (btn ? btn.offsetWidth : 60), x));
       y = Math.max(0, Math.min(window.innerHeight - (btn ? btn.offsetHeight : 60), y));
       moveBoth(x, y);
-      console.log('[FloatingCart][DEBUG] Dragging', {x, y});
+      
     }
   }
   function onMouseUp(e) {
@@ -1618,7 +1604,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const left = btn ? parseInt(btn.style.left) : 0;
         const top = btn ? parseInt(btn.style.top) : 0;
         savePosition(left, top);
-        console.log('[FloatingCart][DEBUG] Drag End', {left, top});
+
       }
       isMouseDown = false;
       isDragging = false;
@@ -1651,12 +1637,12 @@ document.addEventListener('DOMContentLoaded', function() {
   // Click handler for open/close (only if not dragging)
   if (btn) {
     btn.addEventListener('click', function(e) {
-      console.log('[FloatingCart][DEBUG] Click', {isDragging, isMouseDown, panel, display: panel ? panel.style.display : undefined});
+      
       if (isDragging) {
         // Prevent click if just dragged
         e.preventDefault();
         e.stopPropagation();
-        console.log('[FloatingCart][DEBUG] Click prevented due to drag');
+        
         return;
       }
       e.stopPropagation();
@@ -1678,7 +1664,7 @@ document.addEventListener('DOMContentLoaded', function() {
       setTimeout(function() {
         const rect = panel.getBoundingClientRect();
         const style = window.getComputedStyle(panel);
-        console.log('[FloatingCart][DEBUG] Panel computed style:', {
+
           display: style.display,
           left: style.left,
           top: style.top,
@@ -1705,114 +1691,58 @@ document.addEventListener('DOMContentLoaded', function() {
 })();
 // Add this simple function to update per-item total
 function updateItemTotal(cartId, quantity, unitPrice) {
-  console.log('[updateItemTotal] Called with cartId:', cartId, 'quantity:', quantity, 'unitPrice:', unitPrice);
+  
   
   const totalDiv = document.querySelector('div[data-cart-total-id="' + cartId + '"]');
-  console.log('[updateItemTotal] Found totalDiv:', totalDiv);
+  
   
   if (totalDiv) {
     const oldText = totalDiv.textContent;
     const newTotal = (quantity * unitPrice).toFixed(2);
     totalDiv.textContent = '₹' + newTotal;
-    console.log('[updateItemTotal] Updated from', oldText, 'to ₹' + newTotal);
-  } else {
-    console.log('[updateItemTotal] ERROR: Could not find totalDiv for cartId:', cartId);
-    console.log('[updateItemTotal] Available elements with data-cart-total-id:');
-    document.querySelectorAll('div[data-cart-total-id]').forEach(el => {
-      console.log('  - Element:', el, 'cartId:', el.getAttribute('data-cart-total-id'));
-    });
-  }
+    
+  
 }
 
 // Add global event listener for real-time updates
 document.body.addEventListener('input', function(e) {
-  console.log('[INPUT EVENT] Target:', e.target, 'classList:', e.target.classList);
+  
   
   if (e.target.classList.contains('cart-qty-input')) {
-    console.log('[INPUT EVENT] Found cart-qty-input');
-    
     const cartId = e.target.getAttribute('data-cart-id');
     const quantity = parseInt(e.target.value) || 1;
-    console.log('[INPUT EVENT] cartId:', cartId, 'quantity:', quantity);
     
     const row = e.target.closest('.d-flex.align-items-center');
-    console.log('[INPUT EVENT] Found row:', row);
     
     const priceSpan = row.querySelector('.ms-1');
-    console.log('[INPUT EVENT] Found priceSpan:', priceSpan, 'text:', priceSpan ? priceSpan.textContent : 'null');
     
     const unitPrice = parseFloat(priceSpan.textContent.match(/₹(\d+\.?\d*)/)?.[1] || 0);
-    console.log('[INPUT EVENT] Extracted unitPrice:', unitPrice);
     
     if (unitPrice > 0) {
-      console.log('[INPUT EVENT] Calling updateItemTotal...');
       updateItemTotal(cartId, quantity, unitPrice);
-    } else {
-      console.log('[INPUT EVENT] ERROR: unitPrice is 0 or invalid');
     }
-  } else {
-    console.log('[INPUT EVENT] Target does not have cart-qty-input class');
   }
 });
 
 // Add global event listener for change events
 document.body.addEventListener('change', function(e) {
-  console.log('[CHANGE EVENT] Target:', e.target, 'classList:', e.target.classList);
-  
   if (e.target.classList.contains('cart-qty-input')) {
-    console.log('[CHANGE EVENT] Found cart-qty-input');
-    
     const cartId = e.target.getAttribute('data-cart-id');
     const quantity = parseInt(e.target.value) || 1;
-    console.log('[CHANGE EVENT] cartId:', cartId, 'quantity:', quantity);
     
     const row = e.target.closest('.d-flex.align-items-center');
-    console.log('[CHANGE EVENT] Found row:', row);
     
     const priceSpan = row.querySelector('.ms-1');
-    console.log('[CHANGE EVENT] Found priceSpan:', priceSpan, 'text:', priceSpan ? priceSpan.textContent : 'null');
     
     const unitPrice = parseFloat(priceSpan.textContent.match(/₹(\d+\.?\d*)/)?.[1] || 0);
-    console.log('[CHANGE EVENT] Extracted unitPrice:', unitPrice);
     
     if (unitPrice > 0) {
-      console.log('[CHANGE EVENT] Calling updateItemTotal...');
       updateItemTotal(cartId, quantity, unitPrice);
-    } else {
-      console.log('[CHANGE EVENT] ERROR: unitPrice is 0 or invalid');
     }
-  } else {
-    console.log('[CHANGE EVENT] Target does not have cart-qty-input class');
   }
 });
 
-// Add debug function to check all cart elements
-function debugCartElements() {
-  console.log('[DEBUG] Checking all cart elements...');
-  
-  const inputs = document.querySelectorAll('.cart-qty-input');
-  console.log('[DEBUG] Found', inputs.length, 'cart-qty-input elements');
-  
-  inputs.forEach((input, index) => {
-    const cartId = input.getAttribute('data-cart-id');
-    const row = input.closest('.d-flex.align-items-center');
-    const totalDiv = row ? row.querySelector('div[data-cart-total-id]') : null;
-    
-    console.log('[DEBUG] Input', index + 1, ':', {
-      cartId: cartId,
-      value: input.value,
-      row: row,
-      totalDiv: totalDiv,
-      totalText: totalDiv ? totalDiv.textContent : 'null'
-    });
-  });
-}
 
-// Call debug function when page loads
-document.addEventListener('DOMContentLoaded', function() {
-  console.log('[DEBUG] Page loaded, checking cart elements...');
-  setTimeout(debugCartElements, 2000); // Wait 2 seconds for cart to load
-});
 
 // Add smooth update function for immediate feedback
 function smoothUpdatePerItemTotal(cartId, newTotal) {
@@ -1837,7 +1767,7 @@ function smoothUpdatePerItemTotal(cartId, newTotal) {
       totalDiv.style.padding = '';
     }, 200);
     
-    console.log('[smoothUpdatePerItemTotal] Updated cartId:', cartId, 'from', oldTotal, 'to', newTotalValue);
+
   }
 }
 </script>

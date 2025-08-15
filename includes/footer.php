@@ -1,5 +1,8 @@
 <!-- Footer -->
 <footer class="desktop-footer">
+    <div class="footer-background">
+        <div class="footer-overlay"></div>
+    </div>
     <div class="footer-container">
         <div class="footer-column">
             <h3>Quick Links</h3>

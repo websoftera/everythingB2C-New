@@ -168,6 +168,7 @@ $categoryTree = buildCategoryTree($categories);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="assets/css/admin.css" rel="stylesheet">
+    <link rel="stylesheet" href="./asset/style/style.css">
 </head>
 <body>
     <div class="everythingb2c-admin-container">

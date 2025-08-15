@@ -12,7 +12,7 @@ header('Content-Type: application/json');
 $input = json_decode(file_get_contents('php://input'), true);
 
 if (!$input || !isset($input['cart_id']) || !isset($input['quantity'])) {
-    error_log('Invalid input: ' . print_r($input, true));
+
     session_write_close();
     echo json_encode(['success' => false, 'message' => 'Invalid input']);
     exit;
@@ -63,26 +63,26 @@ if (isset($_SESSION['user_id'])) {
         session_write_close();
         echo json_encode(['success' => true, 'message' => 'Cart updated']);
     } else {
-        error_log('DB update failed for cart_id ' . $cartId . ', user_id ' . $_SESSION['user_id']);
+
         session_write_close();
         echo json_encode(['success' => false, 'message' => 'Failed to update cart']);
     }
 } else {
     // Guest: update session cart
     if (!isset($_SESSION['cart']) || !is_array($_SESSION['cart'])) {
-        error_log('Session cart not found or not array: ' . print_r($_SESSION['cart'] ?? null, true));
+    
         session_write_close();
         echo json_encode(['success' => false, 'message' => 'Cart not found']);
         exit;
     }
-    error_log('Session cart before update: ' . print_r($_SESSION['cart'], true));
+
     if (isset($_SESSION['cart'][$cartId])) {
         $_SESSION['cart'][$cartId] = $quantity;
-        error_log('Session cart after update: ' . print_r($_SESSION['cart'], true));
+    
         session_write_close();
         echo json_encode(['success' => true, 'message' => 'Cart updated']);
     } else {
-        error_log('Cart item not found for id: ' . $cartId);
+    
         session_write_close();
         echo json_encode(['success' => false, 'message' => 'Cart item not found']);
     }

@@ -27,8 +27,7 @@ if (isLoggedIn()) {
     }
 }
 
-// Debug: Log wishlist status
-error_log("Wishlist debug - User logged in: " . (isLoggedIn() ? 'Yes' : 'No') . ", Wishlist items count: " . count($wishlist_ids) . ", Wishlist IDs: " . implode(',', $wishlist_ids));
+
 
 // Filter to only main categories (parent_id is NULL)
 $main_categories = array_filter($categories, function($cat) { return empty($cat['parent_id']); });
@@ -36,7 +35,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 
 <!-- Hero Section -->
 <section class="hero-slider-section">
-    <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="1500">
+    <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4000">
         <div class="carousel-inner">
             <div class="carousel-item active hero-slide hero-slide-1">
                 <div class="carousel-caption d-block text-start">
@@ -114,7 +113,9 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
             <a href="categories.php" class="view-all-link">View All</a>
         </div>
         <div class="categories-slider-wrapper">
-                         <button class="category-nav-btn prev-btn" aria-label="Scroll Left">&#8249;</button>
+            <button class="category-nav-btn prev-btn" aria-label="Scroll Left">
+                <img src="asset/icons/blue_arrow.png" alt="Previous" style="width: 20px; height: 10px;">
+            </button>
             <div class="categories-container" id="slider">
             <?php foreach ($main_categories as $category): ?>
                     <div class="category-item">
@@ -133,7 +134,9 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                 </div>
             <?php endforeach; ?>
         </div>
-                         <button class="category-nav-btn next-btn" aria-label="Scroll Right">&#8250;</button>
+            <button class="category-nav-btn next-btn" aria-label="Scroll Right">
+                <img src="asset/icons/blue_arrow.png" alt="Next" style="transform: rotate(180deg); width: 20px; height: 10px;">
+            </button>
         </div>
     </div>
 </section>
@@ -151,8 +154,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
         </button>
             <div class="discounted-products-container" id="discounted-slider">
         <?php 
-        // Debug: Show how many discounted products we have
-        echo '<!-- DEBUG: Found ' . count($discountedProducts) . ' discounted products -->';
+
         
         foreach ($discountedProducts as $product): 
             $inWishlist = in_array($product['id'], $wishlist_ids);
@@ -206,7 +208,10 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                             </div>
                     </div>
                         <div class="cart-actions d-flex align-items-center gap-2">
-                            <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">ADD TO CART</button>
+                            <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">
+                                <i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>
+                                ADD TO CART
+                            </button>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -234,8 +239,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
         </button>
             <div class="featured-products-container" id="featured-slider">
         <?php 
-        // Debug: Show how many featured products we have
-        echo '<!-- DEBUG: Found ' . count($featuredProducts) . ' featured products -->';
+
         
         foreach ($featuredProducts as $product): 
             $inWishlist = in_array($product['id'], $wishlist_ids);
@@ -281,13 +285,18 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                     <?php if ($isOutOfStock): ?>
                         <a href="product.php?slug=<?php echo $product['slug']; ?>" class="read-more">READ MORE</a>
                     <?php else: ?>
-                        <div class="cart-actions d-flex align-items-center gap-2">
-                            <div class="quantity-control d-inline-flex align-items-center">
+                      <div class="cart-actions d-flex align-items-center gap-2">
+                              <div class="quantity-control d-inline-flex align-items-center">
                                 <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
                                 <input type="number" class="quantity-input" value="1" min="1" max="99" data-product-id="<?php echo $product['id']; ?>">
                                 <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
                             </div>
-                            <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">ADD TO CART</button>
+                      </div>
+                        <div class="cart-actions d-flex align-items-center gap-2">
+                            <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">
+                                <i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>
+                                ADD TO CART
+                            </button>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -303,32 +312,62 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 </section>
 
 <section class="service-section">
-  <div class="features">
-    
-    <div class="feature green">
-      <i class="fas fa-truck"></i>
-      <div class="divider"></div>
-      <span>Free Shipping</span>
-    </div>
+  <div class="container">
+    <div class="service-cards">
+      
+      <div class="service-card free-shipping">
+        <div class="service-inner">
+          <div class="service-icon">
+            <img src="asset/icons/free_shipping.png" alt="Free Shipping">
+          </div>
+          <div class="service-divider"></div>
+          <div class="service-text">
+            <div class="service-title">FREE</div>
+            <div class="service-subtitle">Shipping</div>
+          </div>
+        </div>
+      </div>
 
-    <div class="feature yellow">
-      <i class="fas fa-indian-rupee-sign"></i>
-      <div class="divider"></div>
-      <span>Lower Price</span>
-    </div>
+      <div class="service-card lower-price">
+        <div class="service-inner">
+          <div class="service-icon">
+            <img src="asset/icons/lower_price_icon.png" alt="Lower Price">
+          </div>
+          <div class="service-divider"></div>
+          <div class="service-text">
+            <div class="service-title">LOWER</div>
+            <div class="service-subtitle">Price</div>
+          </div>
+        </div>
+      </div>
 
-    <div class="feature blue">
-      <i class="fas fa-mobile-alt"></i>
-      <div class="divider"></div>
-      <span>COD Service</span>
-    </div>
+      <div class="service-card cod-service">
+        <div class="service-inner">
+          <div class="service-icon">
+            <img src="asset/icons/COD.png" alt="COD Service">
+          </div>
+          <div class="service-divider"></div>
+          <div class="service-text">
+            <div class="service-title">COD</div>
+            <div class="service-subtitle">Services</div>
+          </div>
+        </div>
+      </div>
 
-    <div class="feature gray">
-      <i class="fas fa-newspaper"></i>
-      <div class="divider"></div>
-      <span>Return Policy</span>
-    </div>
+      <div class="service-card return-policy">
+        <div class="service-inner">
+          <div class="service-icon">
+            <img src="asset/icons/return_policy.png" alt="Return Policy">
+          </div>
+          <div class="service-divider"></div>
+          <div class="service-text">
+            <div class="service-title">RETURN</div>
+            <div class="service-subtitle">Policy</div>
+          </div>
+        </div>
+      </div>
 
+    </div>
   </div>
 </section>
 
@@ -339,6 +378,253 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 <link rel="stylesheet" href="./asset/style/style.css">
 
 <style>
+/* Service Section - Redesigned */
+.service-section {
+  padding: 40px 0;
+  background: #f8f9fa;
+}
+
+.service-cards {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.service-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 8px;
+  width: 300px;
+  height: 100px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.service-inner {
+  display: flex;
+  align-items: center;
+  padding: 20px 25px;
+  border-radius: 6px;
+  width: 100%;
+  height: 100%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.service-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.service-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 90px;
+  height: 90px;
+  margin-right: 20px;
+}
+
+.service-icon img {
+  width: 60px;
+  height: 60px;
+  filter: brightness(0) invert(1);
+  object-fit: contain;
+}
+
+/* Larger icons for Free Shipping and Return Policy */
+.service-card.free-shipping .service-icon img,
+.service-card.return-policy .service-icon img {
+  width: 70px;
+  height: 70px;
+}
+
+.service-divider {
+  width: 1px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.4);
+  margin: 0 20px;
+}
+
+.service-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.service-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.1;
+  margin-bottom: 4px;
+  letter-spacing: 0.5px;
+}
+
+.service-subtitle {
+  font-size: 16px;
+  font-weight: 400;
+  color: #ffffff;
+  line-height: 1.1;
+  letter-spacing: 0.3px;
+}
+
+/* Service Card Colors */
+.service-card.free-shipping {
+  background: #F7434C;
+}
+
+.service-card.lower-price {
+  background: #FBC51B;
+}
+
+.service-card.cod-service {
+  background: #9FBE1B;
+}
+
+.service-card.return-policy {
+  background: #3079F1;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .service-cards {
+    gap: 15px;
+  }
+  
+  .service-card {
+    width: 280px;
+    height: 90px;
+    padding: 6px;
+  }
+  
+  .service-inner {
+    padding: 18px 22px;
+  }
+  
+  .service-icon {
+    width: 80px;
+    height: 80px;
+    margin-right: 18px;
+  }
+  
+  .service-icon img {
+    width: 55px;
+    height: 55px;
+  }
+  
+  /* Larger icons for Free Shipping and Return Policy */
+  .service-card.free-shipping .service-icon img,
+  .service-card.return-policy .service-icon img {
+    width: 65px;
+    height: 65px;
+  }
+  
+  .service-divider {
+    height: 50px;
+    margin: 0 18px;
+  }
+}
+
+@media (max-width: 768px) {
+  .service-section {
+    padding: 30px 0;
+  }
+  
+  .service-cards {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .service-card {
+    width: 100%;
+    max-width: 300px;
+    height: 80px;
+    padding: 6px;
+  }
+  
+  .service-inner {
+    padding: 16px 20px;
+  }
+  
+  .service-icon {
+    width: 70px;
+    height: 70px;
+    margin-right: 15px;
+  }
+  
+  .service-icon img {
+    width: 50px;
+    height: 50px;
+  }
+  
+  /* Larger icons for Free Shipping and Return Policy */
+  .service-card.free-shipping .service-icon img,
+  .service-card.return-policy .service-icon img {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .service-divider {
+    height: 45px;
+    margin: 0 15px;
+  }
+  
+  .service-title {
+    font-size: 18px;
+  }
+  
+  .service-subtitle {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .service-card {
+    height: 70px;
+    padding: 5px;
+  }
+  
+  .service-inner {
+    padding: 14px 18px;
+  }
+  
+  .service-icon {
+    width: 60px;
+    height: 60px;
+    margin-right: 12px;
+  }
+  
+  .service-icon img {
+    width: 45px;
+    height: 45px;
+  }
+  
+  /* Larger icons for Free Shipping and Return Policy */
+  .service-card.free-shipping .service-icon img,
+  .service-card.return-policy .service-icon img {
+    width: 55px;
+    height: 55px;
+  }
+  
+  .service-divider {
+    height: 40px;
+    margin: 0 12px;
+  }
+  
+  .service-title {
+    font-size: 16px;
+  }
+  
+  .service-subtitle {
+    font-size: 13px;
+  }
+}
+
 /* Popular Categories Section - Modern Design */
 .popular-categories-section {
   padding: 20px;
@@ -458,10 +744,9 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 
 .category-nav-btn {
   background: #ffffff;
-  border: 1px solid #e0e0e0;
-  border-radius: 50%;
-  color: #16BAE4;
-  font-size: 24px;
+  border: none;
+  color: var(--light-blue);
+  font-size: 14px;
   font-weight: bold;
   cursor: pointer;
   width: 30px;
@@ -469,11 +754,11 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 50;
+  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
   opacity: 1;
   pointer-events: auto;
@@ -484,9 +769,9 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 
 .category-nav-btn:hover {
   background: #ffffff;
-  color: #16BAE4;
-  border-color: #16BAE4;
-  box-shadow: 0 4px 12px rgba(22, 186, 228, 0.3);
+  color: var(--dark-blue);
+  border-color: var(--light-blue);
+  box-shadow: 0 4px 12px rgba(206, 229, 239, 0.3);
   transform: translateY(-50%) scale(1.05);
 }
 
@@ -495,11 +780,13 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 }
 
 .category-nav-btn.prev-btn {
-  left: -24px;
+  left: -20px;
+  z-index: 10;
 }
 
 .category-nav-btn.next-btn {
-  right: -24px;
+  right: -20px;
+  z-index: 10;
 }
 
 /* Ensure arrows are always visible */
@@ -516,9 +803,29 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 
 /* Force arrow visibility */
 .category-nav-btn {
-  color: #16BAE4 !important;
+  color: var(--light-blue) !important;
   background: #ffffff !important;
   border: 1px solid #e0e0e0 !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  position: absolute !important;
+  z-index: 100 !important;
+  width: 22px !important;
+  height: 22px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+}
+
+.category-nav-btn.prev-btn {
+  left: -20px !important;
+}
+
+.category-nav-btn.next-btn {
+  right: -20px !important;
 }
 
 /* Discounted Products Section - Modern Design */
@@ -1405,13 +1712,12 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 
 .featured-nav-btn {
   background: #ffffff !important;
-  border-radius: 50% !important;
   color: var(--light-green) !important; /* Light green color as per image */
   font-size: 24px !important;
   font-weight: bold !important;
   cursor: pointer !important;
-  width: 50px !important;
-  height: 50px !important;
+  width: 22px !important;
+  height: 22px !important;
   position: absolute !important;
   top: 50% !important;
   transform: translateY(-50%) !important;
@@ -1615,11 +1921,109 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   z-index: -1 !important;
 }
 
-/* Hero Banner Carousel - Responsive Fix */
+/* Hero Banner Carousel - Enhanced Smooth Transitions */
 .hero-slider-section {
   width: 100% !important;
   overflow: hidden !important;
   position: relative !important;
+}
+
+/* Enhanced carousel transitions */
+#heroCarousel {
+  width: 100% !important;
+  overflow: hidden !important;
+}
+
+#heroCarousel .carousel-inner {
+  width: 100% !important;
+  overflow: hidden !important;
+}
+
+#heroCarousel .carousel-item {
+  width: 100% !important;
+  position: relative !important;
+  transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out !important;
+  opacity: 0 !important;
+  transform: scale(1.05) !important;
+}
+
+#heroCarousel .carousel-item.active {
+  opacity: 1 !important;
+  transform: scale(1) !important;
+  z-index: 2 !important;
+}
+
+#heroCarousel .carousel-item:not(.active) {
+  z-index: 1 !important;
+}
+
+/* Smooth fade transition for carousel items */
+.carousel-item {
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.carousel-item.active {
+  opacity: 1 !important;
+  transform: scale(1) !important;
+}
+
+.carousel-item:not(.active) {
+  opacity: 0 !important;
+  transform: scale(1.05) !important;
+}
+
+/* Enhanced carousel controls */
+.carousel-control-prev,
+.carousel-control-next {
+  background: rgba(0, 0, 0, 0.3) !important;
+  border-radius: 50% !important;
+  width: 50px !important;
+  height: 50px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  transition: all 0.3s ease !important;
+  z-index: 10 !important;
+}
+
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+  background: rgba(0, 0, 0, 0.6) !important;
+  transform: translateY(-50%) scale(1.1) !important;
+}
+
+.carousel-control-prev {
+  left: 20px !important;
+}
+
+.carousel-control-next {
+  right: 20px !important;
+}
+
+/* Enhanced carousel indicators */
+.carousel-indicators {
+  bottom: 20px !important;
+  z-index: 10 !important;
+}
+
+.carousel-indicators button {
+  width: 12px !important;
+  height: 12px !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.5) !important;
+  border: 2px solid rgba(255, 255, 255, 0.3) !important;
+  margin: 0 4px !important;
+  transition: all 0.3s ease !important;
+}
+
+.carousel-indicators button.active {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(255, 255, 255, 0.9) !important;
+  transform: scale(1.2) !important;
+}
+
+.carousel-indicators button:hover {
+  background: rgba(255, 255, 255, 0.7) !important;
+  transform: scale(1.1) !important;
 }
 
 /* Additional Responsive Container Fixes */
@@ -1687,7 +2091,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   object-fit: cover !important;
 }
 
-/* Mobile-specific carousel fixes */
+/* Mobile-specific carousel fixes with smooth transitions */
 @media (max-width: 767.98px) {
   .hero-slider-section {
     overflow: hidden !important;
@@ -1703,22 +2107,51 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   
   #heroCarousel .carousel-item {
     width: 100% !important;
-    display: none !important;
+    position: relative !important;
+    transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out !important;
   }
   
   #heroCarousel .carousel-item.active {
-    display: block !important;
+    opacity: 1 !important;
+    transform: scale(1) !important;
+    z-index: 2 !important;
   }
   
-  /* Ensure only one slide is visible at a time */
   #heroCarousel .carousel-item:not(.active) {
-    display: none !important;
-    position: absolute !important;
-    left: -100% !important;
+    opacity: 0 !important;
+    transform: scale(1.02) !important;
+    z-index: 1 !important;
+  }
+  
+  /* Enhanced mobile carousel controls */
+  .carousel-control-prev,
+  .carousel-control-next {
+    width: 40px !important;
+    height: 40px !important;
+    background: rgba(0, 0, 0, 0.4) !important;
+  }
+  
+  .carousel-control-prev {
+    left: 10px !important;
+  }
+  
+  .carousel-control-next {
+    right: 10px !important;
+  }
+  
+  /* Enhanced mobile carousel indicators */
+  .carousel-indicators {
+    bottom: 15px !important;
+  }
+  
+  .carousel-indicators button {
+    width: 10px !important;
+    height: 10px !important;
+    margin: 0 3px !important;
   }
 }
 
-/* Tablet and desktop carousel fixes */
+/* Tablet and desktop carousel fixes with smooth transitions */
 @media (min-width: 768px) {
   .hero-slider-section {
     overflow: hidden !important;
@@ -1730,6 +2163,25 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   
   #heroCarousel .carousel-inner {
     overflow: hidden !important;
+  }
+  
+  /* Enhanced desktop carousel transitions */
+  #heroCarousel .carousel-item {
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+  
+  /* Enhanced desktop carousel controls */
+  .carousel-control-prev,
+  .carousel-control-next {
+    width: 60px !important;
+    height: 60px !important;
+    background: rgba(0, 0, 0, 0.2) !important;
+  }
+  
+  .carousel-control-prev:hover,
+  .carousel-control-next:hover {
+    background: rgba(0, 0, 0, 0.5) !important;
+    transform: translateY(-50%) scale(1.15) !important;
   }
 }
 
@@ -1931,6 +2383,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   z-index: 10 !important;
   display: flex !important;
   gap: 8px !important;
+  margin-left: 0% !important;
 }
 
 .carousel-indicators button {
@@ -1974,101 +2427,125 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 </style>
 
 <script>
-console.log('JavaScript loading...');
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM Content Loaded');
     // Hero Carousel functionality
     const heroCarousel = document.getElementById('heroCarousel');
     if (heroCarousel) {
-        // Initialize Bootstrap carousel if not already initialized
+        // Initialize Bootstrap carousel with smooth transitions
         if (typeof bootstrap !== 'undefined' && bootstrap.Carousel) {
             const carousel = new bootstrap.Carousel(heroCarousel, {
-                interval: 3000,
+                interval: 4000,
                 wrap: true,
                 keyboard: false,
                 pause: 'hover',
-                touch: true
+                touch: true,
+                ride: 'carousel'
             });
         }
         
-        // Fallback carousel functionality for mobile
+        // Enhanced fallback carousel functionality with smooth transitions
         const carouselItems = heroCarousel.querySelectorAll('.carousel-item');
         let currentIndex = 0;
+        let isTransitioning = false;
         
         function showSlide(index) {
-            carouselItems.forEach((item, i) => {
-                item.classList.remove('active');
-                if (i === index) {
-                    item.classList.add('active');
-                }
-            });
+            if (isTransitioning) return;
+            isTransitioning = true;
+            
+            const currentItem = carouselItems[currentIndex];
+            const nextItem = carouselItems[index];
+            
+            // Add transition classes
+            currentItem.style.transition = 'opacity 0.8s ease-in-out, transform 0.8s ease-in-out';
+            nextItem.style.transition = 'opacity 0.8s ease-in-out, transform 0.8s ease-in-out';
+            
+            // Fade out current slide
+            currentItem.style.opacity = '0';
+            currentItem.style.transform = 'scale(1.05)';
+            currentItem.classList.remove('active');
+            
+            // Fade in next slide
+            nextItem.style.opacity = '1';
+            nextItem.style.transform = 'scale(1)';
+            nextItem.classList.add('active');
+            
+            currentIndex = index;
+            
+            // Reset transition state after animation
+            setTimeout(() => {
+                isTransitioning = false;
+                currentItem.style.transition = '';
+                nextItem.style.transition = '';
+            }, 800);
         }
         
         function nextSlide() {
-            currentIndex = (currentIndex + 1) % carouselItems.length;
-            showSlide(currentIndex);
+            const nextIndex = (currentIndex + 1) % carouselItems.length;
+            showSlide(nextIndex);
         }
         
-        // Auto-advance slides
-        setInterval(nextSlide, 3000);
+        function prevSlide() {
+            const prevIndex = (currentIndex - 1 + carouselItems.length) % carouselItems.length;
+            showSlide(prevIndex);
+        }
+        
+        // Auto-advance slides with smooth timing
+        setInterval(nextSlide, 4000);
+        
+        // Add manual navigation
+        const prevBtn = heroCarousel.querySelector('.carousel-control-prev');
+        const nextBtn = heroCarousel.querySelector('.carousel-control-next');
+        
+        if (prevBtn) {
+            prevBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                prevSlide();
+            });
+        }
+        
+        if (nextBtn) {
+            nextBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                nextSlide();
+            });
+        }
     }
     
     // Category slider functionality - Simplified
-    console.log('🔍 Looking for category slider elements...');
     const categoryContainer = document.getElementById('slider');
     const prevBtn = document.querySelector('.category-nav-btn.prev-btn');
     const nextBtn = document.querySelector('.category-nav-btn.next-btn');
     
-    console.log('Category elements:', {
-        container: categoryContainer ? 'FOUND' : 'NOT FOUND',
-        prevBtn: prevBtn ? 'FOUND' : 'NOT FOUND',
-        nextBtn: nextBtn ? 'FOUND' : 'NOT FOUND'
-    });
-    
     if (categoryContainer && prevBtn && nextBtn) {
-        console.log('✅ All category slider elements found - Setting up slider...');
-        
         // Simple scroll function
         const scrollAmount = 200; // Fixed scroll amount
         
         prevBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            console.log('⬅️ CATEGORY PREV button clicked');
             categoryContainer.scrollBy({
                 left: -scrollAmount,
                 behavior: 'smooth'
             });
-            console.log('Category scrolled left by', scrollAmount, 'px');
         });
         
         nextBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            console.log('➡️ CATEGORY NEXT button clicked');
             categoryContainer.scrollBy({
                 left: scrollAmount,
                 behavior: 'smooth'
             });
-            console.log('Category scrolled right by', scrollAmount, 'px');
         });
-        
-        console.log('✅ Category slider event listeners added');
-        
-    } else {
-        console.error('❌ Category slider setup failed - missing elements');
-        if (!categoryContainer) console.error('Missing: slider container');
-        if (!prevBtn) console.error('Missing: category prev button');
-        if (!nextBtn) console.error('Missing: category next button');
     }
     
     // Discounted Products slider functionality - SIMPLE & RELIABLE VERSION
-    console.log('🔍 Setting up discounted products slider...');
+    
     
     const discountedContainer = document.getElementById('discounted-slider');
     const discountedPrevBtn = document.querySelector('.discounted-nav-btn.prev-btn');
     const discountedNextBtn = document.querySelector('.discounted-nav-btn.next-btn');
     
     if (discountedContainer && discountedPrevBtn && discountedNextBtn) {
-        console.log('✅ Discount slider elements found - initializing...');
+
         
         // Dynamic scroll amount based on screen size
         function getDiscountedScrollAmount() {
@@ -2088,7 +2565,6 @@ document.addEventListener('DOMContentLoaded', function() {
         discountedPrevBtn.addEventListener('click', function(e) {
             e.preventDefault();
             const scrollAmount = getDiscountedScrollAmount();
-            console.log('⬅️ Scrolling left by', scrollAmount, 'px');
             discountedContainer.scrollLeft -= scrollAmount;
         });
         
@@ -2096,38 +2572,14 @@ document.addEventListener('DOMContentLoaded', function() {
         discountedNextBtn.addEventListener('click', function(e) {
             e.preventDefault();
             const scrollAmount = getDiscountedScrollAmount();
-            console.log('➡️ Scrolling right by', scrollAmount, 'px');
             discountedContainer.scrollLeft += scrollAmount;
         });
-        
-        console.log('✅ Discount slider setup complete');
-        
-        // Simple diagnostic
-        setTimeout(() => {
-            console.log('📊 Slider info:', {
-                containerWidth: discountedContainer.clientWidth,
-                contentWidth: discountedContainer.scrollWidth,
-                canScroll: discountedContainer.scrollWidth > discountedContainer.clientWidth,
-                cardCount: discountedContainer.querySelectorAll('.product-card').length
-            });
-        }, 1000);
-        
-    } else {
-        console.error('❌ Discount slider elements not found');
     }
     
     // Featured Products slider functionality - SAME AS DISCOUNT PRODUCTS
-    console.log('🔍 Setting up featured products slider...');
-    
     const featuredContainer = document.getElementById('featured-slider');
     const featuredPrevBtn = document.querySelector('.featured-nav-btn.prev-btn');
     const featuredNextBtn = document.querySelector('.featured-nav-btn.next-btn');
-    
-    console.log('Featured elements check:', {
-        container: featuredContainer ? 'FOUND' : 'NOT FOUND',
-        prevBtn: featuredPrevBtn ? 'FOUND' : 'NOT FOUND',
-        nextBtn: featuredNextBtn ? 'FOUND' : 'NOT FOUND'
-    });
     
     // Force make arrows visible
     if (featuredPrevBtn) {
@@ -2135,7 +2587,6 @@ document.addEventListener('DOMContentLoaded', function() {
         featuredPrevBtn.style.visibility = 'visible';
         featuredPrevBtn.style.opacity = '1';
         featuredPrevBtn.style.zIndex = '9999';
-        console.log('🔧 Forced prev arrow visibility');
     }
     
     if (featuredNextBtn) {
@@ -2143,11 +2594,9 @@ document.addEventListener('DOMContentLoaded', function() {
         featuredNextBtn.style.visibility = 'visible';
         featuredNextBtn.style.opacity = '1';
         featuredNextBtn.style.zIndex = '9999';
-        console.log('🔧 Forced next arrow visibility');
     }
     
     if (featuredContainer && featuredPrevBtn && featuredNextBtn) {
-        console.log('✅ Featured slider elements found - initializing...');
         
         // Dynamic scroll amount based on screen size
         function getFeaturedScrollAmount() {
@@ -2167,7 +2616,6 @@ document.addEventListener('DOMContentLoaded', function() {
         featuredPrevBtn.addEventListener('click', function(e) {
             e.preventDefault();
             const scrollAmount = getFeaturedScrollAmount();
-            console.log('⬅️ Featured scrolling left by', scrollAmount, 'px');
             featuredContainer.scrollLeft -= scrollAmount;
         });
         
@@ -2175,56 +2623,11 @@ document.addEventListener('DOMContentLoaded', function() {
         featuredNextBtn.addEventListener('click', function(e) {
             e.preventDefault();
             const scrollAmount = getFeaturedScrollAmount();
-            console.log('➡️ Featured scrolling right by', scrollAmount, 'px');
             featuredContainer.scrollLeft += scrollAmount;
         });
-        
-        console.log('✅ Featured slider setup complete');
-        
-        // Simple diagnostic
-        setTimeout(() => {
-            console.log('📊 Featured slider info:', {
-                containerWidth: featuredContainer.clientWidth,
-                contentWidth: featuredContainer.scrollWidth,
-                canScroll: featuredContainer.scrollWidth > featuredContainer.clientWidth,
-                cardCount: featuredContainer.querySelectorAll('.product-card').length
-            });
-        }, 1000);
-        
-    } else {
-        console.error('❌ Featured slider elements not found');
     }
     
-    // Handle window resize for responsive sliders
-    window.addEventListener('resize', function() {
-        console.log('🔄 Window resized - updating slider diagnostics...');
-        
-        // Update discounted slider info
-        if (discountedContainer) {
-            setTimeout(() => {
-                console.log('📊 Updated Discount slider info:', {
-                    containerWidth: discountedContainer.clientWidth,
-                    contentWidth: discountedContainer.scrollWidth,
-                    canScroll: discountedContainer.scrollWidth > discountedContainer.clientWidth,
-                    cardCount: discountedContainer.querySelectorAll('.product-card').length,
-                    screenWidth: window.innerWidth
-                });
-            }, 100);
-        }
-        
-        // Update featured slider info
-        if (featuredContainer) {
-            setTimeout(() => {
-                console.log('📊 Updated Featured slider info:', {
-                    containerWidth: featuredContainer.clientWidth,
-                    contentWidth: featuredContainer.scrollWidth,
-                    canScroll: featuredContainer.scrollWidth > featuredContainer.clientWidth,
-                    cardCount: featuredContainer.querySelectorAll('.product-card').length,
-                    screenWidth: window.innerWidth
-                });
-            }, 100);
-        }
-    });
+
     
     // Product carousel functionality
     const productCarousels = document.querySelectorAll('.product-carousel-wrapper');
@@ -2565,7 +2968,7 @@ function closeDeliveryPopup() {
             // Fallback to form submission if AJAX fails
             markPopupAsShownFallback();
         } else {
-            console.log('Popup marked as shown successfully');
+
         }
     })
     .catch(error => {
@@ -2720,16 +3123,13 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Force pink color on page load for wishlist items
     function applyWishlistStyling() {
-        console.log('applyWishlistStyling function called');
         
         // Find all wishlist labels with wishlist-active class
         const activeWishlistLabels = document.querySelectorAll('.wishlist-label.wishlist-active');
-        console.log('Found active wishlist labels:', activeWishlistLabels.length);
         
         activeWishlistLabels.forEach(function(label) {
             const heartIcon = label.querySelector('.heart-icon');
             if (heartIcon) {
-                console.log('Applying pink color to heart icon');
                 heartIcon.style.color = '#DE0085';
                 heartIcon.style.webkitTextStroke = '2px #DE0085';
                 heartIcon.style.textStroke = '2px #DE0085';
@@ -2739,14 +3139,12 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Also check for checked checkboxes
         const checkedCheckboxes = document.querySelectorAll('.heart-checkbox:checked');
-        console.log('Found checked checkboxes:', checkedCheckboxes.length);
         
         checkedCheckboxes.forEach(function(checkbox) {
             const label = checkbox.nextElementSibling;
             if (label && label.classList.contains('wishlist-label')) {
                 const heartIcon = label.querySelector('.heart-icon');
                 if (heartIcon) {
-                    console.log('Applying pink color to heart icon from checkbox');
                     heartIcon.style.color = '#DE0085';
                     heartIcon.style.webkitTextStroke = '2px #DE0085';
                     heartIcon.style.textStroke = '2px #DE0085';
@@ -2757,16 +3155,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Apply styling immediately
-    console.log('Applying wishlist styling...');
     applyWishlistStyling();
     
     // Also apply styling after a short delay to ensure all elements are loaded
     setTimeout(function() {
-        console.log('Applying wishlist styling after 100ms...');
         applyWishlistStyling();
     }, 100);
     setTimeout(function() {
-        console.log('Applying wishlist styling after 500ms...');
         applyWishlistStyling();
     }, 500);
 });
@@ -2776,19 +3171,15 @@ document.addEventListener('DOMContentLoaded', function() {
 <!-- Force wishlist styling on page load - always runs -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Wishlist styling script loaded');
     
     function forceWishlistStyling() {
-        console.log('forceWishlistStyling function called');
         
         // Find all wishlist labels with wishlist-active class
         const activeWishlistLabels = document.querySelectorAll('.wishlist-label.wishlist-active');
-        console.log('Found active wishlist labels:', activeWishlistLabels.length);
         
         activeWishlistLabels.forEach(function(label) {
             const heartIcon = label.querySelector('.heart-icon');
             if (heartIcon) {
-                console.log('Applying pink color to heart icon');
                 heartIcon.style.color = '#DE0085';
                 heartIcon.style.webkitTextStroke = '2px #DE0085';
                 heartIcon.style.textStroke = '2px #DE0085';
@@ -2798,14 +3189,12 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Also check for checked checkboxes
         const checkedCheckboxes = document.querySelectorAll('.heart-checkbox:checked');
-        console.log('Found checked checkboxes:', checkedCheckboxes.length);
         
         checkedCheckboxes.forEach(function(checkbox) {
             const label = checkbox.nextElementSibling;
             if (label && label.classList.contains('wishlist-label')) {
                 const heartIcon = label.querySelector('.heart-icon');
                 if (heartIcon) {
-                    console.log('Applying pink color to heart icon from checkbox');
                     heartIcon.style.color = '#DE0085';
                     heartIcon.style.webkitTextStroke = '2px #DE0085';
                     heartIcon.style.textStroke = '2px #DE0085';
@@ -2814,67 +3203,31 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Debug: Check all wishlist elements
+        // Check all wishlist elements
         const allWishlistLabels = document.querySelectorAll('.wishlist-label');
-        console.log('Total wishlist labels found:', allWishlistLabels.length);
         
         allWishlistLabels.forEach(function(label, index) {
             const checkbox = label.previousElementSibling;
             const isChecked = checkbox && checkbox.checked;
             const hasActiveClass = label.classList.contains('wishlist-active');
-            console.log(`Wishlist label ${index}: checked=${isChecked}, active=${hasActiveClass}`);
         });
     }
     
     // Apply styling immediately
-    console.log('Applying wishlist styling immediately...');
     forceWishlistStyling();
     
     // Also apply styling after delays to ensure all elements are loaded
     setTimeout(function() {
-        console.log('Applying wishlist styling after 100ms...');
         forceWishlistStyling();
     }, 100);
     
     setTimeout(function() {
-        console.log('Applying wishlist styling after 500ms...');
         forceWishlistStyling();
     }, 500);
     
     setTimeout(function() {
-        console.log('Applying wishlist styling after 1000ms...');
         forceWishlistStyling();
     }, 1000);
-    
-    // Test function to manually add an item to wishlist
-    window.testWishlist = function() {
-        console.log('Testing wishlist functionality...');
-        
-        // Find the first wishlist checkbox and check it
-        const firstCheckbox = document.querySelector('.heart-checkbox');
-        if (firstCheckbox) {
-            firstCheckbox.checked = true;
-            const label = firstCheckbox.nextElementSibling;
-            if (label) {
-                label.classList.add('wishlist-active');
-                const heartIcon = label.querySelector('.heart-icon');
-                if (heartIcon) {
-                    heartIcon.style.color = '#DE0085';
-                    heartIcon.style.webkitTextStroke = '2px #DE0085';
-                    heartIcon.style.textStroke = '2px #DE0085';
-                    heartIcon.style.filter = 'drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3))';
-                    console.log('Manually applied pink color to first heart icon');
-                }
-            }
-        }
-    };
-    
-    // Add a test button to the page
-    const testButton = document.createElement('button');
-    testButton.textContent = 'Test Wishlist';
-    testButton.style.cssText = 'position: fixed; top: 10px; right: 10px; z-index: 10000; background: red; color: white; padding: 10px; border: none; cursor: pointer;';
-    testButton.onclick = window.testWishlist;
-    document.body.appendChild(testButton);
 });
 </script>
 

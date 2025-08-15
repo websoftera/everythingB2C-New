@@ -288,8 +288,7 @@ document.addEventListener('DOMContentLoaded', function () {
             target.textContent = 'Added to Cart';
             // --- HIGHLIGHT BUTTON ---
             target.classList.add('cart-added-highlight');
-            console.log('Added cart-added-highlight class to button (initial):', target);
-            console.log('Button classes after adding:', target.className);
+            
             
             // Check if product is already in cart after adding
             setTimeout(function() {
@@ -301,8 +300,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             target.textContent = 'Added to Cart';
                             target.disabled = false; // Keep enabled so user can add more
                             target.classList.add('cart-added-highlight');
-                            console.log('Added cart-added-highlight class to button (check):', target);
-                            console.log('Button classes after adding:', target.className);
+                            
                         } else {
                             // Product not in cart, revert to original state
                             target.textContent = originalLabel;
@@ -698,10 +696,10 @@ document.body.addEventListener('click', function(e) {
     .then(res => res.json())
     .then(data => {
       btn.disabled = false;
-      btn.textContent = 'ADD TO CART';
+      btn.innerHTML = '<i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>ADD TO CART';
       if (data.success) {
-        btn.textContent = 'UPDATED!';
-        setTimeout(function(){ btn.textContent = 'ADD TO CART'; }, 1200);
+        btn.innerHTML = 'UPDATED!';
+        setTimeout(function(){ btn.innerHTML = '<i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>ADD TO CART'; }, 1200);
         // Refresh quantity inputs on the page
         initializeQuantityInputs();
         
@@ -779,7 +777,7 @@ document.body.addEventListener('click', function(e) {
 
 // Function to initialize button states for products already in cart
 function initializeCartButtonStates() {
-    console.log('Initializing cart button states...');
+
     
     // Find all add-to-cart buttons with comprehensive selectors
     const buttons = document.querySelectorAll(`
@@ -792,30 +790,29 @@ function initializeCartButtonStates() {
         button[data-product-id]
     `);
     
-    console.log('Found buttons:', buttons.length);
+
     
     buttons.forEach(btn => {
         const productId = btn.dataset.productId;
         if (!productId) return;
         
-        console.log('Checking button for product ID:', productId, 'Button:', btn);
+
         
         fetch(`ajax/check-product-in-cart.php?product_id=${productId}`)
             .then(res => res.json())
             .then(data => {
                 if (data.success && data.in_cart) {
                     // Product is in cart, highlight the button but keep it enabled
-                    btn.textContent = 'Added to Cart';
+                    btn.innerHTML = '<i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>Added to Cart';
                     btn.disabled = false; // Keep enabled so user can add more
                     btn.classList.add('cart-added-highlight');
-                    console.log('Button highlighted for product ID:', productId, 'Classes after adding:', btn.className);
-                    console.log('Button element:', btn);
+                    
                 } else {
                     // Product not in cart, ensure button is normal
-                    btn.textContent = 'Add to Cart';
+                    btn.innerHTML = '<i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>Add to Cart';
                     btn.disabled = false;
                     btn.classList.remove('cart-added-highlight');
-                    console.log('Button normalized for product ID:', productId);
+    
                 }
             })
             .catch(error => {
@@ -847,7 +844,7 @@ window.addEventListener('load', function() {
 
 // Function to update a specific button state
 function updateButtonState(productId, inCart) {
-    console.log('Updating button state for product ID:', productId, 'in cart:', inCart);
+
     
     // More comprehensive selector to find all possible add-to-cart buttons
     const selectors = [
@@ -869,44 +866,30 @@ function updateButtonState(productId, inCart) {
     
     if (btn) {
         if (inCart) {
-            btn.textContent = 'Added to Cart';
+            btn.innerHTML = '<i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>Added to Cart';
             btn.disabled = false; // Keep enabled so user can add more
             btn.classList.add('cart-added-highlight');
         } else {
-            btn.textContent = 'Add to Cart';
+            btn.innerHTML = '<i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>Add to Cart';
             btn.disabled = false;
             btn.classList.remove('cart-added-highlight');
         }
-        console.log('Button state updated for product ID:', productId, 'Button found:', btn);
-    } else {
-        console.log('No button found for product ID:', productId);
-        // Let's try a broader search to see what buttons exist
-        const allButtons = document.querySelectorAll('[data-product-id]');
-        console.log('All buttons with data-product-id:', allButtons);
-        allButtons.forEach(btn => {
-            console.log('Button:', btn.dataset.productId, 'Classes:', btn.className);
-        });
     }
 }
 
 // Handle cart item removal to update button states
 window.addEventListener('cart-item-removed', function(event) {
-    console.log('Cart item removed event received:', event.detail);
     const productId = event.detail?.productId;
     if (productId) {
-        console.log('Attempting to update button state for product ID:', productId);
         // Update the specific button state
         updateButtonState(productId, false);
         
         // Also check if the button was actually updated by re-checking cart status
         setTimeout(() => {
-            console.log('Re-checking cart status for product ID:', productId);
             fetch(`ajax/check-product-in-cart.php?product_id=${productId}`)
                 .then(res => res.json())
                 .then(data => {
-                    console.log('Cart status check result:', data);
                     if (!data.success || !data.in_cart) {
-                        console.log('Product confirmed not in cart, ensuring button is unhighlighted');
                         updateButtonState(productId, false);
                     }
                 })
@@ -916,14 +899,12 @@ window.addEventListener('cart-item-removed', function(event) {
         }, 1000);
     } else {
         // If no specific product ID, reinitialize all buttons
-        console.log('No product ID provided, reinitializing all buttons');
         initializeCartButtonStates();
     }
 });
 
 // Handle cart remove all to update all button states
 window.addEventListener('cart-removed-all', function(event) {
-    console.log('Cart removed all event received');
     // Reinitialize all buttons to remove highlighting
     initializeCartButtonStates();
 });

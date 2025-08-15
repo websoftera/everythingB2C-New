@@ -502,7 +502,7 @@ document.getElementById('removeAllItems').addEventListener('click', function() {
             if (data.success) {
                 // Dispatch cart-removed-all event
                 if (data.remove_all) {
-                    console.log('Dispatching cart-removed-all event');
+            
                     window.dispatchEvent(new CustomEvent('cart-removed-all'));
                     
                     // Also dispatch cart-updated event to trigger button re-initialization

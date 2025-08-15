@@ -6,17 +6,11 @@ header('Content-Type: application/json');
 
 $input = json_decode(file_get_contents('php://input'), true);
 
-// Debug logging for session and cart state
-error_log('[get-cart-summary] SESSION ID: ' . session_id());
 if (isLoggedIn()) {
-    error_log('[get-cart-summary] USER ID: ' . $_SESSION['user_id']);
     global $pdo;
     $stmt = $pdo->prepare('SELECT * FROM cart WHERE user_id = ?');
     $stmt->execute([$_SESSION['user_id']]);
     $cartRows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    error_log('[get-cart-summary] DB CART: ' . print_r($cartRows, true));
-} else {
-    error_log('[get-cart-summary] SESSION CART: ' . print_r($_SESSION['cart'] ?? null, true));
 }
 
 if (isLoggedIn()) {
