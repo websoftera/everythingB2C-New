@@ -100,7 +100,7 @@ body {
 }
 
 .discount {
-  background-color: #28a745;
+  background-color: #9fbe1b;
   color: white;
   font-size: 13px;
   padding: 6px;
@@ -139,7 +139,7 @@ body {
 }
 
 .pay {
-  background-color: #28a745;
+  background-color: #9fbe1b;
   color: white;
   padding: 5px 10px;
   border-radius: 10px;
@@ -622,7 +622,6 @@ margin: 2px 2px !important;
   justify-content: center;
   align-items: center;
   gap: 6px;
-  margin: 10px 0;
 }
 
 /* MRP and Pay buttons */
@@ -644,7 +643,7 @@ margin: 2px 2px !important;
 }
 
 .pay {
-  border: 1px solid #28a745;
+  border: 1px solid #9fbe1b;
   color: #9FBF1C;
   background: #28a7469a !important;
   background: none !important;
@@ -1101,7 +1100,7 @@ padding-right: 20px;
 }
 
 .discount {
-  background-color: #28a745;
+  background-color: #9fbe1b;
   color: white;
   font-size: 13px;
   padding: 6px;
@@ -1140,7 +1139,7 @@ padding-right: 20px;
 }
 
 .pay {
-  background-color: #28a745;
+  background-color: #9fbe1b;
   color: white;
   padding: 5px 10px;
   border-radius: 10px;
@@ -1668,7 +1667,7 @@ padding-right: 20px;
   font-size: 14px;
 }
 .discount-banner1 {
-  background-color: #28a745;
+  background-color: #9fbe1b;
   color: white;
   text-align: center;
   width: 100%;
@@ -1679,7 +1678,7 @@ padding-right: 20px;
 }
 @media (min-width: 546px){
   .discount-banner1{
-      background-color: #28a745;
+      background-color: #9fbe1b;
   color: white;
   text-align: center;
   width: 100%;
@@ -1692,7 +1691,7 @@ padding-right: 20px;
 
 @media (min-width: 996px){
   .discount-banner1{
-      background-color: #28a745;
+      background-color: #9fbe1b;
   color: white;
   text-align: center;
   width: 100%;
@@ -1736,7 +1735,6 @@ margin: 2px 2px !important;
   justify-content: center;
   align-items: center;
   gap: 6px;
-  margin: 10px 0;
 }
 
 /* MRP and Pay buttons */
@@ -1758,8 +1756,8 @@ color: #038CC3 !important;
 }
 
 .pay {
-  border: 1px solid #28a745 !important;
-  color: #28a745 !important;
+  border: 1px solid #9fbe1b !important;
+  color: #9fbe1b !important;
   background: none !important;
 }
 
@@ -1908,7 +1906,7 @@ input[type="checkbox"]:checked + .heart-icon {
 
 .wishlist-btn {
   padding: 10px 20px;
-  background: #28a745;
+  background: #9fbe1b;
   color: white;
   font-weight: bold;
   border: none;
@@ -2606,7 +2604,7 @@ html, body {
 }
 
 .header2 .nav-links a[href*="shop.php"] i {
-  color: #28a745; /* Shop - green */
+  color: #9fbe1b; /* Shop - green */
 }
 
 .header2 .nav-links a[href*="wishlist.php"] i {

@@ -229,7 +229,7 @@ body {
 }
 
 /* .discount-banner {
-  background-color: #28a745;
+  background-color: #9fbe1b;
   color: white;
   text-align: center;
   padding: 3px;
@@ -272,7 +272,6 @@ body {
   display: flex;
   justify-content: center;
   gap: 6px;
-  margin: 10px 0;
 }
 
 .price-buttons button {
@@ -291,7 +290,7 @@ body {
 }
 
 .pay {
-  background-color: #28a745;
+  background-color: #9fbe1b;
   color: white;
 }
 
@@ -736,10 +735,6 @@ overflow-x: auto;
   font-weight: bold;
 }
 
-.price-buttons {
-  margin: 10px 0;
-}
-
 .price-buttons .mrp {
 border: 1px solid #038CC3 !important;
 color: #038CC3 !important;
@@ -751,7 +746,7 @@ color: #038CC3 !important;
 }
 
 .price-buttons .pay {
-  border: 1px solid #28a745;
+  border: 1px solid #9fbe1b;
   color: #9FBF1C;
   background: #28a7469a !important;
   background: none !important;
@@ -851,7 +846,7 @@ color: #038CC3 !important;
 }
 
 .price-buttons1 .pay {
-  background-color: #28a745;
+  background-color: #9fbe1b;
 }
 
 

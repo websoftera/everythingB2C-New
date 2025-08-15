@@ -54,3 +54,31 @@
 .border-dark-grey { border-color: var(--dark-grey) !important; }
 .border-light-blue { border-color: var(--light-blue) !important; }
 .border-dark-blue { border-color: var(--dark-blue) !important; }
+
+/* Cart Added Highlight - Global Styles */
+.cart-added-highlight,
+.add-to-cart.cart-added-highlight, 
+.add-to-cart-btn.cart-added-highlight, 
+.shop-page-add-to-cart-btn.cart-added-highlight,
+.related-products-container .add-to-cart-btn.cart-added-highlight,
+.product-card .add-to-cart-btn.cart-added-highlight,
+.card .add-to-cart-btn.cart-added-highlight {
+  border: 2.5px solid #ffd600 !important; /* Yellow border */
+  background: var(--dark-green) !important; /* Green background using CSS variable */
+  color: var(--white) !important;
+  box-shadow: 0 0 0 6px rgba(255,214,0,0.18), 0 2px 12px rgba(40,167,69,0.22) !important;
+  transition: box-shadow 0.2s, border 0.2s, background 0.2s, color 0.2s !important;
+  transform: scale(1.02) !important;
+}
+
+/* Ensure the highlight works on all button types */
+button.cart-added-highlight,
+input[type="button"].cart-added-highlight,
+input[type="submit"].cart-added-highlight {
+  border: 2.5px solid #ffd600 !important;
+  background: var(--dark-green) !important;
+  color: var(--white) !important;
+  box-shadow: 0 0 0 6px rgba(255,214,0,0.18), 0 2px 12px rgba(40,167,69,0.22) !important;
+  transition: box-shadow 0.2s, border 0.2s, background 0.2s, color 0.2s !important;
+  transform: scale(1.02) !important;
+}

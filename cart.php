@@ -37,7 +37,7 @@ echo renderBreadcrumb($breadcrumbs);
 ?>
 
 <!-- Banner/Breadcrumb (skip homepage) -->
-
+<link rel="stylesheet" href="./asset/style/style.css">
 <div class="container mt-4">
     <!-- <h1>Shopping Cart</h1> -->
     

@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Helper to re-initialize quantity controls for all product cards and re-attach event handlers
     function reinitQuantityControlsWithDebug() {
-        document.querySelectorAll('.product-card, .card, .shop-page-product-card, .product-detail-card').forEach(card => {
+        document.querySelectorAll('.product-card, .card, .shop-page-product-card, .product-detail-card, .related-products-container .product-card').forEach(card => {
             card.querySelectorAll('.quantity-input, .shop-page-quantity-input').forEach(input => {
                 input.disabled = false;
                 input.removeEventListener('input', input._debugInputHandler || (()=>{}));
@@ -182,7 +182,9 @@ document.addEventListener('DOMContentLoaded', function () {
             input[type="number"][min="1"],
             .quantity-control input[type="number"],
             .cart-actions input[type="number"],
-            .cart-controls input[type="number"]
+            .cart-controls input[type="number"],
+            .related-products-container .quantity-input,
+            .related-products-container input[type="number"]
         `);
 
         
@@ -195,7 +197,7 @@ document.addEventListener('DOMContentLoaded', function () {
             
             // Method 2: Check parent containers
             if (!productId) {
-                const productCard = input.closest('.product-card, .card, .shop-page-product-card, .product-detail-card, [data-product-id]');
+                const productCard = input.closest('.product-card, .card, .shop-page-product-card, .product-detail-card, .related-products-container .product-card, [data-product-id]');
                 if (productCard) {
                     productId = productCard.dataset.productId || productCard.getAttribute('data-product-id');
                 }
@@ -261,7 +263,7 @@ document.addEventListener('DOMContentLoaded', function () {
             event.preventDefault();
             const productId = target.dataset.productId;
             let quantity = 1;
-            let cardRoot = target.closest('.product-card, .card, .shop-page-product-card, .product-detail-card');
+            let cardRoot = target.closest('.product-card, .card, .shop-page-product-card, .product-detail-card, .related-products-container .product-card');
             let cartActions = target.closest('.cart-actions');
             let cartControls = target.closest('.cart-controls');
             let shopCartActions = target.closest('.shop-page-cart-actions');
@@ -286,6 +288,8 @@ document.addEventListener('DOMContentLoaded', function () {
             target.textContent = 'Added to Cart';
             // --- HIGHLIGHT BUTTON ---
             target.classList.add('cart-added-highlight');
+            console.log('Added cart-added-highlight class to button (initial):', target);
+            console.log('Button classes after adding:', target.className);
             
             // Check if product is already in cart after adding
             setTimeout(function() {
@@ -297,6 +301,8 @@ document.addEventListener('DOMContentLoaded', function () {
                             target.textContent = 'Added to Cart';
                             target.disabled = false; // Keep enabled so user can add more
                             target.classList.add('cart-added-highlight');
+                            console.log('Added cart-added-highlight class to button (check):', target);
+                            console.log('Button classes after adding:', target.className);
                         } else {
                             // Product not in cart, revert to original state
                             target.textContent = originalLabel;
@@ -774,9 +780,25 @@ document.body.addEventListener('click', function(e) {
 // Function to initialize button states for products already in cart
 function initializeCartButtonStates() {
     console.log('Initializing cart button states...');
-    document.querySelectorAll('.add-to-cart-btn, .add-to-cart, .shop-page-add-to-cart-btn').forEach(btn => {
+    
+    // Find all add-to-cart buttons with comprehensive selectors
+    const buttons = document.querySelectorAll(`
+        .add-to-cart-btn, 
+        .add-to-cart, 
+        .shop-page-add-to-cart-btn,
+        .related-products-container .add-to-cart-btn,
+        .product-card .add-to-cart-btn,
+        .card .add-to-cart-btn,
+        button[data-product-id]
+    `);
+    
+    console.log('Found buttons:', buttons.length);
+    
+    buttons.forEach(btn => {
         const productId = btn.dataset.productId;
         if (!productId) return;
+        
+        console.log('Checking button for product ID:', productId, 'Button:', btn);
         
         fetch(`ajax/check-product-in-cart.php?product_id=${productId}`)
             .then(res => res.json())
@@ -786,7 +808,8 @@ function initializeCartButtonStates() {
                     btn.textContent = 'Added to Cart';
                     btn.disabled = false; // Keep enabled so user can add more
                     btn.classList.add('cart-added-highlight');
-                    console.log('Button highlighted for product ID:', productId);
+                    console.log('Button highlighted for product ID:', productId, 'Classes after adding:', btn.className);
+                    console.log('Button element:', btn);
                 } else {
                     // Product not in cart, ensure button is normal
                     btn.textContent = 'Add to Cart';
@@ -803,18 +826,46 @@ function initializeCartButtonStates() {
 
 // Initialize button states when page loads
 document.addEventListener('DOMContentLoaded', function() {
-    initializeCartButtonStates();
+    setTimeout(() => {
+        initializeCartButtonStates();
+    }, 100);
 });
 
 // Also initialize when cart is updated
 document.addEventListener('cart-updated', function() {
-    initializeCartButtonStates();
+    setTimeout(() => {
+        initializeCartButtonStates();
+    }, 100);
+});
+
+// Initialize when window loads (for dynamic content)
+window.addEventListener('load', function() {
+    setTimeout(() => {
+        initializeCartButtonStates();
+    }, 200);
 });
 
 // Function to update a specific button state
 function updateButtonState(productId, inCart) {
     console.log('Updating button state for product ID:', productId, 'in cart:', inCart);
-    const btn = document.querySelector(`[data-product-id="${productId}"].add-to-cart-btn, [data-product-id="${productId}"].add-to-cart, [data-product-id="${productId}"].shop-page-add-to-cart-btn, button[data-product-id="${productId}"]`);
+    
+    // More comprehensive selector to find all possible add-to-cart buttons
+    const selectors = [
+        `[data-product-id="${productId}"].add-to-cart-btn`,
+        `[data-product-id="${productId}"].add-to-cart`,
+        `[data-product-id="${productId}"].shop-page-add-to-cart-btn`,
+        `.related-products-container [data-product-id="${productId}"].add-to-cart-btn`,
+        `.product-card [data-product-id="${productId}"].add-to-cart-btn`,
+        `.card [data-product-id="${productId}"].add-to-cart-btn`,
+        `button[data-product-id="${productId}"]`,
+        `[data-product-id="${productId}"]`
+    ];
+    
+    let btn = null;
+    for (const selector of selectors) {
+        btn = document.querySelector(selector);
+        if (btn) break;
+    }
     
     if (btn) {
         if (inCart) {

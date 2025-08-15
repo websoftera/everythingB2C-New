@@ -93,7 +93,7 @@ $settings = getPopupSettings();
             margin-bottom: 15px;
         }
         .status-active {
-            color: #28a745;
+            color: #9fbe1b;
         }
         .status-inactive {
             color: #dc3545;

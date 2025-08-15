@@ -383,7 +383,7 @@ foreach ($daily_sales as $day) {
                     backgroundColor: [
                         '#667eea',
                         '#764ba2',
-                        '#28a745',
+                        '#9fbe1b',
                         '#ffc107',
                         '#dc3545',
                         '#17a2b8',

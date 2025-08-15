@@ -187,7 +187,7 @@ if (isset($_POST['delete_address'])) {
 }
 
 .account-stat-card.primary { background: #007bff; }
-.account-stat-card.success { background: #28a745; }
+.account-stat-card.success { background: #9fbe1b; }
 .account-stat-card.warning { background: #ffc107; color: #000; }
 
 /* === Orders === */
@@ -216,7 +216,7 @@ if (isset($_POST['delete_address'])) {
   color: #fff;
 }
 
-.status.delivered { background: #28a745; }
+.status.delivered { background: #9fbe1b; }
 .status.cancelled { background: #dc3545; }
 .status.primary { background: #007bff; }
 

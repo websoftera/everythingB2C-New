@@ -476,7 +476,7 @@ $categoryTree = buildCategoryTree($categories);
 }
 
 .filter-btn-primary:hover {
-  background: #28a745;
+  background: #9fbe1b;
 }
 
 .filter-btn-secondary {

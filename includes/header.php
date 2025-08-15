@@ -98,6 +98,34 @@ html, body {
 }
 
 /* Force breadcrumb separator to be ">" only */
+
+/* Cart Added Highlight - Maximum Specificity Override */
+html body .cart-added-highlight,
+html body .add-to-cart.cart-added-highlight,
+html body .add-to-cart-btn.cart-added-highlight,
+html body .shop-page-add-to-cart-btn.cart-added-highlight,
+html body .related-products-container .add-to-cart-btn.cart-added-highlight,
+html body .product-card .add-to-cart-btn.cart-added-highlight,
+html body .card .add-to-cart-btn.cart-added-highlight,
+html body .discounted-products-section .add-to-cart-btn.cart-added-highlight,
+html body .category-section .add-to-cart-btn.cart-added-highlight,
+html body .products-grid .add-to-cart-btn.cart-added-highlight,
+html body .search-results .add-to-cart-btn.cart-added-highlight,
+html body .homepage-section .add-to-cart-btn.cart-added-highlight,
+html body .top-products-section .add-to-cart-btn.cart-added-highlight,
+html body button.cart-added-highlight,
+html body input[type="button"].cart-added-highlight,
+html body input[type="submit"].cart-added-highlight,
+html body [data-product-id].cart-added-highlight {
+  border: 2.5px solid #ffd600 !important;
+  background: #9fbe1b !important;
+  color: #fff !important;
+  box-shadow: 0 0 0 6px rgba(255,214,0,0.18), 0 2px 12px rgba(40,167,69,0.22) !important;
+  transition: box-shadow 0.2s, border 0.2s, background 0.2s, color 0.2s !important;
+  transform: scale(1.02) !important;
+  position: relative !important;
+  z-index: 999 !important;
+}
 .breadcrumb-item::before,
 .breadcrumb-item::after {
   content: none !important;
@@ -131,7 +159,7 @@ html, body {
 .products .card,
 #wishlist-container .card,
 .swiper-slide .card {
-  padding-bottom: 6px !important;
+  padding-bottom: 0 !important;
   border-radius: 0 !important;
 }
 
@@ -205,7 +233,7 @@ html, body {
 /* Product Added Highlight Effect */
 .product-added-highlight {
   animation: productAddedPulse 0.6s ease-in-out;
-  border: 2px solid #28a745 !important;
+  border: 2px solid #9fbe1b !important;
   box-shadow: 0 0 15px rgba(40, 167, 69, 0.3) !important;
   transform: scale(1.02);
   transition: all 0.3s ease;
@@ -213,7 +241,7 @@ html, body {
 
 @keyframes productAddedPulse {
   0% {
-    border-color: #28a745;
+    border-color: #9fbe1b;
     box-shadow: 0 0 5px rgba(40, 167, 69, 0.2);
     transform: scale(1);
   }
@@ -223,7 +251,7 @@ html, body {
     transform: scale(1.03);
   }
   100% {
-    border-color: #28a745;
+    border-color: #9fbe1b;
     box-shadow: 0 0 15px rgba(40, 167, 69, 0.3);
     transform: scale(1.02);
   }
@@ -252,7 +280,7 @@ html, body {
 }
 .dropdown-menu .dropdown-item:hover, .dropdown-menu .dropdown-item:focus {
   background: #f3f8f3;
-  color: #28a745;
+  color: #9fbe1b;
 }
 .dropdown-submenu {
   position: relative;

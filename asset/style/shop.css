@@ -243,7 +243,7 @@
     text-decoration: line-through !important;
 }
 .shop-page-price-btn.pay {
-  border: 1px solid #28a745;
+  border: 1px solid #9fbe1b;
   color: #9FBF1C;
   background: #28a7469a !important;
     background: none !important;
@@ -318,7 +318,7 @@
 /* Discount Banner - EXACT match */
 .shop-page-discount-banner {
     width: 100% !important;
-    background: #28a745 !important;
+    background: #9fbe1b !important;
     color: #fff !important;
     font-weight: bold !important;
     font-size: 11px !important;
@@ -510,7 +510,7 @@
     bottom: 24px;
     left: 24px;
     z-index: 1200;
-    background: #28a745;
+    background: #9fbe1b;
     color: #fff;
     border: none;
     border-radius: 50%;

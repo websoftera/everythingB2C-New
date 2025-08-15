@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS order_statuses (
 INSERT IGNORE INTO order_statuses (name, description, color, is_system, sort_order) VALUES
 ('Pending', 'Order has been placed and is awaiting confirmation', '#ffc107', TRUE, 1),
 ('Processing', 'Order is being processed and prepared for shipping', '#17a2b8', TRUE, 2),
-('Shipped', 'Order has been shipped from our warehouse', '#28a745', TRUE, 3),
+('Shipped', 'Order has been shipped from our warehouse', '#9fbe1b', TRUE, 3),
 ('In Transit', 'Order is in transit to delivery location', '#6f42c1', TRUE, 4),
 ('Out for Delivery', 'Order is out for delivery to your address', '#fd7e14', TRUE, 5),
 ('Delivered', 'Order has been successfully delivered', '#20c997', TRUE, 6),

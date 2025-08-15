@@ -109,7 +109,10 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 <!-- Product Categories Section -->
 <section class="popular-categories-section">
     <div class="categories-card">
-        <h2 class="categories-title">Product Categories</h2>
+        <div class="category-products-header">
+            <h2 class="category-products-title">Product Categories</h2>
+            <a href="categories.php" class="view-all-link">View All</a>
+        </div>
         <div class="categories-slider-wrapper">
                          <button class="category-nav-btn prev-btn" aria-label="Scroll Left">&#8249;</button>
             <div class="categories-container" id="slider">
@@ -345,7 +348,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 }
 
 .categories-card {
-  background: #9FBF1C;
+  background: #fff;
   border-radius: 8px;
   border: 1px solid #e0e0e0;
   padding: 20px;
@@ -407,7 +410,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   margin: 0 auto 10px;
   background: #f8f9fa;
   border-radius: 8px;
-  border: 1px solid #e9ecef;
+  border: 1px solid #e0e0e0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -418,7 +421,8 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 
 .category-illustration:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0 5px 5px var(--pay-light-green);
+  border: 2px solid var(--dark-green);
 }
 
 .category-illustration img {
@@ -520,7 +524,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 /* Discounted Products Section - Modern Design */
 .discounted-products-section {
   padding: 20px;
-  background: var(--light-blue); /* Light blue background as per image */
+  background: none !important;
   margin: 0;
   overflow: visible;
 }
@@ -543,12 +547,33 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   margin-bottom: 20px;
 }
 
+.category-products-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.category-products-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--dark-blue); /* Dark blue color as per image */
+  margin: 0;
+  padding-left: 8px;
+}
+
 .discounted-products-title {
   font-size: 16px;
   font-weight: bold;
   color: var(--dark-blue); /* Dark blue color as per image */
   margin: 0;
   padding-left: 8px;
+}
+
+.category-products-header .view-all-link {
+  background: var(--light-gray) !important;
+  background-color: var(--medium-gray) !important;
+  color: var(--dark-grey) !important;
 }
 
 .view-all-link {
@@ -748,6 +773,19 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   background: var(--dark-blue) !important; /* Slightly lighter blue on hover */
 }
 
+/* Cart Added Highlight for Discounted Products Section */
+.discounted-products-container .card.product-card .add-to-cart-btn.cart-added-highlight,
+.discounted-products-container .card.product-card .add-to-cart.cart-added-highlight {
+  border: 2.5px solid #ffd600 !important; /* Yellow border */
+  background: #9fbe1b !important; /* Green background */
+  color: #fff !important;
+  box-shadow: 0 0 0 6px rgba(255,214,0,0.18), 0 2px 12px rgba(40,167,69,0.22) !important;
+  transition: box-shadow 0.2s, border 0.2s, background 0.2s, color 0.2s !important;
+  transform: scale(1.02) !important;
+  position: relative !important;
+  z-index: 999 !important;
+}
+
 .discounted-products-container .card.product-card .product-details {
   background-image: none !important;
 }
@@ -762,6 +800,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 
 .product-info{
   padding: 5px 6px !important;
+  background: #ffffff !important;
 }
 
 .discounted-nav-btn {
@@ -1160,7 +1199,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 .featured-products-section {
   padding: 20px;
   padding-bottom: 45px;
-  background-color: var(--light-green); /* Light green background as per image */
+  background-color: none !important; /* Light green background as per image */
   margin: 0;
   overflow: visible;
 }
@@ -1298,12 +1337,11 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   flex-grow: 0 !important;
   margin: 0 !important;
   box-sizing: border-box !important;
-  background: var(--light-green) !important; /* Light green background as per image */
+  background: #fff !important; /* Light green background as per image */
   border-radius: 8px !important;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
   border: 1px solid var(--light-green) !important;
   /* Override any global white background */
-  background-color: var(--light-green) !important;
   background-image: none !important;
   /* Ensure border matches background */
   border-color: var(--light-green) !important;
@@ -1337,15 +1375,27 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   background: #4b5563 !important; /* Slightly lighter gray on hover */
 }
 
+/* Cart Added Highlight for Featured Products Section */
+.featured-products-container .card.product-card .add-to-cart-btn.cart-added-highlight,
+.featured-products-container .card.product-card .add-to-cart.cart-added-highlight {
+  border: 2.5px solid #ffd600 !important; /* Yellow border */
+  background: #9fbe1b !important; /* Green background */
+  color: #fff !important;
+  box-shadow: 0 0 0 6px rgba(255,214,0,0.18), 0 2px 12px rgba(40,167,69,0.22) !important;
+  transition: box-shadow 0.2s, border 0.2s, background 0.2s, color 0.2s !important;
+  transform: scale(1.02) !important;
+  position: relative !important;
+  z-index: 999 !important;
+}
+
 .featured-products-container .card.product-card .product-details {
-  background: var(--light-green) !important; /* Same as card background */
-  background-color: var(--light-green) !important;
+  background: none !important; /* Same as card background */
   background-image: none !important;
 }
 
 .featured-products-container .card.product-card .product-image {
-  background: var(--light-green) !important; /* Same as card background */
-  background-color: var(--light-green) !important;
+  background: none !important;/* Same as card background */
+  background-color: none !important;
   background-image: none !important;
 }
 
@@ -2296,7 +2346,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 .delivery-tagline {
     font-size: 11px;
-    color: #28a745;
+    color: #9fbe1b;
     margin-top: 3px;
     font-weight: 500;
 }

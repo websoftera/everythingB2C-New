@@ -47,7 +47,7 @@
 
 /* User Sign In/Sign Out Icon and Text Styles */
 .user-signin-icon {
-  color: #28a745 !important; /* Green color for sign-in */
+  color: #9fbe1b !important; /* Green color for sign-in */
   font-size: 20px !important;
   transition: color 0.3s ease, transform 0.2s ease !important;
 }
@@ -479,7 +479,7 @@ h3{
   --white: #fff;
   --light-gray: #f8f9fa;
   --border-color: #e9ecef;
-  --success-color: #28a745;
+  --success-color: #9fbe1b;
   --danger-color: #dc3545;
   --warning-color: #ffc107;
 }
@@ -1338,7 +1338,7 @@ h3{
   top: 0px;
   left: 0px;
   z-index: 2;
-  background-color: #28a745;
+  background-color: #9fbe1b;
   color: white;
   padding: 3px 8px;
   font-size: 0.8rem;
@@ -2321,12 +2321,32 @@ input, select, textarea, button {
   max-width: 117px !important;
 }
 
-.add-to-cart.cart-added-highlight, .add-to-cart-btn.cart-added-highlight, .shop-page-add-to-cart-btn.cart-added-highlight {
+/* Cart Added Highlight - Comprehensive Global Styles */
+.cart-added-highlight,
+.add-to-cart.cart-added-highlight, 
+.add-to-cart-btn.cart-added-highlight, 
+.shop-page-add-to-cart-btn.cart-added-highlight,
+.related-products-container .add-to-cart-btn.cart-added-highlight,
+.product-card .add-to-cart-btn.cart-added-highlight,
+.card .add-to-cart-btn.cart-added-highlight,
+.discounted-products-section .add-to-cart-btn.cart-added-highlight,
+.category-section .add-to-cart-btn.cart-added-highlight,
+.products-grid .add-to-cart-btn.cart-added-highlight,
+.search-results .add-to-cart-btn.cart-added-highlight,
+.homepage-section .add-to-cart-btn.cart-added-highlight,
+.top-products-section .add-to-cart-btn.cart-added-highlight,
+button.cart-added-highlight,
+input[type="button"].cart-added-highlight,
+input[type="submit"].cart-added-highlight,
+[data-product-id].cart-added-highlight {
   border: 2.5px solid #ffd600 !important; /* Yellow border */
-  background: #28a745 !important; /* Green background */
+  background: #9fbe1b !important; /* Green background */
   color: #fff !important;
   box-shadow: 0 0 0 6px rgba(255,214,0,0.18), 0 2px 12px rgba(40,167,69,0.22) !important;
-  transition: box-shadow 0.2s, border 0.2s, background 0.2s, color 0.2s;
+  transition: box-shadow 0.2s, border 0.2s, background 0.2s, color 0.2s !important;
+  transform: scale(1.02) !important;
+  position: relative !important;
+  z-index: 10 !important;
 }
 
 .discount-banner{
@@ -2404,4 +2424,33 @@ input, select, textarea, button {
     min-height: 40px !important;
     margin: 8px 0 0 0 !important;
   }
+}
+
+/* Universal Cart Added Highlight - Fallback for any element */
+.cart-added-highlight {
+  border: 2.5px solid #ffd600 !important; /* Yellow border */
+  background: #9fbe1b !important; /* Green background */
+  color: #fff !important;
+  box-shadow: 0 0 0 6px rgba(255,214,0,0.18), 0 2px 12px rgba(40,167,69,0.22) !important;
+  transition: box-shadow 0.2s, border 0.2s, background 0.2s, color 0.2s !important;
+  transform: scale(1.02) !important;
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+/* Additional specificity for different page contexts */
+body .cart-added-highlight,
+html .cart-added-highlight,
+#main-content .cart-added-highlight,
+.container .cart-added-highlight,
+.row .cart-added-highlight,
+.col .cart-added-highlight {
+  border: 2.5px solid #ffd600 !important;
+  background: #9fbe1b !important;
+  color: #fff !important;
+  box-shadow: 0 0 0 6px rgba(255,214,0,0.18), 0 2px 12px rgba(40,167,69,0.22) !important;
+  transition: box-shadow 0.2s, border 0.2s, background 0.2s, color 0.2s !important;
+  transform: scale(1.02) !important;
+  position: relative !important;
+  z-index: 10 !important;
 }

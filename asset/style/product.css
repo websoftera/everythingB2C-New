@@ -185,7 +185,7 @@ body {
 }
 
 .discount {
-  background-color: #28a745;
+  background-color: #9fbe1b;
   color: white;
   font-size: 13px;
   padding: 6px;
@@ -224,7 +224,7 @@ body {
 }
 
 .pay {
-  background-color: #28a745;
+  background-color: #9fbe1b;
   color: white;
   padding: 5px 10px;
   border-radius: 10px;
@@ -630,7 +630,7 @@ body {
 }
 
 /* .discount-banner {
-  background-color: #28a745;
+  background-color: #9fbe1b;
   color: white;
   text-align: center;
   width: 100%;
@@ -671,7 +671,6 @@ body {
   justify-content: center;
   align-items: center;
   gap: 6px;
-  margin: 10px 0;
 }
 
 /* MRP and Pay buttons */
@@ -693,7 +692,7 @@ body {
 }
 
 .pay {
-  border: 1px solid #28a745;
+  border: 1px solid #9fbe1b;
   color: #9FBF1C;
   background: #28a7469a !important;
   background: none !important;

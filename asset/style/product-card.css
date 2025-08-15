@@ -183,8 +183,8 @@
     text-decoration: line-through !important;
 }
 .price-btn.pay {
-    /* border: 1px solid #28a745 !important; */
-    color: #28a745 !important;
+    /* border: 1px solid #9fbe1b !important; */
+    color: #9fbe1b !important;
     background: #28a7463a !important;
     margin-left: 0px !important;
 }
@@ -592,8 +592,8 @@
     font-size: 15px;
 }
 .price-btn.pay {
-    /* border: 1px solid #28a745 !important; */
-    color: #28a745 !important;
+    /* border: 1px solid #9fbe1b !important; */
+    color: #9fbe1b !important;
     background: #28a7463a !important;
     border-radius: 6px;
     padding: 3px 10px;
@@ -783,4 +783,12 @@ html body .product-card .wishlist .heart-checkbox:checked + .wishlist-label .hea
 .modern-info .mrp,
 .modern-info .pay {
   max-width: 117px !important;
+}
+
+.cart-added-highlight {
+  border: 2.5px solid #ffd600 !important; /* Yellow border */
+  background: #9fbe1b !important; /* Green background */
+  color: #fff !important;
+  box-shadow: 0 0 0 6px rgba(255,214,0,0.18), 0 2px 12px rgba(40,167,69,0.22) !important;
+  transition: box-shadow 0.2s, border 0.2s, background 0.2s, color 0.2s;
 }
