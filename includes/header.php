@@ -387,7 +387,6 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
 </div>
 
 
-
 <!-- NAVBAR START -->
 <nav class="navbar navbar-expand-lg sticky-top bg-white">
     <div class="container-fluid">
@@ -852,7 +851,10 @@ function updateFloatingCartCount(animationType = null) {
       if (mobileCartCount) {
         mobileCartCount.textContent = newCount > 0 ? newCount : '';
         mobileCartCount.style.display = newCount > 0 ? 'inline-block' : 'none';
-        
+        console.log('Updated mobile cart count:', newCount);
+      } else {
+        console.log('Mobile cart count element not found');
+      }
       // Hide or show floating cart icon (but not on checkout page)
       var floatingCartBtn = document.getElementById('floatingCartBtn');
       if (floatingCartBtn) {
@@ -1144,7 +1146,7 @@ function renderFloatingCart() {
             if (resp.success) {
               // Dispatch cart-item-removed event
               if (resp.product_id) {
-
+                console.log('Dispatching cart-item-removed event for product ID:', resp.product_id);
                 window.dispatchEvent(new CustomEvent('cart-item-removed', {
                   detail: { productId: resp.product_id }
                 }));
@@ -1156,7 +1158,9 @@ function renderFloatingCart() {
                 if (typeof updateButtonState === 'function') {
                   updateButtonState(resp.product_id, false);
                 }
-              
+              } else {
+                console.log('No product_id in response:', resp);
+              }
               
               // If cart is now empty, reload floating cart
               if (!content.querySelector('.d-flex.align-items-center')) {
@@ -1247,7 +1251,7 @@ function renderFloatingCart() {
                   });
                 }
                 // Reset to original user input and don't proceed with update
-    
+                console.log('Validation failed, resetting to:', originalUserInput);
                 this.value = originalUserInput;
                 validationFailed = true;
               }
@@ -1434,7 +1438,7 @@ document.addEventListener('DOMContentLoaded', function() {
           if (data.success) {
             // Dispatch cart-removed-all event
             if (data.remove_all) {
-      
+              console.log('Dispatching cart-removed-all event');
               window.dispatchEvent(new CustomEvent('cart-removed-all'));
               
               // Also dispatch cart-updated event to trigger button re-initialization
@@ -1543,7 +1547,7 @@ document.addEventListener('DOMContentLoaded', function() {
           panel.style.right = 'auto';
           panel.style.bottom = 'auto';
         }
-      
+      } catch(e) {console.log('[FloatingCart][DEBUG] Error loading position:', e);}
     }
   }
 
@@ -1554,7 +1558,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Move both elements
   function moveBoth(left, top) {
-    
+    console.log('[FloatingCart][DEBUG] Moving both to:', left, top);
     if (btn) {
       btn.style.left = left + 'px';
       btn.style.top = top + 'px';
@@ -1581,7 +1585,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (btn) btn.style.transition = 'none';
     if (panel) panel.style.transition = 'none';
     document.body.style.userSelect = 'none';
-    
+    console.log('[FloatingCart][DEBUG] MouseDown', {startX, startY});
   }
   function onMouseMove(e) {
     if (!isMouseDown) return;
@@ -1594,7 +1598,7 @@ document.addEventListener('DOMContentLoaded', function() {
       x = Math.max(0, Math.min(window.innerWidth - (btn ? btn.offsetWidth : 60), x));
       y = Math.max(0, Math.min(window.innerHeight - (btn ? btn.offsetHeight : 60), y));
       moveBoth(x, y);
-      
+      console.log('[FloatingCart][DEBUG] Dragging', {x, y});
     }
   }
   function onMouseUp(e) {
@@ -1604,7 +1608,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const left = btn ? parseInt(btn.style.left) : 0;
         const top = btn ? parseInt(btn.style.top) : 0;
         savePosition(left, top);
-
+        console.log('[FloatingCart][DEBUG] Drag End', {left, top});
       }
       isMouseDown = false;
       isDragging = false;
@@ -1637,12 +1641,12 @@ document.addEventListener('DOMContentLoaded', function() {
   // Click handler for open/close (only if not dragging)
   if (btn) {
     btn.addEventListener('click', function(e) {
-      
+      console.log('[FloatingCart][DEBUG] Click', {isDragging, isMouseDown, panel, display: panel ? panel.style.display : undefined});
       if (isDragging) {
         // Prevent click if just dragged
         e.preventDefault();
         e.stopPropagation();
-        
+        console.log('[FloatingCart][DEBUG] Click prevented due to drag');
         return;
       }
       e.stopPropagation();
@@ -1664,7 +1668,7 @@ document.addEventListener('DOMContentLoaded', function() {
       setTimeout(function() {
         const rect = panel.getBoundingClientRect();
         const style = window.getComputedStyle(panel);
-
+        console.log('[FloatingCart][DEBUG] Panel computed style:', {
           display: style.display,
           left: style.left,
           top: style.top,
@@ -1691,18 +1695,25 @@ document.addEventListener('DOMContentLoaded', function() {
 })();
 // Add this simple function to update per-item total
 function updateItemTotal(cartId, quantity, unitPrice) {
-  
+  console.log('[updateItemTotal] Called with cartId:', cartId, 'quantity:', quantity, 'unitPrice:', unitPrice);
   
   const totalDiv = document.querySelector('div[data-cart-total-id="' + cartId + '"]');
-  
+  console.log('[updateItemTotal] Found totalDiv:', totalDiv);
   
   if (totalDiv) {
     const oldText = totalDiv.textContent;
     const newTotal = (quantity * unitPrice).toFixed(2);
     totalDiv.textContent = '₹' + newTotal;
-    
-  
+    console.log('[updateItemTotal] Updated from', oldText, 'to ₹' + newTotal);
+  } else {
+    console.log('[updateItemTotal] ERROR: Could not find totalDiv for cartId:', cartId);
+    console.log('[updateItemTotal] Available elements with data-cart-total-id:');
+    document.querySelectorAll('div[data-cart-total-id]').forEach(el => {
+      console.log('  - Element:', el, 'cartId:', el.getAttribute('data-cart-total-id'));
+    });
+  }
 }
+
 
 // Add global event listener for real-time updates
 document.body.addEventListener('input', function(e) {
