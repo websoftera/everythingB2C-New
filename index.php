@@ -898,7 +898,7 @@ function topFunction(e) {
 .category-label {
   font-size: 14px;
   font-weight: 600;
-  color: #fff;
+  color: #666;
   margin: 0;
   line-height: 1.2;
   text-align: center;
