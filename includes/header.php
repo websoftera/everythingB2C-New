@@ -415,7 +415,7 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
                 <!-- DESKTOP Dropdown -->
                 <div class="dropdown-desktop">
                   <button id="categoryDropdownDesktop" class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" data-selected-category="all">
-                    <span id="selectedCategoryDesktop">All</span>
+                    <span id="selectedCategoryDesktop">All Categories</span>
                   </button>
                   <ul class="dropdown-menu">
                     <li><a class="dropdown-item category-option" href="#" data-category="all">All</a></li>
@@ -1558,7 +1558,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Move both elements
   function moveBoth(left, top) {
-    console.log('[FloatingCart][DEBUG] Moving both to:', left, top);
     if (btn) {
       btn.style.left = left + 'px';
       btn.style.top = top + 'px';
@@ -1585,7 +1584,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (btn) btn.style.transition = 'none';
     if (panel) panel.style.transition = 'none';
     document.body.style.userSelect = 'none';
-    console.log('[FloatingCart][DEBUG] MouseDown', {startX, startY});
   }
   function onMouseMove(e) {
     if (!isMouseDown) return;
@@ -1598,7 +1596,6 @@ document.addEventListener('DOMContentLoaded', function() {
       x = Math.max(0, Math.min(window.innerWidth - (btn ? btn.offsetWidth : 60), x));
       y = Math.max(0, Math.min(window.innerHeight - (btn ? btn.offsetHeight : 60), y));
       moveBoth(x, y);
-      console.log('[FloatingCart][DEBUG] Dragging', {x, y});
     }
   }
   function onMouseUp(e) {
@@ -1608,7 +1605,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const left = btn ? parseInt(btn.style.left) : 0;
         const top = btn ? parseInt(btn.style.top) : 0;
         savePosition(left, top);
-        console.log('[FloatingCart][DEBUG] Drag End', {left, top});
       }
       isMouseDown = false;
       isDragging = false;
@@ -1641,12 +1637,10 @@ document.addEventListener('DOMContentLoaded', function() {
   // Click handler for open/close (only if not dragging)
   if (btn) {
     btn.addEventListener('click', function(e) {
-      console.log('[FloatingCart][DEBUG] Click', {isDragging, isMouseDown, panel, display: panel ? panel.style.display : undefined});
       if (isDragging) {
         // Prevent click if just dragged
         e.preventDefault();
         e.stopPropagation();
-        console.log('[FloatingCart][DEBUG] Click prevented due to drag');
         return;
       }
       e.stopPropagation();
@@ -1668,18 +1662,6 @@ document.addEventListener('DOMContentLoaded', function() {
       setTimeout(function() {
         const rect = panel.getBoundingClientRect();
         const style = window.getComputedStyle(panel);
-        console.log('[FloatingCart][DEBUG] Panel computed style:', {
-          display: style.display,
-          left: style.left,
-          top: style.top,
-          right: style.right,
-          bottom: style.bottom,
-          width: style.width,
-          height: style.height,
-          zIndex: style.zIndex,
-          opacity: style.opacity,
-          visibility: style.visibility
-        });
       }, 100);
     });
   }

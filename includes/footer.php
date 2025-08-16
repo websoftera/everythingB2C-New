@@ -53,6 +53,5 @@
         <a href="terms.php">Terms of Service</a></p>
     </div>
 </footer>
-
 </body>
 </html> 

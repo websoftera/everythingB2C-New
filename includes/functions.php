@@ -976,4 +976,37 @@ function clearUserCart($userId) {
     $stmt = $pdo->prepare("DELETE FROM cart WHERE user_id = ?");
     return $stmt->execute([$userId]);
 }
+
+// Build pagination URL with filters
+function buildPaginationUrl($pageType, $page, $params = []) {
+    // Remove the page parameter from params if it exists
+    unset($params['page']);
+    
+    // Build the base URL
+    if ($pageType === 'products') {
+        $baseUrl = 'products.php';
+    } else {
+        // For category pages, preserve the slug
+        $baseUrl = 'category.php';
+        if (isset($params['slug'])) {
+            $baseUrl .= '?slug=' . urlencode($params['slug']);
+            unset($params['slug']);
+        }
+    }
+    
+    // Add the page parameter
+    $params['page'] = $page;
+    
+    // Build query string
+    $queryString = http_build_query($params);
+    
+    // Construct the final URL
+    if ($pageType === 'products') {
+        return $baseUrl . ($queryString ? '?' . $queryString : '');
+    } else {
+        // For category pages, handle the slug parameter separately
+        $separator = strpos($baseUrl, '?') !== false ? '&' : '?';
+        return $baseUrl . ($queryString ? $separator . $queryString : '');
+    }
+}
 ?> 

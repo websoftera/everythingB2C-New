@@ -154,38 +154,7 @@ $totalPages = ceil($totalProducts / $itemsPerPage);
 $offset = ($currentPage - 1) * $itemsPerPage;
 $products = array_slice($allProducts, $offset, $itemsPerPage);
 
-// Helper function to build pagination URLs with all filter parameters
-function buildPaginationUrl($slug, $page, $params = []) {
-    $url = "?slug=" . urlencode($slug) . "&page=" . $page;
-    
-    // Preserve all filter parameters
-    if (isset($params['q']) && $params['q'] !== '') {
-        $url .= "&q=" . urlencode($params['q']);
-    }
-    
-    // Always include category parameter (even if empty for "All Categories")
-    if (isset($params['category'])) {
-        $url .= "&category=" . urlencode($params['category']);
-    }
-    
-    if (isset($params['subcategory']) && $params['subcategory'] !== '') {
-        $url .= "&subcategory=" . urlencode($params['subcategory']);
-    }
-    
-    if (isset($params['min_price']) && $params['min_price'] !== '') {
-        $url .= "&min_price=" . urlencode($params['min_price']);
-    }
-    
-    if (isset($params['max_price']) && $params['max_price'] !== '') {
-        $url .= "&max_price=" . urlencode($params['max_price']);
-    }
-    
-    if (isset($params['sort']) && $params['sort'] !== '') {
-        $url .= "&sort=" . urlencode($params['sort']);
-    }
-    
-    return $url;
-}
+// Use buildPaginationUrl function from functions.php
 ?>
 
 <!-- Breadcrumb Navigation -->
@@ -295,19 +264,19 @@ echo renderBreadcrumb($breadcrumbs);
             <ul class="pagination justify-content-center">
               <?php if ($currentPage > 1): ?>
                 <li class="page-item">
-                  <a class="page-link" href="<?php echo buildPaginationUrl($slug, $currentPage - 1, $_GET); ?>">Previous</a>
+                  <a class="page-link" href="<?php echo buildPaginationUrl('category', $currentPage - 1, $_GET); ?>">Previous</a>
                 </li>
               <?php endif; ?>
               
               <?php for ($i = max(1, $currentPage - 2); $i <= min($totalPages, $currentPage + 2); $i++): ?>
                 <li class="page-item <?php echo $i == $currentPage ? 'active' : ''; ?>">
-                  <a class="page-link" href="<?php echo buildPaginationUrl($slug, $i, $_GET); ?>"><?php echo $i; ?></a>
+                  <a class="page-link" href="<?php echo buildPaginationUrl('category', $i, $_GET); ?>"><?php echo $i; ?></a>
                 </li>
               <?php endfor; ?>
               
               <?php if ($currentPage < $totalPages): ?>
                 <li class="page-item">
-                  <a class="page-link" href="<?php echo buildPaginationUrl($slug, $currentPage + 1, $_GET); ?>">Next</a>
+                  <a class="page-link" href="<?php echo buildPaginationUrl('category', $currentPage + 1, $_GET); ?>">Next</a>
                 </li>
               <?php endif; ?>
             </ul>

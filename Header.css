@@ -678,8 +678,8 @@ margin: 2px 2px !important;
   font-size: 18px;
   pointer-events: none;
   color: transparent; /* Transparent fill */
-  -webkit-text-stroke: 2px #666; /* Dark grey border */
-  text-stroke: 2px #666; /* Dark grey border for non-webkit browsers */
+  -webkit-text-stroke: 1px #666; /* Dark grey border */
+  text-stroke: 1px #666; /* Dark grey border for non-webkit browsers */
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2)); /* Subtle shadow */
   transition: all 0.3s ease;
 }
