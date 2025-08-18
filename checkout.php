@@ -347,7 +347,7 @@ foreach ($cartItems as $item) {
             <div class="mb-2"></div>
             <div class="d-flex justify-content-between mb-2"><span>Total MRP</span><span>₹<?php echo number_format($mrp,0); ?></span></div>
             <div class="d-flex justify-content-between mb-2"><span>You Pay</span><span id="you-pay-amount">₹<?php echo number_format($orderTotals['subtotal'],0); ?></span></div>
-            <div class="d-flex justify-content-between mb-2 bg-light p-2 rounded"><span class="text-success"><b>Total Savings</b></span><span class="text-success">₹<?php echo number_format($savings,0); ?></span></div>
+            <div class="d-flex justify-content-between mb-2 bg-light p-2 rounded"><span class="text-success"><b>Savings</b></span><span class="text-success">₹<?php echo number_format($savings,0); ?></span></div>
             <div class="d-flex justify-content-between mb-2"><span>Delivery charge</span><span id="cart-shipping">₹<?php echo $orderTotals['shipping_charge']; ?></span></div>
             <!-- <div class="d-flex justify-content-between mb-2"><span>Shipping Zone</span><span id="cart-shipping-zone"><?php echo htmlspecialchars($orderTotals['shipping_zone_name'] ?? ''); ?></span></div> -->
             
@@ -391,7 +391,7 @@ foreach ($cartItems as $item) {
                 <div id="directPaymentInfoMsg" class="text-success text-center mb-2" style="display:none;"></div>
                 <div class="d-grid mb-3">
                   <button type="submit" name="place_order" id="placeOrderBtn" class="place-order-btn btn btn-primary w-100 mt-3" <?php if ($orderTotals['total'] < 150) echo 'disabled'; ?>>
-                    <i class="fas fa-shopping-cart"></i> Place Order
+                    <i class="fas fa-shopping-cart"></i> PLACE ORDER
                   </button>
                 </div>
               </div>
@@ -540,7 +540,7 @@ document.querySelectorAll('input[name="selected_address_left"]').forEach(functio
             key: resp.key_id,
             amount: resp.amount,
             currency: resp.currency,
-            name: 'Demo-site',
+            name: 'EverythingB2C',
             description: 'Order Payment',
             order_id: resp.razorpay_order_id,
             handler: function(paymentResp) {
@@ -721,7 +721,7 @@ function mockVerifyUpiId(upiId) {
 function generateUpiQrCode(upiId, amount) {
   // Always use the fixed payee UPI ID
   const payeeUpiId = 'samir.bvm@okicici';
-  const upiUrl = `upi://pay?pa=${encodeURIComponent(payeeUpiId)}&pn=Demo-site&am=${amount}&cu=INR`;
+  const upiUrl = `upi://pay?pa=${encodeURIComponent(payeeUpiId)}&pn=EverythingB2C&am=${amount}&cu=INR`;
   var qrDiv = document.getElementById('upiQrCode');
   if (qrDiv) {
     qrDiv.innerHTML = '';
@@ -1011,8 +1011,8 @@ function confirmDeleteCheckoutAddress(form) {
         showCancelButton: true,
         confirmButtonColor: '#d33',
         cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Yes, delete it!',
-        cancelButtonText: 'Cancel'
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No'
     }).then((result) => {
         if (result.isConfirmed) {
             form.submit();

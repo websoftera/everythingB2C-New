@@ -43,8 +43,8 @@ echo renderBreadcrumb($breadcrumbs);
     
     <?php if (empty($cartItems)): ?>
         <div class="text-center py-5">
+          <img src="./Kichen Page/page2/logo.webp" alt="Logo" class="img-fluid logo" />
             <h3>Your cart is empty</h3>
-            <p>Add some products to your cart to get started.</p>
             <a href="index.php" class="btn btn-primary">Continue Shopping</a>
         </div>
     <?php else: ?>
@@ -298,8 +298,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
                 cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, remove it!',
-                cancelButtonText: 'Cancel'
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No'
             }).then((result) => {
                 if (result.isConfirmed) {
                 fetch('ajax/remove-from-cart.php', {
@@ -402,29 +402,328 @@ function updateFloatingCartCount() {
 </script> 
 
 <style>
+/* Responsive Cart Table Styles - Keep Horizontal Layout */
 @media (max-width: 768px) {
   .cart-header-row, .cart-item-row {
-    font-size: 0.93rem !important;
-    gap: 2px !important;
-    padding-left: 1px !important;
-    padding-right: 1px !important;
+    font-size: 0.85rem !important;
+    gap: 3px !important;
+    padding: 6px 3px !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
   }
+  
   .cart-header-row > div, .cart-item-row > div {
-    min-width: 28px !important;
-    font-size: 0.92em !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+    min-width: auto !important;
+    font-size: 0.85em !important;
+    padding: 1px !important;
+    flex-shrink: 0 !important;
   }
+  
+  /* Product image */
+  .cart-item-row > div:first-child {
+    flex: 0 0 35px !important;
+    max-width: 35px !important;
+  }
+  
+  /* Product name */
   .cart-item-row > div:nth-child(2) {
-    min-width: 40px !important;
-    max-width: 90px !important;
+    flex: 0 0 100px !important;
+    min-width: 80px !important;
+    max-width: 100px !important;
+    font-size: 0.8em !important;
   }
-  .cart-item-row > div {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  
+  /* MRP */
+  .cart-item-row > div:nth-child(3) {
+    flex: 0 0 50px !important;
+    min-width: 45px !important;
+    font-size: 0.75em !important;
+  }
+  
+  /* You Pay */
+  .cart-item-row > div:nth-child(4) {
+    flex: 0 0 50px !important;
+    min-width: 45px !important;
+    font-size: 0.75em !important;
+  }
+  
+  /* You Save */
+  .cart-item-row > div:nth-child(5) {
+    flex: 0 0 50px !important;
+    min-width: 45px !important;
+    font-size: 0.75em !important;
+  }
+  
+  /* Quantity */
+  .cart-item-row > div:nth-child(6) {
+    flex: 0 0 65px !important;
+    min-width: 60px !important;
+  }
+  
+  /* Total */
+  .cart-item-row > div:nth-child(7) {
+    flex: 0 0 50px !important;
+    min-width: 45px !important;
+    font-size: 0.75em !important;
+  }
+  
+  /* Delete button */
+  .cart-item-row > div:last-child {
+    flex: 0 0 28px !important;
+    min-width: 25px !important;
+  }
+  
+  /* Quantity controls */
+  .quantity-control {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 1px !important;
+  }
+  
+  .quantity-control .btn-qty {
+    width: 18px !important;
+    height: 18px !important;
+    font-size: 9px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  
+  .quantity-control .quantity-input {
+    width: 22px !important;
+    height: 18px !important;
+    font-size: 9px !important;
+    padding: 1px !important;
+    text-align: center !important;
+  }
+  
+  /* Delete button */
+  .remove-item {
+    padding: 2px 3px !important;
+    font-size: 0.7rem !important;
+    min-width: 22px !important;
+    height: 22px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  
+  /* Hide header on mobile for better space */
+  .cart-header-row {
+    display: none !important;
   }
 }
+
+@media (max-width: 576px) {
+  .cart-header-row, .cart-item-row {
+    font-size: 0.8rem !important;
+    gap: 2px !important;
+    padding: 5px 2px !important;
+  }
+  
+  /* Product image */
+  .cart-item-row > div:first-child {
+    flex: 0 0 30px !important;
+    max-width: 30px !important;
+  }
+  
+  /* Product name */
+  .cart-item-row > div:nth-child(2) {
+    flex: 0 0 80px !important;
+    min-width: 70px !important;
+    max-width: 80px !important;
+    font-size: 0.75em !important;
+  }
+  
+  /* MRP */
+  .cart-item-row > div:nth-child(3) {
+    flex: 0 0 45px !important;
+    min-width: 40px !important;
+    font-size: 0.7em !important;
+  }
+  
+  /* You Pay */
+  .cart-item-row > div:nth-child(4) {
+    flex: 0 0 45px !important;
+    min-width: 40px !important;
+    font-size: 0.7em !important;
+  }
+  
+  /* You Save */
+  .cart-item-row > div:nth-child(5) {
+    flex: 0 0 45px !important;
+    min-width: 40px !important;
+    font-size: 0.7em !important;
+  }
+  
+  /* Quantity */
+  .cart-item-row > div:nth-child(6) {
+    flex: 0 0 60px !important;
+    min-width: 55px !important;
+  }
+  
+  /* Total */
+  .cart-item-row > div:nth-child(7) {
+    flex: 0 0 45px !important;
+    min-width: 40px !important;
+    font-size: 0.7em !important;
+  }
+  
+  /* Delete button */
+  .cart-item-row > div:last-child {
+    flex: 0 0 25px !important;
+    min-width: 22px !important;
+  }
+  
+  .quantity-control .btn-qty {
+    width: 16px !important;
+    height: 16px !important;
+    font-size: 8px !important;
+  }
+  
+  .quantity-control .quantity-input {
+    width: 20px !important;
+    height: 16px !important;
+    font-size: 8px !important;
+  }
+  
+  .remove-item {
+    padding: 1px 2px !important;
+    font-size: 0.65rem !important;
+    min-width: 20px !important;
+    height: 20px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .cart-header-row, .cart-item-row {
+    font-size: 0.75rem !important;
+    gap: 1px !important;
+    padding: 4px 1px !important;
+  }
+  
+  /* Product image */
+  .cart-item-row > div:first-child {
+    flex: 0 0 25px !important;
+    max-width: 25px !important;
+  }
+  
+  /* Product name */
+  .cart-item-row > div:nth-child(2) {
+    flex: 0 0 70px !important;
+    min-width: 60px !important;
+    max-width: 70px !important;
+    font-size: 0.7em !important;
+  }
+  
+  /* MRP */
+  .cart-item-row > div:nth-child(3) {
+    flex: 0 0 40px !important;
+    min-width: 35px !important;
+    font-size: 0.65em !important;
+  }
+  
+  /* You Pay */
+  .cart-item-row > div:nth-child(4) {
+    flex: 0 0 40px !important;
+    min-width: 35px !important;
+    font-size: 0.65em !important;
+  }
+  
+  /* You Save */
+  .cart-item-row > div:nth-child(5) {
+    flex: 0 0 40px !important;
+    min-width: 35px !important;
+    font-size: 0.65em !important;
+  }
+  
+  /* Quantity */
+  .cart-item-row > div:nth-child(6) {
+    flex: 0 0 55px !important;
+    min-width: 50px !important;
+  }
+  
+  /* Total */
+  .cart-item-row > div:nth-child(7) {
+    flex: 0 0 40px !important;
+    min-width: 35px !important;
+    font-size: 0.65em !important;
+  }
+  
+  /* Delete button */
+  .cart-item-row > div:last-child {
+    flex: 0 0 22px !important;
+    min-width: 20px !important;
+  }
+  
+  .quantity-control .btn-qty {
+    width: 15px !important;
+    height: 15px !important;
+    font-size: 7px !important;
+  }
+  
+  .quantity-control .quantity-input {
+    width: 18px !important;
+    height: 15px !important;
+    font-size: 7px !important;
+  }
+  
+  .remove-item {
+    padding: 1px !important;
+    font-size: 0.6rem !important;
+    min-width: 18px !important;
+    height: 18px !important;
+  }
+}
+/* Additional responsive fixes for cart */
+.cart-item-row .quantity-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.cart-item-row .btn-qty {
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ddd;
+  background: #f8f9fa;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.cart-item-row .btn-qty:hover {
+  background: #e9ecef;
+}
+
+.cart-item-row .quantity-input {
+  width: 30px;
+  height: 24px;
+  font-size: 12px;
+  padding: 2px;
+  text-align: center;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+}
+
+.cart-item-row .remove-item {
+  padding: 4px 6px;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+}
+
 .cart-product-modal {
   position: fixed;
   z-index: 99999;
@@ -476,13 +775,13 @@ document.getElementById('cartProductDetailModal').onclick = function(e) {
 document.getElementById('removeAllItems').addEventListener('click', function() {
     Swal.fire({
         title: 'Remove All Items?',
-        text: 'Are you sure you want to remove all items from your cart? This action cannot be undone.',
+        text: 'Do you want to remove all items from your cart? This action cannot be undone.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
         cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Yes, remove all!',
-        cancelButtonText: 'Cancel'
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No'
     }).then((result) => {
         if (result.isConfirmed) {
         // Show loading state

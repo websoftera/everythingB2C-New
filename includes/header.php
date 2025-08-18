@@ -28,7 +28,7 @@ if (isLoggedIn()) {
     $wishlistCount = count($wishlistItems);
 }
 
-$categories = getAllCategoriesWithProductCount();
+$categories = getAllCategoriesWithRecursiveProductCount();
 $categoryTree = buildCategoryTree($categories);
 $currentUser = getCurrentUser();
 
@@ -52,7 +52,7 @@ if (isLoggedIn()) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?php echo $pageTitle ?? 'Demo-site'; ?></title>
+    <title><?php echo $pageTitle ?? 'EverythingB2C'; ?></title>
 
     <!-- Favicon -->
     <link rel="icon" href="./sitelogo.png" type="image/webp">
@@ -418,7 +418,7 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
                     <span id="selectedCategoryDesktop">All Categories</span>
                   </button>
                   <ul class="dropdown-menu">
-                    <li><a class="dropdown-item category-option" href="#" data-category="all">All</a></li>
+                    <li><a class="dropdown-item category-option" href="#" data-category="all">All Categories</a></li>
                     <?php
                     function renderCategoryDropdown($tree, $level = 0) {
                         foreach ($tree as $cat) {
@@ -443,7 +443,7 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
                     <span id="selectedCategoryMobile">All</span>
                   </button>
                   <ul class="dropdown-menu">
-                    <li><a class="dropdown-item category-option" href="#" data-category="all">All</a></li>
+                    <li><a class="dropdown-item category-option" href="#" data-category="all">All Categories</a></li>
                     <?php renderCategoryDropdown($categoryTree); ?>
                   </ul>
                 </div>
@@ -582,16 +582,13 @@ const SwalWithLogo = {
         // Add logo to all SweetAlert dialogs
         const defaultOptions = {
             customClass: {
-                popup: 'swal-with-logo'
+                popup: 'swal-with-logo',
+                icon: 'swal-logo-icon'
             },
             showClass: {
                 popup: 'swal2-show swal2-noanimation'
             },
-            customClass: {
-                popup: 'swal-with-logo',
-                icon: 'swal-logo-icon'
-            },
-                        didOpen: function(popup) {
+            didOpen: function(popup) {
                 // Replace the default SweetAlert icon with our logo
                 
                 // Try different selectors to find the popup element
@@ -613,11 +610,11 @@ const SwalWithLogo = {
                     logoContainer.className = 'swal-logo-container';
                     logoContainer.style.cssText = `
                         position: absolute;
-                        top: 20px;
+                        top: 5px;
                         left: 0;
                         right: 0;
                         width: 100%;
-                        height: 60px;
+                        height: 35px;
                         background: transparent;
                         padding: 0;
                         display: flex;
@@ -629,20 +626,23 @@ const SwalWithLogo = {
                     // Create logo image
                     const logoImg = document.createElement('img');
                     logoImg.src = './asset/images/logo.webp';
-                    logoImg.alt = 'Demo-site';
+                    logoImg.alt = 'EverythingB2C';
                     logoImg.style.cssText = `
                         max-width: 200px;
                         height: auto;
                         object-fit: contain;
                         border-radius: 0;
+                        display: block;
                     `;
                     
                     // Error handling
                     logoImg.onerror = function() {
-                        logoContainer.innerHTML = '<span style="color: #007bff; font-size: 18px; font-weight: bold; text-align: center;">Demo-site</span>';
+                        console.log('Logo image failed to load, showing text fallback');
+                        logoContainer.innerHTML = '<span style="color: #007bff; font-size: 18px; font-weight: bold; text-align: center;">EverythingB2C</span>';
                     };
                     
                     logoImg.onload = function() {
+                        console.log('Logo image loaded successfully');
                     };
                     
                     logoContainer.appendChild(logoImg);
@@ -651,10 +651,48 @@ const SwalWithLogo = {
                     // Adjust title position
                     const titleElement = popupElement.querySelector('.swal2-title');
                     if (titleElement) {
-                        titleElement.style.marginTop = '100px';
+                        titleElement.style.marginTop = '50px';
+                        titleElement.style.marginBottom = '0';
+                        titleElement.style.paddingTop = '0';
                     }
                     
-
+                    // Remove default SweetAlert spacing
+                    const headerElement = popupElement.querySelector('.swal2-header');
+                    if (headerElement) {
+                        headerElement.style.marginBottom = '0';
+                        headerElement.style.paddingBottom = '0';
+                    }
+                    
+                    const contentElement = popupElement.querySelector('.swal2-content');
+                    if (contentElement) {
+                        contentElement.style.marginTop = '0';
+                        contentElement.style.paddingTop = '0';
+                    }
+                    
+                    // Adjust actions container to remove extra space
+                    const actionsElement = popupElement.querySelector('.swal2-actions');
+                    if (actionsElement) {
+                        actionsElement.style.marginBottom = '0';
+                        actionsElement.style.paddingBottom = '0';
+                    }
+                    
+                    // Adjust HTML container
+                    const htmlContainer = popupElement.querySelector('.swal2-html-container');
+                    if (htmlContainer) {
+                        htmlContainer.style.margin = '0';
+                        htmlContainer.style.padding = '0';
+                        htmlContainer.style.lineHeight = '1.3';
+                    }
+                    
+                    // Force remove any remaining spacing
+                    const allElements = popupElement.querySelectorAll('*');
+                    allElements.forEach(el => {
+                        if (el.classList.contains('swal2-title') || el.classList.contains('swal2-html-container')) {
+                            el.style.marginBottom = '0';
+                            el.style.paddingBottom = '0';
+                        }
+                    });
+                }
             }
         };
         
@@ -673,6 +711,263 @@ Object.keys(OriginalSwal).forEach(key => {
 
 // Override the global Swal.fire to use our custom version
 window.Swal = SwalWithLogo;
+
+// Ensure SweetAlert wrapper is always available
+if (typeof window.Swal === 'undefined') {
+    window.Swal = SwalWithLogo;
+}
+
+// Add CSS for SweetAlert logo styling
+const style = document.createElement('style');
+style.textContent = `
+    .swal-with-logo {
+        padding-top: 50px !important;
+        padding-bottom: 20px !important;
+        min-height: auto !important;
+    }
+    
+    .swal-logo-container {
+        position: absolute !important;
+        top: 30px !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: 35px !important;
+        background: transparent !important;
+        padding: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        z-index: 10002 !important;
+    }
+    
+    .swal-logo-container img {
+        max-width: 200px !important;
+        height: auto !important;
+        object-fit: contain !important;
+        border-radius: 0 !important;
+        display: block !important;
+    }
+    
+    .swal2-title {
+        margin-top: 50px !important;
+        margin-bottom: 0 !important;
+        padding-top: 0 !important;
+        line-height: 1.2 !important;
+    }
+    
+    .swal2-html-container {
+        margin: 5px 0 !important;
+        padding: 0 !important;
+    }
+    
+    /* Remove default SweetAlert spacing */
+    .swal2-popup .swal2-header {
+        margin-bottom: 0 !important;
+        padding-bottom: 0 !important;
+    }
+    
+    .swal2-popup .swal2-content {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+    
+    .swal2-actions {
+        margin-top: 20px !important;
+        margin-bottom: 0 !important;
+        padding-bottom: 0 !important;
+    }
+    
+    .swal-logo-icon {
+        display: none !important;
+    }
+    
+    /* Remove extra space from SweetAlert popup */
+    .swal2-popup {
+        padding-bottom: 20px !important;
+        min-height: auto !important;
+        max-height: none !important;
+    }
+    
+    /* Ensure content doesn't have extra margins */
+    .swal2-content {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    /* Override all default SweetAlert spacing */
+    .swal2-popup * {
+        box-sizing: border-box !important;
+    }
+    
+    .swal2-popup .swal2-header {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    .swal2-popup .swal2-title {
+        margin: 50px 0 0 0 !important;
+        padding: 0 !important;
+        line-height: 1.2 !important;
+    }
+    
+    .swal2-popup .swal2-html-container {
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 1.3 !important;
+    }
+    
+    /* Target the specific SweetAlert structure */
+    .swal2-popup .swal2-header {
+        margin: 0 !important;
+        padding: 0 !important;
+        min-height: 0 !important;
+    }
+    
+    .swal2-popup .swal2-content {
+        margin: 0 !important;
+        padding: 0 !important;
+        min-height: 0 !important;
+    }
+    
+    /* Remove any icon space */
+    .swal2-popup .swal2-icon {
+        display: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        height: 0 !important;
+    }
+    
+    .swal2-popup .swal2-actions {
+        margin: 20px 0 0 0 !important;
+        padding: 0 !important;
+    }
+    
+    /* Force remove any extra space */
+    .swal2-popup .swal2-icon {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+`;
+document.head.appendChild(style);
+
+// Function to add logo to any existing SweetAlert popups
+function addLogoToExistingPopups() {
+    const existingPopups = document.querySelectorAll('.swal2-popup');
+    existingPopups.forEach(popup => {
+        if (!popup.querySelector('.swal-logo-container')) {
+            const iconElement = popup.querySelector('.swal2-icon');
+            if (iconElement) {
+                iconElement.style.display = 'none';
+            }
+            
+            const logoContainer = document.createElement('div');
+            logoContainer.className = 'swal-logo-container';
+            logoContainer.style.cssText = `
+                position: absolute;
+                top: 5px;
+                left: 0;
+                right: 0;
+                width: 100%;
+                height: 35px;
+                background: transparent;
+                padding: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10002;
+            `;
+            
+            const logoImg = document.createElement('img');
+            logoImg.src = './asset/images/logo.webp';
+            logoImg.alt = 'EverythingB2C';
+            logoImg.style.cssText = `
+                max-width: 200px;
+                height: auto;
+                object-fit: contain;
+                border-radius: 0;
+                display: block;
+            `;
+            
+            logoImg.onerror = function() {
+                logoContainer.innerHTML = '<span style="color: #007bff; font-size: 18px; font-weight: bold; text-align: center;">EverythingB2C</span>';
+            };
+            
+            logoContainer.appendChild(logoImg);
+            popup.appendChild(logoContainer);
+            
+            const titleElement = popup.querySelector('.swal2-title');
+            if (titleElement) {
+                titleElement.style.marginTop = '50px';
+                titleElement.style.marginBottom = '0';
+                titleElement.style.paddingTop = '0';
+            }
+            
+            // Remove default SweetAlert spacing
+            const headerElement = popup.querySelector('.swal2-header');
+            if (headerElement) {
+                headerElement.style.marginBottom = '0';
+                headerElement.style.paddingBottom = '0';
+            }
+            
+            const contentElement = popup.querySelector('.swal2-content');
+            if (contentElement) {
+                contentElement.style.marginTop = '0';
+                contentElement.style.paddingTop = '0';
+            }
+            
+            // Adjust actions container to remove extra space
+            const actionsElement = popup.querySelector('.swal2-actions');
+            if (actionsElement) {
+                actionsElement.style.marginBottom = '0';
+                actionsElement.style.paddingBottom = '0';
+            }
+            
+            // Adjust HTML container
+            const htmlContainer = popup.querySelector('.swal2-html-container');
+            if (htmlContainer) {
+                htmlContainer.style.margin = '0';
+                htmlContainer.style.padding = '0';
+                htmlContainer.style.lineHeight = '1.3';
+            }
+            
+            // Force remove any remaining spacing
+            const allElements = popup.querySelectorAll('*');
+            allElements.forEach(el => {
+                if (el.classList.contains('swal2-title') || el.classList.contains('swal2-html-container')) {
+                    el.style.marginBottom = '0';
+                    el.style.paddingBottom = '0';
+                }
+            });
+        }
+    });
+}
+
+// Run the function periodically to catch any popups that might have been missed
+setInterval(addLogoToExistingPopups, 100);
+
+// Also run when DOM changes to catch dynamically created popups
+const observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+        if (mutation.type === 'childList') {
+            mutation.addedNodes.forEach(function(node) {
+                if (node.nodeType === Node.ELEMENT_NODE) {
+                    if (node.classList && node.classList.contains('swal2-popup')) {
+                        setTimeout(addLogoToExistingPopups, 10);
+                    }
+                    if (node.querySelector && node.querySelector('.swal2-popup')) {
+                        setTimeout(addLogoToExistingPopups, 10);
+                    }
+                }
+            });
+        }
+    });
+});
+
+observer.observe(document.body, {
+    childList: true,
+    subtree: true
+});
 </script>
 <script>
 // Initialize Bootstrap dropdowns
@@ -1412,13 +1707,13 @@ document.addEventListener('DOMContentLoaded', function() {
     floatingRemoveAllBtn.addEventListener('click', function() {
       Swal.fire({
         title: 'Remove All Items?',
-        text: 'Are you sure you want to remove all items from your cart? This action cannot be undone.',
+        text: 'Do you want to remove all items from your cart? This action cannot be undone.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
         cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Yes, remove all!',
-        cancelButtonText: 'Cancel'
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No'
       }).then((result) => {
         if (result.isConfirmed) {
         // Show loading state
@@ -1862,7 +2157,7 @@ function smoothUpdatePerItemTotal(cartId, newTotal) {
 </script>
 
 <!-- Go to Top Button -->
-<button id="goToTopBtn" style="display:none; position:fixed; bottom:30px; right:30px; z-index:9999; background:#b2d235; color:white; border:none; border-radius:12px; width:56px; height:56px; box-shadow:0 2px 8px rgba(0,0,0,0.15); font-size:2rem; cursor:pointer; transition:background 0.2s;">
+<button id="goToTopBtn" style="display:none; position:fixed; bottom:30px; right:30px; z-index:9999; background:#b2d235; color:white; border:none; border-radius:12px; width:56px; height:56px; box-shadow:0 2px 8px rgba(0,0,0,0.15); font-size:2rem; cursor:pointer; transition:all 0.2s;">
     <span style="display:flex; align-items:center; justify-content:center;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg></span>
 </button>
 <script>
@@ -1881,6 +2176,51 @@ if(document.getElementById('goToTopBtn')){
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 }
+
+// Add mobile-specific positioning for goToTopBtn
+document.addEventListener('DOMContentLoaded', function() {
+    const goToTopBtn = document.getElementById('goToTopBtn');
+    if (goToTopBtn) {
+        function updateButtonPosition() {
+            if (window.innerWidth <= 480) {
+                // Extra small mobile
+                goToTopBtn.style.setProperty('left', '15px', 'important');
+                goToTopBtn.style.setProperty('right', 'auto', 'important');
+                goToTopBtn.style.setProperty('bottom', '15px', 'important');
+                goToTopBtn.style.setProperty('width', '40px', 'important');
+                goToTopBtn.style.setProperty('height', '40px', 'important');
+                goToTopBtn.style.setProperty('font-size', '1.2rem', 'important');
+            } else if (window.innerWidth <= 768) {
+                // Mobile/tablet
+                goToTopBtn.style.setProperty('left', '20px', 'important');
+                goToTopBtn.style.setProperty('right', 'auto', 'important');
+                goToTopBtn.style.setProperty('bottom', '20px', 'important');
+                goToTopBtn.style.setProperty('width', '45px', 'important');
+                goToTopBtn.style.setProperty('height', '45px', 'important');
+                goToTopBtn.style.setProperty('font-size', '1.5rem', 'important');
+            } else {
+                // Desktop
+                goToTopBtn.style.setProperty('left', 'auto', 'important');
+                goToTopBtn.style.setProperty('right', '30px', 'important');
+                goToTopBtn.style.setProperty('bottom', '30px', 'important');
+                goToTopBtn.style.setProperty('width', '56px', 'important');
+                goToTopBtn.style.setProperty('height', '56px', 'important');
+                goToTopBtn.style.setProperty('font-size', '2rem', 'important');
+            }
+        }
+        
+        // Update on load
+        updateButtonPosition();
+        
+        // Update on resize
+        window.addEventListener('resize', updateButtonPosition);
+        
+        // Also update when scroll event triggers (in case button is recreated)
+        window.addEventListener('scroll', function() {
+            setTimeout(updateButtonPosition, 10);
+        });
+    }
+});
 
 // Home and Wishlist Icon Hover Effects
 document.addEventListener('DOMContentLoaded', function() {

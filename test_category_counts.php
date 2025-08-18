@@ -3,8 +3,8 @@ require_once 'includes/functions.php';
 
 echo "<h2>Category Product Count Test</h2>";
 
-// Get categories with real-time product counts
-$categories = getAllCategoriesWithProductCount();
+// Get categories with recursive product counts (including subcategories)
+$categories = getAllCategoriesWithRecursiveProductCount();
 
 echo "<table border='1' style='border-collapse: collapse; width: 100%;'>";
 echo "<tr><th>Category ID</th><th>Category Name</th><th>Slug</th><th>Product Count</th><th>Parent ID</th></tr>";

@@ -300,9 +300,11 @@ echo renderBreadcrumb($breadcrumbs);
 /* Product Grid - Responsive */
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(4, 1fr); /* Desktop: 4 cards per row */
   gap: 20px;
   margin-bottom: 40px;
+  width: 100%;
+  max-width: 100%;
 }
 
 /* Product Card - Matching Products Offering Discount Design */
@@ -411,22 +413,175 @@ echo renderBreadcrumb($breadcrumbs);
   margin-bottom: 20px;
 }
 
-/* Responsive Design */
-@media (max-width: 991.98px) {
+/* Responsive Design - Progressive Enhancement */
+@media (max-width: 767px) {
   .products-grid {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(2, 1fr); /* Mobile: 2 cards per row */
     gap: 15px;
-  }
-}
-
-@media (max-width: 767.98px) {
-  .products-grid {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 10px;
   }
   
   .products-header h1 {
     font-size: 24px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+  .products-grid {
+    grid-template-columns: repeat(3, 1fr); /* Tablet: 3 cards per row */
+    gap: 18px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .products-grid {
+    grid-template-columns: repeat(4, 1fr); /* Desktop: 4 cards per row */
+    gap: 20px;
+  }
+}
+
+/* Mobile-specific fixes - Ensure cards fit properly */
+@media (max-width: 767px) {
+  .products-grid {
+    gap: 12px;
+    padding: 0 10px;
+  }
+  
+  .product-card {
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+  }
+  
+  .product-card .product-details {
+    padding: 8px;
+    min-width: 0;
+    width: 100%;
+  }
+  
+  .product-card .product-details h3 {
+    font-size: 12px;
+    margin-bottom: 2px;
+    max-width: 100%;
+    width: 100%;
+  }
+  
+  .product-card .price-buttons {
+    gap: 3px;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    width: 100%;
+  }
+  
+  .product-card .price-btn {
+    font-size: 10px;
+    padding: 3px 4px;
+    flex-shrink: 0;
+    min-width: fit-content;
+    max-width: 100%;
+  }
+  
+  .product-card .add-to-cart-btn {
+    font-size: 11px;
+    padding: 5px 6px;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+  
+  .product-card .cart-actions {
+    width: 100%;
+    min-width: 0;
+  }
+  
+  .product-card .quantity-control {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Tablet adjustments */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .product-card .product-details h3 {
+    font-size: 13px;
+  }
+  
+  .product-card .price-btn {
+    font-size: 10px;
+    padding: 3px 4px;
+  }
+  
+  .product-card .add-to-cart-btn {
+    font-size: 11px;
+    padding: 5px 6px;
+  }
+}
+
+/* Desktop adjustments */
+@media (min-width: 1200px) {
+  .product-card .product-details h3 {
+    font-size: 14px;
+  }
+  
+  .product-card .price-btn {
+    font-size: 11px;
+    padding: 4px 6px;
+  }
+  
+  .product-card .add-to-cart-btn {
+    font-size: 12px;
+    padding: 6px 8px;
+  }
+}
+
+/* Container and Layout Fixes */
+.container {
+  max-width: 100%;
+  overflow-x: hidden;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.row {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.col-lg-9 {
+  padding-left: 15px;
+  padding-right: 15px;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Additional mobile fixes */
+@media (max-width: 767px) {
+  .container {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  
+  .col-lg-9 {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  
+  /* Ensure no horizontal scroll */
+  body {
+    overflow-x: hidden;
+  }
+  
+  /* Force 2 column layout on mobile */
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px;
+    width: 100%;
+  }
+  
+  /* Ensure cards don't overflow */
+  .product-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
   }
 }
 </style>

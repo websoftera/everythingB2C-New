@@ -2724,7 +2724,7 @@ html, body {
 /* Mobile adjustments */
 @media (max-width: 991.98px) {
   .navbar form {
-    max-width: 80%; /* Wider on mobile for better usability */
+    max-width: 100%; /* Wider on mobile for better usability */
   }
   
   .navbar form .input-group {

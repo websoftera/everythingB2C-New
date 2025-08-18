@@ -462,8 +462,8 @@
 
 @media (max-width: 600px) {
     .card, .product-card {
-        max-width: 98vw !important;
-        min-width: 98vw !important;
+        max-width: 47vw !important;
+        min-width: 47vw !important;
         margin: 0 auto 8px auto !important;
     }
     .discount-banner, .out-of-stock, .price-btn, .add-to-cart, .quantity-input, .wishlist {

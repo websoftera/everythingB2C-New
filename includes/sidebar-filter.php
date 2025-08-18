@@ -152,7 +152,7 @@ $categoryTree = buildCategoryTree($categories);
       <!-- Filter Actions -->
       <div class="filter-actions">
         <button type="submit" class="filter-btn filter-btn-primary">
-          <i class="bi bi-check-lg"></i> Apply Filters
+          <i class="bi bi-check-lg"></i> Apply
         </button>
         <button type="button" class="filter-btn filter-btn-secondary" id="clearAllFilters">
           <i class="bi bi-x-lg"></i> Clear All

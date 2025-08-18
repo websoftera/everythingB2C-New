@@ -1,4 +1,4 @@
-# Demo-site - Dynamic E-commerce Website
+# EverythingB2C - Dynamic E-commerce Website
 
 This is a dynamic e-commerce website built with PHP and MySQL, converted from a static HTML website.
 
@@ -30,7 +30,7 @@ The website uses the following main tables:
 
 ### 1. Database Setup
 
-1. Create a MySQL database named `Demo-site`
+1. Create a MySQL database named `EverythingB2C`
 2. Import the database schema from `database/schema.sql`
 3. Update database credentials in `config/database.php` if needed
 
@@ -38,7 +38,7 @@ The website uses the following main tables:
 
 Ensure your files are organized as follows:
 ```
-Demo-site-New/
+EverythingB2C-New/
 ├── config/
 │   └── database.php
 ├── includes/
@@ -79,7 +79,7 @@ Demo-site-New/
 define('DB_HOST', 'localhost');
 define('DB_USER', 'your_username');
 define('DB_PASS', 'your_password');
-define('DB_NAME', 'Demo-site');
+define('DB_NAME', 'EverythingB2C');
 ```
 
 2. Ensure your web server is configured to serve PHP files

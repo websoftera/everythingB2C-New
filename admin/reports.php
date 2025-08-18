@@ -133,7 +133,7 @@ foreach ($daily_sales as $day) {
                                     <label class="form-label">&nbsp;</label>
                                     <div>
                                         <button type="submit" class="btn btn-primary">
-                                            <i class="fas fa-filter"></i> Apply Filter
+                                            <i class="fas fa-filter"></i> Apply
                                         </button>
                                     </div>
                                 </div>

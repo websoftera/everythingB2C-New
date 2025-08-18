@@ -314,8 +314,8 @@ echo renderBreadcrumb($breadcrumbs);
 /* Product Grid - Truly Responsive */
 .products-grid {
   display: grid;
-  grid-template-columns: 1fr; /* Mobile: 1 card per row */
-  gap: 15px;
+  grid-template-columns: repeat(4, 1fr); /* Desktop: 4 cards per row */
+  gap: 20px;
   margin-bottom: 40px;
   width: 100%;
   max-width: 100%;
@@ -490,39 +490,32 @@ echo renderBreadcrumb($breadcrumbs);
 }
 
 /* Responsive Design - Progressive Enhancement */
-@media (min-width: 576px) {
+@media (max-width: 767px) {
   .products-grid {
-    grid-template-columns: repeat(2, 1fr); /* Tablet: 2 cards per row */
+    grid-template-columns: repeat(2, 1fr); /* Mobile: 2 cards per row */
     gap: 15px;
   }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 768px) and (max-width: 1199px) {
   .products-grid {
-    grid-template-columns: repeat(2, 1fr); /* Small Desktop: 2 cards per row */
+    grid-template-columns: repeat(3, 1fr); /* Tablet: 3 cards per row */
     gap: 18px;
-  }
-}
-
-@media (min-width: 992px) {
-  .products-grid {
-    grid-template-columns: repeat(3, 1fr); /* Desktop: 3 cards per row */
-    gap: 20px;
   }
 }
 
 @media (min-width: 1200px) {
   .products-grid {
-    grid-template-columns: repeat(4, 1fr); /* Large Desktop: 4 cards per row */
+    grid-template-columns: repeat(4, 1fr); /* Desktop: 4 cards per row */
     gap: 20px;
   }
 }
 
 /* Mobile-specific fixes - Ensure cards fit properly */
-@media (max-width: 575.98px) {
+@media (max-width: 767px) {
   .products-grid {
-    gap: 10px;
-    padding: 0 5px;
+    gap: 12px;
+    padding: 0 10px;
   }
   
   .product-card {
@@ -579,7 +572,7 @@ echo renderBreadcrumb($breadcrumbs);
 }
 
 /* Tablet adjustments */
-@media (min-width: 576px) and (max-width: 991.98px) {
+@media (min-width: 768px) and (max-width: 1199px) {
   .product-card .product-details h3 {
     font-size: 13px;
   }
@@ -596,7 +589,7 @@ echo renderBreadcrumb($breadcrumbs);
 }
 
 /* Desktop adjustments */
-@media (min-width: 992px) {
+@media (min-width: 1200px) {
   .product-card .product-details h3 {
     font-size: 14px;
   }
@@ -633,10 +626,10 @@ echo renderBreadcrumb($breadcrumbs);
 }
 
 /* Additional mobile fixes */
-@media (max-width: 575.98px) {
+@media (max-width: 767px) {
   .container-fluid {
-    padding-left: 5px;
-    padding-right: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
   }
   
   .col-lg-9 {
@@ -649,10 +642,10 @@ echo renderBreadcrumb($breadcrumbs);
     overflow-x: hidden;
   }
   
-  /* Force single column layout on very small screens */
+  /* Force 2 column layout on mobile */
   .products-grid {
-    grid-template-columns: 1fr !important;
-    gap: 10px;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px;
     width: 100%;
   }
   
