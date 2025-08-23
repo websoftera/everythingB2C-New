@@ -145,7 +145,7 @@ body {
 .navbar {
   background-color: #fff;
   border-bottom: 1px solid #dee2e6;
-  padding: 0.5rem 1rem;
+  padding: 0 0.5px !important;
 }
 
 .navbar .logo {
@@ -574,9 +574,9 @@ overflow-x: auto;
 }
 
 .category-label {
-  font-size: 9px;
+  font-size: 8px;
   font-weight: bold;
-  color: #333;
+  color: #fff;
   text-decoration: none !important;
 }
 

@@ -402,7 +402,7 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
             <div class="d-lg-none ms-auto mobile-nav-icons">
                 <!-- Wishlist Icon -->
                 <a href="wishlist.php" class="text-decoration-none text-dark mobile-nav-link position-relative me-2">
-                    <i class="bi <?php echo $wishlistCount > 0 ? 'bi-heart-fill' : 'bi-heart'; ?>" style="font-size: 20px; color: #DE0085;"></i>
+                    <i class="bi <?php echo $wishlistCount > 0 ? 'bi-heart-fill' : 'bi-heart'; ?>" style="font-size: 24px; color: #DE0085;"></i>
                     <?php if ($wishlistCount > 0): ?>
                         <span class="position-absolute badge rounded-pill wishlist-count-badge" style="background-color: #DE0085; font-size: 10px; min-width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; transform: translate(50%, -50%);">
                             <?php echo $wishlistCount; ?>
@@ -413,23 +413,23 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
                 <!-- Account/Login Icon -->
                 <?php if (isLoggedIn()): ?>
                     <a href="myaccount.php" class="text-decoration-none text-dark mobile-nav-link me-2 d-flex align-items-center">
-                        <i class="fas fa-user me-1" style="font-size: 16px; color: #007bff;"></i>
+                        <i class="fas fa-user me-1" style="font-size: 24px; color: #007bff;"></i>
                         <div class="user-welcome-text" style="display: block !important;">
-                            <div class="welcome-line-1" style="font-size: 8px; line-height: 1; margin: 0;">Welcome</div>
-                            <div class="welcome-line-2" style="font-size: 8px; line-height: 1; font-weight: 600; margin: 0;"><?php echo htmlspecialchars(substr($currentUser['name'], 0, 5)); ?></div>
+                            <div class="welcome-line-1" style="font-size: 10px; line-height: 1; margin: 0; color: #333;">Welcome</div>
+                            <div class="welcome-line-2" style="font-size: 10px; line-height: 1; font-weight: 600; margin: 0; color: #333;"><?php echo htmlspecialchars(substr($currentUser['name'], 0, 4)); ?></div>
                         </div>
                     </a>
                 <?php else: ?>
                     <a href="login.php" class="text-decoration-none text-dark mobile-nav-link me-2 d-flex align-items-center">
-                        <i class="fas fa-user me-1" style="font-size: 16px; color: #99d052;"></i>
-                        <span class="user-signin-text" style="font-size: 8px; font-weight: 600; display: block !important;">Sign In</span>
+                        <i class="fas fa-user me-1" style="font-size: 24px; color: #99d052;"></i>
+                        <span class="user-signin-text" style="font-size: 10px; font-weight: 600; display: block !important; color: #333; white-space: nowrap; overflow: visible;">Sign In</span>
                     </a>
                 <?php endif; ?>
                 
                 <!-- Cart Icon -->
                 <a href="cart.php" class="text-decoration-none text-dark cart-link position-relative">
-                    <img src="./asset/images/Cart_Icon.png" alt="Cart" class="cart-icon" style="width:28px;height:28px;">
-                    <span id="cart-count-mobile" class="position-absolute badge rounded-pill" style="display:<?php echo $cartCount > 0 ? 'inline-block' : 'none'; ?>; top: -5px; right: -5px; transform: translate(50%, -50%);">
+                    <img src="./asset/images/Cart_Icon.png" alt="Cart" class="cart-icon" style="width:30px;height:30px;">
+                    <span id="cart-count-mobile" class="position-absolute" style="display:<?php echo $cartCount > 0 ? 'inline-block' : 'none'; ?>; top: -2px; right: -2px; transform: translate(50%, -50%); color: var(--dark-green); font-size: 11px; font-weight: 600; background: none; border: none;">
                         <?php echo $cartCount > 0 ? $cartCount : ''; ?>
                     </span>
                 </a>
@@ -467,7 +467,7 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
                 <!-- MOBILE Dropdown -->
                 <div class="dropdown-mobile">
                   <button id="categoryDropdownMobile" class="btn btn-light dropdown-toggle mobile-category-btn" type="button" data-bs-toggle="dropdown" data-selected-category="all">
-                    <span id="selectedCategoryMobile">All Categories</span>
+                    <span id="selectedCategoryMobile">All</span>
                   </button>
                   <ul class="dropdown-menu">
                     <li><a class="dropdown-item category-option" href="#" data-category="all">All Categories</a></li>
@@ -523,7 +523,7 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
 </nav>
 
 <!-- CATEGORY SCROLL - ONLY MOBILE -->
-<div class="category-scroll-container d-block d-lg-none py-2 px-2">
+<div class="category-scroll-container d-block d-lg-none">
     <div class="scroll-wrapper d-flex flex-nowrap overflow-auto">
         <?php function renderMobileCategoryMenu($tree) {
             // Get current category from URL parameter
@@ -2337,3 +2337,86 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+<script>
+  // JavaScript-based infinite auto-scroll for category section
+  document.addEventListener('DOMContentLoaded', function () {
+    const scrollWrapper = document.querySelector('.category-scroll-container .scroll-wrapper');
+    if (!scrollWrapper) return;
+
+    // Get all category items
+    const categoryItems = scrollWrapper.querySelectorAll('.category-item');
+    if (categoryItems.length === 0) return;
+
+    // Clear the wrapper
+    scrollWrapper.innerHTML = '';
+
+    // Create multiple sets of items for infinite scroll
+    const numSets = 3; // Number of complete sets to create
+    
+    for (let i = 0; i < numSets; i++) {
+      categoryItems.forEach(item => {
+        // Clone each item
+        const clonedItem = item.cloneNode(true);
+        scrollWrapper.appendChild(clonedItem);
+      });
+    }
+
+    // Calculate dimensions
+    const totalWidth = scrollWrapper.scrollWidth;
+    const singleWidth = totalWidth / numSets;
+    const visibleWidth = scrollWrapper.clientWidth;
+
+    // Start position (middle set)
+    scrollWrapper.scrollLeft = singleWidth;
+
+    // Auto-scroll settings
+    const step = 25; // Pixels per step (extremely fast)
+    const intervalTime = 1; // Milliseconds between steps (extremely fast)
+
+    function autoScroll() {
+      if (!scrollWrapper) return;
+
+      let current = scrollWrapper.scrollLeft;
+
+      // If we've scrolled past the second set, reset to first set
+      if (current >= singleWidth * 2) {
+        scrollWrapper.scrollLeft = singleWidth;
+      } else {
+        scrollWrapper.scrollLeft += step;
+      }
+    }
+
+    let interval = setInterval(autoScroll, intervalTime);
+    let isPaused = false;
+
+    // Pause on mouseenter/touchstart
+    function pauseScroll() {
+      if (!isPaused) {
+        clearInterval(interval);
+        isPaused = true;
+      }
+    }
+
+    // Resume on mouseleave/touchend
+    function resumeScroll() {
+      if (isPaused) {
+        interval = setInterval(autoScroll, intervalTime);
+        isPaused = false;
+      }
+    }
+
+    // Event listeners for pause/resume
+    scrollWrapper.addEventListener('mouseenter', pauseScroll);
+    scrollWrapper.addEventListener('mouseleave', resumeScroll);
+    scrollWrapper.addEventListener('touchstart', pauseScroll);
+    scrollWrapper.addEventListener('touchend', resumeScroll);
+
+    // Pause on user scroll interaction
+    scrollWrapper.addEventListener('scroll', function() {
+      if (!isPaused) {
+        pauseScroll();
+        setTimeout(resumeScroll, 2000);
+      }
+    });
+  });
+</script>

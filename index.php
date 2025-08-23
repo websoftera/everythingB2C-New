@@ -1131,7 +1131,7 @@ function topFunction(e) {
 .category-label {
   font-size: 14px;
   font-weight: 600;
-  color: #666;
+  color: #fff;
   margin: 0;
   line-height: 1.2;
   text-align: center;
@@ -1213,8 +1213,8 @@ function topFunction(e) {
   }
   
   .category-item {
-    width: 80px;
-    min-width: 80px;
+    width: 50px;
+    min-width: 50px;
   }
   
   .category-illustration {
@@ -1223,7 +1223,7 @@ function topFunction(e) {
   }
   
   .category-label {
-    font-size: 13px;
+    font-size: 8px;
     font-weight: 600;
   }
   
@@ -1241,8 +1241,8 @@ function topFunction(e) {
   }
   
   .category-item {
-    width: 140px;
-    min-width: 140px;
+    width: 50px;
+    min-width: 50px;
   }
   
   .category-illustration {
@@ -1251,7 +1251,7 @@ function topFunction(e) {
   }
   
   .category-label {
-    font-size: 12px;
+    font-size: 8px;
     font-weight: 600;
     line-height: 1.1;
   }
@@ -1283,8 +1283,8 @@ function topFunction(e) {
   }
   
   .category-item {
-    width: 120px;
-    min-width: 120px;
+    width: 50px;
+    min-width: 50px;
   }
   
   .category-illustration {
@@ -1293,7 +1293,7 @@ function topFunction(e) {
   }
   
   .category-label {
-    font-size: 11px;
+    font-size: 8px;
     font-weight: 600;
   }
   
@@ -1806,8 +1806,8 @@ function topFunction(e) {
   }
   
   .category-item {
-    width: 80px;
-    min-width: 80px;
+    width: 50px;
+    min-width: 50px;
   }
   
   .category-illustration {
@@ -1831,7 +1831,7 @@ function topFunction(e) {
   }
   
   .category-label {
-    font-size: 12px;
+    font-size: 8px;
   }
   
   .category-nav-btn {
@@ -1872,8 +1872,8 @@ function topFunction(e) {
   }
   
   .category-item {
-    width: 80px;
-    min-width: 80px;
+    width: 50px;
+    min-width: 50px;
   }
   
   .category-illustration {
@@ -1896,7 +1896,7 @@ function topFunction(e) {
   }
   
   .category-label {
-    font-size: 10px;
+    font-size: 8px;
   }
   
   .category-nav-btn {

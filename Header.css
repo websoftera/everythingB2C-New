@@ -380,6 +380,13 @@ body {
   color: #fff;                /* White text */
   border: none;               
 }
+#categoryDropdownMobile{
+  padding-right: 5px !important;
+}
+
+.dropdown-mobile {
+  padding-right: 5px !important;             
+}
 
 .dropdown-mobile .btn:hover {
   background-color: #88be45;  
@@ -402,7 +409,7 @@ body {
 .navbar {
   background-color: #fff;
   border-bottom: 1px solid #dee2e6;
-  padding: 0.5rem 1rem;
+  padding: 0 0.5px !important;
 }
 
 .navbar .logo {
@@ -1423,7 +1430,7 @@ padding-right: 20px;
 .navbar {
   background-color: #fff;
   border-bottom: 1px solid #dee2e6;
-  padding: 0.5rem 1rem;
+  padding: 0 0.5px !important;
 }
 
 .navbar .logo {
@@ -1491,7 +1498,7 @@ padding-right: 20px;
 .category-scroll-container .category-item {
   transition: all 0.3s ease;
   border-radius: 8px;
-  padding: 8px 12px;
+  padding: 4px 2px;
   text-decoration: none;
   color: #333;
 }
@@ -1517,12 +1524,12 @@ padding-right: 20px;
   border: 1px solid #ccc;
 }
 
-  .category-label {
-    font-size: 9px;
-    font-weight: bold;
-    color: #333;
-    text-decoration: none !important;
-  }
+.category-label {
+    font-size: 8px;
+  font-weight: bold;
+    color: #fff;
+  text-decoration: none !important;
+}
   
   /* Mobile wishlist count badge positioning */
   .mobile-nav-link[href*="wishlist.php"] {
@@ -2044,7 +2051,7 @@ input[type="checkbox"]:checked + .heart-icon {
 .navbar {
   background-color: #fff;
   border-bottom: 1px solid #dee2e6;
-  padding: 0.5rem 1rem;
+  padding: 0 0.5px !important;
   position: sticky;
   top: 35px;
   z-index: 999;
@@ -2066,12 +2073,17 @@ input[type="checkbox"]:checked + .heart-icon {
 
 .category-scroll-container .scroll-wrapper {
   display: flex;
-  gap: 10px;
+  gap: 1px;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   overflow-x: auto;
-  padding: 8px 5px;
+  padding: 1px 1px;
   max-width: 100%;
+  transition: scroll-left 0.02s ease-out;
+  will-change: scroll-left;
+  backface-visibility: hidden;
+  perspective: 1000px;
+  transform-style: preserve-3d;
 }
 
 .category-scroll-container .scroll-wrapper::-webkit-scrollbar {
@@ -2100,7 +2112,7 @@ input[type="checkbox"]:checked + .heart-icon {
   }
   
   .category-scroll-container {
-    top: 83px;
+    top: 130px;
   }
   
   .category-navbar {
@@ -2173,16 +2185,16 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 8px;
-    padding: 8px 15px;
+    margin-bottom: 2px;
+    padding: 2px 2px;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
-    gap: 15px;
+    gap: 6px;
   }
   
   .navbar .logo {
-    max-height: 60px;
+    max-height: 120px;
     width: auto;
     flex: 0 0 auto;
     min-width: 0;
@@ -2195,16 +2207,56 @@ body {
   
   /* Mobile navigation icons */
   .mobile-nav-icons {
-    gap: 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    margin-left: auto;
   }
   
   .mobile-nav-link {
-    min-width: 32px;
-    height: 32px;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
   }
   
   .mobile-nav-link i {
-    font-size: 16px !important;
+    font-size: 24px !important;
+  }
+  
+  /* Account text styling */
+  .mobile-nav-link .user-welcome-text,
+  .mobile-nav-link .user-signin-text {
+    font-size: 10px !important;
+    line-height: 1.2 !important;
+    font-weight: 600 !important;
+    color: #333 !important;
+    overflow: visible !important;
+    white-space: nowrap !important;
+  }
+  
+  /* Ensure sign-in text is fully visible */
+  .mobile-nav-link .user-signin-text {
+    min-width: 40px !important;
+    text-align: left !important;
+  }
+  
+  /* Cart icon consistency */
+  .cart-link {
+    width: 42px !important;
+    height: 42px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+  }
+  
+  .cart-icon {
+    width: 35px !important;
+    height: 25px !important;
   }
   
   /* Ensure account text is visible on medium mobile */
@@ -2251,7 +2303,7 @@ body {
     order: 2;
     min-width: 0;
     max-width: 100%;
-    padding: 0 15px 8px 15px;
+    padding: 0 2px 8px 2px;
     box-sizing: border-box;
   }
   
@@ -2276,14 +2328,14 @@ body {
   }
   
   .navbar form .input-group .dropdown-mobile {
-    margin-right: -1px;
+    margin-right: 0;
     border-top-right-radius: 0 !important;
     border-bottom-right-radius: 0 !important;
   }
   
   .navbar form .input-group .form-control {
-    margin-left: -1px;
-    margin-right: -1px;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
     border-top-left-radius: 0 !important;
     border-bottom-left-radius: 0 !important;
     border-top-right-radius: 0 !important;
@@ -2402,13 +2454,13 @@ body {
   }
   
   .navbar form .input-group .form-control {
-    margin-left: 0 !important;
-    width: calc(100% + 2px) !important;
+    margin-left: -1px !important;
+    width: 100% !important;
   }
   
   /* Ultra-aggressive gap elimination */
   .navbar form .input-group .dropdown-mobile .btn {
-    margin-right: -1px !important;
+    margin-right: 0 !important;
     border-right: none !important;
     box-shadow: none !important;
   }
@@ -2421,7 +2473,7 @@ body {
   
   /* Override any potential Bootstrap spacing */
   .input-group > .dropdown-mobile {
-    margin-right: -2px !important;
+    margin-right: 0px !important;
   }
   
   .input-group > .form-control {
@@ -2455,7 +2507,7 @@ body {
   .navbar form .input-group .form-control {
     position: relative;
     z-index: 2;
-    margin-left: -4px !important;
+    /* margin-left: -4px !important; */
   }
   
   /* Force the search input to overlap the dropdown button */
@@ -2465,7 +2517,7 @@ body {
   }
   
   .navbar form .input-group .dropdown-mobile {
-    margin-right: -1px !important;
+    margin-right: 0px !important;
     border-right: none !important;
   }
   
@@ -2485,7 +2537,7 @@ body {
   .navbar form .input-group .dropdown-mobile .btn {
     border-right: none !important;
     margin-right: 0 !important;
-    padding-right: 12px !important;
+    padding-right: 0 !important;
     box-shadow: none !important;
   }
   
@@ -2500,7 +2552,7 @@ body {
   .navbar form .input-group .dropdown-mobile {
     position: relative;
     z-index: 2;
-    margin-right: -1px !important;
+    margin-right: 0px !important;
     border-right: none !important;
   }
   
@@ -2523,7 +2575,7 @@ body {
   
   /* Target the specific dropdown-mobile div */
   .dropdown-mobile {
-    margin-right: -2px !important;
+    margin-right: 0px !important;
     border-right: none !important;
   }
 
@@ -2587,7 +2639,8 @@ body {
   /* Target by ID for controlled specificity */
   #headerSearchInput {
     /* width: calc(100% + 10px) !important; */
-    margin-left: -5px !important;
+    /* margin-left: -5px !important; */
+    width: 100% !important;
     border-left: none !important;
     border-top-left-radius: 0 !important;
     border-bottom-left-radius: 0 !important;
@@ -2614,7 +2667,7 @@ body {
     margin-left: 0 !important;
     border-left: none !important;
     box-shadow: none !important;
-    width: calc(100% + 8px) !important;
+    width: 100% !important;
   }
   
   /* Force absolute positioning to eliminate gaps */
@@ -2648,7 +2701,7 @@ body {
   .navbar form .input-group .mobile-search-input {
     grid-column: 2;
     margin: 0 !important;
-    width: calc(100% + 6px) !important;
+    width: 100% !important;
     margin-left: -3px !important;
   }
   
@@ -2685,7 +2738,7 @@ body {
   .navbar form .dropdown-desktop,
   .navbar form .dropdown-mobile {
     flex-shrink: 0;
-    min-width: 80px;
+    /* min-width: 80px !important; */
   }
   
   /* Old rule removed - using new cart-section class instead */
@@ -2702,14 +2755,14 @@ body {
   }
   
   .category-item {
-    width: 60px;
-    min-width: 60px;
+    width: 50px;
+    min-width: 50px;
     flex-shrink: 0;
   }
   
   .category-img {
-    width: 60px;
-    height: 60px;
+    width: 50px !important;
+    height: 50px !important;
   }
   
   .category-label {
@@ -2811,22 +2864,39 @@ body {
   
   /* Mobile navigation icons on small screens */
   .mobile-nav-icons {
-    gap: 3px;
+    gap: 8px;
   }
   
   .mobile-nav-link {
-    min-width: 28px;
-    height: 28px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
   }
   
   .mobile-nav-link i {
-    font-size: 14px !important;
+    font-size: 22px !important;
+  }
+  
+  /* Cart icon consistency for small screens */
+  .cart-link {
+    width: 40px !important;
+    height: 40px !important;
+  }
+  
+  .cart-icon {
+    width: 35px !important;
+    height: 25px !important;
   }
   
   /* Ensure account text is visible on small mobile */
   .mobile-nav-link .user-welcome-text,
   .mobile-nav-link .user-signin-text {
     display: block !important;
+    font-size: 10px !important;
+    line-height: 1.1 !important;
   }
   
   /* Show cart icon on small mobile */
@@ -2852,12 +2922,12 @@ body {
   }
   
   .category-img {
-    width: 50px;
-    height: 50px;
+    width: 50px !important;
+    height: 50px !important;
   }
   
   .category-label {
-    font-size: 7px;
+    font-size: 8px;
   }
   
   #floatingCartBtn {
@@ -2869,6 +2939,72 @@ body {
   
   #floatingCartBtn i {
     font-size: 1.3rem;
+  }
+}
+
+/* Extra small devices (phones, 480px and down) */
+@media (max-width: 480px) {
+  .mobile-nav-icons {
+    gap: 6px;
+  }
+  
+  .mobile-nav-link {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+  }
+  
+  .mobile-nav-link i {
+    font-size: 18px !important;
+  }
+  
+  .mobile-nav-link .user-welcome-text,
+  .mobile-nav-link .user-signin-text {
+    font-size: 10px !important;
+    line-height: 1 !important;
+  }
+  
+  .cart-link {
+    width: 32px !important;
+    height: 32px !important;
+  }
+  
+  .cart-icon {
+    width: 35px !important;
+    height: 25px !important;
+  }
+}
+
+/* Very small devices (phones, 360px and down) */
+@media (max-width: 360px) {
+  .mobile-nav-icons {
+    gap: 4px;
+  }
+  
+  .mobile-nav-link {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+  }
+  
+  .mobile-nav-link i {
+    font-size: 16px !important;
+  }
+  
+  .mobile-nav-link .user-welcome-text,
+  .mobile-nav-link .user-signin-text {
+    font-size: 10px !important;
+    line-height: 1 !important;
+  }
+  
+  .cart-link {
+    width: 28px !important;
+    height: 28px !important;
+  }
+  
+  .cart-icon {
+    width: 35px !important;
+    height: 25px !important;
   }
 }
 
@@ -2887,13 +3023,13 @@ body {
   }
   
   .category-item {
-    width: 55px;
-    min-width: 55px;
+    width: 50px;
+    min-width: 50px;
   }
   
   .category-img {
-    width: 55px;
-    height: 55px;
+    width: 50px !important;
+    height: 50px !important;
   }
 }
 
@@ -3059,7 +3195,7 @@ html, body {
 #cart-count-mobile {
   position: absolute !important;
   top: -5px !important;
-  right: 15px !important;
+  right: 5px !important;
   transform: translate(50%, -50%) !important;
   z-index: 1032 !important;
 }
@@ -3155,7 +3291,7 @@ html, body {
   
   /* Ensure proper spacing */
   .input-group .dropdown-mobile {
-    margin-right: -1px;
+    margin-right: 0px;
   }
   
   .input-group .mobile-search-input {

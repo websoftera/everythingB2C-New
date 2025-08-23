@@ -400,8 +400,8 @@
   }
   
   .cart-icon {
-    width: 50px !important;
-    height: 38px !important;
+    width: 35px !important;
+    height: 25px !important;
   }
   
   .floating-cart-btn {
@@ -750,7 +750,7 @@ h3{
 .navbar {
   background-color: #fff;
   border-bottom: 1px solid #dee2e6;
-  padding: 0.5rem 1rem;
+  padding: 0 0.5px !important;
 }
 
 .navbar .logo {
@@ -1872,9 +1872,9 @@ overflow-x: auto;
 }
 
 .category-label {
-  font-size: 9px;
+  font-size: 8px;
   font-weight: bold;
-  color: #333;
+  color: #fff;
   text-decoration: none !important;
 }
 
