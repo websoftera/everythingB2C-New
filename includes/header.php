@@ -398,11 +398,38 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
                 </a>
             </div>
             
-            <!-- Mobile Cart Icon -->
-            <div class="d-lg-none ms-auto cart-section-mobile">
+            <!-- Mobile Navigation Icons -->
+            <div class="d-lg-none ms-auto mobile-nav-icons">
+                <!-- Wishlist Icon -->
+                <a href="wishlist.php" class="text-decoration-none text-dark mobile-nav-link position-relative me-2">
+                    <i class="bi <?php echo $wishlistCount > 0 ? 'bi-heart-fill' : 'bi-heart'; ?>" style="font-size: 20px; color: #DE0085;"></i>
+                    <?php if ($wishlistCount > 0): ?>
+                        <span class="position-absolute badge rounded-pill wishlist-count-badge" style="background-color: #DE0085; font-size: 10px; min-width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; transform: translate(50%, -50%);">
+                            <?php echo $wishlistCount; ?>
+                        </span>
+                    <?php endif; ?>
+                </a>
+                
+                <!-- Account/Login Icon -->
+                <?php if (isLoggedIn()): ?>
+                    <a href="myaccount.php" class="text-decoration-none text-dark mobile-nav-link me-2 d-flex align-items-center">
+                        <i class="fas fa-user me-1" style="font-size: 16px; color: #007bff;"></i>
+                        <div class="user-welcome-text" style="display: block !important;">
+                            <div class="welcome-line-1" style="font-size: 8px; line-height: 1; margin: 0;">Welcome</div>
+                            <div class="welcome-line-2" style="font-size: 8px; line-height: 1; font-weight: 600; margin: 0;"><?php echo htmlspecialchars(substr($currentUser['name'], 0, 5)); ?></div>
+                        </div>
+                    </a>
+                <?php else: ?>
+                    <a href="login.php" class="text-decoration-none text-dark mobile-nav-link me-2 d-flex align-items-center">
+                        <i class="fas fa-user me-1" style="font-size: 16px; color: #99d052;"></i>
+                        <span class="user-signin-text" style="font-size: 8px; font-weight: 600; display: block !important;">Sign In</span>
+                    </a>
+                <?php endif; ?>
+                
+                <!-- Cart Icon -->
                 <a href="cart.php" class="text-decoration-none text-dark cart-link position-relative">
                     <img src="./asset/images/Cart_Icon.png" alt="Cart" class="cart-icon" style="width:28px;height:28px;">
-                    <span id="cart-count-mobile" class="position-absolute top-0 start-100 translate-middle badge rounded-pill" style="display:<?php echo $cartCount > 0 ? 'inline-block' : 'none'; ?>;">
+                    <span id="cart-count-mobile" class="position-absolute badge rounded-pill" style="display:<?php echo $cartCount > 0 ? 'inline-block' : 'none'; ?>; top: -5px; right: -5px; transform: translate(50%, -50%);">
                         <?php echo $cartCount > 0 ? $cartCount : ''; ?>
                     </span>
                 </a>
@@ -440,7 +467,7 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
                 <!-- MOBILE Dropdown -->
                 <div class="dropdown-mobile">
                   <button id="categoryDropdownMobile" class="btn btn-light dropdown-toggle mobile-category-btn" type="button" data-bs-toggle="dropdown" data-selected-category="all">
-                    <span id="selectedCategoryMobile">All</span>
+                    <span id="selectedCategoryMobile">All Categories</span>
                   </button>
                   <ul class="dropdown-menu">
                     <li><a class="dropdown-item category-option" href="#" data-category="all">All Categories</a></li>
@@ -499,8 +526,14 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
 <div class="category-scroll-container d-block d-lg-none py-2 px-2">
     <div class="scroll-wrapper d-flex flex-nowrap overflow-auto">
         <?php function renderMobileCategoryMenu($tree) {
+            // Get current category from URL parameter
+            $currentCategory = isset($_GET['slug']) ? $_GET['slug'] : '';
+            
             foreach ($tree as $cat) {
-                echo '<a href="category.php?slug=' . $cat['slug'] . '" class="category-item text-center mx-2">';
+                // Check if this category is currently active
+                $activeClass = ($currentCategory === $cat['slug']) ? 'active' : '';
+                
+                echo '<a href="category.php?slug=' . $cat['slug'] . '" class="category-item text-center mx-2 ' . $activeClass . '">';
                 echo '<img src="./' . $cat['image'] . '" alt="' . htmlspecialchars($cat['name']) . '" class="category-img mb-1">';
                 echo '<div class="category-label">' . htmlspecialchars($cat['name']) . '</div>';
                 echo '</a>';
@@ -1691,13 +1724,56 @@ if (closeFloatingCartPanel) {
 // Update cart count on page load and every 30s
 updateFloatingCartCount(); // No animation on initial load
 setInterval(() => updateFloatingCartCount(), 30000); // No animation on periodic updates
-// Optionally update on add-to-cart events if available
+
+// Function to update mobile navigation icons
+function updateMobileNavIcons() {
+  // Update wishlist icon
+  const wishlistLink = document.querySelector('.mobile-nav-link[href*="wishlist.php"]');
+  if (wishlistLink) {
+    const wishlistIcon = wishlistLink.querySelector('i');
+    const wishlistBadge = wishlistLink.querySelector('.badge');
+    
+    // Fetch current wishlist count
+    fetch('ajax/get_wishlist_count.php')
+      .then(res => res.json())
+      .then(data => {
+        const count = data.wishlist_count || 0;
+        
+        // Update icon
+        if (wishlistIcon) {
+          wishlistIcon.className = count > 0 ? 'bi bi-heart-fill' : 'bi bi-heart';
+        }
+        
+        // Update badge
+        if (wishlistBadge) {
+          if (count > 0) {
+            wishlistBadge.textContent = count;
+            wishlistBadge.style.display = 'flex';
+          } else {
+            wishlistBadge.style.display = 'none';
+          }
+        }
+      })
+      .catch(err => console.log('Error updating wishlist count:', err));
+  }
+}
+
 // Listen for global cart updates (from add-to-cart or other actions)
 window.addEventListener('cart-updated', function(event) {
   renderFloatingCart();
   // Use animation type from event detail if provided
   const animationType = event.detail && event.detail.action ? event.detail.action : 'updated';
   updateFloatingCartCount(animationType);
+});
+
+// Listen for wishlist updates
+window.addEventListener('wishlist-updated', function(event) {
+  updateMobileNavIcons();
+});
+
+// Update mobile nav icons on page load
+document.addEventListener('DOMContentLoaded', function() {
+  updateMobileNavIcons();
 });
 
 // Floating Cart Remove All functionality

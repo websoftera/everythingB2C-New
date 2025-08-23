@@ -1483,20 +1483,79 @@ padding-right: 20px;
   border-bottom: none !important;
 }
 
+.category-item:active {
+  border: 1px solid #fff !important;
+}
+
+/* Mobile Category Slider Active State */
+.category-scroll-container .category-item {
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  padding: 8px 12px;
+  text-decoration: none;
+  color: #333;
+}
+
+.category-scroll-container .category-item:hover {
+  background-color: rgba(153, 208, 82, 0.1);
+  transform: translateY(-2px);
+}
+
+.category-scroll-container .category-item.active .category-img {
+  border: 3px solid #99d052;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(153, 208, 82, 0.3);
+  transform: scale(1.05);
+  filter: brightness(1.1) contrast(1.1);
+}
+
 .category-img {
   width: 70px;
   height: 70px;
   object-fit: cover;
-  border-radius: 50%;
+  border-radius: 4px !important;
   border: 1px solid #ccc;
 }
 
-.category-label {
-  font-size: 9px;
-  font-weight: bold;
-  color: #333;
-  text-decoration: none !important;
-}
+  .category-label {
+    font-size: 9px;
+    font-weight: bold;
+    color: #333;
+    text-decoration: none !important;
+  }
+  
+  /* Mobile wishlist count badge positioning */
+  .mobile-nav-link[href*="wishlist.php"] {
+    position: relative;
+  }
+  
+  /* Mobile only styles for wishlist count badge */
+  @media (max-width: 991.98px) {
+    .mobile-nav-link[href*="wishlist.php"] .wishlist-count-badge,
+    .mobile-nav-link[href*="wishlist.php"] .badge {
+      position: absolute !important;
+      top: 0px !important;
+      right: 8px !important;
+      transform: translate(50%, -50%) !important;
+      z-index: 10;
+      background-color: #DE0085 !important;
+      font-size: 8px !important;
+      min-width: 12px !important;
+      height: 12px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+    
+    /* Override any conflicting styles */
+    .mobile-nav-link[href*="wishlist.php"] .wishlist-count-badge {
+      top: 0px !important;
+      right: 8px !important;
+      min-width: 12px !important;
+      height: 12px !important;
+      font-size: 8px !important;
+    }
+  }
 
 /* Hide scroll on desktop */
 @media (min-width: 992px) {
@@ -2134,6 +2193,26 @@ body {
     display: none !important;
   }
   
+  /* Mobile navigation icons */
+  .mobile-nav-icons {
+    gap: 4px;
+  }
+  
+  .mobile-nav-link {
+    min-width: 32px;
+    height: 32px;
+  }
+  
+  .mobile-nav-link i {
+    font-size: 16px !important;
+  }
+  
+  /* Ensure account text is visible on medium mobile */
+  .mobile-nav-link .user-welcome-text,
+  .mobile-nav-link .user-signin-text {
+    display: block !important;
+  }
+  
   /* Show cart icon on mobile */
   .cart-section {
     display: flex !important;
@@ -2181,6 +2260,39 @@ body {
     gap: 0;
     width: 100%;
     display: flex;
+    margin: 0;
+    border-collapse: collapse;
+    font-size: 0;
+    letter-spacing: -1px;
+  }
+  
+  .navbar form .input-group > * {
+    font-size: 14px;
+  }
+  
+  .navbar form .input-group > * {
+    margin: 0;
+    border-radius: 0;
+  }
+  
+  .navbar form .input-group .dropdown-mobile {
+    margin-right: -1px;
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+  }
+  
+  .navbar form .input-group .form-control {
+    margin-left: -1px;
+    margin-right: -1px;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+  }
+  
+  .navbar form .input-group .btn {
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
   }
   
   .navbar form .input-group > * {
@@ -2203,6 +2315,13 @@ body {
     font-size: 14px;
     flex-shrink: 0;
     border-radius: 0;
+    height: 42px;
+    /* width: 42px;
+    min-width: 42px;
+    max-width: 42px; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
   /* Connect dropdown button with search input */
@@ -2210,6 +2329,332 @@ body {
     border-radius: 0;
     border-right: none;
     flex-shrink: 0;
+  }
+  
+  /* Ensure seamless connection between search elements */
+  .navbar form .input-group .dropdown-mobile .btn {
+    border-right: none !important;
+    margin-right: 0 !important;
+  }
+  
+  .navbar form .input-group .form-control {
+    border-left: none !important;
+    border-right: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  
+  .navbar form .input-group .btn {
+    border-left: none !important;
+    margin-left: 0 !important;
+  }
+  
+  /* Force connection by removing any gaps */
+  .navbar form .input-group > * {
+    margin: 0 !important;
+    border-radius: 0 !important;
+    outline: none !important;
+    box-shadow: none !important;
+  }
+  
+  /* Target Bootstrap input-group elements specifically */
+  .navbar form .input-group .dropdown-mobile,
+  .navbar form .input-group .form-control,
+  .navbar form .input-group .btn {
+    margin: 0 !important;
+    border-radius: 0 !important;
+    outline: none !important;
+    box-shadow: none !important;
+  }
+  
+  /* Direct targeting of mobile dropdown and search input */
+  .dropdown-mobile {
+    margin-right: 0 !important;
+    border-right: none !important;
+  }
+  
+  .mobile-search-input {
+    margin-left: 0 !important;
+    border-left: none !important;
+    /* width: calc(100% + 10px) !important; */
+  }
+  
+  /* Force connection using specific class targeting */
+  .navbar form .input-group .dropdown-mobile .btn {
+    border-right: none !important;
+    margin-right: 0 !important;
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+  }
+  
+  .navbar form .input-group .mobile-search-input {
+    border-left: none !important;
+    margin-left: 0 !important;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    width: calc(100% + 8px) !important;
+    margin-left: -4px !important;
+  }
+  
+  /* Force connection by targeting the specific gap */
+  .navbar form .input-group .dropdown-mobile {
+    margin-right: 0 !important;
+  }
+  
+  .navbar form .input-group .form-control {
+    margin-left: 0 !important;
+    width: calc(100% + 2px) !important;
+  }
+  
+  /* Ultra-aggressive gap elimination */
+  .navbar form .input-group .dropdown-mobile .btn {
+    margin-right: -1px !important;
+    border-right: none !important;
+    box-shadow: none !important;
+  }
+  
+  .navbar form .input-group .form-control {
+    margin-left: -1px !important;
+    border-left: none !important;
+    box-shadow: none !important;
+  }
+  
+  /* Override any potential Bootstrap spacing */
+  .input-group > .dropdown-mobile {
+    margin-right: -2px !important;
+  }
+  
+  .input-group > .form-control {
+    margin-left: -2px !important;
+  }
+  
+  /* Force remove border radius from mobile dropdown button */
+  .navbar form .input-group .dropdown-mobile .btn {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    border-right: none !important;
+    margin-right: 0 !important;
+    box-shadow: none !important;
+  }
+  
+  /* Force remove border radius from search input */
+  .navbar form .input-group .form-control {
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    border-left: none !important;
+    margin-left: -3px !important;
+    box-shadow: none !important;
+  }
+  
+  /* Additional aggressive fix for the gap */
+  .navbar form .input-group .dropdown-mobile {
+    position: relative;
+    z-index: 3;
+  }
+  
+  .navbar form .input-group .form-control {
+    position: relative;
+    z-index: 2;
+    margin-left: -4px !important;
+  }
+  
+  /* Force the search input to overlap the dropdown button */
+  .navbar form .input-group .form-control:focus {
+    margin-left: -4px !important;
+    border-left: none !important;
+  }
+  
+  .navbar form .input-group .dropdown-mobile {
+    margin-right: -1px !important;
+    border-right: none !important;
+  }
+  
+  .navbar form .input-group .form-control {
+    margin-left: -1px !important;
+    margin-right: -1px !important;
+    border-left: none !important;
+    border-right: none !important;
+  }
+  
+  .navbar form .input-group .btn {
+    margin-left: -1px !important;
+    border-left: none !important;
+  }
+  
+  /* Override any Bootstrap default spacing */
+  .navbar form .input-group .dropdown-mobile .btn {
+    border-right: none !important;
+    margin-right: 0 !important;
+    padding-right: 12px !important;
+    box-shadow: none !important;
+  }
+  
+  .navbar form .input-group .form-control {
+    border-left: none !important;
+    margin-left: 0 !important;
+    padding-left: 12px !important;
+    box-shadow: none !important;
+  }
+  
+  /* Force absolute connection by overlapping elements */
+  .navbar form .input-group .dropdown-mobile {
+    position: relative;
+    z-index: 2;
+    margin-right: -1px !important;
+    border-right: none !important;
+  }
+  
+  .navbar form .input-group .form-control {
+    position: relative;
+    z-index: 1;
+    margin-left: -4px !important;
+    border-left: none !important;
+  }
+  
+  /* Additional fix for the gap */
+  .navbar form .input-group .dropdown-mobile .btn {
+    border-right: none !important;
+    margin-right: 0 !important;
+    position: relative;
+    z-index: 2;
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+  }
+  
+  /* Target the specific dropdown-mobile div */
+  .dropdown-mobile {
+    margin-right: -2px !important;
+    border-right: none !important;
+  }
+
+  .mx-4 {
+    margin-right: 0px !important;
+    margin-left: 0px !important;
+}
+  
+  .dropdown-mobile .btn {
+    border-right: none !important;
+    margin-right: 0 !important;
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    box-shadow: none !important;
+  }
+  
+  /* Force the search input to connect with the dropdown */
+  .navbar form .input-group .form-control {
+    margin-left: 0 !important;
+    border-left: none !important;
+    box-shadow: none !important;
+    width: calc(100% + 2px) !important;
+  }
+  
+  /* Direct targeting of mobile search input for connection */
+  .mobile-search-input {
+    width: calc(100% + 12px) !important;
+    margin-left: -6px !important;
+    border-left: none !important;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    position: relative;
+    z-index: 2;
+  }
+  
+  /* Force the input to extend into the dropdown area */
+  .navbar form .input-group .mobile-search-input {
+    position: relative;
+    z-index: 2;
+    width: calc(100% + 15px) !important;
+    margin-left: -8px !important;
+  }
+  
+  /* Controlled connection approach */
+  .navbar form .input-group {
+    position: relative;
+  }
+  
+  .navbar form .input-group .dropdown-mobile {
+    position: relative;
+    z-index: 1;
+  }
+  
+  .navbar form .input-group .mobile-search-input {
+    position: relative;
+    left: -4px;
+    width: calc(100% + 6px) !important;
+    z-index: 2;
+  }
+  
+  /* Target by ID for controlled specificity */
+  #headerSearchInput {
+    /* width: calc(100% + 10px) !important; */
+    margin-left: -5px !important;
+    border-left: none !important;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    position: relative;
+    z-index: 2;
+  }
+  
+  /* Controlled connection using specific selector */
+  .navbar form .input-group #headerSearchInput.mobile-search-input {
+    position: relative;
+    width: 100% !important;
+    z-index: 2;
+  }
+  
+  /* Nuclear option: Use transform to force connection */
+  .navbar form .input-group .dropdown-mobile {
+    transform: translateX(0) !important;
+    margin-right: 0 !important;
+    border-right: none !important;
+  }
+  
+  .navbar form .input-group .form-control {
+    transform: translateX(0) !important;
+    margin-left: 0 !important;
+    border-left: none !important;
+    box-shadow: none !important;
+    width: calc(100% + 8px) !important;
+  }
+  
+  /* Force absolute positioning to eliminate gaps */
+  .navbar form .input-group {
+    position: relative;
+  }
+  
+  .navbar form .input-group .dropdown-mobile {
+    position: relative;
+    z-index: 10;
+  }
+  
+  .navbar form .input-group .form-control {
+    position: relative;
+    z-index: 9;
+    left: 0;
+  }
+  
+  /* Ultra-aggressive gap elimination using CSS Grid */
+  .navbar form .input-group {
+    display: grid !important;
+    grid-template-columns: auto 1fr auto !important;
+    gap: 0 !important;
+  }
+  
+  .navbar form .input-group .dropdown-mobile {
+    grid-column: 1;
+    margin: 0 !important;
+  }
+  
+  .navbar form .input-group .mobile-search-input {
+    grid-column: 2;
+    margin: 0 !important;
+    width: calc(100% + 6px) !important;
+    margin-left: -3px !important;
+  }
+  
+  .navbar form .input-group .mobile-search-btn {
+    grid-column: 3;
+    margin: 0 !important;
   }
   
   /* Ensure dropdown button and search input are connected */
@@ -2364,6 +2809,26 @@ body {
     border-radius: 0;
   }
   
+  /* Mobile navigation icons on small screens */
+  .mobile-nav-icons {
+    gap: 3px;
+  }
+  
+  .mobile-nav-link {
+    min-width: 28px;
+    height: 28px;
+  }
+  
+  .mobile-nav-link i {
+    font-size: 14px !important;
+  }
+  
+  /* Ensure account text is visible on small mobile */
+  .mobile-nav-link .user-welcome-text,
+  .mobile-nav-link .user-signin-text {
+    display: block !important;
+  }
+  
   /* Show cart icon on small mobile */
   .cart-section {
     padding: 6px 10px;
@@ -2494,20 +2959,87 @@ html, body {
   width: 100% !important;
 }
 
-/* Mobile cart section */
-.cart-section-mobile {
+/* Mobile navigation icons */
+.mobile-nav-icons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin-left: auto;
 }
 
-.cart-section-mobile .cart-link {
-  padding: 8px;
-  border-radius: 50%;
-  transition: background-color 0.3s ease;
+.mobile-nav-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  transition: all 0.3s ease;
   position: relative;
+  background: none;
+  border: none;
+  box-shadow: none;
+  padding: 0 4px;
+  white-space: nowrap;
 }
 
-.cart-section-mobile .cart-link:hover {
-  background-color: #f8f9fa;
+.mobile-nav-link:hover {
+  transform: scale(1.1);
+  background: none;
+  box-shadow: none;
+}
+
+.mobile-nav-link i {
+  transition: transform 0.3s ease;
+}
+
+.mobile-nav-link:hover i {
+  transform: scale(1.1);
+}
+
+/* Specific colors for mobile nav icons */
+.mobile-nav-link[href*="wishlist.php"] i {
+  color: #DE0085 !important;
+}
+
+.mobile-nav-link[href*="myaccount.php"] i {
+  color: #007bff !important;
+}
+
+.mobile-nav-link[href*="login.php"] i {
+  color: #99d052 !important;
+}
+
+.mobile-nav-link[href*="cart.php"] {
+  background: none;
+  border: none;
+}
+
+/* Mobile navigation text styling - ensure visibility */
+.mobile-nav-link .user-welcome-text,
+.mobile-nav-link .user-signin-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60px;
+  display: block !important;
+}
+
+.mobile-nav-link .welcome-line-1,
+.mobile-nav-link .welcome-line-2 {
+  margin: 0;
+  padding: 0;
+  display: block !important;
+}
+
+.mobile-nav-link .user-signin-text {
+  margin: 0;
+  padding: 0;
+  display: block !important;
+}
+
+/* Mobile cart section - now part of mobile-nav-icons */
+.cart-section-mobile {
+  display: none; /* Hide old cart section since we're using mobile-nav-icons */
 }
 
 /* Ensure cart count badge is visible */
@@ -2526,8 +3058,26 @@ html, body {
 /* Mobile cart count positioning - right side */
 #cart-count-mobile {
   position: absolute !important;
-  top: -6px !important;
-  right: -30px !important;
+  top: -5px !important;
+  right: 15px !important;
+  transform: translate(50%, -50%) !important;
+  z-index: 1032 !important;
+}
+
+/* Wishlist count badge styling */
+.mobile-nav-link[href*="wishlist.php"] .badge {
+  background-color: #DE0085 !important;
+  color: white !important;
+  font-size: 8px !important;
+  min-width: 12px !important;
+  height: 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 1031 !important;
+  position: absolute !important;
+  top: 0px !important;
+  right: 8px !important;
   transform: translate(50%, -50%) !important;
 }
 
@@ -3158,5 +3708,31 @@ input[type="checkbox"]:checked + .heart-icon,
     margin-left: 4px !important;
     color: #adb5bd !important;
     font-weight: bold !important;
+}
+
+/* Custom Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--dark-green);
+  border-radius: 6px;
+  border: 2px solid #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #7a8c1a; /* Slightly darker shade of dark-green */
+}
+
+/* Firefox scrollbar styles */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--dark-green) #f1f1f1;
 }
 

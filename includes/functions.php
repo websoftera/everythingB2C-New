@@ -69,14 +69,102 @@ function getAllCategoriesWithRecursiveProductCount() {
     return $categories;
 }
 
+// Alternative function using a more efficient approach with CTE (Common Table Expression)
+function getAllCategoriesWithRecursiveProductCountOptimized() {
+    global $pdo;
+    
+    // Use a recursive CTE to get all category hierarchies and their product counts
+    $sql = "
+        WITH RECURSIVE category_tree AS (
+            -- Base case: get all categories
+            SELECT 
+                id, 
+                name, 
+                parent_id, 
+                slug,
+                0 as level,
+                CAST(id AS CHAR(1000)) as path
+            FROM categories 
+            
+            UNION ALL
+            
+            -- Recursive case: get child categories
+            SELECT 
+                c.id, 
+                c.name, 
+                c.parent_id, 
+                c.slug,
+                ct.level + 1,
+                CONCAT(ct.path, ',', c.id) as path
+            FROM categories c
+            INNER JOIN category_tree ct ON c.parent_id = ct.id
+        ),
+        category_product_counts AS (
+            SELECT 
+                ct.id,
+                ct.name,
+                ct.parent_id,
+                ct.slug,
+                ct.level,
+                ct.path,
+                COALESCE(p.product_count, 0) as direct_product_count,
+                COALESCE(child_p.total_child_products, 0) as child_product_count
+            FROM category_tree ct
+            LEFT JOIN (
+                SELECT category_id, COUNT(*) as product_count
+                FROM products 
+                WHERE is_active = 1
+                GROUP BY category_id
+            ) p ON ct.id = p.category_id
+            LEFT JOIN (
+                SELECT 
+                    parent_cat.id,
+                    SUM(p2.product_count) as total_child_products
+                FROM category_tree parent_cat
+                LEFT JOIN category_tree child_cat ON child_cat.path LIKE CONCAT(parent_cat.path, ',%')
+                LEFT JOIN (
+                    SELECT category_id, COUNT(*) as product_count
+                    FROM products 
+                    WHERE is_active = 1
+                    GROUP BY category_id
+                ) p2 ON child_cat.id = p2.category_id
+                WHERE parent_cat.level = 0
+                GROUP BY parent_cat.id
+            ) child_p ON ct.id = child_p.id
+        )
+        SELECT 
+            id,
+            name,
+            parent_id,
+            slug,
+            level,
+            (direct_product_count + child_product_count) as product_count
+        FROM category_product_counts
+        ORDER BY name
+    ";
+    
+    try {
+        $stmt = $pdo->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (Exception $e) {
+        // Fallback to the original method if CTE is not supported
+        return getAllCategoriesWithRecursiveProductCount();
+    }
+}
+
 // Helper function to recursively count products in a category and all its subcategories
 function getRecursiveProductCount($categoryId) {
     global $pdo;
     
+    // Validate category ID
+    if (!$categoryId || !is_numeric($categoryId)) {
+        return 0;
+    }
+    
     // Get direct products in this category
     $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM products WHERE category_id = ? AND is_active = 1");
     $stmt->execute([$categoryId]);
-    $directCount = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
+    $directCount = (int)$stmt->fetch(PDO::FETCH_ASSOC)['count'];
     
     // Get all subcategories
     $stmt = $pdo->prepare("SELECT id FROM categories WHERE parent_id = ?");

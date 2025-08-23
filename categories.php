@@ -7,6 +7,17 @@ require_once 'includes/functions.php';
 $categories = getAllCategoriesWithRecursiveProductCount();
 $main_categories = array_filter($categories, function($cat) { return empty($cat['parent_id']); });
 
+// Debug: Let's verify the counting is working correctly
+// Uncomment the following lines to debug category counts
+/*
+echo "<div style='background: #f0f0f0; padding: 10px; margin: 10px; border: 1px solid #ccc;'>";
+echo "<h4>Debug: Category Product Counts</h4>";
+foreach ($main_categories as $cat) {
+    echo "<p><strong>{$cat['name']}</strong>: {$cat['product_count']} products</p>";
+}
+echo "</div>";
+*/
+
 // Get filter parameters for sidebar
 $selectedCategory = isset($_GET['category']) ? $_GET['category'] : '';
 $searchTerm = isset($_GET['q']) ? trim($_GET['q']) : '';

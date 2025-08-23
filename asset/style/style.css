@@ -679,14 +679,14 @@ h3{
 
 .navbar .dropdown-menu {
   position: absolute;
-  z-index: 1060 !important; /* Dropdown above both navbars */
+  z-index: 9999 !important; /* Dropdown above both navbars */
 }
 
 /* Ensure dropdown menus are clickable and visible */
 .navbar-nav .dropdown-menu {
   display: none;
   position: absolute;
-  z-index: 1060 !important;
+  z-index: 9999 !important;
   min-width: 200px;
   background-color: #ffffff;
   border: 1px solid #dee2e6;
