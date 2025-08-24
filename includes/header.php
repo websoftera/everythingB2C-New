@@ -416,7 +416,7 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
                         <i class="fas fa-user me-1" style="font-size: 24px; color: #007bff;"></i>
                         <div class="user-welcome-text" style="display: block !important;">
                             <div class="welcome-line-1" style="font-size: 10px; line-height: 1; margin: 0; color: #333;">Welcome</div>
-                            <div class="welcome-line-2" style="font-size: 10px; line-height: 1; font-weight: 600; margin: 0; color: #333;"><?php echo htmlspecialchars(substr($currentUser['name'], 0, 4)); ?></div>
+                            <div class="welcome-line-2" style="font-size: 10px; line-height: 1; font-weight: 600; margin: 0; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?php echo htmlspecialchars($currentUser['name']); ?></div>
                         </div>
                     </a>
                 <?php else: ?>
