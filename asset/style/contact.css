@@ -164,7 +164,7 @@
     width: 100%;
     background-color: var(--input-bg);
     border-radius: 5px;
-    height: 45px;
+    height: 35px;
     display: flex;
     align-items: center; /* Vertically align icon and input */
     padding: 0 15px;
@@ -514,7 +514,7 @@
 
   /* Adjusted input-group for mobile to fix alignment */
   .main-container .input-group {
-    height: 45px; /* Maintain height for consistent input size */
+    height: 35px; /* Maintain height for consistent input size */
     margin: 10px 0; /* Slightly increase margin for spacing */
     padding: 0 15px; /* Ensure padding is consistent */
   }

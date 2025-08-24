@@ -11,6 +11,7 @@
                 <li><a href="products.php">All Products</a></li>
                 <li><a href="about.php">About Us</a></li>
                 <li><a href="contact.php">Contact</a></li>
+                <li><a href="privacy.php">Privacy Policy</a></li>
             </ul>
         </div>
         <div class="footer-column">
@@ -42,15 +43,13 @@
                 <a href="#"><i class="fab fa-linkedin"></i></a>
             </div>
             <div class="contact-info mt-3">
-                <p><i class="fas fa-phone"></i> +91 1234567890</p>
-                <p><i class="fas fa-envelope footer-email"></i> info@EverythingB2C.com</p>
+                <p><i class="fas fa-phone"></i> <a href="tel:+918780406230">+91 878 040 6230</a></p>
+                <p><i class="fas fa-envelope footer-email"></i> <a href="mailto:info@everythingb2c.in">info@everythingb2c.in</a></p>
             </div>
         </div>
     </div>
     <div class="footer-bottom">
-        <p>&copy; 2024 EverythingB2C. All rights reserved. | 
-        <a href="privacy.php">Privacy Policy</a> | 
-        <a href="terms.php">Terms of Service</a></p>
+        <p>Copyrights 2025 EverythingB2C - All Rights Reserved & Developed by <a href="https://www.websoftera.com" target="_blank">Websoftera</a></p>
     </div>
 </footer>
 </body>

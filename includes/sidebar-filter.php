@@ -91,8 +91,8 @@ $categoryTree = buildCategoryTree($categories);
         </div>
       </div>
 
-      <!-- Price Range Filter -->
-      <div class="filter-section">
+      <!-- Price Range Filter - HIDDEN -->
+      <div class="filter-section" style="display: none;">
         <h5>Price Range</h5>
         <div class="price-range-container">
           <div class="price-display">
@@ -134,8 +134,8 @@ $categoryTree = buildCategoryTree($categories);
         </div>
       </div>
 
-      <!-- Sort Options -->
-      <div class="filter-section">
+      <!-- Sort Options - HIDDEN -->
+      <div class="filter-section" style="display: none;">
         <h5>Sort By</h5>
         <div class="form-group">
           <select name="sort" class="form-control">

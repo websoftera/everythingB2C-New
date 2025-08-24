@@ -460,30 +460,30 @@ function buildCategoriesPaginationUrl($page, $params = []) {
     display: flex;
     flex-direction: column;
     padding: 10px;
-    background-color: #9fbe1b;
+    background-color: #fff;
 }
 
 .category-name {
     font-size: 0.9rem;
     font-weight: 600;
-    color: #ffffff;
+    color: var(--dark-green);
     margin-bottom: 6px;
     text-align: center;
 }
 
 .category-name a {
     text-decoration: none;
-    color: inherit;
+    color: var(--dark-green);
     transition: color 0.3s ease;
 }
 
 .category-name a:hover {
-    color: #ffffff;
+    color: var(--light-green);
     opacity: 0.8;
 }
 
 .category-count {
-    color: #ffffff;
+    color: var(--dark-grey);
     font-weight: 500;
     text-align: center;
     margin-bottom: 10px;
@@ -501,9 +501,9 @@ function buildCategoriesPaginationUrl($page, $params = []) {
 }
 
 .view-category-btn {
-    background: #ffffff;
-    color: #9fbe1b;
-    border: 2px solid #ffffff;
+    background: var(--dark-green);
+    color: #fff;
+    border: 2px solid var(--light-green);
     padding: 5px 10px;
     border-radius: 6px;
     font-weight: 600;
@@ -513,8 +513,8 @@ function buildCategoriesPaginationUrl($page, $params = []) {
 
 .view-category-btn:hover {
     background: transparent;
-    color: #ffffff;
-    border-color: #ffffff;
+    color: #fff;
+    border-color: var(--light-green);
     transform: translateY(-2px);
 }
 

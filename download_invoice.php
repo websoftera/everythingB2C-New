@@ -36,8 +36,8 @@ $company = [
     'name' => 'EverythingB2C',
     'address' => 'Shop 12, D, Media Park, Bhagwan Tatyasaheb Kawade Rd, Dombi Wadi, R, Pune, Maharashtra 411001',
     'gstin' => '27AAABC1711H1ZF',
-    'phone' => '+91 90281 18070',
-    'email' => 'info@EverythingB2C.in',
+    'phone' => '+91 878 040 6230',
+    'email' => 'info@everythingb2c.in',
     'logo' => __DIR__ . '/asset/images/logo.webp',
 ];
 

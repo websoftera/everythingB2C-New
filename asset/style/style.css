@@ -96,7 +96,7 @@
 
 /* User Account Icon and Welcome Text Styles */
 .user-account-icon {
-  color: #fff !important; /* Blue color for account icon */
+  color: #007bff !important; /* Blue color for account icon */
   font-size: 20px !important;
   vertical-align: middle !important;
   line-height: 1 !important;
@@ -587,9 +587,13 @@ h3{
 
 .footer-bottom {
   text-align: center;
-  margin-top: 0px;
+  margin-top: 15px;
   font-size: 14px;
   color: #ccc;
+}
+
+.footer-bottom p{
+  margin: 0;
 }
 
 .category-header{
@@ -635,6 +639,116 @@ h3{
   .footer-bottom {
     font-size: 16px;
     margin-top: 20px;
+  }
+}
+
+/* Mobile Footer - 2 columns per row */
+@media (max-width: 768px) {
+  .desktop-footer {
+    padding: 15px 20px;
+  }
+  
+  .footer-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 0 10px;
+  }
+  
+  .footer-column {
+    min-width: auto;
+    flex: 1;
+    margin-bottom: 15px;
+  }
+  
+  .footer-column h3 {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+  
+  .footer-column ul li {
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+  
+  .footer-column.social .icons i {
+    font-size: 16px;
+    margin-right: 10px;
+  }
+  
+  .footer-column.social .contact-info p {
+    font-size: 11px;
+    margin-bottom: 4px;
+  }
+  
+  .footer-bottom {
+    font-size: 12px;
+    margin-top: 15px;
+    padding: 0 15px;
+  }
+  
+  .footer-bottom a {
+    color: #fff;
+    font-weight: 600;
+  }
+  
+  .footer-column.social .contact-info a {
+    color: #ccc;
+    font-size: 11px;
+  }
+}
+
+/* Small Mobile Footer */
+@media (max-width: 480px) {
+  .desktop-footer {
+    padding: 10px 15px;
+  }
+  
+  .footer-container {
+    gap: 15px;
+    padding: 0 7px;
+  }
+  
+  .footer-column {
+    margin-bottom: 10px;
+  }
+  
+  .footer-column h3 {
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+  
+  .footer-column ul li {
+    font-size: 11px;
+    margin-bottom: 5px;
+  }
+  
+  .footer-column.social .icons i {
+    font-size: 14px;
+    margin-right: 8px;
+  }
+  
+  .footer-column.social .contact-info p {
+    font-size: 10px;
+    margin-bottom: 3px;
+  }
+  
+  .footer-bottom {
+    font-size: 11px;
+    margin-top: 10px;
+    padding: 0 10px;
+  }
+  
+  .footer-bottom a {
+    color: #fff;
+    font-weight: 600;
+  }
+  
+  .footer-column.social .contact-info a {
+    color: #ccc;
+    font-size: 10px;
   }
 }
 
@@ -812,7 +926,7 @@ h3{
   font-weight: bold;
   text-align: center;
   text-decoration: none;
-  margin: 20px auto;
+  margin: 10px auto;
 }
 
 .hero-button {
@@ -1057,6 +1171,18 @@ h3{
         font-size: 14px;
         padding: 20px;
         flex-direction: column;
+    }
+
+    .category-products-title {
+      padding-left: 20px !important;
+    }
+
+    .service-section {
+        margin: 0px 7px !important;
+    }
+
+    .navbar .logo {
+      margin-left: -8px !important;
     }
 
 
@@ -2536,8 +2662,8 @@ html .cart-added-highlight,
     bottom: 20px !important;
     left: 20px !important; /* Changed from right to left */
     right: auto !important; /* Reset right positioning */
-    width: 45px !important;
-    height: 45px !important;
+    width: 30px !important;
+    height: 30px !important;
     font-size: 16px !important;
     padding: 12px !important;
   }
@@ -2558,8 +2684,8 @@ html .cart-added-highlight,
     bottom: 15px !important;
     left: 15px !important; /* Changed from right to left */
     right: auto !important; /* Reset right positioning */
-    width: 40px !important;
-    height: 40px !important;
+    width: 30px !important;
+    height: 30px !important;
     font-size: 14px !important;
     padding: 10px !important;
   }
@@ -2818,8 +2944,8 @@ html .cart-added-highlight,
   .category-nav-btn img,
   .discounted-nav-btn img,
   .featured-nav-btn img {
-    width: 12px !important;
-    height: 12px !important;
+    width: 10px !important;
+    height: 10px !important;
   }
   
   /* Reduce gaps in containers */
