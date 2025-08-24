@@ -539,7 +539,7 @@ padding-right: 20px;
 .category-scroll-container {
   display: flex;            /* ensure flex layout */
   gap: 10px;                /* add gap between items */
-  background-color:#9FBF1C;
+  background-color:#fff;
   border-top: 1px solid #ddd;
   border-bottom: 1px solid #ddd;
 scroll-behavior: smooth;
@@ -576,7 +576,7 @@ overflow-x: auto;
 .category-label {
   font-size: 8px;
   font-weight: bold;
-  color: #fff;
+  color: #6c757d;
   text-decoration: none !important;
 }
 

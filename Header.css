@@ -1466,7 +1466,7 @@ padding-right: 20px;
 /*--------------------------------------2nd navbar-----------------------------------------------------*/
 .category-scroll-container {
   display: block;           /* container should be block */
-  background-color:#9FBF1C;
+  background-color:#fff;
   border-top: 1px solid #ddd;
   border-bottom: 1px solid #ddd;
 
@@ -1527,7 +1527,7 @@ padding-right: 20px;
 .category-label {
     font-size: 8px;
   font-weight: bold;
-    color: #fff;
+    color: #6c757d;
   text-decoration: none !important;
 }
   
@@ -2060,7 +2060,7 @@ input[type="checkbox"]:checked + .heart-icon {
 
 .category-scroll-container {
   display: block;
-  background-color: #9FBF1C;
+  background-color: #fff;
   border-top: 1px solid #ddd;
   border-bottom: 1px solid #ddd;
   position: sticky;
@@ -2186,7 +2186,6 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2px;
-    padding: 2px 2px;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
@@ -2209,7 +2208,7 @@ body {
   .mobile-nav-icons {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 15px;
     flex-shrink: 0;
     margin-left: auto;
   }
@@ -2303,7 +2302,7 @@ body {
     order: 2;
     min-width: 0;
     max-width: 100%;
-    padding: 0 2px 8px 2px;
+    padding: 0 0px 8px 0px;
     box-sizing: border-box;
   }
   
@@ -2839,7 +2838,6 @@ body {
   }
   
   .navbar .logo-wrapper {
-    padding: 6px 10px;
     margin-bottom: 6px;
     gap: 10px;
   }
@@ -2850,7 +2848,7 @@ body {
   }
   
   .navbar form {
-    padding: 0 10px 6px 10px;
+    padding: 0 0px 6px 0px;
   }
   
   .navbar form .form-control {
@@ -2868,7 +2866,7 @@ body {
   
   /* Mobile navigation icons on small screens */
   .mobile-nav-icons {
-    gap: 8px;
+    gap: 10px;
   }
   
   .mobile-nav-link {
@@ -2949,7 +2947,7 @@ body {
 /* Extra small devices (phones, 480px and down) */
 @media (max-width: 480px) {
   .mobile-nav-icons {
-    gap: 6px;
+    gap: 8px;
   }
   
   .mobile-nav-link {
@@ -2982,7 +2980,7 @@ body {
 /* Very small devices (phones, 360px and down) */
 @media (max-width: 360px) {
   .mobile-nav-icons {
-    gap: 4px;
+    gap: 6px;
   }
   
   .mobile-nav-link {
@@ -3103,7 +3101,7 @@ html, body {
 .mobile-nav-icons {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 15px;
   margin-left: auto;
 }
 
@@ -3941,5 +3939,587 @@ input[type="checkbox"]:checked + .heart-icon,
   box-shadow: 0 4px 12px rgba(153, 208, 82, 0.3);
   transform: scale(1.05);
   filter: brightness(1.1) contrast(1.1);
+}
+
+/* ===== MOBILE COMPACT STYLES ===== */
+/* Mobile devices - Make website compact with consistent margins */
+@media (max-width: 768px) {
+  /* Global container margins for consistency */
+  .container, .container-fluid {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+  
+  /* Reduce section padding */
+  section {
+    padding: 15px 0 !important;
+  }
+  
+  /* Compact hero section */
+  .hero-slider-section {
+    margin-bottom: 10px !important;
+  }
+  
+  /* Compact process section */
+  .process-container {
+    padding: 0 !important;
+    gap: 15px !important;
+  }
+  
+  /* .step {
+    padding: 8px !important;
+  } */
+  
+  .step img {
+    padding: 0px !important;
+  }
+
+  .process-container {
+    margin: 0px !important;
+  }
+  
+  .step p {
+    font-size: 10px !important;
+    margin: 5px 0 0 0 !important;
+  }
+  
+  /* Compact category section */
+  .popular-categories-section {
+    padding: 15px 0 !important;
+  }
+  
+  .categories-card {
+    padding: 10px 0 !important;
+    margin: 0 6px !important;
+  }
+  
+  .category-products-header {
+    padding: 0 0 10px 0 !important;
+    margin-bottom: 2px !important;
+  }
+  
+  .category-products-title {
+    font-size: 16px !important;
+    margin-bottom: 5px !important;
+  }
+  
+  /* Compact product sections */
+  .discounted-products-section,
+  .featured-products-section {
+    padding: 15px 0 !important;
+  }
+  
+  .discounted-products-card,
+  .featured-products-card {
+    padding: 10px 0 !important;
+  }
+  
+  .discounted-products-header,
+  .featured-products-header {
+    padding: 0 0 0px 0 !important;
+    /* margin-bottom: 10px !important; */
+  }
+  
+  .discounted-products-title,
+  .featured-products-title {
+    font-size: 16px !important;
+    margin-bottom: 5px !important;
+  }
+  
+  /* Compact product cards */
+  .product-card {
+    margin-bottom: 10px !important;
+    padding: 8px !important;
+  }
+  
+  .product-info {
+    padding: 8px !important;
+  }
+  
+  .product-details h3 {
+    font-size: 12px !important;
+    margin-bottom: 5px !important;
+    line-height: 1.2 !important;
+  }
+  
+  .price-buttons {
+    gap: 5px !important;
+    margin-bottom: 8px !important;
+  }
+  
+  .price-btn {
+    padding: 4px 6px !important;
+    font-size: 10px !important;
+  }
+  
+  /* Compact navigation */
+  .category-nav-btn,
+  .discounted-nav-btn,
+  .featured-nav-btn {
+    width: 20px !important;
+    height: 20px !important;
+    background: #ffffff !important;
+    border: 1px solid #e0e0e0 !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
+    z-index: 100 !important;
+  }
+  
+  .category-nav-btn.prev-btn,
+  .discounted-nav-btn.prev-btn,
+  .featured-nav-btn.prev-btn {
+    left: 5px !important;
+  }
+  
+  .category-nav-btn.next-btn,
+  .discounted-nav-btn.next-btn,
+  .featured-nav-btn.next-btn {
+    right: 5px !important;
+  }
+  
+  /* Adjust navigation button images */
+  .category-nav-btn img,
+  .discounted-nav-btn img,
+  .featured-nav-btn img {
+    width: 12px !important;
+    height: 12px !important;
+  }
+  
+  /* Reduce gaps in containers */
+  .categories-container,
+  .discounted-products-container,
+  .featured-products-container {
+    gap: 8px !important;
+    padding: 5px 0 !important;
+  }
+  
+  /* Compact headings */
+  h1, h2, h3, h4, h5, h6 {
+    margin-bottom: 8px !important;
+  }
+  
+  h1 { font-size: 18px !important; }
+  h2 { font-size: 16px !important; }
+  h3 { font-size: 14px !important; }
+  h4 { font-size: 13px !important; }
+  h5 { font-size: 12px !important; }
+  h6 { font-size: 11px !important; }
+  
+  /* Compact paragraphs */
+  p {
+    margin-bottom: 8px !important;
+    line-height: 1.4 !important;
+  }
+  
+  /* Compact buttons */
+  .btn {
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+  }
+  
+  /* Compact forms */
+  .form-control {
+    padding: 6px 10px !important;
+    font-size: 14px !important;
+  }
+  
+  /* Compact lists */
+  ul, ol {
+    padding-left: 20px !important;
+  }
+  
+  li {
+    margin-bottom: 5px !important;
+  }
+  
+  /* Compact tables */
+  .table {
+    font-size: 12px !important;
+  }
+  
+  .table td, .table th {
+    padding: 6px 8px !important;
+  }
+  
+  /* Compact cards */
+  .card {
+    margin-bottom: 10px !important;
+  }
+  
+  .card-body {
+    padding: 12px !important;
+  }
+  
+  .card-title {
+    font-size: 14px !important;
+    margin-bottom: 8px !important;
+  }
+  
+  /* Compact modals */
+  .modal-body {
+    padding: 15px !important;
+  }
+  
+  .modal-header {
+    padding: 10px 15px !important;
+  }
+  
+  .modal-footer {
+    padding: 10px 15px !important;
+  }
+  
+  /* Compact alerts */
+  .alert {
+    padding: 8px 12px !important;
+    margin-bottom: 10px !important;
+  }
+  
+  /* Compact breadcrumbs */
+  .breadcrumb {
+    padding: 8px 0 !important;
+    margin-bottom: 10px !important;
+  }
+  
+  .breadcrumb-item {
+    font-size: 12px !important;
+  }
+  
+  /* Compact pagination */
+  .pagination {
+    gap: 2px !important;
+  }
+  
+  .page-link {
+    padding: 6px 10px !important;
+    font-size: 12px !important;
+  }
+  
+  /* Compact badges */
+  .badge {
+    font-size: 10px !important;
+    padding: 3px 6px !important;
+  }
+  
+  /* Compact tooltips */
+  .tooltip {
+    font-size: 11px !important;
+  }
+  
+  /* Compact dropdowns */
+  .dropdown-menu {
+    padding: 5px 0 !important;
+  }
+  
+  .dropdown-item {
+    padding: 6px 15px !important;
+    font-size: 13px !important;
+  }
+  
+  /* Compact navbar */
+  .navbar {
+    padding: 8px 0 !important;
+  }
+  
+  .navbar-nav .nav-link {
+    padding: 6px 10px !important;
+    font-size: 13px !important;
+  }
+  
+  /* Compact footer */
+  footer {
+    padding: 20px 0 !important;
+  }
+  
+  footer .container {
+    padding: 0 12px !important;
+  }
+  
+  /* Compact grid spacing */
+  .row {
+    margin-left: -6px !important;
+    margin-right: -6px !important;
+  }
+  
+  .col, .col-1, .col-2, .col-3, .col-4, .col-5, .col-6,
+  .col-7, .col-8, .col-9, .col-10, .col-11, .col-12 {
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+  }
+}
+
+/* Extra small mobile devices - Even more compact */
+@media (max-width: 480px) {
+  /* Tighter margins */
+  .container, .container-fluid {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  
+  /* Even more compact sections */
+  section {
+    padding: 10px 0 !important;
+  }
+  
+  /* Smaller headings */
+  h1 { font-size: 16px !important; }
+  h2 { font-size: 14px !important; }
+  h3 { font-size: 12px !important; }
+  h4 { font-size: 11px !important; }
+  h5 { font-size: 10px !important; }
+  h6 { font-size: 9px !important; }
+  
+  /* Smaller text */
+  p {
+    font-size: 12px !important;
+    margin-bottom: 6px !important;
+  }
+  
+  /* Smaller buttons */
+  .btn {
+    padding: 5px 10px !important;
+    font-size: 11px !important;
+  }
+  
+  /* Smaller form elements */
+  .form-control {
+    padding: 5px 8px !important;
+    font-size: 13px !important;
+  }
+  
+  /* Smaller cards */
+  .card-body {
+    padding: 8px !important;
+  }
+  
+  .card-title {
+    font-size: 12px !important;
+    margin-bottom: 6px !important;
+  }
+  
+  /* Smaller product cards */
+  .product-card {
+    margin-bottom: 8px !important;
+    padding: 6px !important;
+  }
+  
+  .product-info {
+    padding: 6px !important;
+  }
+  
+  .product-details h3 {
+    font-size: 11px !important;
+    margin-bottom: 4px !important;
+  }
+  
+  .price-buttons {
+    gap: 4px !important;
+    margin-bottom: 6px !important;
+  }
+  
+  .price-btn {
+    padding: 3px 5px !important;
+    font-size: 9px !important;
+  }
+  
+  /* Smaller navigation */
+  .category-nav-btn,
+  .discounted-nav-btn,
+  .featured-nav-btn {
+    width: 18px !important;
+    height: 18px !important;
+    background: #ffffff !important;
+    border: 1px solid #e0e0e0 !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
+    z-index: 100 !important;
+  }
+  
+  .category-nav-btn.prev-btn,
+  .discounted-nav-btn.prev-btn,
+  .featured-nav-btn.prev-btn {
+    left: 3px !important;
+  }
+  
+  .category-nav-btn.next-btn,
+  .discounted-nav-btn.next-btn,
+  .featured-nav-btn.next-btn {
+    right: 3px !important;
+  }
+  
+  /* Adjust navigation button images */
+  .category-nav-btn img,
+  .discounted-nav-btn img,
+  .featured-nav-btn img {
+    width: 10px !important;
+    height: 10px !important;
+  }
+  
+  /* Smaller gaps */
+  .categories-container,
+  .discounted-products-container,
+  .featured-products-container {
+    gap: 6px !important;
+    padding: 4px 0 !important;
+  }
+  
+  /* Smaller grid spacing */
+  .row {
+    margin-left: -4px !important;
+    margin-right: -4px !important;
+  }
+  
+  .col, .col-1, .col-2, .col-3, .col-4, .col-5, .col-6,
+  .col-7, .col-8, .col-9, .col-10, .col-11, .col-12 {
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+  }
+}
+
+/* Ultra small devices */
+@media (max-width: 360px) {
+  /* Minimal margins */
+  .container, .container-fluid {
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+  }
+  
+  /* Minimal padding */
+  section {
+    padding: 8px 0 !important;
+  }
+  
+  /* Minimal text sizes */
+  h1 { font-size: 15px !important; }
+  h2 { font-size: 13px !important; }
+  h3 { font-size: 11px !important; }
+  h4 { font-size: 10px !important; }
+  h5 { font-size: 9px !important; }
+  h6 { font-size: 8px !important; }
+  
+  p {
+    font-size: 11px !important;
+    margin-bottom: 5px !important;
+  }
+  
+  /* Minimal buttons */
+  .btn {
+    padding: 4px 8px !important;
+    font-size: 10px !important;
+  }
+  
+  /* Minimal form elements */
+  .form-control {
+    padding: 4px 6px !important;
+    font-size: 12px !important;
+  }
+  
+  /* Minimal cards */
+  .card-body {
+    padding: 6px !important;
+  }
+  
+  .card-title {
+    font-size: 11px !important;
+    margin-bottom: 5px !important;
+  }
+  
+  /* Minimal product cards */
+  .product-card {
+    margin-bottom: 6px !important;
+    padding: 5px !important;
+  }
+  
+  .product-info {
+    padding: 5px !important;
+  }
+  
+  .product-details h3 {
+    font-size: 10px !important;
+    margin-bottom: 3px !important;
+  }
+  
+  .price-buttons {
+    gap: 3px !important;
+    margin-bottom: 5px !important;
+  }
+  
+  .price-btn {
+    padding: 2px 4px !important;
+    font-size: 8px !important;
+  }
+  
+  /* Minimal navigation */
+  .category-nav-btn,
+  .discounted-nav-btn,
+  .featured-nav-btn {
+    width: 16px !important;
+    height: 16px !important;
+    background: #ffffff !important;
+    border: 1px solid #e0e0e0 !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
+    z-index: 100 !important;
+  }
+  
+  .category-nav-btn.prev-btn,
+  .discounted-nav-btn.prev-btn,
+  .featured-nav-btn.prev-btn {
+    left: 2px !important;
+  }
+  
+  .category-nav-btn.next-btn,
+  .discounted-nav-btn.next-btn,
+  .featured-nav-btn.next-btn {
+    right: 2px !important;
+  }
+  
+  /* Adjust navigation button images */
+  .category-nav-btn img,
+  .discounted-nav-btn img,
+  .featured-nav-btn img {
+    width: 8px !important;
+    height: 8px !important;
+  }
+  
+  /* Minimal gaps */
+  .categories-container,
+  .discounted-products-container,
+  .featured-products-container {
+    gap: 4px !important;
+    padding: 3px 0 !important;
+  }
+  
+  /* Minimal grid spacing */
+  .row {
+    margin-left: -3px !important;
+    margin-right: -3px !important;
+  }
+  
+  .col, .col-1, .col-2, .col-3, .col-4, .col-5, .col-6,
+  .col-7, .col-8, .col-9, .col-10, .col-11, .col-12 {
+    padding-left: 3px !important;
+    padding-right: 3px !important;
+  }
+}
+
+.featured-products-section {
+  background: none !important;
+  margin: 0px 18px !important;
+}
+
+.service-section{
+  margin: 0px 18px !important;
+}
+
+@media (max-width: 768px){
+.featured-products-section {
+  background: none !important;
+  margin: 0px 0px !important;
+}
+
+.service-section{
+  margin: 0px 0px !important;
+}
+.category-nav-btn {
+  width: 18px !important;
+  height: 18px !important;
+}
 }
 
