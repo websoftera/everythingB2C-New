@@ -533,7 +533,7 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
                 // Check if this category is currently active
                 $activeClass = ($currentCategory === $cat['slug']) ? 'active' : '';
                 
-                echo '<a href="category.php?slug=' . $cat['slug'] . '" class="category-item text-center mx-2 ' . $activeClass . '">';
+                echo '<a href="category.php?slug=' . $cat['slug'] . '" class="custom-category-item text-center mx-2 ' . $activeClass . '">';
                 echo '<img src="./' . $cat['image'] . '" alt="' . htmlspecialchars($cat['name']) . '" class="category-img mb-1">';
                 echo '<div class="category-label">' . htmlspecialchars($cat['name']) . '</div>';
                 echo '</a>';
@@ -2344,7 +2344,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!scrollWrapper) return;
 
     // Get all category items
-    const categoryItems = scrollWrapper.querySelectorAll('.category-item');
+    const categoryItems = scrollWrapper.querySelectorAll('.custom-category-item');
     if (categoryItems.length === 0) return;
 
     // Clear the wrapper
