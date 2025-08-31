@@ -211,8 +211,8 @@
     justify-content: center !important;
     cursor: pointer !important;
     position: absolute !important;
-    top: 10px !important;
-    right: 10px !important;
+    top: 0px !important;
+    right: 0px !important;
     z-index: 10 !important;
     margin-left: 0 !important;
     align-self: auto !important;
@@ -462,10 +462,26 @@
 
 @media (max-width: 600px) {
     .card, .product-card {
-        max-width: 47vw !important;
-        min-width: 47vw !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 100% !important;
         margin: 0 auto 8px auto !important;
     }
+    
+    /* Ensure proper spacing for wishlist container */
+    .wishlist-container .row {
+        margin: 0 !important;
+        gap: 8px !important;
+    }
+    
+    .wishlist-container .col-md-3,
+    .wishlist-container .col-sm-6 {
+        flex: 0 0 calc(50% - 4px) !important;
+        max-width: calc(50% - 4px) !important;
+        padding: 0 2px !important;
+        margin-bottom: 8px !important;
+    }
+    
     .discount-banner, .out-of-stock, .price-btn, .add-to-cart, .quantity-input, .wishlist {
         height: 22px !important;
         font-size: 0.75rem !important;

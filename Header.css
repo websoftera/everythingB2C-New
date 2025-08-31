@@ -799,8 +799,8 @@ margin: 2px 2px !important;
   justify-content: center;
   align-items: center;
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 0px;
+  right: 0px;
   z-index: 10;
   cursor: pointer;
 }
@@ -4108,7 +4108,7 @@ input[type="checkbox"]:checked + .heart-icon,
   }
 
   .process-container {
-    margin: 0px !important;
+    margin: 0 7px !important;
   }
   
   .step p {
@@ -4145,6 +4145,7 @@ input[type="checkbox"]:checked + .heart-icon,
   .discounted-products-card,
   .featured-products-card {
     padding: 10px 0 !important;
+    padding-left: 0px !important;
   }
   
   .discounted-products-header,
