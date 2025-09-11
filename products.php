@@ -176,7 +176,7 @@ echo renderBreadcrumb($breadcrumbs);
               </div>
               <h3>No products found</h3>
               <p>Try adjusting your filters or search terms.</p>
-              <a href="products.php" class="filter-clear-btn">Clear All Filters</a>
+              <a href="products.php" class="filter-clear-btn">Clear Filter</a>
             </div>
           <?php else: ?>
             <?php foreach ($products as $product): 

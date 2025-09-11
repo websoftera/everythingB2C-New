@@ -132,7 +132,7 @@ function buildCategoriesPaginationUrl($page, $params = []) {
                                 <i class="bi bi-search"></i> Apply
                             </button>
                             <a href="categories.php" class="btn btn-outline-secondary filter-clear-btn">
-                                <i class="bi bi-x-circle"></i> Clear All
+                                <i class="bi bi-x-circle"></i> Clear Filter
                             </a>
                         </div>
                     </form>
@@ -191,7 +191,7 @@ function buildCategoriesPaginationUrl($page, $params = []) {
                                 <i class="bi bi-search"></i> Apply
                             </button>
                             <a href="categories.php" class="btn btn-outline-secondary filter-clear-btn">
-                                <i class="bi bi-x-circle"></i> Clear All
+                                <i class="bi bi-x-circle"></i> Clear Filter
                             </a>
                         </div>
                     </form>
@@ -204,8 +204,8 @@ function buildCategoriesPaginationUrl($page, $params = []) {
                                     <!-- Mobile Filter Button - Always Visible on Mobile -->
 <div class="mobile-filter-button-container d-lg-none">
     <button class="mobile-filter-btn" id="mobileFilterBtn">
-        <i class="bi bi-sliders"></i>
-        <span>Filter & Search</span>
+        <span class="filter-icon-css"></span>
+        <span>Filter</span>
     </button>
 </div>
        
@@ -220,7 +220,7 @@ function buildCategoriesPaginationUrl($page, $params = []) {
                             </div>
                             <h3>No categories found</h3>
                             <p>Try adjusting your search terms or filters.</p>
-                            <a href="categories.php" class="filter-clear-btn">Clear All Filters</a>
+                            <a href="categories.php" class="filter-clear-btn">Clear Filter Filters</a>
                         </div>
                     <?php else: ?>
                         <?php foreach ($displayCategories as $category): ?>
@@ -356,9 +356,13 @@ function buildCategoriesPaginationUrl($page, $params = []) {
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.5);
 }
 
-.mobile-filter-btn i {
-    font-size: 18px;
-    animation: pulse 2s infinite;
+.mobile-filter-btn .filter-icon-css {
+    width: 18px;
+    height: 14px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 16'%3E%3Cg fill='white'%3E%3Crect x='2' y='4' width='16' height='2' rx='1'/%3E%3Crect x='2' y='10' width='16' height='2' rx='1'/%3E%3Crect x='9' y='1' width='2' height='6' rx='1'/%3E%3Crect x='9' y='7' width='2' height='6' rx='1'/%3E%3C/g%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
 }
 
 @keyframes pulse {

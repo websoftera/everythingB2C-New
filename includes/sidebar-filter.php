@@ -29,8 +29,8 @@ $categoryTree = buildCategoryTree($categories);
 <div class="sidebar-filter-container">
   <!-- Mobile Filter Toggle Button -->
   <button class="filter-toggle-btn d-lg-none" id="sidebarFilterToggle">
-    <i class="bi bi-funnel"></i>
-    <span>Filters</span>
+    <span class="filter-icon-css"></span>
+    <span>Filter</span>
   </button>
 
   <!-- Sidebar Filter Panel -->
@@ -91,7 +91,8 @@ $categoryTree = buildCategoryTree($categories);
         </div>
       </div>
 
-      <!-- Price Range Filter -->
+      <!-- Price Range Filter - COMMENTED OUT FOR NOW -->
+      <!--
       <div class="filter-section">
         <h5>Price Range</h5>
         <div class="price-range-container">
@@ -133,8 +134,10 @@ $categoryTree = buildCategoryTree($categories);
           </div>
         </div>
       </div>
+      -->
 
-      <!-- Sort Options -->
+      <!-- Sort Options - COMMENTED OUT FOR NOW -->
+      <!--
       <div class="filter-section">
         <h5>Sort By</h5>
         <div class="form-group">
@@ -148,6 +151,7 @@ $categoryTree = buildCategoryTree($categories);
           </select>
         </div>
       </div>
+      -->
 
       <!-- Filter Actions -->
       <div class="filter-actions">
@@ -155,7 +159,7 @@ $categoryTree = buildCategoryTree($categories);
           <i class="bi bi-check-lg"></i> Apply
         </button>
         <button type="button" class="filter-btn filter-btn-secondary" id="clearAllFilters">
-          <i class="bi bi-x-lg"></i> Clear All
+          <i class="bi bi-x-lg"></i> Clear Filter
         </button>
       </div>
     </form>
@@ -173,19 +177,33 @@ $categoryTree = buildCategoryTree($categories);
   align-items: center;
   gap: 8px;
   padding: 10px 16px;
-  background: #007bff;
-  color: white;
-  border: none;
-  border-radius: 6px;
+  background: white;
+  color: #99d052;
+  border: 1px solid #99d052;
+  border-radius: 20px;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   margin-bottom: 15px;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
+}
+
+.filter-toggle-btn .filter-icon-css {
+  width: 16px;
+  height: 12px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 16'%3E%3Cg fill='%2399d052'%3E%3Crect x='2' y='4' width='16' height='2' rx='1'/%3E%3Crect x='2' y='10' width='16' height='2' rx='1'/%3E%3Crect x='9' y='1' width='2' height='6' rx='1'/%3E%3Crect x='9' y='7' width='2' height='6' rx='1'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
 }
 
 .filter-toggle-btn:hover {
-  background: #0056b3;
+  background: #99d052;
+  color: white;
+}
+
+.filter-toggle-btn:hover .filter-icon-css {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 16'%3E%3Cg fill='white'%3E%3Crect x='2' y='4' width='16' height='2' rx='1'/%3E%3Crect x='2' y='10' width='16' height='2' rx='1'/%3E%3Crect x='9' y='1' width='2' height='6' rx='1'/%3E%3Crect x='9' y='7' width='2' height='6' rx='1'/%3E%3C/g%3E%3C/svg%3E");
 }
 
 .sidebar-filter-panel {

@@ -149,7 +149,7 @@ echo renderBreadcrumb($breadcrumbs);
               <?php else: ?>
                 <p>Try adjusting your filters or search terms.</p>
               <?php endif; ?>
-              <a href="search.php" class="filter-clear-btn">Clear All Filters</a>
+              <a href="search.php" class="filter-clear-btn">Clear Filter</a>
             </div>
           <?php else: ?>
             <?php foreach ($products as $product): 

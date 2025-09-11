@@ -249,7 +249,7 @@ body {
 }
 
 .footer-column ul li {
-  margin-bottom: 10px;
+  margin-bottom: 2px;
   font-size: 14px;
   color: #ccc;
   cursor: pointer;
@@ -367,7 +367,7 @@ body {
   
   .footer-column ul li {
     font-size: 12px;
-    margin-bottom: 6px;
+    margin-bottom: 2px;
   }
   
   .footer-column.social .icons i {
@@ -419,7 +419,7 @@ body {
   
   .footer-column ul li {
     font-size: 11px;
-    margin-bottom: 5px;
+    margin-bottom: 2px;
   }
   
   .footer-column.social .icons i {
@@ -1408,7 +1408,7 @@ padding-right: 20px;
 }
 
 .footer-column ul li {
-  margin-bottom: 10px;
+  margin-bottom: 2px;
   font-size: 14px;
   color: #ccc;
   cursor: pointer;
@@ -1589,7 +1589,7 @@ padding-right: 20px;
   }
 
   .navbar .logo {
-    max-height: 65px; 
+    max-height: 60px; 
   }
 }
 
@@ -2326,7 +2326,7 @@ body {
   }
   
   .navbar .logo {
-    max-height: 120px;
+    max-height: 60px;
     width: auto;
     flex: 0 0 auto;
     min-width: 0;
@@ -2341,7 +2341,7 @@ body {
   .mobile-nav-icons {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 26px;
     flex-shrink: 0;
     margin-left: auto;
   }
@@ -2499,7 +2499,7 @@ body {
     font-size: 14px;
     flex-shrink: 0;
     border-radius: 0;
-    height: 42px;
+    height: 45px;
     /* width: 42px;
     min-width: 42px;
     max-width: 42px; */
@@ -2976,7 +2976,7 @@ body {
   }
   
   .navbar .logo {
-    max-height: 50px;
+    max-height: 45px;
     min-width: 0;
   }
   
@@ -3150,7 +3150,7 @@ body {
   }
   
   .navbar .logo {
-    max-height: 45px;
+    max-height: 40px;
   }
   
   .category-scroll-container {
@@ -3234,7 +3234,7 @@ html, body {
 .mobile-nav-icons {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 26px;
   margin-left: auto;
 }
 
@@ -3575,13 +3575,13 @@ html, body {
   }
   
   .navbar form .input-group {
-    height: 35px; /* Slightly shorter on mobile */
+    height: 45px; /* Increased height for mobile devices */
   }
   
   .navbar form .form-control,
   .navbar form .btn,
   .navbar form .dropdown-toggle {
-    height: 35px; /* Match mobile height */
+    height: 45px; /* Match increased mobile height */
   }
 }
 
@@ -4074,13 +4074,170 @@ input[type="checkbox"]:checked + .heart-icon,
   filter: brightness(1.1) contrast(1.1);
 }
 
+/* ===== CONSISTENT 8PX MARGIN SYSTEM ===== */
+/* Based on header logo start and header elements end - maintain 8px margins throughout */
+
+/* Global container margins - consistent 8px from header alignment */
+.container, .container-fluid {
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
+/* ===== CUSTOM FILTER ICON SYSTEM ===== */
+/* Custom filter icon matching the design: two horizontal lines with vertical lines through them */
+
+.custom-filter-icon {
+  position: relative;
+  display: inline-block;
+  width: 20px;
+  height: 16px;
+}
+
+.custom-filter-icon::before,
+.custom-filter-icon::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #99d052;
+  border-radius: 1px;
+}
+
+.custom-filter-icon::before {
+  top: 4px;
+}
+
+.custom-filter-icon::after {
+  top: 10px;
+}
+
+.custom-filter-icon::before,
+.custom-filter-icon::after {
+  box-shadow: 
+    0 0 0 1px #99d052,
+    0 0 0 2px transparent,
+    0 0 0 3px #99d052;
+}
+
+/* Alternative approach using pseudo-elements for vertical lines */
+.custom-filter-icon-v2 {
+  position: relative;
+  display: inline-block;
+  width: 20px;
+  height: 16px;
+}
+
+.custom-filter-icon-v2::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #99d052;
+  border-radius: 1px;
+  box-shadow: 
+    0 6px 0 #99d052,
+    0 3px 0 0 #99d052,
+    0 9px 0 0 #99d052;
+}
+
+/* SVG-based filter icon for better control */
+.filter-icon-svg {
+  width: 20px;
+  height: 16px;
+  fill: #99d052;
+}
+
+/* Inline SVG filter icon - matches the design exactly */
+.filter-icon-inline {
+  display: inline-block;
+  width: 20px;
+  height: 16px;
+  vertical-align: middle;
+}
+
+/* SVG-based filter icon that matches the design exactly */
+.filter-icon-css {
+  display: inline-block;
+  width: 20px;
+  height: 16px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 16'%3E%3Cg fill='%2399d052'%3E%3Crect x='2' y='4' width='16' height='2' rx='1'/%3E%3Crect x='2' y='10' width='16' height='2' rx='1'/%3E%3Crect x='9' y='1' width='2' height='6' rx='1'/%3E%3Crect x='9' y='7' width='2' height='6' rx='1'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+
+/* Filter button styling with custom icon */
+.filter-btn-with-custom-icon {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: white;
+  border: 1px solid #99d052;
+  border-radius: 20px;
+  color: #99d052;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.filter-btn-with-custom-icon:hover {
+  background: #99d052;
+  color: white;
+}
+
+.filter-btn-with-custom-icon:hover .filter-icon-css {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 16'%3E%3Cg fill='white'%3E%3Crect x='2' y='4' width='16' height='2' rx='1'/%3E%3Crect x='2' y='10' width='16' height='2' rx='1'/%3E%3Crect x='9' y='1' width='2' height='6' rx='1'/%3E%3Crect x='9' y='7' width='2' height='6' rx='1'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* ===== STANDARDIZED HOMEPAGE SECTION SPACING ===== */
+/* Consistent top and bottom spacing for all home page sections */
+.hero-slider-section,
+.popular-categories-section,
+.discounted-products-section,
+.featured-products-section,
+.service-section,
+.process-container {
+  padding: 20px 0 !important;
+  margin: 0 !important;
+}
+
+/* Section containers - consistent spacing */
+.categories-card,
+.discounted-products-card,
+.featured-products-card {
+  padding: 15px 0 !important;
+  margin: 0 !important;
+}
+
 /* ===== MOBILE COMPACT STYLES ===== */
 /* Mobile devices - Make website compact with consistent margins */
 @media (max-width: 768px) {
-  /* Global container margins for consistency */
+  /* Global container margins for consistency - maintain 8px system */
   .container, .container-fluid {
-    padding-left: 12px !important;
-    padding-right: 12px !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  
+  /* Standardized section padding for mobile */
+  .hero-slider-section,
+  .popular-categories-section,
+  .discounted-products-section,
+  .featured-products-section,
+  .service-section,
+  .process-container {
+    padding: 15px 0 !important;
+    margin: 0 !important;
+  }
+  
+  /* Section containers - mobile spacing */
+  .categories-card,
+  .discounted-products-card,
+  .featured-products-card {
+    padding: 10px 0 !important;
+    margin: 0 !important;
   }
   
   /* Reduce section padding */
@@ -4088,20 +4245,10 @@ input[type="checkbox"]:checked + .heart-icon,
     padding: 15px 0 !important;
   }
   
-  /* Compact hero section */
-  .hero-slider-section {
-    margin-bottom: 10px !important;
-  }
-  
-  /* Compact process section */
+  /* Compact process section - keep gap and step styling */
   .process-container {
-    padding: 0 !important;
     gap: 15px !important;
   }
-  
-  /* .step {
-    padding: 8px !important;
-  } */
   
   .step img {
     padding: 0px !important;
@@ -4116,44 +4263,15 @@ input[type="checkbox"]:checked + .heart-icon,
     margin: 5px 0 0 0 !important;
   }
   
-  /* Compact category section */
-  .popular-categories-section {
-    padding: 15px 0 !important;
-  }
-  
-  .categories-card {
-    padding: 10px 0 !important;
-    margin: 0 6px !important;
-  }
-  
-  .category-products-header {
+  /* Section headers - consistent spacing */
+  .category-products-header,
+  .discounted-products-header,
+  .featured-products-header {
     padding: 0 0 10px 0 !important;
     margin-bottom: 2px !important;
   }
   
-  .category-products-title {
-    font-size: 16px !important;
-    margin-bottom: 5px !important;
-  }
-  
-  /* Compact product sections */
-  .discounted-products-section,
-  .featured-products-section {
-    padding: 15px 0 !important;
-  }
-  
-  .discounted-products-card,
-  .featured-products-card {
-    padding: 10px 0 !important;
-    padding-left: 0px !important;
-  }
-  
-  .discounted-products-header,
-  .featured-products-header {
-    padding: 0 0 0px 0 !important;
-    /* margin-bottom: 10px !important; */
-  }
-  
+  .category-products-title,
   .discounted-products-title,
   .featured-products-title {
     font-size: 16px !important;
@@ -4382,10 +4500,29 @@ input[type="checkbox"]:checked + .heart-icon,
 
 /* Extra small mobile devices - Even more compact */
 @media (max-width: 480px) {
-  /* Tighter margins */
+  /* Maintain consistent 8px margins */
   .container, .container-fluid {
     padding-left: 8px !important;
     padding-right: 8px !important;
+  }
+  
+  /* Standardized section padding for small mobile */
+  .hero-slider-section,
+  .popular-categories-section,
+  .discounted-products-section,
+  .featured-products-section,
+  .service-section,
+  .process-container {
+    padding: 12px 0 !important;
+    margin: 0 !important;
+  }
+  
+  /* Section containers - small mobile spacing */
+  .categories-card,
+  .discounted-products-card,
+  .featured-products-card {
+    padding: 8px 0 !important;
+    margin: 0 !important;
   }
   
   /* Even more compact sections */
@@ -4509,10 +4646,29 @@ input[type="checkbox"]:checked + .heart-icon,
 
 /* Ultra small devices */
 @media (max-width: 360px) {
-  /* Minimal margins */
+  /* Maintain consistent 8px margins even on ultra small devices */
   .container, .container-fluid {
-    padding-left: 6px !important;
-    padding-right: 6px !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  
+  /* Standardized section padding for ultra-small mobile */
+  .hero-slider-section,
+  .popular-categories-section,
+  .discounted-products-section,
+  .featured-products-section,
+  .service-section,
+  .process-container {
+    padding: 10px 0 !important;
+    margin: 0 !important;
+  }
+  
+  /* Section containers - ultra-small mobile spacing */
+  .categories-card,
+  .discounted-products-card,
+  .featured-products-card {
+    padding: 6px 0 !important;
+    margin: 0 !important;
   }
   
   /* Minimal padding */
@@ -4635,22 +4791,13 @@ input[type="checkbox"]:checked + .heart-icon,
 
 .featured-products-section {
   background: none !important;
-  margin: 0px 18px !important;
 }
 
 .service-section{
-  margin: 0px 18px !important;
+  /* Left and right margins preserved as requested */
 }
 
 @media (max-width: 768px){
-.featured-products-section {
-  background: none !important;
-  margin: 0px 0px !important;
-}
-
-.service-section{
-  margin: 0px 7px !important;
-}
 .category-nav-btn {
   width: 18px !important;
   height: 18px !important;
