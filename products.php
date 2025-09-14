@@ -229,8 +229,6 @@ echo renderBreadcrumb($breadcrumbs);
                                 <input type="number" class="quantity-input" value="1" min="1" max="99" data-product-id="<?php echo $product['id']; ?>">
                                 <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
                             </div>
-                        </div>
-                        <div class="cart-actions d-flex align-items-center gap-2">
                             <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">
                                 <i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>
                                 ADD TO CART
@@ -416,7 +414,7 @@ echo renderBreadcrumb($breadcrumbs);
 /* Responsive Design - Progressive Enhancement */
 @media (max-width: 767px) {
   .products-grid {
-    grid-template-columns: repeat(2, 1fr); /* Mobile: 2 cards per row */
+    grid-template-columns: 1fr; /* Mobile: 1 card per row */
     gap: 15px;
   }
   
@@ -491,11 +489,19 @@ echo renderBreadcrumb($breadcrumbs);
   .product-card .cart-actions {
     width: 100%;
     min-width: 0;
+    justify-content: space-between;
+    align-items: center;
   }
   
   .product-card .quantity-control {
-    width: 100%;
-    justify-content: center;
+    flex-shrink: 0;
+    margin-right: 10px;
+  }
+  
+  .product-card .add-to-cart-btn {
+    flex: 1;
+    min-width: 0;
+    max-width: none;
   }
 }
 
@@ -570,9 +576,9 @@ echo renderBreadcrumb($breadcrumbs);
     overflow-x: hidden;
   }
   
-  /* Force 2 column layout on mobile */
+  /* Force 1 column layout on mobile */
   .products-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-columns: 1fr !important;
     gap: 12px;
     width: 100%;
   }

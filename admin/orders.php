@@ -289,6 +289,22 @@ $statuses = getAllOrderStatuses();
                                                             <a href="../download_invoice.php?order_id=<?php echo $order['id']; ?>" target="_blank" class="btn btn-sm btn-outline-warning" title="Download Invoice">
                                                                 <i class="fas fa-file-invoice"></i>
                                                             </a>
+                                                            <!-- DTDC Integration Buttons -->
+                                                            <?php if ($order['dtdc_enabled'] && $order['dtdc_tracking_id']): ?>
+                                                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="refreshDTDCTracking(<?php echo $order['id']; ?>)" title="Refresh DTDC Tracking">
+                                                                    <i class="fas fa-sync-alt"></i>
+                                                                </button>
+                                                                <button type="button" class="btn btn-sm btn-outline-dark" onclick="viewDTDCTracking(<?php echo $order['id']; ?>)" title="View DTDC Tracking">
+                                                                    <i class="fas fa-shipping-fast"></i>
+                                                                </button>
+                                                                <button type="button" class="btn btn-sm btn-outline-success" onclick="generateDTDCLabel(<?php echo $order['id']; ?>)" title="Generate Shipping Label">
+                                                                    <i class="fas fa-tag"></i>
+                                                                </button>
+                                                            <?php else: ?>
+                                                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="createDTDCOrder(<?php echo $order['id']; ?>)" title="Create DTDC Order">
+                                                                    <i class="fas fa-plus"></i> DTDC
+                                                                </button>
+                                                            <?php endif; ?>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -450,6 +466,238 @@ $statuses = getAllOrderStatuses();
                 }
             });
     }
+
+    // ==================== DTDC INTEGRATION FUNCTIONS ====================
+
+    /**
+     * Create DTDC order for shipping
+     */
+    function createDTDCOrder(orderId) {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: 'Create DTDC Order?',
+                text: 'This will create a shipping order with DTDC for this order.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, Create Order'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    performDTDCAction('create_dtdc_order', { order_id: orderId }, 'Creating DTDC order...', 'DTDC order created successfully!');
+                }
+            });
+        } else {
+            if (confirm('Create DTDC order for this order?')) {
+                performDTDCAction('create_dtdc_order', { order_id: orderId }, 'Creating DTDC order...', 'DTDC order created successfully!');
+            }
+        }
+    }
+
+    /**
+     * Refresh DTDC tracking data
+     */
+    function refreshDTDCTracking(orderId) {
+        performDTDCAction('refresh_tracking', { order_id: orderId }, 'Refreshing tracking data...', 'Tracking data refreshed successfully!');
+    }
+
+    /**
+     * View DTDC tracking events
+     */
+    function viewDTDCTracking(orderId) {
+        // Show loading
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: 'Loading...',
+                text: 'Fetching DTDC tracking data',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+        }
+
+        fetch('ajax/dtdc_tracking.php?action=get_tracking_events&order_id=' + orderId)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayDTDCTrackingEvents(data.data);
+                } else {
+                    throw new Error(data.message || 'Failed to fetch tracking events');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: error.message || 'Failed to fetch tracking events',
+                        timer: 4000,
+                        showConfirmButton: false
+                    });
+                } else {
+                    alert('Error: ' + error.message);
+                }
+            });
+    }
+
+    /**
+     * Generate DTDC shipping label
+     */
+    function generateDTDCLabel(orderId) {
+        performDTDCAction('generate_label', { order_id: orderId }, 'Generating shipping label...', 'Shipping label generated successfully!');
+    }
+
+    /**
+     * Perform DTDC API action
+     */
+    function performDTDCAction(action, data, loadingMessage, successMessage) {
+        // Show loading
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: 'Processing...',
+                text: loadingMessage,
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+        }
+
+        const formData = new FormData();
+        formData.append('action', action);
+        Object.keys(data).forEach(key => {
+            formData.append(key, data[key]);
+        });
+
+        fetch('ajax/dtdc_tracking.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: successMessage,
+                        timer: 3000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        // Reload the page to show updated data
+                        location.reload();
+                    });
+                } else {
+                    alert(successMessage);
+                    location.reload();
+                }
+            } else {
+                throw new Error(data.message || 'Action failed');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message || 'Action failed',
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            } else {
+                alert('Error: ' + error.message);
+            }
+        });
+    }
+
+    /**
+     * Display DTDC tracking events in a modal
+     */
+    function displayDTDCTrackingEvents(events) {
+        if (typeof Swal !== 'undefined') {
+            let eventsHtml = '';
+            
+            if (events && events.length > 0) {
+                eventsHtml = '<div class="timeline">';
+                events.forEach(event => {
+                    eventsHtml += `
+                        <div class="timeline-item">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h6>${event.event_status || 'Status Update'}</h6>
+                                <p class="text-muted">${new Date(event.event_date).toLocaleString()}</p>
+                                <p class="mb-1">${event.event_location || ''}</p>
+                                ${event.event_description ? `<p class="mb-0">${event.event_description}</p>` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+                eventsHtml += '</div>';
+            } else {
+                eventsHtml = '<p class="text-muted">No tracking events found.</p>';
+            }
+
+            Swal.fire({
+                title: 'DTDC Tracking Events',
+                html: eventsHtml,
+                width: '600px',
+                showConfirmButton: true,
+                confirmButtonText: 'Close'
+            });
+        } else {
+            alert('DTDC Tracking Events:\n' + JSON.stringify(events, null, 2));
+        }
+    }
     </script>
+
+    <style>
+    /* DTDC Tracking Events Timeline Styles */
+    .timeline {
+        position: relative;
+        padding-left: 30px;
+    }
+    
+    .timeline-item {
+        position: relative;
+        margin-bottom: 20px;
+    }
+    
+    .timeline-marker {
+        position: absolute;
+        left: -30px;
+        top: 5px;
+        width: 12px;
+        height: 12px;
+        background-color: #007bff;
+        border-radius: 50%;
+        border: 2px solid #fff;
+        box-shadow: 0 0 0 2px #007bff;
+    }
+    
+    .timeline-item:not(:last-child)::before {
+        content: '';
+        position: absolute;
+        left: -24px;
+        top: 17px;
+        width: 2px;
+        height: calc(100% + 10px);
+        background-color: #dee2e6;
+    }
+    
+    .timeline-content h6 {
+        margin-bottom: 5px;
+        color: #333;
+    }
+    
+    .timeline-content p {
+        margin-bottom: 5px;
+        font-size: 14px;
+    }
+    </style>
 </body>
 </html> 

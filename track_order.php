@@ -68,7 +68,47 @@ include 'includes/header.php';
             </div>
         </div>
     <?php elseif ($order): ?>
-        <?php if ($order && $order['external_tracking_link']): ?>
+        <?php 
+        // Check if DTDC tracking is available for this order
+        $dtdcEnabled = $order['dtdc_enabled'] ?? false;
+        $dtdcTrackingId = $order['dtdc_tracking_id'] ?? '';
+        $externalTrackingId = $order['external_tracking_id'] ?? '';
+        $dtdcTrackingData = null;
+        
+        // Use DTDC tracking ID from either dtdc_tracking_id or external_tracking_id
+        $trackingIdToUse = $dtdcTrackingId ?: $externalTrackingId;
+        
+        // Check if it's a DTDC tracking ID (starts with 'D' followed by numbers)
+        $isDTDCTrackingId = preg_match('/^D\d+$/', $trackingIdToUse);
+        
+        if ($isDTDCTrackingId) {
+            $dtdcTrackingData = getDTDCTracking($trackingIdToUse);
+            $dtdcEnabled = true; // Enable DTDC tracking for this order
+        }
+        ?>
+        
+        <!-- DTDC Live Tracking Section -->
+        <?php if ($dtdcEnabled && $trackingIdToUse): ?>
+            <div class="container mb-4">
+                <div class="alert alert-success d-flex align-items-center justify-content-between" style="border-radius: 8px;">
+                    <div>
+                        <i class="fas fa-shipping-fast me-2"></i>
+                        <strong>DTDC Live Tracking:</strong> Your shipment is being tracked in real time.
+                        <?php if ($dtdcTrackingData): ?>
+                            <br><small>Current Status: <strong><?php echo htmlspecialchars($dtdcTrackingData['status']); ?></strong></small>
+                        <?php endif; ?>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button onclick="refreshDTDCTracking('<?php echo $trackingIdToUse; ?>')" class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                        <button onclick="viewDTDCTrackingDetails('<?php echo $trackingIdToUse; ?>')" class="btn btn-success btn-sm">
+                            <i class="fas fa-truck"></i> View Details
+                        </button>
+                    </div>
+                </div>
+            </div>
+        <?php elseif ($order && $order['external_tracking_link']): ?>
             <div class="container mb-4">
                 <div class="alert alert-info d-flex align-items-center justify-content-between" style="border-radius: 8px;">
                     <div>
@@ -128,6 +168,55 @@ include 'includes/header.php';
                         </div>
                     </div>
                 </div>
+                
+                <!-- DTDC Tracking Events Section -->
+                <?php if ($dtdcEnabled && $trackingIdToUse && $dtdcTrackingData): ?>
+                    <?php 
+                    // Get events from API response or database
+                    $dtdcEvents = $dtdcTrackingData['events'] ?? getDTDCTrackingEvents($order['id']); 
+                    ?>
+                    <?php if (!empty($dtdcEvents)): ?>
+                        <div class="trackorder-card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-shipping-fast me-2"></i>DTDC Live Tracking Events
+                                    <button onclick="refreshDTDCTracking('<?php echo $trackingIdToUse; ?>')" class="btn btn-sm btn-outline-success float-end">
+                                        <i class="fas fa-sync-alt"></i> Refresh
+                                    </button>
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="timeline">
+                                    <?php foreach ($dtdcEvents as $event): ?>
+                                        <div class="timeline-item">
+                                            <div class="timeline-marker" style="background-color: #28a745;"></div>
+                                            <div class="timeline-content">
+                                                <h6 class="mb-1"><?php echo htmlspecialchars($event['status'] ?? $event['event_status'] ?? 'Status Update'); ?></h6>
+                                                <p class="text-muted mb-1">
+                                                    <?php 
+                                                    if (isset($event['event_date'])) {
+                                                        echo date('F j, Y g:i A', strtotime($event['event_date']));
+                                                    } elseif (isset($event['date']) && isset($event['time'])) {
+                                                        echo date('F j, Y g:i A', strtotime($event['date'] . ' ' . $event['time']));
+                                                    } else {
+                                                        echo 'Recent';
+                                                    }
+                                                    ?>
+                                                </p>
+                                                <?php if ($event['location'] ?? $event['event_location']): ?>
+                                                    <p class="mb-1"><i class="fas fa-map-marker-alt me-1"></i><?php echo htmlspecialchars($event['location'] ?? $event['event_location']); ?></p>
+                                                <?php endif; ?>
+                                                <?php if ($event['description'] ?? $event['event_description']): ?>
+                                                    <p class="mb-0"><?php echo htmlspecialchars($event['description'] ?? $event['event_description']); ?></p>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                <?php endif; ?>
             </div>
 
             <div class="col-lg-4">
@@ -276,6 +365,151 @@ document.addEventListener('DOMContentLoaded', function() {
     };
   }
 });
+
+// ==================== DTDC TRACKING FUNCTIONS ====================
+
+/**
+ * Refresh DTDC tracking data
+ */
+function refreshDTDCTracking(trackingId) {
+    // Show loading indicator
+    const refreshBtn = event.target.closest('button');
+    const originalContent = refreshBtn.innerHTML;
+    refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+    refreshBtn.disabled = true;
+
+    fetch('ajax/dtdc_tracking.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `action=track_shipment&tracking_id=${trackingId}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Reload the page to show updated tracking data
+            location.reload();
+        } else {
+            alert('Error refreshing tracking data: ' + (data.message || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error refreshing tracking data. Please try again.');
+    })
+    .finally(() => {
+        // Restore button state
+        refreshBtn.innerHTML = originalContent;
+        refreshBtn.disabled = false;
+    });
+}
+
+/**
+ * View DTDC tracking details in a modal
+ */
+function viewDTDCTrackingDetails(trackingId) {
+    // Show loading
+    const modal = document.createElement('div');
+    modal.innerHTML = `
+        <div class="modal fade" id="dtdcTrackingModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">DTDC Tracking Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-center">
+                            <i class="fas fa-spinner fa-spin fa-2x"></i>
+                            <p>Loading tracking details...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    const bsModal = new bootstrap.Modal(modal.querySelector('#dtdcTrackingModal'));
+    bsModal.show();
+
+    fetch('ajax/dtdc_tracking.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `action=track_shipment&tracking_id=${trackingId}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        const modalBody = modal.querySelector('.modal-body');
+        
+        if (data.success) {
+            let html = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Tracking ID:</strong> ${data.data.tracking_id}</p>
+                        <p><strong>Status:</strong> <span class="badge bg-success">${data.data.status}</span></p>
+                        <p><strong>Current Location:</strong> ${data.data.current_location || 'N/A'}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Delivery Date:</strong> ${data.data.delivery_date || 'N/A'}</p>
+                        <p><strong>Delivered To:</strong> ${data.data.delivered_to || 'N/A'}</p>
+                    </div>
+                </div>
+            `;
+            
+            if (data.data.events && data.data.events.length > 0) {
+                html += `
+                    <hr>
+                    <h6>Tracking Events</h6>
+                    <div class="timeline">
+                `;
+                
+                data.data.events.forEach(event => {
+                    html += `
+                        <div class="timeline-item">
+                            <div class="timeline-marker" style="background-color: #28a745;"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">${event.status || 'Status Update'}</h6>
+                                <p class="text-muted mb-1">${event.date} ${event.time}</p>
+                                ${event.location ? `<p class="mb-1"><i class="fas fa-map-marker-alt me-1"></i>${event.location}</p>` : ''}
+                                ${event.description ? `<p class="mb-0">${event.description}</p>` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+            }
+            
+            modalBody.innerHTML = html;
+        } else {
+            modalBody.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Error: ${data.message || 'Failed to fetch tracking details'}
+                </div>
+            `;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        const modalBody = modal.querySelector('.modal-body');
+        modalBody.innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle"></i>
+                Error loading tracking details. Please try again.
+            </div>
+        `;
+    });
+
+    // Clean up modal when closed
+    modal.addEventListener('hidden.bs.modal', () => {
+        document.body.removeChild(modal);
+    });
+}
 </script>
 
 <?php include 'includes/footer.php'; ?> 

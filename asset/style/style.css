@@ -939,7 +939,7 @@ h3{
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
-  gap: 30px !important;
+  gap: 38px !important;
   margin: 5px 0;
 }
 
@@ -1174,7 +1174,7 @@ h3{
     }
 
     .category-products-title {
-      padding-left: 10px !important;
+      padding-left: 8px !important;
     }
 
     .service-section {

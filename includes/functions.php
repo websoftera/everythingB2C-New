@@ -1097,4 +1097,351 @@ function buildPaginationUrl($pageType, $page, $params = []) {
         return $baseUrl . ($queryString ? $separator . $queryString : '');
     }
 }
+
+// ==================== DTDC API INTEGRATION FUNCTIONS ====================
+
+/**
+ * Create DTDC order for shipping
+ * 
+ * @param int $orderId Our order ID
+ * @param array $orderData Order details
+ * @return array|false DTDC order data or false on failure
+ */
+function createDTDCOrder($orderId, $orderData) {
+    global $pdo;
+    
+    try {
+        require_once __DIR__ . '/dtdc_api.php';
+        $dtdcApi = new DTDCAPI();
+        
+        if (!$dtdcApi->isEnabled()) {
+            return false;
+        }
+        
+        // Upload order to DTDC
+        $dtdcResponse = $dtdcApi->uploadOrder($orderData);
+        
+        if ($dtdcResponse && isset($dtdcResponse['order_id'])) {
+            // Store DTDC order information
+            $stmt = $pdo->prepare("INSERT INTO dtdc_orders (order_id, dtdc_order_id, dtdc_tracking_id, dtdc_reference_number, status) VALUES (?, ?, ?, ?, ?)");
+            $stmt->execute([
+                $orderId,
+                $dtdcResponse['order_id'],
+                $dtdcResponse['tracking_id'] ?? '',
+                $dtdcResponse['reference_number'] ?? '',
+                'CREATED'
+            ]);
+            
+            // Update main orders table
+            $stmt = $pdo->prepare("UPDATE orders SET dtdc_tracking_id = ?, dtdc_order_id = ?, dtdc_enabled = 1 WHERE id = ?");
+            $stmt->execute([
+                $dtdcResponse['tracking_id'] ?? '',
+                $dtdcResponse['order_id'],
+                $orderId
+            ]);
+            
+            // Log the API call
+            logDTDCAPICall($orderId, 'create_order', $orderData, $dtdcResponse, 'SUCCESS');
+            
+            return $dtdcResponse;
+        }
+        
+        // Log failed API call
+        logDTDCAPICall($orderId, 'create_order', $orderData, $dtdcResponse, 'FAILED', 'Failed to create DTDC order');
+        
+        return false;
+        
+    } catch (Exception $e) {
+        error_log("DTDC Order Creation Error: " . $e->getMessage());
+        logDTDCAPICall($orderId, 'create_order', $orderData, [], 'ERROR', $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Get DTDC tracking information
+ * 
+ * @param string $trackingId DTDC tracking ID
+ * @return array|false Tracking data or false on failure
+ */
+function getDTDCTracking($trackingId) {
+    try {
+        require_once __DIR__ . '/dtdc_api.php';
+        $dtdcApi = new DTDCAPI();
+        
+        if (!$dtdcApi->isEnabled()) {
+            return false;
+        }
+        
+        // Check cache first
+        $cachedData = getDTDCCache($trackingId);
+        if ($cachedData) {
+            return $cachedData;
+        }
+        
+        // Fetch from DTDC API
+        $trackingData = $dtdcApi->trackShipment($trackingId);
+        
+        if ($trackingData) {
+            // Cache the data
+            setDTDCCache($trackingId, $trackingData);
+            
+            // Store tracking events in database
+            storeDTDCTrackingEvents($trackingId, $trackingData);
+            
+            return $trackingData;
+        }
+        
+        return false;
+        
+    } catch (Exception $e) {
+        error_log("DTDC Tracking Error: " . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Get DTDC order by our order ID
+ * 
+ * @param int $orderId Our order ID
+ * @return array|false DTDC order data or false on failure
+ */
+function getDTDCOrderByOrderId($orderId) {
+    global $pdo;
+    
+    $stmt = $pdo->prepare("SELECT * FROM dtdc_orders WHERE order_id = ?");
+    $stmt->execute([$orderId]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+/**
+ * Update DTDC tracking events in database
+ * 
+ * @param string $trackingId DTDC tracking ID
+ * @param array $trackingData Tracking data from API
+ * @return bool Success status
+ */
+function storeDTDCTrackingEvents($trackingId, $trackingData) {
+    global $pdo;
+    
+    try {
+        // Get DTDC order ID
+        $stmt = $pdo->prepare("SELECT id FROM dtdc_orders WHERE dtdc_tracking_id = ?");
+        $stmt->execute([$trackingId]);
+        $dtdcOrder = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$dtdcOrder) {
+            return false;
+        }
+        
+        // Clear existing events for this order
+        $stmt = $pdo->prepare("DELETE FROM dtdc_tracking_events WHERE dtdc_order_id = ?");
+        $stmt->execute([$dtdcOrder['id']]);
+        
+        // Insert new events
+        if (isset($trackingData['events']) && is_array($trackingData['events'])) {
+            $stmt = $pdo->prepare("INSERT INTO dtdc_tracking_events (dtdc_order_id, event_date, event_location, event_status, event_description) VALUES (?, ?, ?, ?, ?)");
+            
+            foreach ($trackingData['events'] as $event) {
+                $eventDateTime = $event['date'] . ' ' . $event['time'];
+                $stmt->execute([
+                    $dtdcOrder['id'],
+                    $eventDateTime,
+                    $event['location'] ?? '',
+                    $event['status'] ?? '',
+                    $event['description'] ?? ''
+                ]);
+            }
+        }
+        
+        // Update DTDC order status
+        $stmt = $pdo->prepare("UPDATE dtdc_orders SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?");
+        $stmt->execute([
+            $trackingData['status'] ?? 'UNKNOWN',
+            $dtdcOrder['id']
+        ]);
+        
+        return true;
+        
+    } catch (Exception $e) {
+        error_log("DTDC Events Storage Error: " . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Get DTDC tracking events for an order
+ * 
+ * @param int $orderId Our order ID
+ * @return array Tracking events
+ */
+function getDTDCTrackingEvents($orderId) {
+    global $pdo;
+    
+    $stmt = $pdo->prepare("
+        SELECT te.*, do.dtdc_tracking_id 
+        FROM dtdc_tracking_events te 
+        JOIN dtdc_orders do ON te.dtdc_order_id = do.id 
+        WHERE do.order_id = ? 
+        ORDER BY te.event_date DESC
+    ");
+    $stmt->execute([$orderId]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+/**
+ * Cancel DTDC order
+ * 
+ * @param int $orderId Our order ID
+ * @return bool Success status
+ */
+function cancelDTDCOrder($orderId) {
+    global $pdo;
+    
+    try {
+        // Get DTDC order details
+        $dtdcOrder = getDTDCOrderByOrderId($orderId);
+        if (!$dtdcOrder) {
+            return false;
+        }
+        
+        require_once __DIR__ . '/dtdc_api.php';
+        $dtdcApi = new DTDCAPI();
+        
+        if (!$dtdcApi->isEnabled()) {
+            return false;
+        }
+        
+        // Cancel order in DTDC system
+        $response = $dtdcApi->cancelOrder($dtdcOrder['dtdc_order_id']);
+        
+        if ($response) {
+            // Update DTDC order status
+            $stmt = $pdo->prepare("UPDATE dtdc_orders SET status = 'CANCELLED', updated_at = CURRENT_TIMESTAMP WHERE order_id = ?");
+            $stmt->execute([$orderId]);
+            
+            // Log the API call
+            logDTDCAPICall($orderId, 'cancel_order', ['dtdc_order_id' => $dtdcOrder['dtdc_order_id']], $response, 'SUCCESS');
+            
+            return true;
+        }
+        
+        // Log failed API call
+        logDTDCAPICall($orderId, 'cancel_order', ['dtdc_order_id' => $dtdcOrder['dtdc_order_id']], $response, 'FAILED', 'Failed to cancel DTDC order');
+        
+        return false;
+        
+    } catch (Exception $e) {
+        error_log("DTDC Order Cancellation Error: " . $e->getMessage());
+        logDTDCAPICall($orderId, 'cancel_order', [], [], 'ERROR', $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Generate DTDC shipping label
+ * 
+ * @param int $orderId Our order ID
+ * @return array|false Label data or false on failure
+ */
+function generateDTDCShippingLabel($orderId) {
+    global $pdo;
+    
+    try {
+        // Get DTDC order details
+        $dtdcOrder = getDTDCOrderByOrderId($orderId);
+        if (!$dtdcOrder) {
+            return false;
+        }
+        
+        require_once __DIR__ . '/dtdc_api.php';
+        $dtdcApi = new DTDCAPI();
+        
+        if (!$dtdcApi->isEnabled()) {
+            return false;
+        }
+        
+        // Generate shipping label
+        $labelData = $dtdcApi->generateShippingLabel($dtdcOrder['dtdc_order_id']);
+        
+        if ($labelData) {
+            // Log the API call
+            logDTDCAPICall($orderId, 'generate_label', ['dtdc_order_id' => $dtdcOrder['dtdc_order_id']], $labelData, 'SUCCESS');
+            
+            return $labelData;
+        }
+        
+        // Log failed API call
+        logDTDCAPICall($orderId, 'generate_label', ['dtdc_order_id' => $dtdcOrder['dtdc_order_id']], $labelData, 'FAILED', 'Failed to generate shipping label');
+        
+        return false;
+        
+    } catch (Exception $e) {
+        error_log("DTDC Label Generation Error: " . $e->getMessage());
+        logDTDCAPICall($orderId, 'generate_label', [], [], 'ERROR', $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Log DTDC API calls for debugging and monitoring
+ * 
+ * @param int $orderId Order ID
+ * @param string $action API action
+ * @param array $requestData Request data
+ * @param array $responseData Response data
+ * @param string $status Status (SUCCESS, FAILED, ERROR)
+ * @param string $errorMessage Error message if any
+ * @return bool Success status
+ */
+function logDTDCAPICall($orderId, $action, $requestData, $responseData, $status = 'SUCCESS', $errorMessage = '') {
+    global $pdo;
+    
+    try {
+        $stmt = $pdo->prepare("INSERT INTO dtdc_api_logs (order_id, action, request_data, response_data, status, error_message) VALUES (?, ?, ?, ?, ?, ?)");
+        return $stmt->execute([
+            $orderId,
+            $action,
+            json_encode($requestData),
+            json_encode($responseData),
+            $status,
+            $errorMessage
+        ]);
+    } catch (Exception $e) {
+        error_log("DTDC API Logging Error: " . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Simple cache functions for DTDC tracking data
+ */
+
+function getDTDCCache($trackingId) {
+    $cacheFile = __DIR__ . '/../cache/dtdc_' . md5($trackingId) . '.json';
+    
+    if (file_exists($cacheFile)) {
+        $cacheData = json_decode(file_get_contents($cacheFile), true);
+        if ($cacheData && (time() - $cacheData['timestamp']) < 300) { // 5 minutes cache
+            return $cacheData['data'];
+        }
+    }
+    
+    return false;
+}
+
+function setDTDCCache($trackingId, $data) {
+    $cacheDir = __DIR__ . '/../cache';
+    if (!is_dir($cacheDir)) {
+        mkdir($cacheDir, 0755, true);
+    }
+    
+    $cacheFile = $cacheDir . '/dtdc_' . md5($trackingId) . '.json';
+    $cacheData = [
+        'timestamp' => time(),
+        'data' => $data
+    ];
+    
+    return file_put_contents($cacheFile, json_encode($cacheData)) !== false;
+}
 ?> 
