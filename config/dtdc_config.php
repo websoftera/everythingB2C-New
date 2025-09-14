@@ -9,17 +9,22 @@
 return [
     // DTDC API Configuration
     'api' => [
-        // Base URL for DTDC API - Updated with actual DTDC API endpoint
-        'base_url' => 'https://apis.dtdc.in/apis',
+        // Base URL for DTDC API - Official production endpoint
+        'base_url' => 'https://blktracksvc.dtdc.com/dtdc-api',
         
         // API Authentication - Updated with your exact credentials
         'username' => 'PL3537_trk_json',
         'password' => 'wafBo',
         'api_key' => 'bbb8196c734d8487983936199e880072',
+        'token' => '', // Will be obtained dynamically
+        'customer_code' => 'PL3537',
+        'customer_password' => 'Abc@123456',
         
-        // API Endpoints - Updated with actual DTDC API endpoints
+        // API Endpoints - Official DTDC API endpoints from documentation
         'endpoints' => [
-            'tracking' => '/tracking',
+            'authenticate' => '/api/dtdc/authenticate',
+            'tracking' => '/rest/JSONCnTrk/getTrackDetails',
+            'tracking_xml' => '/rest/XMLCnTrk/getDetails',
             'pincode_search' => '/pincode/check',
             'order_upload' => '/order/create',
             'order_cancel' => '/order/cancel',

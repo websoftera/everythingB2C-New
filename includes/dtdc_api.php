@@ -36,9 +36,10 @@ class DTDCAPI {
         $endpoint = $this->baseUrl . $this->config['api']['endpoints']['tracking'];
         
         $data = [
-            'tracking_id' => $trackingId,
+            'awbno' => $trackingId,
             'username' => $this->username,
-            'password' => $this->password
+            'password' => $this->password,
+            'token' => $this->apiKey
         ];
         
         $response = $this->makeRequest('POST', $endpoint, $data);
@@ -62,8 +63,11 @@ class DTDCAPI {
             }
         }
         
-        // If API fails, create mock data for testing
-        return $this->createMockTrackingData($trackingId);
+        // Log that API call failed
+        error_log("DTDC API call failed for tracking ID: $trackingId");
+        
+        // Return false to indicate API failure
+        return false;
     }
     
     /**
@@ -197,7 +201,7 @@ class DTDCAPI {
                 'Accept: application/json',
                 'User-Agent: EverythingB2C/1.0',
                 'X-API-Key: ' . $this->apiKey,
-                'Authorization: ' . $this->username . ':' . $this->apiKey
+                'Authorization: ' . $this->config['api']['token']
             ]
         ]);
         
@@ -392,10 +396,21 @@ class DTDCAPI {
     /**
      * Get configuration value
      * 
-     * @param string $key Configuration key
+     * @param string $key Configuration key (supports dot notation like 'api.base_url')
      * @return mixed
      */
     public function getConfig($key) {
-        return $this->config[$key] ?? null;
+        $keys = explode('.', $key);
+        $value = $this->config;
+        
+        foreach ($keys as $k) {
+            if (isset($value[$k])) {
+                $value = $value[$k];
+            } else {
+                return null;
+            }
+        }
+        
+        return $value;
     }
 }

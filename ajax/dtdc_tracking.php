@@ -45,48 +45,24 @@ function handleTrackShipment() {
     if ($trackingData) {
         echo json_encode([
             'success' => true,
-            'data' => $trackingData
+            'data' => $trackingData,
+            'source' => 'api'
         ]);
     } else {
-        // Create fallback mock data for testing
-        $mockData = [
-            'tracking_id' => $trackingId,
-            'status' => 'IN_TRANSIT',
-            'status_description' => 'Package is in transit (Demo Data)',
-            'current_location' => 'Mumbai Hub',
-            'delivery_date' => date('Y-m-d', strtotime('+2 days')),
-            'delivered_to' => '',
-            'mapped_status' => 'In Transit',
-            'events' => [
-                [
-                    'date' => date('Y-m-d', strtotime('-2 days')),
-                    'time' => '10:30:00',
-                    'location' => 'Origin Hub - Delhi',
-                    'status' => 'PICKED_UP',
-                    'description' => 'Package picked up from sender'
-                ],
-                [
-                    'date' => date('Y-m-d', strtotime('-1 day')),
-                    'time' => '14:15:00',
-                    'location' => 'Sorting Facility - Delhi',
-                    'status' => 'PROCESSED',
-                    'description' => 'Package processed at sorting facility'
-                ],
-                [
-                    'date' => date('Y-m-d'),
-                    'time' => '09:45:00',
-                    'location' => 'Mumbai Hub',
-                    'status' => 'IN_TRANSIT',
-                    'description' => 'Package in transit to destination'
-                ]
-            ]
-        ];
+        // Check if it's a valid DTDC tracking ID format
+        if (!preg_match('/^(D|7D)\d+$/', $trackingId)) {
+            throw new Exception('Invalid DTDC tracking ID format. Expected format: D or 7D followed by numbers (e.g., D1005560078, 7D154319925)');
+        }
         
-        echo json_encode([
-            'success' => true,
-            'data' => $mockData,
-            'message' => 'Demo tracking data (API not available)'
-        ]);
+        // API failed - provide detailed error information
+        $errorMessage = 'DTDC API Error: ';
+        $errorMessage .= 'Tracking ID not found or not authorized for your account. ';
+        $errorMessage .= 'This could be due to:';
+        $errorMessage .= '<br>• Tracking ID does not belong to your DTDC account';
+        $errorMessage .= '<br>• Tracking ID is invalid or expired';
+        $errorMessage .= '<br>• Insufficient permissions for this tracking ID';
+        
+        throw new Exception($errorMessage);
     }
 }
 ?>

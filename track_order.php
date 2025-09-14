@@ -9,13 +9,14 @@ $statusHistory = [];
 
 if ($trackingId) {
     global $pdo;
+    // Check both tracking_id and external_tracking_id fields
     $stmt = $pdo->prepare("SELECT o.*, os.name as status_name, os.color as status_color, os.description as status_description,
                                  a.name as address_name, a.phone as address_phone, a.address_line1, a.address_line2, a.city, a.state, a.pincode
                           FROM orders o 
                           LEFT JOIN order_statuses os ON o.order_status_id = os.id
                           LEFT JOIN addresses a ON o.address_id = a.id
-                          WHERE o.tracking_id = ?");
-    $stmt->execute([$trackingId]);
+                          WHERE o.tracking_id = ? OR o.external_tracking_id = ?");
+    $stmt->execute([$trackingId, $trackingId]);
     $order = $stmt->fetch(PDO::FETCH_ASSOC);
     
     if ($order) {
@@ -78,8 +79,8 @@ include 'includes/header.php';
         // Use DTDC tracking ID from either dtdc_tracking_id or external_tracking_id
         $trackingIdToUse = $dtdcTrackingId ?: $externalTrackingId;
         
-        // Check if it's a DTDC tracking ID (starts with 'D' followed by numbers)
-        $isDTDCTrackingId = preg_match('/^D\d+$/', $trackingIdToUse);
+        // Check if it's a DTDC tracking ID (starts with 'D' followed by numbers, or starts with '7D' followed by numbers)
+        $isDTDCTrackingId = preg_match('/^(D|7D)\d+$/', $trackingIdToUse);
         
         if ($isDTDCTrackingId) {
             $dtdcTrackingData = getDTDCTracking($trackingIdToUse);
@@ -90,7 +91,7 @@ include 'includes/header.php';
         <!-- DTDC Live Tracking Section -->
         <?php if ($dtdcEnabled && $trackingIdToUse): ?>
             <div class="container mb-4">
-                <div class="alert alert-success d-flex align-items-center justify-content-between" style="border-radius: 8px;">
+                <!-- <div class="alert alert-success d-flex align-items-center justify-content-between" style="border-radius: 8px;">
                     <div>
                         <i class="fas fa-shipping-fast me-2"></i>
                         <strong>DTDC Live Tracking:</strong> Your shipment is being tracked in real time.
@@ -106,7 +107,7 @@ include 'includes/header.php';
                             <i class="fas fa-truck"></i> View Details
                         </button>
                     </div>
-                </div>
+                </div> -->
             </div>
         <?php elseif ($order && $order['external_tracking_link']): ?>
             <div class="container mb-4">
@@ -146,7 +147,8 @@ include 'includes/header.php';
                         <?php endforeach; ?>
                     </div>
                 </div>
-                <!-- Order Status Timeline -->
+                <!-- Order Status Timeline - Only show if no DTDC tracking -->
+                <?php if (!$dtdcEnabled || !$trackingIdToUse): ?>
                 <div class="trackorder-card mb-4">
                     <div class="card-header">
                         <h5 class="mb-0">Order Status</h5>
@@ -168,22 +170,37 @@ include 'includes/header.php';
                         </div>
                     </div>
                 </div>
+                <?php endif; ?>
                 
                 <!-- DTDC Tracking Events Section -->
                 <?php if ($dtdcEnabled && $trackingIdToUse && $dtdcTrackingData): ?>
                     <?php 
                     // Get events from API response or database
                     $dtdcEvents = $dtdcTrackingData['events'] ?? getDTDCTrackingEvents($order['id']); 
+                    
+                    // Reverse the events array to show latest updates first
+                    if (!empty($dtdcEvents)) {
+                        $dtdcEvents = array_reverse($dtdcEvents);
+                    }
                     ?>
                     <?php if (!empty($dtdcEvents)): ?>
                         <div class="trackorder-card mb-4">
                             <div class="card-header">
                                 <h5 class="mb-0">
-                                    <i class="fas fa-shipping-fast me-2"></i>DTDC Live Tracking Events
+                                    <i class="fas fa-shipping-fast me-2"></i>Order Live Tracking Details
                                     <button onclick="refreshDTDCTracking('<?php echo $trackingIdToUse; ?>')" class="btn btn-sm btn-outline-success float-end">
                                         <i class="fas fa-sync-alt"></i> Refresh
                                     </button>
                                 </h5>
+                                <div class="mt-2">
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Real-time tracking powered by DTDC • Tracking ID: <strong><?php echo htmlspecialchars($trackingIdToUse); ?></strong>
+                                        <?php if ($dtdcTrackingData && isset($dtdcTrackingData['current_location'])): ?>
+                                            • Current Location: <strong><?php echo htmlspecialchars($dtdcTrackingData['current_location']); ?></strong>
+                                        <?php endif; ?>
+                                    </small>
+                                </div>
                             </div>
                             <div class="card-body">
                                 <div class="timeline">
@@ -340,7 +357,7 @@ include 'includes/header.php';
     margin-left: 10px;
 }
 
-.timeline-item:last-child .timeline-content {
+.timeline-item:first-child .timeline-content {
     background-color: #e3f2fd;
     border-left: 4px solid #2196f3;
 }
@@ -416,7 +433,7 @@ function viewDTDCTrackingDetails(trackingId) {
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">DTDC Tracking Details</h5>
+                        <h5 class="modal-title">Order Live Tracking Details</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
@@ -467,7 +484,8 @@ function viewDTDCTrackingDetails(trackingId) {
                     <div class="timeline">
                 `;
                 
-                data.data.events.forEach(event => {
+                // Reverse events to show latest first
+                data.data.events.reverse().forEach(event => {
                     html += `
                         <div class="timeline-item">
                             <div class="timeline-marker" style="background-color: #28a745;"></div>

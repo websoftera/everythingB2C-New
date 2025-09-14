@@ -1111,8 +1111,8 @@ function createDTDCOrder($orderId, $orderData) {
     global $pdo;
     
     try {
-        require_once __DIR__ . '/dtdc_api.php';
-        $dtdcApi = new DTDCAPI();
+        require_once __DIR__ . '/dtdc_api_new.php';
+        $dtdcApi = new DTDCAPINew();
         
         if (!$dtdcApi->isEnabled()) {
             return false;
@@ -1166,8 +1166,8 @@ function createDTDCOrder($orderId, $orderData) {
  */
 function getDTDCTracking($trackingId) {
     try {
-        require_once __DIR__ . '/dtdc_api.php';
-        $dtdcApi = new DTDCAPI();
+        require_once __DIR__ . '/dtdc_api_new.php';
+        $dtdcApi = new DTDCAPINew();
         
         if (!$dtdcApi->isEnabled()) {
             return false;
@@ -1305,8 +1305,8 @@ function cancelDTDCOrder($orderId) {
             return false;
         }
         
-        require_once __DIR__ . '/dtdc_api.php';
-        $dtdcApi = new DTDCAPI();
+        require_once __DIR__ . '/dtdc_api_new.php';
+        $dtdcApi = new DTDCAPINew();
         
         if (!$dtdcApi->isEnabled()) {
             return false;
@@ -1354,8 +1354,8 @@ function generateDTDCShippingLabel($orderId) {
             return false;
         }
         
-        require_once __DIR__ . '/dtdc_api.php';
-        $dtdcApi = new DTDCAPI();
+        require_once __DIR__ . '/dtdc_api_new.php';
+        $dtdcApi = new DTDCAPINew();
         
         if (!$dtdcApi->isEnabled()) {
             return false;
