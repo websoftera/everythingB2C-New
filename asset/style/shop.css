@@ -633,6 +633,22 @@
     justify-content: center !important;
 }
 
+/* Desktop-specific shop page add-to-cart button size reduction */
+@media (min-width: 1025px) {
+    .shop-page-add-to-cart-btn {
+        font-size: 11px !important;
+        height: 30px !important;
+        min-height: 30px !important;
+        max-height: 30px !important;
+        padding: 0 8px !important;
+    }
+    
+    .shop-page-add-to-cart-btn i {
+        font-size: 14px !important;
+        margin-right: 3px !important;
+    }
+}
+
 .shop-page-read-more {
     width: 100%;
     font-size: 15px !important;
@@ -688,6 +704,19 @@
   justify-content: center !important;
   box-sizing: border-box !important;
   margin: 0 !important;
+}
+
+/* Desktop-specific add-to-cart button size reduction */
+@media (min-width: 1025px) {
+  .add-to-cart {
+    font-size: 10px !important;
+    height: 26px !important;
+  }
+  
+  .add-to-cart i {
+    font-size: 12px !important;
+    margin-right: 3px !important;
+  }
 }
 
 .quantity-control {

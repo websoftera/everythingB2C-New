@@ -129,10 +129,10 @@ function buildCategoriesPaginationUrl($page, $params = []) {
                         <!-- Filter Actions -->
                         <div class="filter-actions">
                             <button type="submit" class="btn btn-primary filter-apply-btn">
-                                <i class="bi bi-search"></i> Apply
+                                Apply
                             </button>
                             <a href="categories.php" class="btn btn-outline-secondary filter-clear-btn">
-                                <i class="bi bi-x-circle"></i> Clear Filter
+                                Clear All
                             </a>
                         </div>
                     </form>
@@ -188,10 +188,10 @@ function buildCategoriesPaginationUrl($page, $params = []) {
                         <!-- Filter Actions -->
                         <div class="filter-actions">
                             <button type="submit" class="btn btn-primary filter-apply-btn">
-                                <i class="bi bi-search"></i> Apply
+                                Apply
                             </button>
                             <a href="categories.php" class="btn btn-outline-secondary filter-clear-btn">
-                                <i class="bi bi-x-circle"></i> Clear Filter
+                                Clear All
                             </a>
                         </div>
                     </form>
@@ -220,7 +220,7 @@ function buildCategoriesPaginationUrl($page, $params = []) {
                             </div>
                             <h3>No categories found</h3>
                             <p>Try adjusting your search terms or filters.</p>
-                            <a href="categories.php" class="filter-clear-btn">Clear Filter Filters</a>
+                            <a href="categories.php" class="filter-clear-btn">Clear All Filters</a>
                         </div>
                     <?php else: ?>
                         <?php foreach ($displayCategories as $category): ?>

@@ -29,7 +29,7 @@ body {
 }
 
 .logo {
-  height: auto;
+  height: 60px;
   max-height: 75px;
   width: auto;
   max-width: 100%;
@@ -578,7 +578,7 @@ body {
 /* Nav Bar 1st Css */
 
 .logo {
-  height: 75px;
+  height: 60px;
   width: auto;
   cursor: pointer;
 }
@@ -1250,7 +1250,7 @@ body {
 }
 
 .logo {
-  height: auto;
+  height: 60px;
   max-height: 75px;
   width: auto;
   max-width: 100%;
@@ -1606,7 +1606,7 @@ padding-right: 20px;
 /* Nav Bar 1st Css */
 
 .logo {
-  height: 75px;
+  height: 60px;
   width: auto;
   cursor: pointer;
 }
@@ -3558,6 +3558,52 @@ html, body {
   .input-group .mobile-search-input {
     margin-left: -1px;
   }
+  
+  /* Add border radius to entire mobile search container */
+  .navbar form .input-group {
+    border-radius: 6px !important;
+    overflow: hidden;
+  }
+  
+  /* Add border radius to mobile search input */
+  .mobile-search-input {
+    border-radius: 0 !important;
+    border-top-left-radius: 6px !important;
+    border-bottom-left-radius: 6px !important;
+  }
+  
+  .navbar form .input-group .mobile-search-input {
+    border-radius: 0 !important;
+    border-top-left-radius: 6px !important;
+    border-bottom-left-radius: 6px !important;
+  }
+  
+  /* Add border radius to mobile search button */
+  .navbar form .input-group .btn {
+    border-radius: 0 !important;
+    border-top-right-radius: 6px !important;
+    border-bottom-right-radius: 6px !important;
+  }
+  
+  .navbar form .input-group .mobile-search-btn {
+    border-radius: 0 !important;
+    border-top-right-radius: 6px !important;
+    border-bottom-right-radius: 6px !important;
+  }
+  
+  /* Add border radius to mobile dropdown button */
+  .navbar form .input-group .dropdown-mobile .btn {
+    border-radius: 0 !important;
+    border-top-left-radius: 6px !important;
+    border-bottom-left-radius: 6px !important;
+  }
+  
+  /* Override any existing border-radius: 0 rules for mobile search */
+  .navbar form .input-group .form-control.mobile-search-input {
+    border-radius: 0 !important;
+    border-top-left-radius: 6px !important;
+    border-bottom-left-radius: 6px !important;
+  }
 }
 
 /* Icon-specific styles for header2 navigation */
@@ -4337,6 +4383,7 @@ input[type="checkbox"]:checked + .heart-icon,
   .discounted-products-card,
   .featured-products-card {
     padding: 10px 0 !important;
+    padding-bottom: 0 !important;
     margin: 0 !important;
   }
   
@@ -4622,6 +4669,7 @@ input[type="checkbox"]:checked + .heart-icon,
   .discounted-products-card,
   .featured-products-card {
     padding: 8px 0 !important;
+    padding-bottom: 0 !important;
     margin: 0 !important;
   }
   
@@ -4768,6 +4816,7 @@ input[type="checkbox"]:checked + .heart-icon,
   .discounted-products-card,
   .featured-products-card {
     padding: 6px 0 !important;
+    padding-bottom: 0 !important;
     margin: 0 !important;
   }
   

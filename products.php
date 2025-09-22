@@ -176,7 +176,7 @@ echo renderBreadcrumb($breadcrumbs);
               </div>
               <h3>No products found</h3>
               <p>Try adjusting your filters or search terms.</p>
-              <a href="products.php" class="filter-clear-btn">Clear Filter</a>
+              <a href="products.php" class="filter-clear-btn">Clear All</a>
             </div>
           <?php else: ?>
             <?php foreach ($products as $product): 
@@ -414,8 +414,8 @@ echo renderBreadcrumb($breadcrumbs);
 /* Responsive Design - Progressive Enhancement */
 @media (max-width: 767px) {
   .products-grid {
-    grid-template-columns: 1fr; /* Mobile: 1 card per row */
-    gap: 15px;
+    grid-template-columns: repeat(2, 1fr); /* Mobile: 2 cards per row */
+    gap: 2px; /* Reduced gap for better space utilization */
   }
   
   .products-header h1 {
@@ -440,14 +440,20 @@ echo renderBreadcrumb($breadcrumbs);
 /* Mobile-specific fixes - Ensure cards fit properly */
 @media (max-width: 767px) {
   .products-grid {
-    gap: 12px;
-    padding: 0 10px;
+    gap: 2px; /* Reduced gap for 2-column layout */
+    padding: 0 0px; /* Reduced padding for better space utilization */
   }
   
   .product-card {
     min-width: 0;
     max-width: 100%;
     width: 100%;
+  }
+  
+  /* Force mobile cart actions to stack vertically */
+  .product-card .cart-actions.d-flex {
+    flex-direction: column !important;
+    align-items: center !important;
   }
   
   .product-card .product-details {
@@ -487,21 +493,41 @@ echo renderBreadcrumb($breadcrumbs);
   }
   
   .product-card .cart-actions {
-    width: 100%;
+    width: 100% !important;
     min-width: 0;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column !important; /* Force vertical stacking on mobile */
+    align-items: center !important;
+    gap: 8px !important; /* Space between quantity and add-to-cart */
+    display: flex !important;
   }
   
   .product-card .quantity-control {
-    flex-shrink: 0;
-    margin-right: 10px;
+    flex-shrink: 0 !important;
+    margin-right: 0 !important; /* Remove right margin since they're stacked */
+    width: 100% !important;
+    justify-content: center !important;
+    display: flex !important;
+    margin-bottom: 0 !important;
   }
   
   .product-card .add-to-cart-btn {
-    flex: 1;
+    width: 100% !important;
     min-width: 0;
     max-width: none;
+    flex: none !important; /* Remove flex to prevent stretching */
+    margin-top: 0 !important;
+  }
+  
+  /* Ensure quantity buttons are properly sized for mobile */
+  .product-card .btn-qty {
+    min-width: 32px;
+    height: 32px;
+  }
+  
+  .product-card .quantity-input {
+    width: 50px;
+    text-align: center;
+    font-size: 14px;
   }
 }
 
@@ -562,8 +588,8 @@ echo renderBreadcrumb($breadcrumbs);
 /* Additional mobile fixes */
 @media (max-width: 767px) {
   .container {
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-left: 8px;
+    padding-right: 8px;
   }
   
   .col-lg-9 {
@@ -576,10 +602,10 @@ echo renderBreadcrumb($breadcrumbs);
     overflow-x: hidden;
   }
   
-  /* Force 1 column layout on mobile */
+  /* Force 2 column layout on mobile */
   .products-grid {
-    grid-template-columns: 1fr !important;
-    gap: 12px;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 2px;
     width: 100%;
   }
   

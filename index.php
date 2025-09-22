@@ -204,14 +204,12 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                     <?php if ($isOutOfStock): ?>
                         <a href="product.php?slug=<?php echo $product['slug']; ?>" class="read-more">READ MORE</a>
                     <?php else: ?>
-                      <div class="cart-actions d-flex align-items-center gap-2">
-                                                    <div class="quantity-control d-inline-flex align-items-center">
+                        <div class="cart-actions d-flex align-items-center gap-2">
+                            <div class="quantity-control d-inline-flex align-items-center">
                                 <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
                                 <input type="number" class="quantity-input" value="1" min="1" max="99" data-product-id="<?php echo $product['id']; ?>">
                                 <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
                             </div>
-                    </div>
-                        <div class="cart-actions d-flex align-items-center gap-2">
                             <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">
                                 <i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>
                                 ADD TO CART
@@ -289,14 +287,12 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                     <?php if ($isOutOfStock): ?>
                         <a href="product.php?slug=<?php echo $product['slug']; ?>" class="read-more">READ MORE</a>
                     <?php else: ?>
-                      <div class="cart-actions d-flex align-items-center gap-2">
-                              <div class="quantity-control d-inline-flex align-items-center">
+                        <div class="cart-actions d-flex align-items-center gap-2">
+                            <div class="quantity-control d-inline-flex align-items-center">
                                 <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
                                 <input type="number" class="quantity-input" value="1" min="1" max="99" data-product-id="<?php echo $product['id']; ?>">
                                 <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
                             </div>
-                      </div>
-                        <div class="cart-actions d-flex align-items-center gap-2">
                             <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">
                                 <i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>
                                 ADD TO CART
@@ -1619,6 +1615,7 @@ function topFunction(e) {
     overflow: hidden !important;
     margin: 0 10px !important;
     padding: 7px !important;
+    padding-bottom: 0 !important;
     padding-left: 0px !important;
   }
   
@@ -2653,6 +2650,7 @@ function topFunction(e) {
     overflow: hidden !important;
     margin: 0 10px !important;
     padding: 15px !important;
+    padding-bottom: 0 !important;
     padding-left: 0px !important;
   }
   
@@ -2833,6 +2831,7 @@ function topFunction(e) {
   
   .featured-products-card {
     padding: 15px;
+    padding-bottom: 0 !important;
     padding-left: 0px !important;
     border-radius: 6px;
     max-width: 100%;
@@ -2887,6 +2886,7 @@ function topFunction(e) {
   
   .featured-products-card {
     padding: 18px;
+    padding-bottom: 0 !important;
     max-width: 100%;
     padding-left: 0px !important;
   }

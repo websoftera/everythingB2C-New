@@ -46,7 +46,7 @@ try {
         
         if ($cartItem) {
             // Update existing cart item
-            $stmt = $pdo->prepare("UPDATE cart SET quantity = ?, updated_at = NOW() WHERE id = ?");
+            $stmt = $pdo->prepare("UPDATE cart SET quantity = ? WHERE id = ?");
             $stmt->execute([$quantity, $cartItem['id']]);
             
             echo json_encode([
@@ -56,7 +56,7 @@ try {
             ]);
         } else {
             // Product not in cart, add it
-            $stmt = $pdo->prepare("INSERT INTO cart (user_id, product_id, quantity, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())");
+            $stmt = $pdo->prepare("INSERT INTO cart (user_id, product_id, quantity, created_at) VALUES (?, ?, ?, NOW())");
             $stmt->execute([$userId, $productId, $quantity]);
             
             echo json_encode([

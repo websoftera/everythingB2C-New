@@ -29,13 +29,13 @@ $pageTitle = 'Track Order';
 include 'includes/header.php';
 ?>
 
-<div class="page-banner" style="background: url('asset/images/internalpage-bg.webp') center/cover no-repeat; min-height: 240px; display: flex; align-items: center;">
+<!-- <div class="page-banner" style="background: url('asset/images/internalpage-bg.webp') center/cover no-repeat; min-height: 240px; display: flex; align-items: center;">
     <div class="container">
         <h2 style="color: #fff; font-size: 2rem; font-weight: bold; text-shadow: 0 2px 8px rgba(0,0,0,0.3); margin: 0; padding: 32px 0;">
             Track Your Order
         </h2>
     </div>
-</div>
+</div> -->
 
 <div class="container my-5">
     <!-- Track Order Form -->

@@ -781,7 +781,7 @@ h3{
 
 /* Nav Bar 1st Css */
 .logo {
-  height: 75px;
+  height: 60px;
   width: auto;
   cursor: pointer;
 }
@@ -917,7 +917,7 @@ h3{
 
 /* Main Button Style */
 .hero-button {
-  width: 300px;
+  width: 208px;
   background-color: #11b1f0;
   color: #fff;
   padding: 10px 20px;

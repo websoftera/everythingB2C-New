@@ -190,7 +190,7 @@ echo renderBreadcrumb($breadcrumbs);
               </div>
               <h3>No products found</h3>
               <p>Try adjusting your filters or search terms.</p>
-              <a href="category.php?slug=<?php echo $category['slug']; ?>" class="filter-clear-btn">Clear Filter</a>
+              <a href="category.php?slug=<?php echo $category['slug']; ?>" class="filter-clear-btn">Clear All</a>
             </div>
           <?php else: ?>
             <?php foreach ($products as $product): 
