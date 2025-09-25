@@ -765,6 +765,22 @@ function createOrder($userId, $addressId, $paymentMethod, $gstNumber = null, $co
         $stmt = $pdo->prepare("DELETE FROM cart WHERE user_id = ?");
         $stmt->execute([$userId]);
         $pdo->commit();
+        
+        // Send email notifications (after successful order creation)
+        try {
+            require_once __DIR__ . '/email_functions.php';
+            
+            // Send notification to user
+            sendOrderPlacedUserNotification($userId, $orderId);
+            
+            // Send notification to admin
+            sendOrderPlacedAdminNotification($orderId);
+            
+        } catch (Exception $emailError) {
+            // Log email error but don't fail the order
+            error_log("Email notification failed for order {$orderId}: " . $emailError->getMessage());
+        }
+        
         return ['success' => true, 'order_id' => $orderId, 'tracking_id' => $trackingId, 'order_number' => $orderNumber];
     } catch (Exception $e) {
         $pdo->rollBack();
@@ -784,6 +800,18 @@ function updateOrderStatus($orderId, $statusId, $description = null, $externalTr
     try {
         $pdo->beginTransaction();
         
+        // Get current order status for comparison
+        $stmt = $pdo->prepare("SELECT order_status_id, user_id FROM orders WHERE id = ?");
+        $stmt->execute([$orderId]);
+        $currentOrder = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$currentOrder) {
+            throw new Exception('Order not found');
+        }
+        
+        $oldStatusId = $currentOrder['order_status_id'];
+        $userId = $currentOrder['user_id'];
+        
         // Update order status
         $stmt = $pdo->prepare("UPDATE orders SET order_status_id = ?, status_description = ?, external_tracking_id = ?, external_tracking_link = ?, estimated_delivery_date = ? WHERE id = ?");
         $stmt->execute([$statusId, $description, $externalTrackingId, $externalTrackingLink, $estimatedDeliveryDate, $orderId]);
@@ -792,6 +820,29 @@ function updateOrderStatus($orderId, $statusId, $description = null, $externalTr
         addOrderStatusHistory($orderId, $statusId, $description, 'admin');
         
         $pdo->commit();
+        
+        // Send email notification if status actually changed
+        if ($oldStatusId != $statusId) {
+            try {
+                require_once __DIR__ . '/email_functions.php';
+                
+                // Get status names for email
+                $stmt = $pdo->prepare("SELECT name FROM order_statuses WHERE id IN (?, ?)");
+                $stmt->execute([$oldStatusId, $statusId]);
+                $statuses = $stmt->fetchAll(PDO::FETCH_COLUMN);
+                
+                $oldStatusName = isset($statuses[0]) ? $statuses[0] : null;
+                $newStatusName = isset($statuses[1]) ? $statuses[1] : null;
+                
+                // Send notification to user
+                sendOrderStatusChangedNotification($userId, $orderId, $newStatusName, $oldStatusName);
+                
+            } catch (Exception $emailError) {
+                // Log email error but don't fail the status update
+                error_log("Email notification failed for order status update {$orderId}: " . $emailError->getMessage());
+            }
+        }
+        
         return true;
         
     } catch (Exception $e) {

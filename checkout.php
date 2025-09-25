@@ -938,34 +938,47 @@ const directPaymentConfirmModal = new bootstrap.Modal(document.getElementById('d
 })();
 </script>
 
-<!-- Thank You Modal (always present for JS to show) -->
-<div id="thankYouModal" class="popup-overlay" style="display:none;">
-  <div class="popup">
-    <span class="popup-close" onclick="closeThankYouModal()">&times;</span>
-    <i class="fas fa-check-circle text-success" style="font-size: 3rem;"></i>
-    <h3 class="text-success mt-3">Thank You!</h3>
-    <p class="lead">Your order has been placed successfully.</p>
-    <div class="d-grid gap-2 mt-4">
-      <a href="myaccount.php" class="btn btn-primary">Go to My Account</a>
-      <a href="index.php" class="btn btn-outline-secondary">Continue Shopping</a>
-    </div>
-  </div>
-</div>
 <?php if (!empty($orderPlaced)): ?>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('thankYouModal').style.display = 'flex';
-    var closeBtn = document.querySelector('#thankYouModal .popup-close');
-    if (closeBtn) {
-      closeBtn.onclick = function() { window.location.href = 'index.php'; };
-    }
-    document.getElementById('thankYouModal').onclick = function(e) {
-      if (e.target === this) window.location.href = 'index.php';
-    };
+    showOrderSuccessPopup();
   });
 </script>
 <?php endif; ?>
 <script>
+function showOrderSuccessPopup() {
+  Swal.fire({
+    title: 'Thank You!',
+    html: `
+      <div style="text-align: center;">
+        <i class="fas fa-check-circle text-success" style="font-size: 3rem; color: #9fbe1b; margin-bottom: 15px;"></i>
+        <p style="font-size: 16px; margin: 15px 0;">Your order has been placed successfully.</p>
+        <p style="font-size: 14px; color: #666; margin: 10px 0;">We'll send you updates about your order via email and SMS.</p>
+      </div>
+    `,
+    icon: null,
+    showConfirmButton: true,
+    showCancelButton: true,
+    confirmButtonText: 'Go to My Account',
+    cancelButtonText: 'Continue Shopping',
+    confirmButtonColor: '#9fbe1b',
+    cancelButtonColor: '#6c757d',
+    width: '380px',
+    padding: '20px',
+    customClass: {
+      popup: 'swal-with-logo order-success-popup'
+    },
+    allowOutsideClick: false,
+    allowEscapeKey: false
+  }).then((result) => {
+    if (result.isConfirmed) {
+      window.location.href = 'myaccount.php';
+    } else if (result.isDismissed) {
+      window.location.href = 'index.php';
+    }
+  });
+}
+
 function closeThankYouModal() {
   window.location.href = 'index.php';
 }
@@ -974,6 +987,51 @@ if (window.history.replaceState) {
   window.history.replaceState(null, null, window.location.href);
 }
 </script>
+
+<style>
+/* Order Success Popup Styling */
+.order-success-popup {
+  max-width: 380px !important;
+  width: 90% !important;
+  max-height: 80vh !important;
+  border-radius: 8px !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2) !important;
+  padding: 20px !important;
+}
+
+/* Ensure consistent styling with other popups */
+.swal2-popup.order-success-popup {
+  padding: 20px !important;
+  border-radius: 8px !important;
+}
+
+/* Green button styling for order success */
+.swal2-confirm.swal2-styled {
+  background-color: #9fbe1b !important;
+  border-color: #9fbe1b !important;
+}
+
+.swal2-confirm.swal2-styled:hover {
+  background-color: #8ba817 !important;
+  border-color: #8ba817 !important;
+}
+
+/* Cancel button styling */
+.swal2-cancel.swal2-styled {
+  background-color: #6c757d !important;
+  border-color: #6c757d !important;
+}
+
+.swal2-cancel.swal2-styled:hover {
+  background-color: #5a6268 !important;
+  border-color: #5a6268 !important;
+}
+
+/* Success icon styling */
+.order-success-popup .fas.fa-check-circle {
+  color: #9fbe1b !important;
+}
+</style>
 <style>
 .popup-overlay {
   position: fixed;

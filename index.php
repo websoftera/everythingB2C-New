@@ -38,19 +38,19 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
     <div id="heroCarousel" class="custom-carousel">
         <div class="carousel-inner">
             <div class="carousel-item active">
-                <img src="asset/images/banner_1.webp" alt="Banner 1" class="carousel-image">
+                <img src="asset/images/b1.webp" alt="Banner 1" class="carousel-image">
                 <div class="carousel-caption d-block text-start">
                     <!-- Optional caption content -->
                 </div>
             </div>
             <div class="carousel-item">
-                <img src="asset/images/banner_2.webp" alt="Banner 2" class="carousel-image">
+                <img src="asset/images/b2.webp" alt="Banner 2" class="carousel-image">
                 <div class="carousel-caption d-block text-end">
                     <!-- Optional caption content -->
                 </div>
             </div>
             <div class="carousel-item">
-                <img src="asset/images/banner_3.webp" alt="Banner 3" class="carousel-image">
+                <img src="asset/images/b3.webp" alt="Banner 3" class="carousel-image">
                 <div class="carousel-caption d-block text-end">
                     <!-- Optional caption content -->
                 </div>

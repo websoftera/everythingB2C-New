@@ -1962,8 +1962,8 @@ padding-right: 20px;
   display: flex;            /* ensure flex layout */
   gap: 10px;                /* add gap between items */
   background-color:#fff;
-  border-top: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
+  border-top: none;
+  border-bottom: none;
 scroll-behavior: smooth;
 overflow-x: auto;
 
@@ -2014,7 +2014,8 @@ overflow-x: auto;
   margin: 2px 6px !important;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
   border-radius: 4px !important;
-  border: 1px solid #ddd !important;
+    border-top: none;
+  border-bottom: none;
 }
 }
 

@@ -1700,8 +1700,8 @@ padding-right: 20px;
 .category-scroll-container {
   display: block;           /* container should be block */
   background-color:#fff;
-  border-top: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
+  border-top: none;
+  border-bottom: none;
 
   /* Keep these overrides */
   border-bottom: none !important;
@@ -2294,8 +2294,8 @@ input[type="checkbox"]:checked + .heart-icon {
 .category-scroll-container {
   display: block;
   background-color: #fff;
-  border-top: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
+  border-top: none;
+  border-bottom: none;
   position: sticky;
   top: 91px;
   z-index: 998;

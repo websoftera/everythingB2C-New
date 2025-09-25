@@ -735,10 +735,15 @@ function confirmLogout() {
         text: 'Are you sure you want to logout?',
         icon: 'question',
         showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
+        confirmButtonColor: '#9fbe1b',
+        cancelButtonColor: '#6c757d',
         confirmButtonText: 'Yes',
-        cancelButtonText: 'No'
+        cancelButtonText: 'No',
+        width: '380px',
+        padding: '20px',
+        customClass: {
+            popup: 'logout-popup'
+        }
     }).then((result) => {
         if (result.isConfirmed) {
             window.location.href = '?logout=1';
@@ -781,4 +786,44 @@ function confirmRemoveWishlist(productId) {
     });
 }
 </script>
+
+<style>
+/* Logout Popup Styling to match pincode popup */
+.logout-popup {
+    max-width: 380px !important;
+    width: 90% !important;
+    max-height: 80vh !important;
+    border-radius: 8px !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2) !important;
+    padding: 20px !important;
+}
+
+/* Ensure consistent styling with pincode popup */
+.swal2-popup.logout-popup {
+    padding: 20px !important;
+    border-radius: 8px !important;
+}
+
+/* Green button styling */
+.swal2-confirm.swal2-styled {
+    background-color: #9fbe1b !important;
+    border-color: #9fbe1b !important;
+}
+
+.swal2-confirm.swal2-styled:hover {
+    background-color: #8ba817 !important;
+    border-color: #8ba817 !important;
+}
+
+/* Cancel button styling */
+.swal2-cancel.swal2-styled {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+}
+
+.swal2-cancel.swal2-styled:hover {
+    background-color: #5a6268 !important;
+    border-color: #5a6268 !important;
+}
+</style>
 <?php include 'includes/footer.php'; ?>

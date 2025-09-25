@@ -18,7 +18,7 @@ ul ul, ul ol, ol ul, ol ol {
 
 /* INDEXES */
 div.mpdf_index_main {
-	
+	font-family: sans-serif;
 	line-height: normal;
 }
 
@@ -28,7 +28,7 @@ div.mpdf_index_entry {
 }
 
 div.mpdf_index_letter {
-	
+	font-family: sans-serif;
 	font-size: 1.8em;
 	font-weight: bold;
 	line-height: normal;
@@ -45,7 +45,7 @@ a.mpdf_index_link {
 
 /* TABLE OF CONTENTS */
 div.mpdf_toc {
-	
+	font-family: sans-serif;
 	line-height: normal;
 }
 
