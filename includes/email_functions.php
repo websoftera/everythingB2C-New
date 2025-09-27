@@ -4,7 +4,8 @@
  * Handles sending email notifications for orders and status updates
  */
 
-require_once 'config/email.php';
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../config/email.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
@@ -155,12 +156,15 @@ function generateOrderPlacedUserEmail($user, $order, $orderItems) {
     
     $itemsHTML = '';
     foreach ($orderItems as $item) {
+        $productName = $item['name'] ?? 'Unknown Product';
+        $quantity = $item['quantity'] ?? 1;
+        $price = $item['price'] ?? 0;
         $itemsHTML .= "
         <tr>
-            <td style='padding: 10px; border-bottom: 1px solid #eee;'>{$item['product_name']}</td>
-            <td style='padding: 10px; border-bottom: 1px solid #eee; text-align: center;'>{$item['quantity']}</td>
-            <td style='padding: 10px; border-bottom: 1px solid #eee; text-align: right;'>₹" . number_format($item['price'], 2) . "</td>
-            <td style='padding: 10px; border-bottom: 1px solid #eee; text-align: right;'>₹" . number_format($item['price'] * $item['quantity'], 2) . "</td>
+            <td style='padding: 10px; border-bottom: 1px solid #eee;'>{$productName}</td>
+            <td style='padding: 10px; border-bottom: 1px solid #eee; text-align: center;'>{$quantity}</td>
+            <td style='padding: 10px; border-bottom: 1px solid #eee; text-align: right;'>₹" . number_format($price, 2) . "</td>
+            <td style='padding: 10px; border-bottom: 1px solid #eee; text-align: right;'>₹" . number_format($price * $quantity, 2) . "</td>
         </tr>";
     }
     
@@ -185,7 +189,7 @@ function generateOrderPlacedUserEmail($user, $order, $orderItems) {
         <div class='container'>
             <div class='header'>
                 <h1>Order Confirmed!</h1>
-                <p>Thank you for your order, {$user['first_name']}!</p>
+                <p>Thank you for your order, " . ($user['first_name'] ?? 'Customer') . "!</p>
             </div>
             <div class='content'>
                 <div class='order-details'>
@@ -241,12 +245,15 @@ function generateOrderPlacedAdminEmail($order, $orderItems) {
     
     $itemsHTML = '';
     foreach ($orderItems as $item) {
+        $productName = $item['name'] ?? 'Unknown Product';
+        $quantity = $item['quantity'] ?? 1;
+        $price = $item['price'] ?? 0;
         $itemsHTML .= "
         <tr>
-            <td style='padding: 10px; border-bottom: 1px solid #eee;'>{$item['product_name']}</td>
-            <td style='padding: 10px; border-bottom: 1px solid #eee; text-align: center;'>{$item['quantity']}</td>
-            <td style='padding: 10px; border-bottom: 1px solid #eee; text-align: right;'>₹" . number_format($item['price'], 2) . "</td>
-            <td style='padding: 10px; border-bottom: 1px solid #eee; text-align: right;'>₹" . number_format($item['price'] * $item['quantity'], 2) . "</td>
+            <td style='padding: 10px; border-bottom: 1px solid #eee;'>{$productName}</td>
+            <td style='padding: 10px; border-bottom: 1px solid #eee; text-align: center;'>{$quantity}</td>
+            <td style='padding: 10px; border-bottom: 1px solid #eee; text-align: right;'>₹" . number_format($price, 2) . "</td>
+            <td style='padding: 10px; border-bottom: 1px solid #eee; text-align: right;'>₹" . number_format($price * $quantity, 2) . "</td>
         </tr>";
     }
     
@@ -286,9 +293,9 @@ function generateOrderPlacedAdminEmail($order, $orderItems) {
                 
                 <div class='customer-details'>
                     <h3>Customer Information</h3>
-                    <p><strong>Name:</strong> {$order['first_name']} {$order['last_name']}</p>
-                    <p><strong>Email:</strong> {$order['email']}</p>
-                    <p><strong>Phone:</strong> {$order['phone']}</p>
+                    <p><strong>Name:</strong> " . ($order['first_name'] ?? '') . " " . ($order['last_name'] ?? '') . "</p>
+                    <p><strong>Email:</strong> " . ($order['email'] ?? 'N/A') . "</p>
+                    <p><strong>Phone:</strong> " . ($order['phone'] ?? 'N/A') . "</p>
                 </div>
                 
                 <h3>Order Items</h3>
