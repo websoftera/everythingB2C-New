@@ -1,3 +1,9 @@
+<?php
+// Include seller functions if available (for pending product count)
+if (file_exists(__DIR__ . '/../../includes/seller_functions.php')) {
+    require_once __DIR__ . '/../../includes/seller_functions.php';
+}
+?>
 <div class="everythingb2c-sidebar">
     <div class="everythingb2c-sidebar-header">
         <h3 class="everythingb2c-sidebar-brand"><i class="fas fa-tachometer-alt"></i> EverythingB2C</h3>
@@ -46,6 +52,47 @@
                     <i class="fas fa-users everythingb2c-nav-icon"></i> Users
                 </a>
             </li>
+            
+            <!-- Seller Management Section -->
+            <li class="everythingb2c-nav-item">
+                <a class="everythingb2c-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'manage_sellers.php' ? 'active' : ''; ?>" href="manage_sellers.php">
+                    <i class="fas fa-store everythingb2c-nav-icon"></i> Manage Sellers
+                </a>
+            </li>
+            
+            <li class="everythingb2c-nav-item">
+                <a class="everythingb2c-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'approve_products.php' ? 'active' : ''; ?>" href="approve_products.php">
+                    <i class="fas fa-check-circle everythingb2c-nav-icon"></i> Approve Products
+                    <?php
+                    // Show count of pending products
+                    try {
+                        if (isset($pdo)) {
+                            $stmt = $pdo->query("SELECT COUNT(*) FROM products WHERE is_approved = 0 AND seller_id IS NOT NULL");
+                            $pendingCount = $stmt->fetchColumn();
+                            if ($pendingCount > 0) {
+                                echo "<span class='badge badge-danger' style='margin-left: 10px; background: #dc3545; color: white; padding: 2px 6px; border-radius: 10px; font-size: 11px;'>{$pendingCount}</span>";
+                            }
+                        }
+                    } catch (Exception $e) {
+                        // Silently fail if tables don't exist yet
+                    }
+                    ?>
+                </a>
+            </li>
+            
+            <li class="everythingb2c-nav-item">
+                <a class="everythingb2c-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'seller_products.php' ? 'active' : ''; ?>" href="seller_products.php">
+                    <i class="fas fa-boxes everythingb2c-nav-icon"></i> All Seller Products
+                </a>
+            </li>
+            
+            <li class="everythingb2c-nav-item">
+                <a class="everythingb2c-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'seller_orders.php' ? 'active' : ''; ?>" href="seller_orders.php">
+                    <i class="fas fa-truck everythingb2c-nav-icon"></i> Seller Orders
+                </a>
+            </li>
+            
+            <!-- End Seller Management Section -->
             
             <li class="everythingb2c-nav-item">
                 <a class="everythingb2c-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'reports.php' ? 'active' : ''; ?>" href="reports.php">

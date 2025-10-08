@@ -90,7 +90,7 @@ function sendOrderPlacedAdminNotification($orderId) {
     
     try {
         // Get order details
-        $stmt = $pdo->prepare("SELECT o.*, u.first_name, u.last_name, u.email, u.phone FROM orders o 
+        $stmt = $pdo->prepare("SELECT o.*, u.name, u.email, u.phone FROM orders o 
                                JOIN users u ON o.user_id = u.id WHERE o.id = ?");
         $stmt->execute([$orderId]);
         $order = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -189,7 +189,7 @@ function generateOrderPlacedUserEmail($user, $order, $orderItems) {
         <div class='container'>
             <div class='header'>
                 <h1>Order Confirmed!</h1>
-                <p>Thank you for your order, " . ($user['first_name'] ?? 'Customer') . "!</p>
+                <p>Thank you for your order, " . ($user['name'] ?? 'Customer') . "!</p>
             </div>
             <div class='content'>
                 <div class='order-details'>
@@ -293,7 +293,7 @@ function generateOrderPlacedAdminEmail($order, $orderItems) {
                 
                 <div class='customer-details'>
                     <h3>Customer Information</h3>
-                    <p><strong>Name:</strong> " . ($order['first_name'] ?? '') . " " . ($order['last_name'] ?? '') . "</p>
+                    <p><strong>Name:</strong> " . ($order['name'] ?? 'N/A') . "</p>
                     <p><strong>Email:</strong> " . ($order['email'] ?? 'N/A') . "</p>
                     <p><strong>Phone:</strong> " . ($order['phone'] ?? 'N/A') . "</p>
                 </div>

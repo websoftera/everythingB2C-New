@@ -415,6 +415,7 @@ $categoryTree = buildCategoryTree($categories);
     </form>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/js/admin.js"></script>
     <script>
         function editCategory(category) {
@@ -447,10 +448,25 @@ $categoryTree = buildCategoryTree($categories);
         }
 
         function deleteCategory(id, name) {
-            if (confirm(`Are you sure you want to delete the category "${name}"? This action cannot be undone.`)) {
-                document.getElementById('delete_id').value = id;
-                document.getElementById('deleteCategoryForm').submit();
-            }
+            Swal.fire({
+                title: 'Delete Category?',
+                html: `Are you sure you want to delete "<strong>${name}</strong>"?<br><small class="text-muted">This action cannot be undone.</small>`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, Delete',
+                cancelButtonText: 'Cancel',
+                width: '380px',
+                customClass: {
+                    popup: 'swal-with-logo'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('delete_id').value = id;
+                    document.getElementById('deleteCategoryForm').submit();
+                }
+            });
         }
         
         // JavaScript functions for building category tree

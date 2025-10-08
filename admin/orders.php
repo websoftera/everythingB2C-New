@@ -84,7 +84,16 @@ $offset = ($page - 1) * $per_page;
 
 $sql = "SELECT o.*, os.name as status_name, os.color as status_color, 
                u.name as customer_name, u.email as customer_email,
-               a.name as address_name, a.phone as address_phone
+               a.name as address_name, a.phone as address_phone,
+               (SELECT GROUP_CONCAT(DISTINCT s.business_name SEPARATOR ', ')
+                FROM order_items oi
+                JOIN products p ON oi.product_id = p.id
+                JOIN sellers s ON p.seller_id = s.id
+                WHERE oi.order_id = o.id AND p.seller_id IS NOT NULL) as seller_names,
+               (SELECT COUNT(DISTINCT p.seller_id)
+                FROM order_items oi
+                JOIN products p ON oi.product_id = p.id
+                WHERE oi.order_id = o.id AND p.seller_id IS NOT NULL) as seller_count
         FROM orders o 
         LEFT JOIN order_statuses os ON o.order_status_id = os.id
         LEFT JOIN users u ON o.user_id = u.id
@@ -236,6 +245,11 @@ $statuses = getAllOrderStatuses();
                                                         <?php if ($order['is_business_purchase']): ?>
                                                             <span class="badge bg-info">Business</span>
                                                         <?php endif; ?>
+                                                        <?php if (isset($order['seller_names']) && $order['seller_names']): ?>
+                                                            <br><span class="badge bg-success mt-1">
+                                                                <i class="fas fa-store"></i> Seller Order
+                                                            </span>
+                                                        <?php endif; ?>
                                                     </td>
                                                     <td>
                                                         <a href="../track_order.php?tracking_id=<?php echo $order['tracking_id']; ?>" target="_blank" class="text-primary">
@@ -246,6 +260,11 @@ $statuses = getAllOrderStatuses();
                                                         <div>
                                                             <strong><?php echo htmlspecialchars($order['customer_name']); ?></strong>
                                                             <br><small class="text-muted"><?php echo htmlspecialchars($order['customer_email']); ?></small>
+                                                            <?php if (isset($order['seller_names']) && $order['seller_names']): ?>
+                                                                <br><small class="text-success">
+                                                                    <i class="fas fa-store"></i> <strong>Seller:</strong> <?php echo htmlspecialchars($order['seller_names']); ?>
+                                                                </small>
+                                                            <?php endif; ?>
                                                         </div>
                                                     </td>
                                                     <td>
@@ -289,8 +308,11 @@ $statuses = getAllOrderStatuses();
                                                             <a href="../download_invoice.php?order_id=<?php echo $order['id']; ?>" target="_blank" class="btn btn-sm btn-outline-warning" title="Download Invoice">
                                                                 <i class="fas fa-file-invoice"></i>
                                                             </a>
-                                                            <!-- DTDC Integration Buttons -->
-                                                            <?php if ($order['dtdc_enabled'] && $order['dtdc_tracking_id']): ?>
+                                                            <!-- DTDC Integration Buttons (Hidden - Enable when DTDC is configured) -->
+                                                            <?php 
+                                                            // Uncomment below when DTDC is properly configured
+                                                            /*
+                                                            if (isset($order['dtdc_enabled']) && $order['dtdc_enabled'] && isset($order['dtdc_tracking_id']) && $order['dtdc_tracking_id']): ?>
                                                                 <button type="button" class="btn btn-sm btn-outline-secondary" onclick="refreshDTDCTracking(<?php echo $order['id']; ?>)" title="Refresh DTDC Tracking">
                                                                     <i class="fas fa-sync-alt"></i>
                                                                 </button>
@@ -304,7 +326,9 @@ $statuses = getAllOrderStatuses();
                                                                 <button type="button" class="btn btn-sm btn-outline-primary" onclick="createDTDCOrder(<?php echo $order['id']; ?>)" title="Create DTDC Order">
                                                                     <i class="fas fa-plus"></i> DTDC
                                                                 </button>
-                                                            <?php endif; ?>
+                                                            <?php endif;
+                                                            */
+                                                            ?>
                                                         </div>
                                                     </td>
                                                 </tr>
