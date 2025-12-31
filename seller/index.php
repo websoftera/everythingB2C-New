@@ -131,11 +131,32 @@ $sellerDetails = getSellerDetails($sellerId);
                                                 Pending Approval
                                             </div>
                                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                <?php echo $stats['pending_approval_products'] ?? 0; ?>
+                                                <?php $pending = count(array_filter($dashboardData['pending_products'] ?? [], function($p) { return !$p['rejection_reason']; })); echo $pending; ?>
                                             </div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-clock fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Rejected Products -->
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-danger shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                                Rejected
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                <?php echo count($dashboardData['rejected_products'] ?? []); ?>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-exclamation-circle fa-2x text-gray-300"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -231,6 +252,34 @@ $sellerDetails = getSellerDetails($sellerId);
                                 <i class="fas fa-exclamation-triangle"></i>
                                 <strong>Pending Approval:</strong> You have <?php echo $stats['pending_approval_products']; ?> product(s) waiting for admin approval.
                                 These products will be visible on the website once approved.
+                            </div>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+
+                    <?php 
+                    // Check for rejected products
+                    $rejectedProducts = getRejectedProducts($sellerId);
+                    if (!empty($rejectedProducts)): 
+                    ?>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="alert alert-danger alert-dismissible fade show">
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                <i class="fas fa-times-circle"></i>
+                                <strong>Products Rejected:</strong> You have <?php echo count($rejectedProducts); ?> product(s) that were rejected by the admin. 
+                                <br><small>Please review the rejection reasons and make necessary corrections before resubmitting.</small>
+                                <div style="margin-top: 10px;">
+                                    <?php foreach ($rejectedProducts as $product): ?>
+                                        <div style="margin-bottom: 10px; padding: 8px; background: rgba(255,255,255,0.2); border-radius: 4px;">
+                                            <strong><?php echo htmlspecialchars($product['name']); ?></strong> (ID: <?php echo $product['id']; ?>)
+                                            <br><small>Reason: <?php echo htmlspecialchars($product['rejection_reason']); ?></small>
+                                            <br><a href="edit_product.php?id=<?php echo $product['id']; ?>" class="btn btn-sm btn-light mt-1">
+                                                <i class="fas fa-edit"></i> Edit & Resubmit
+                                            </a>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
                             </div>
                         </div>
                     </div>

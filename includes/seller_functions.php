@@ -519,8 +519,26 @@ function getSellerDashboardData($sellerId) {
         'statistics' => $stats,
         'recent_orders' => $recentOrders,
         'pending_products' => array_filter($pendingProducts, function($p) {
-            return $p['is_approved'] == 0;
+            return $p['is_approved'] == 0 && !$p['rejection_reason'];
+        }),
+        'rejected_products' => array_filter($pendingProducts, function($p) {
+            return $p['is_approved'] == 0 && $p['rejection_reason'];
         }),
         'permissions' => $permissions
     ];
+}
+
+/**
+ * Get rejected products for seller
+ */
+function getRejectedProducts($sellerId) {
+    global $pdo;
+    
+    $stmt = $pdo->prepare("SELECT p.*, c.name as category_name 
+                           FROM products p
+                           LEFT JOIN categories c ON p.category_id = c.id
+                           WHERE p.seller_id = ? AND p.is_approved = 0 AND p.rejection_reason IS NOT NULL
+                           ORDER BY p.updated_at DESC");
+    $stmt->execute([$sellerId]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }

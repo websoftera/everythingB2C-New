@@ -443,6 +443,7 @@ if (isset($_POST['delete_address'])) {
                                     <thead>
                                         <tr>
                                             <th>Product</th>
+                                            <th>Seller</th>
                                             <th>SKU</th>
                                             <th>HSN</th>
                                             <th>Qty</th>
@@ -458,6 +459,7 @@ if (isset($_POST['delete_address'])) {
                                                     <img src="<?php echo htmlspecialchars($item['main_image']); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" style="height:32px;width:32px;object-fit:cover;margin-right:8px;">
                                                     <a href="product.php?slug=<?php echo htmlspecialchars($item['slug']); ?>" target="_blank"><?php echo htmlspecialchars($item['name']); ?></a>
                                                 </td>
+                                                <td><small><?php echo htmlspecialchars($item['seller_name'] ?? 'EverythingB2C'); ?></small></td>
                                                 <td><?php echo htmlspecialchars($item['sku']); ?></td>
                                                 <td><?php echo htmlspecialchars($item['hsn'] ?? ''); ?></td>
                                                 <td><?php echo $item['quantity']; ?></td>

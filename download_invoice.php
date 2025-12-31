@@ -165,7 +165,7 @@ $net_gst_col = $is_maharashtra ? 'Net GST' : 'Net IGST';
 // === MIDDLE SECTION (FORMATTED) ===
 $html .= '<h2>Invoice Details</h2>
 <table border="1" cellpadding="5" cellspacing="0" width="100%">
-<tr><th>Sr.</th><th>Product</th><th>Product Name</th><th>HSN Code</th><th>Qty.</th><th>Unit</th><th>' . $gst_col . '</th><th>Item MRP</th><th>Item Price</th><th>' . $item_gst_col . '</th><th>Net Price</th><th>' . $net_gst_col . '</th><th>Total</th><th>Savings</th></tr>';
+<tr><th>Sr.</th><th>Product</th><th>Product Name</th><th>Seller</th><th>HSN Code</th><th>Qty.</th><th>Unit</th><th>' . $gst_col . '</th><th>Item MRP</th><th>Item Price</th><th>' . $item_gst_col . '</th><th>Net Price</th><th>' . $net_gst_col . '</th><th>Total</th><th>Savings</th></tr>';
 
 $sr = 1;
 $total_net_price = 0;
@@ -214,6 +214,7 @@ foreach ($orderItems as $item) {
     $html .= '<td>' . $sr . '</td>';
     $html .= '<td>' . $img_html . '</td>';
     $html .= '<td>' . nl2br(htmlspecialchars($item['name'])) . '</td>';
+    $html .= '<td>' . htmlspecialchars($item['seller_name'] ?? 'EverythingB2C') . '</td>';
     $html .= '<td>' . htmlspecialchars($item['hsn']) . '</td>';
     $html .= '<td>' . $qty . '</td>';
     $html .= '<td>' . $unit . '</td>';

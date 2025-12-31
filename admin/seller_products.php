@@ -33,9 +33,11 @@ if ($sellerId) {
 }
 
 if ($approvalFilter === 'pending') {
-    $sql .= " AND p.is_approved = 0";
+    $sql .= " AND p.is_approved = 0 AND p.rejection_reason IS NULL";
 } elseif ($approvalFilter === 'approved') {
     $sql .= " AND p.is_approved = 1";
+} elseif ($approvalFilter === 'rejected') {
+    $sql .= " AND p.is_approved = 0 AND p.rejection_reason IS NOT NULL";
 }
 
 $sql .= " ORDER BY p.created_at DESC";
@@ -96,7 +98,8 @@ $sellers = getAllSellers();
                     <select name="approval" class="form-select">
                         <option value="all" <?php echo ($approvalFilter === 'all') ? 'selected' : ''; ?>>All Products</option>
                         <option value="approved" <?php echo ($approvalFilter === 'approved') ? 'selected' : ''; ?>>Approved Only</option>
-                        <option value="pending" <?php echo ($approvalFilter === 'pending') ? 'selected' : ''; ?>>Pending Only</option>
+                        <option value="pending" <?php echo ($approvalFilter === 'pending') ? 'selected' : ''; ?>>Pending Approval</option>
+                        <option value="rejected" <?php echo ($approvalFilter === 'rejected') ? 'selected' : ''; ?>>Rejected</option>
                     </select>
                 </div>
                 <div class="col-md-4">
@@ -199,6 +202,13 @@ $sellers = getAllSellers();
                                         <span class="badge bg-success">
                                             <i class="fas fa-check"></i> Approved
                                         </span>
+                                    <?php elseif ($product['rejection_reason']): ?>
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-times"></i> Rejected
+                                        </span>
+                                        <br><small class="text-muted d-block mt-1" title="<?php echo htmlspecialchars($product['rejection_reason']); ?>">
+                                            <?php echo substr(htmlspecialchars($product['rejection_reason']), 0, 25) . (strlen($product['rejection_reason']) > 25 ? '...' : ''); ?>
+                                        </small>
                                     <?php else: ?>
                                         <span class="badge bg-warning">
                                             <i class="fas fa-clock"></i> Pending

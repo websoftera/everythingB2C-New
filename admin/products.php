@@ -83,10 +83,12 @@ $total_pages = ceil($total_products / $per_page);
 $offset = ($page - 1) * $per_page;
 
 // Get products
-$sql = "SELECT p.*, c.name as category_name, c.parent_id, pc.name as parent_category_name, p.hsn 
+$sql = "SELECT p.*, c.name as category_name, c.parent_id, pc.name as parent_category_name, p.hsn,
+        COALESCE(s.business_name, 'EverythingB2C') as seller_name
         FROM products p 
         LEFT JOIN categories c ON p.category_id = c.id 
-        LEFT JOIN categories pc ON c.parent_id = pc.id 
+        LEFT JOIN categories pc ON c.parent_id = pc.id
+        LEFT JOIN sellers s ON p.seller_id = s.id
         $where_clause 
         ORDER BY p.created_at DESC 
         LIMIT $per_page OFFSET $offset";
@@ -240,6 +242,7 @@ $parentCategories = getParentCategories();
                                                     </th>
                                                     <th>Image</th>
                                                     <th>Name</th>
+                                                    <th>Seller</th>
                                                     <th>SKU</th>
                                                     <th>HSN</th>
                                                     <th>Category</th>
@@ -248,6 +251,7 @@ $parentCategories = getParentCategories();
                                                     <th>Shipping</th>
                                                     <th>Stock</th>
                                                     <th>Status</th>
+                                                    <th>Approval</th>
                                                     <th>Created</th>
                                                     <th>Actions</th>
                                                 </tr>
@@ -277,6 +281,9 @@ $parentCategories = getParentCategories();
                                                             <small class="text-muted">SKU: <?php echo htmlspecialchars($product['sku']); ?></small>
                                                             <br>
                                                             <small class="text-muted"><?php echo htmlspecialchars($product['slug']); ?></small>
+                                                        </td>
+                                                        <td>
+                                                            <small><?php echo htmlspecialchars($product['seller_name']); ?></small>
                                                         </td>
                                                         <td><?php echo htmlspecialchars($product['sku']); ?></td>
                                                         <td><?php echo htmlspecialchars($product['hsn'] ?? ''); ?></td>
@@ -327,6 +334,22 @@ $parentCategories = getParentCategories();
                                                             <span class="badge bg-<?php echo $product['is_active'] ? 'success' : 'secondary'; ?>">
                                                                 <?php echo $product['is_active'] ? 'Active' : 'Inactive'; ?>
                                                             </span>
+                                                        </td>
+                                                        <td>
+                                                            <?php if ($product['is_approved']): ?>
+                                                                <span class="badge bg-success">
+                                                                    <i class="fas fa-check"></i> Approved
+                                                                </span>
+                                                            <?php else: ?>
+                                                                <span class="badge bg-danger">
+                                                                    <i class="fas fa-times"></i> Rejected
+                                                                </span>
+                                                                <?php if ($product['rejection_reason']): ?>
+                                                                    <br><small class="text-muted d-block mt-1" title="<?php echo htmlspecialchars($product['rejection_reason']); ?>">
+                                                                        Reason: <?php echo substr(htmlspecialchars($product['rejection_reason']), 0, 30) . (strlen($product['rejection_reason']) > 30 ? '...' : ''); ?>
+                                                                    </small>
+                                                                <?php endif; ?>
+                                                            <?php endif; ?>
                                                         </td>
                                                         <td><?php echo date('M d, Y', strtotime($product['created_at'])); ?></td>
                                                         <td>

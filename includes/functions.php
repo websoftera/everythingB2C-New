@@ -874,9 +874,11 @@ function getOrderById($orderId, $userId = null) {
 
 function getOrderItems($orderId) {
     global $pdo;
-    $stmt = $pdo->prepare("SELECT oi.*, p.name, p.main_image, p.slug, p.sku, oi.hsn 
+    $stmt = $pdo->prepare("SELECT oi.*, p.name, p.main_image, p.slug, p.sku, oi.hsn, 
+                          p.seller_id, COALESCE(s.business_name, 'EverythingB2C') as seller_name
                           FROM order_items oi 
                           JOIN products p ON oi.product_id = p.id 
+                          LEFT JOIN sellers s ON p.seller_id = s.id
                           WHERE oi.order_id = ?");
     $stmt->execute([$orderId]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
