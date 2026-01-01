@@ -1,5 +1,7 @@
 <?php
 session_start();
+error_reporting(E_ALL);
+ini_set('display_errors', 0); // Don't display errors inline
 require_once '../config/database.php';
 require_once '../includes/functions.php';
 require_once '../includes/seller_functions.php';
@@ -241,12 +243,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     <!-- Debug: Show if POST was received -->
                     <?php if ($_SERVER['REQUEST_METHOD'] === 'POST'): ?>
-                        <div class="alert alert-info">
-                            <strong>Debug:</strong> Form submitted. <?php echo count($_POST); ?> POST fields received.
-                            <?php if ($success_message || $error_message): ?>
-                                Handler executed.
+                        <div class="alert alert-info alert-dismissible fade show">
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            <strong>Debug Info:</strong> Form submitted with <?php echo count($_POST); ?> fields.
+                            <br><small>POST fields: <?php echo htmlspecialchars(implode(", ", array_keys($_POST))); ?></small>
+                            <?php if ($success_message): ?>
+                                <br><span style="color: green;"><strong>✓ Success:</strong> <?php echo htmlspecialchars($success_message); ?></span>
+                            <?php elseif ($error_message): ?>
+                                <br><span style="color: red;"><strong>✗ Error:</strong> <?php echo htmlspecialchars($error_message); ?></span>
                             <?php else: ?>
-                                No success or error message set - check server logs.
+                                <br><span style="color: orange;"><strong>⚠ No handler response</strong> - Check server error logs</span>
                             <?php endif; ?>
                         </div>
                     <?php endif; ?>
