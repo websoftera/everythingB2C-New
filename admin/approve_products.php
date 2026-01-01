@@ -196,10 +196,18 @@ $pendingProducts = getPendingApprovalProducts();
                                     onclick="approveProduct(<?php echo $product['id']; ?>)">
                                 <i class="fas fa-check"></i> Approve Product
                             </button>
-                            <button type="button" class="btn btn-danger" 
-                                    onclick="rejectProduct(<?php echo $product['id']; ?>)">
-                                <i class="fas fa-times"></i> Reject Product
-                            </button>
+                            <?php if ($product['rejection_reason']): ?>
+                                <!-- Product is already rejected - disable reject button -->
+                                <button type="button" class="btn btn-secondary disabled" title="Product is already rejected. Seller needs to resubmit before rejecting again." disabled>
+                                    <i class="fas fa-times"></i> Reject Product (Already Rejected)
+                                </button>
+                            <?php else: ?>
+                                <!-- Product is not rejected - allow rejection -->
+                                <button type="button" class="btn btn-danger" 
+                                        onclick="rejectProduct(<?php echo $product['id']; ?>)">
+                                    <i class="fas fa-times"></i> Reject Product
+                                </button>
+                            <?php endif; ?>
                             <a href="edit_product.php?id=<?php echo $product['id']; ?>" 
                                class="btn btn-info btn-sm">
                                 <i class="fas fa-eye"></i> View Full Details
