@@ -133,15 +133,27 @@ document.addEventListener('DOMContentLoaded', function() {
             let isValid = true;
             
             requiredFields.forEach(field => {
-                if (!field.value.trim()) {
-                    isValid = false;
-                    field.classList.add('error');
-                    
-                    // Remove error class after user starts typing
-                    field.addEventListener('input', function() {
-                        this.classList.remove('error');
-                    }, { once: true });
+                let value = field.value;
+                
+                // For select fields, check if value is empty string
+                // For text fields, trim whitespace
+                if (field.tagName === 'SELECT') {
+                    if (value === '' || value === null) {
+                        isValid = false;
+                        field.classList.add('error');
+                    }
+                } else {
+                    if (!value.trim()) {
+                        isValid = false;
+                        field.classList.add('error');
+                    }
                 }
+                
+                // Remove error class after user starts interacting
+                const eventType = field.tagName === 'SELECT' ? 'change' : 'input';
+                field.addEventListener(eventType, function() {
+                    this.classList.remove('error');
+                }, { once: true });
             });
             
             if (!isValid) {

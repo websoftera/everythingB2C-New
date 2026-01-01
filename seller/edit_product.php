@@ -279,15 +279,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Category *</label>
-                                        <select name="parent_category_id" class="form-select" required>
+                                        <select name="parent_category_id" class="form-select" required id="categorySelect">
                                             <option value="">Select Category</option>
-                                            <?php foreach ($categoryTree as $category): ?>
+                                            <?php 
+                                            $selectedCategory = false;
+                                            foreach ($categoryTree as $category): 
+                                                if ($category['id'] == $product['category_id']) {
+                                                    $selectedCategory = true;
+                                                }
+                                            ?>
                                                 <option value="<?php echo $category['id']; ?>" 
                                                         <?php echo ($category['id'] == $product['category_id']) ? 'selected' : ''; ?>>
                                                     <?php echo htmlspecialchars($category['name']); ?>
                                                 </option>
                                                 <?php if (!empty($category['children'])): ?>
-                                                    <?php foreach ($category['children'] as $child): ?>
+                                                    <?php foreach ($category['children'] as $child): 
+                                                        if ($child['id'] == $product['category_id']) {
+                                                            $selectedCategory = true;
+                                                        }
+                                                    ?>
                                                         <option value="<?php echo $child['id']; ?>"
                                                                 <?php echo ($child['id'] == $product['category_id']) ? 'selected' : ''; ?>>
                                                             &nbsp;&nbsp;&nbsp;└─ <?php echo htmlspecialchars($child['name']); ?>
