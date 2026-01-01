@@ -454,12 +454,18 @@ function rejectProduct($productId, $adminId, $reason) {
         $pdo->beginTransaction();
         
         // Get product and seller info
-        $stmt = $pdo->prepare("SELECT seller_id FROM products WHERE id = ?");
+        $stmt = $pdo->prepare("SELECT seller_id, rejection_reason FROM products WHERE id = ?");
         $stmt->execute([$productId]);
         $product = $stmt->fetch(PDO::FETCH_ASSOC);
         
         if (!$product) {
             throw new Exception('Product not found');
+        }
+        
+        // Prevent re-rejecting an already rejected product
+        // Admin must wait for seller to resubmit before rejecting again
+        if ($product['rejection_reason']) {
+            throw new Exception('This product is already rejected. Please wait for the seller to resubmit before rejecting again.');
         }
         
         // Update product status

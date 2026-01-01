@@ -107,18 +107,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // If product was rejected, reset is_approved to 0 so it needs re-approval
             // Otherwise keep current approval status
             $is_approved = $product['is_approved'];
-            $rejection_reason = null;
+            $rejection_reason = $product['rejection_reason']; // Keep existing reason by default
             
-            // Update product with seller_id and is_approved=0 if it was rejected (for re-submission)
-            if ($product['is_approved'] == 0) {
-                $is_approved = 0; // Reset for re-approval
-                $rejection_reason = null; // Clear the rejection reason on resubmission
+            // If this is a resubmission of a REJECTED product (has rejection_reason)
+            if ($product['rejection_reason']) {
+                // Clear the rejection reason and set back to pending approval
+                $is_approved = 0;           // Not approved yet
+                $rejection_reason = null;  // Clear the reason - fresh start for re-review
             }
 
             $stmt = $pdo->prepare("UPDATE products SET name = ?, slug = ?, description = ?, mrp = ?, selling_price = ?, 
                                    discount_percentage = ?, gst_type = ?, gst_rate = ?, category_id = ?, stock_quantity = ?, 
                                    max_quantity_per_order = ?, is_active = ?, is_featured = ?, is_discounted = ?, 
-                                   is_approved = ?, sku = ?, hsn = ?, rejection_reason = ?
+                                   is_approved = ?, sku = ?, hsn = ?, rejection_reason = ?, updated_at = NOW()
                                    WHERE id = ? AND seller_id = ?");
             $stmt->execute([$name, $slug, $description, $mrp, $selling_price, $discount_percentage, $gst_type, $gst_rate, 
                            $category_id, $stock_quantity, $max_quantity_per_order, $is_active, $is_featured, $is_discounted,
@@ -134,16 +135,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             // Log activity
-            $action_type = $product['is_approved'] == 0 ? 'product_resubmitted' : 'product_updated';
-            logSellerActivity($sellerId, $action_type, "Product '{$name}' (ID: {$productId}) " . 
-                            ($product['is_approved'] == 0 ? 'resubmitted for approval' : 'updated'));
+            $action_type = $product['rejection_reason'] ? 'product_resubmitted' : 'product_updated';
+            $action_desc = $product['rejection_reason'] ? 'resubmitted for approval after rejection' : 'updated';
+            logSellerActivity($sellerId, $action_type, "Product '{$name}' (ID: {$productId}) {$action_desc}");
             
             // Update seller statistics
             updateSellerStatistics($sellerId);
 
             $pdo->commit();
-            $success_message = $product['is_approved'] == 0 ? 
-                'Product updated and resubmitted for approval!' : 
+            $success_message = $product['rejection_reason'] ? 
+                'Product updated and resubmitted for approval! Admin will review your changes.' : 
                 'Product updated successfully!';
             
             // Refresh product data
@@ -185,22 +186,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </a>
                     </div>
 
-                    <?php if (!$product['is_approved'] && $product['rejection_reason']): ?>
+                    <?php if ($product['rejection_reason']): ?>
                         <div class="alert alert-danger alert-dismissible fade show">
                             <i class="fas fa-times-circle"></i>
-                            <strong>Product Rejected!</strong> Your product was rejected by admin. Please review the reason below and make the necessary corrections.
-                            <br><strong>Rejection Reason:</strong> <?php echo htmlspecialchars($product['rejection_reason']); ?>
+                            <strong>Product Rejected - Action Required!</strong> Your product was rejected by the admin. Please carefully review the rejection reason below and make the necessary corrections before resubmitting.
+                            <br><br><strong style="font-size: 1.1em;">Rejection Reason:</strong>
+                            <div style="margin-top: 10px; padding: 10px; background: rgba(0,0,0,0.1); border-left: 3px solid #dc3545; border-radius: 3px;">
+                                <?php echo htmlspecialchars($product['rejection_reason']); ?>
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <small><i class="fas fa-info-circle"></i> Update your product details below and click "Update & Resubmit for Approval"</small>
+                            </div>
                             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
                     <?php elseif (!$product['is_approved']): ?>
                         <div class="alert alert-warning">
                             <i class="fas fa-clock"></i>
-                            <strong>Pending Approval:</strong> This product is waiting for admin approval.
+                            <strong>Pending Approval:</strong> This product is waiting for admin approval. No rejection issues.
                         </div>
                     <?php else: ?>
                         <div class="alert alert-success">
                             <i class="fas fa-check-circle"></i>
-                            <strong>Approved:</strong> This product is approved and active.
+                            <strong>Approved:</strong> This product is approved and active. You can still make updates.
                         </div>
                     <?php endif; ?>
 
@@ -368,7 +375,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </a>
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-save"></i> 
-                                <?php echo !$product['is_approved'] ? 'Update & Resubmit for Approval' : 'Update Product'; ?>
+                                <?php echo $product['rejection_reason'] ? 'Update & Resubmit for Approval' : ($product['is_approved'] ? 'Update Product' : 'Submit for Approval'); ?>
                             </button>
                         </div>
                     </form>
