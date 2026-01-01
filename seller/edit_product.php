@@ -133,7 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = $pdo->prepare("UPDATE products SET name = ?, slug = ?, description = ?, mrp = ?, selling_price = ?, 
                                    discount_percentage = ?, gst_type = ?, gst_rate = ?, category_id = ?, stock_quantity = ?, 
                                    max_quantity_per_order = ?, is_active = ?, is_featured = ?, is_discounted = ?, 
-                                   is_approved = ?, sku = ?, hsn = ?, rejection_reason = ?, updated_at = NOW()
+                                   is_approved = ?, sku = ?, hsn = ?, rejection_reason = ?
                                    WHERE id = ? AND seller_id = ?");
             $stmt->execute([$name, $slug, $description, $mrp, $selling_price, $discount_percentage, $gst_type, $gst_rate, 
                            $category_id, $stock_quantity, $max_quantity_per_order, $is_active, $is_featured, $is_discounted,
