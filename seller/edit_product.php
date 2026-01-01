@@ -74,6 +74,10 @@ $categoryTree = buildCategoryTree($allCategories);
 
 // Handle product update
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Debug: Log the POST data
+    error_log("POST received in edit_product.php");
+    error_log("POST data keys: " . implode(", ", array_keys($_POST)));
+    
     $name = trim($_POST['name']);
     $slug = createSlug($name);
     $description = trim($_POST['description']);
@@ -90,15 +94,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $sku = trim($_POST['sku']);
     $hsn = isset($_POST['hsn']) ? trim($_POST['hsn']) : null;
 
+    // Debug: Log validation
+    error_log("Validation - name: $name, mrp: $mrp, selling_price: $selling_price, category_id: $category_id");
+    
     // Validation
     if (empty($name) || empty($description) || $mrp <= 0 || $selling_price <= 0) {
         $error_message = 'Please fill in all required fields with valid values.';
+        error_log("Validation error: Empty fields");
     } elseif (empty($_POST['parent_category_id'])) {
         $error_message = 'Please select a category.';
+        error_log("Validation error: No category");
     } elseif ($selling_price > $mrp) {
         $error_message = 'Selling price cannot be greater than MRP.';
+        error_log("Validation error: Selling price > MRP");
     } elseif ($gst_rate < 0 || $gst_rate > 100) {
         $error_message = 'GST rate must be between 0 and 100.';
+        error_log("Validation error: Invalid GST");
     } else {
         try {
             $pdo->beginTransaction();
@@ -225,6 +236,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <i class="fas fa-exclamation-circle"></i>
                             <?php echo htmlspecialchars($error_message); ?>
                             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- Debug: Show if POST was received -->
+                    <?php if ($_SERVER['REQUEST_METHOD'] === 'POST'): ?>
+                        <div class="alert alert-info">
+                            <strong>Debug:</strong> Form submitted. <?php echo count($_POST); ?> POST fields received.
+                            <?php if ($success_message || $error_message): ?>
+                                Handler executed.
+                            <?php else: ?>
+                                No success or error message set - check server logs.
+                            <?php endif; ?>
                         </div>
                     <?php endif; ?>
 
