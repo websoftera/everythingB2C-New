@@ -622,4 +622,5 @@ echo renderBreadcrumb($breadcrumbs);
 // Remove any add-to-cart button JS logic here, rely on popup.js
 </script>
 
+<?php include 'includes/back_to_top_button.php'; ?>
 <?php include 'includes/footer.php'; ?> 

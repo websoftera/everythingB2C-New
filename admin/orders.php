@@ -41,6 +41,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
     exit;
 }
 
+// Handle order deletion (Super Admin only)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_order'])) {
+    // Check if user is super admin
+    try {
+        $stmt = $pdo->prepare("SELECT role FROM admins WHERE id = ?");
+        $stmt->execute([$_SESSION['admin_id']]);
+        $admin = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$admin || $admin['role'] !== 'super_admin') {
+            $_SESSION['error_message'] = 'Only Super Admin can delete orders.';
+            header('Location: orders.php');
+            exit;
+        }
+    } catch (Exception $e) {
+        $_SESSION['error_message'] = 'Error verifying admin privileges.';
+        header('Location: orders.php');
+        exit;
+    }
+    
+    $orderId = intval($_POST['order_id']);
+    
+    if ($orderId > 0) {
+        if (deleteOrder($orderId)) {
+            $_SESSION['success_message'] = 'Order deleted successfully with all related data!';
+        } else {
+            $_SESSION['error_message'] = 'Error deleting order. Please try again.';
+        }
+    } else {
+        $_SESSION['error_message'] = 'Invalid order ID.';
+    }
+    
+    header('Location: orders.php');
+
+    exit;
+}
+
 // Get filter parameters
 $status_filter = $_GET['status'] ?? '';
 $payment_filter = $_GET['payment'] ?? '';
@@ -308,6 +344,9 @@ $statuses = getAllOrderStatuses();
                                                             <a href="../download_invoice.php?order_id=<?php echo $order['id']; ?>" target="_blank" class="btn btn-sm btn-outline-warning" title="Download Invoice">
                                                                 <i class="fas fa-file-invoice"></i>
                                                             </a>
+                                                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteOrder(<?php echo $order['id']; ?>)" title="Delete Order (Super Admin Only)">
+                                                                <i class="fas fa-trash-alt"></i>
+                                                            </button>
                                                             <!-- DTDC Integration Buttons (Hidden - Enable when DTDC is configured) -->
                                                             <?php 
                                                             // Uncomment below when DTDC is properly configured
@@ -489,6 +528,74 @@ $statuses = getAllOrderStatuses();
                     alert('Error loading order details');
                 }
             });
+    }
+
+    // Delete Order Function
+    function deleteOrder(orderId) {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: 'Delete Order #' + orderId + '?',
+                html: '<strong>This action cannot be undone!</strong><br><br>This will delete:<br>• Order details<br>• All order items<br>• Order status history<br>• Payment records<br>• DTDC shipping records<br>• API logs',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, Delete Order',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show loading
+                    Swal.fire({
+                        title: 'Deleting...',
+                        text: 'Please wait while the order is being deleted',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    const formData = new FormData();
+                    formData.append('delete_order', '1');
+                    formData.append('order_id', orderId);
+
+                    fetch('orders.php', {
+                        method: 'POST',
+                        body: formData
+                    }).then(response => {
+                        if (response.ok) {
+                            // Reload the page to show the success message and updated list
+                            location.reload();
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Error deleting order. Please try again.',
+                                timer: 4000,
+                                showConfirmButton: false
+                            });
+                        }
+                    }).catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Error deleting order: ' + error.message,
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
+                    });
+                }
+            });
+        } else {
+            if (confirm('Delete Order #' + orderId + '?\n\nThis action cannot be undone! All related data will be deleted.')) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.innerHTML = '<input type="hidden" name="delete_order" value="1"><input type="hidden" name="order_id" value="' + orderId + '">';
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
     }
 
     // ==================== DTDC INTEGRATION FUNCTIONS ====================

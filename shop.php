@@ -342,4 +342,5 @@ echo renderBreadcrumb($breadcrumbs);
 }
 </style>
 
+<?php include 'includes/back_to_top_button.php'; ?>
 <?php include 'includes/footer.php'; ?> 

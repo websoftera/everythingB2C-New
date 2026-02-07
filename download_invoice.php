@@ -131,9 +131,9 @@ if (!empty($address['address_line2'])) {
 }
 $html .= '<br>';
 $html .= htmlspecialchars($address['city']) . ', ' . htmlspecialchars($address['state']) . ' - ' . htmlspecialchars($address['pincode']) . '<br>';
-$html .= 'Phone: ' . htmlspecialchars($address['phone']) . '\n';
+$html .= 'Phone: ' . htmlspecialchars($address['phone']) . '<br>';
 if (!empty($order['gst_number'])) {
-    $html .= 'GSTIN: ' . htmlspecialchars($order['gst_number']) . '\n';
+    $html .= 'GSTIN: ' . htmlspecialchars($order['gst_number']) . '<br>';
 }
 $html .= '</div>';
 

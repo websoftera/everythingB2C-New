@@ -434,6 +434,8 @@ body {
 .navbar .dropdown-menu {
   position: absolute;
   z-index: 1060; /* Dropdown above both navbars */
+  left: auto;
+  right: 0;
 }
 
 .navbar form .btn-primary {

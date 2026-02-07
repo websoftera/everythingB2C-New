@@ -217,6 +217,7 @@ echo renderBreadcrumb($breadcrumbs);
 </section>
 
 <!-- Include Footer -->
+<?php include 'includes/back_to_top_button.php'; ?>
 <?php include 'includes/footer.php'; ?>
 
 <style>
@@ -728,6 +729,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const relatedSlider = document.getElementById('related-slider');
     const prevBtn = document.querySelector('.related-nav-btn.prev-btn');
     const nextBtn = document.querySelector('.related-nav-btn.next-btn');
+    
+    // Force make arrows visible
+    if (prevBtn) {
+        prevBtn.style.display = 'flex';
+        prevBtn.style.visibility = 'visible';
+        prevBtn.style.opacity = '1';
+        prevBtn.style.zIndex = '9999';
+    }
+    
+    if (nextBtn) {
+        nextBtn.style.display = 'flex';
+        nextBtn.style.visibility = 'visible';
+        nextBtn.style.opacity = '1';
+        nextBtn.style.zIndex = '9999';
+    }
     
     if (relatedSlider && prevBtn && nextBtn) {
         let scrollAmount = 0;

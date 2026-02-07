@@ -93,17 +93,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             case 'delete':
                 $id = intval($_POST['id']);
                 try {
-                    // Check if category has products
-                    $stmt = $pdo->prepare("SELECT COUNT(*) FROM products WHERE category_id = ?");
+                    // Check if category has subcategories
+                    $stmt = $pdo->prepare("SELECT COUNT(*) FROM categories WHERE parent_id = ?");
                     $stmt->execute([$id]);
-                    $product_count = $stmt->fetchColumn();
+                    $subcategory_count = $stmt->fetchColumn();
                     
-                    if ($product_count > 0) {
-                        $_SESSION['error_message'] = 'Cannot delete category with existing products.';
+                    if ($subcategory_count > 0) {
+                        $_SESSION['error_message'] = 'Cannot delete category with subcategories. Please delete or reassign subcategories first.';
                     } else {
-                        $stmt = $pdo->prepare("DELETE FROM categories WHERE id = ?");
+                        // Check if category has products
+                        $stmt = $pdo->prepare("SELECT COUNT(*) FROM products WHERE category_id = ?");
                         $stmt->execute([$id]);
-                        $_SESSION['success_message'] = 'Category deleted successfully!';
+                        $product_count = $stmt->fetchColumn();
+                        
+                        if ($product_count > 0) {
+                            $_SESSION['error_message'] = 'Cannot delete category with existing products.';
+                        } else {
+                            $stmt = $pdo->prepare("DELETE FROM categories WHERE id = ?");
+                            $stmt->execute([$id]);
+                            $_SESSION['success_message'] = 'Category deleted successfully!';
+                        }
                     }
                 } catch (Exception $e) {
                     $_SESSION['error_message'] = 'Error deleting category: ' . $e->getMessage();
@@ -154,6 +163,30 @@ function uploadImage($file, $folder) {
     }
     
     return false;
+}
+
+function buildCategoryTree($categories) {
+    $tree = [];
+    $lookup = [];
+    
+    // Create lookup table with children array
+    foreach ($categories as $category) {
+        $category['children'] = [];
+        $lookup[$category['id']] = $category;
+    }
+    
+    // Build tree by establishing parent-child relationships
+    foreach ($categories as $category) {
+        if (is_null($category['parent_id'])) {
+            // Main category - add to root of tree
+            $tree[] = &$lookup[$category['id']];
+        } else if (isset($lookup[$category['parent_id']])) {
+            // Sub-category - add to parent's children
+            $lookup[$category['parent_id']]['children'][] = &$lookup[$category['id']];
+        }
+    }
+    
+    return $tree;
 }
 
 $categoryTree = buildCategoryTree($categories);

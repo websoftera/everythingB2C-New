@@ -73,6 +73,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // === PLACE ORDER HANDLER ===
     if (isset($_POST['place_order'])) {
         $selected_address_id = isset($_POST['selected_address']) ? intval($_POST['selected_address']) : 0;
+        
+        // If no address selected, try to find and use default address
+        if (!$selected_address_id && !empty($addresses)) {
+            foreach ($addresses as $addr) {
+                if ($addr['is_default'] == 1) {
+                    $selected_address_id = $addr['id'];
+                    break;
+                }
+            }
+        }
+        
+        // If still no address, use first address from list
+        if (!$selected_address_id && !empty($addresses)) {
+            $selected_address_id = $addresses[0]['id'];
+        }
+        
         $payment_method = isset($_POST['payment_method']) ? $_POST['payment_method'] : '';
         $gst_number = isset($_POST['gst_number']) ? trim($_POST['gst_number']) : '';
         $upi_transaction_id = null;
@@ -344,15 +360,35 @@ foreach ($cartItems as $item) {
             <h5 class="mb-3">Bill Summary <span class="text-muted" style="font-size:1rem;">(<?php echo $count; ?> products)</span></h5>
             <!-- Per-product breakdown -->
             <!-- Removed per-product table as requested -->
-            <div class="mb-2"></div>
-            <div class="d-flex justify-content-between mb-2"><span>Total MRP</span><span>₹<?php echo number_format($mrp,0); ?></span></div>
-            <div class="d-flex justify-content-between mb-2"><span>You Pay</span><span id="you-pay-amount">₹<?php echo number_format($orderTotals['subtotal'],0); ?></span></div>
-            <div class="d-flex justify-content-between mb-2 bg-light p-2 rounded"><span class="text-success"><b>Savings</b></span><span class="text-success">₹<?php echo number_format($savings,0); ?></span></div>
-            <div class="d-flex justify-content-between mb-2"><span>Delivery charge</span><span id="cart-shipping">₹<?php echo $orderTotals['shipping_charge']; ?></span></div>
-            <!-- <div class="d-flex justify-content-between mb-2"><span>Shipping Zone</span><span id="cart-shipping-zone"><?php echo htmlspecialchars($orderTotals['shipping_zone_name'] ?? ''); ?></span></div> -->
-            
-            <!-- GST Breakdown removed: prices are inclusive of GST -->
-            <div class="d-flex justify-content-between mb-2 bg-primary bg-opacity-10 p-2 rounded"><span><b>Total Amount to Pay</b></span><span id="order-total-amount"><b>₹<?php echo number_format($orderTotals['total'],0); ?></b></span></div>
+            <div class="price-summary-table" style="border:1px solid #e0e0e0;border-radius:8px;background:#fff;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+              <table style="width:100%;border-collapse:collapse;margin:0;">
+                <tbody>
+                  <tr style="border-bottom:1px solid #f0f0f0;background:#fafafa;">
+                    <td style="padding:12px 16px;text-align:left;color:#666;font-size:0.95rem;">Total MRP</td>
+                    <td style="padding:12px 16px;text-align:right;font-weight:600;text-decoration:line-through;color:#999;font-size:0.95rem;">₹<?php echo number_format($mrp,0); ?></td>
+                  </tr>
+                  <tr style="border-bottom:1px solid #f0f0f0;">
+                    <td style="padding:12px 16px;text-align:left;color:#666;font-size:0.95rem;">You Pay</td>
+                    <td style="padding:12px 16px;text-align:right;font-weight:700;color:#1976d2;font-size:1rem;" id="you-pay-amount">₹<?php echo number_format($orderTotals['subtotal'],0); ?></td>
+                  </tr>
+                  <tr style="border-bottom:2px solid #f0f0f0;background:#f5f5f5;">
+                    <td style="padding:12px 16px;text-align:left;color:#2e7d32;font-weight:600;font-size:0.95rem;">Savings</td>
+                    <td style="padding:12px 16px;text-align:right;color:#2e7d32;font-weight:700;font-size:1rem;">₹<?php echo number_format($savings,0); ?></td>
+                  </tr>
+                  <tr style="border-bottom:1px solid #f0f0f0;">
+                    <td style="padding:12px 16px;text-align:left;color:#666;font-size:0.95rem;">Delivery Charge <i class='bi bi-info-circle' title='Delivery charges may vary' style='cursor:help;color:#0288d1;'></i></td>
+                    <td style="padding:12px 16px;text-align:right;font-weight:600;color:#555;font-size:0.95rem;" id="cart-shipping">₹<?php echo $orderTotals['shipping_charge']; ?></td>
+                  </tr>
+                  <!-- <div class="d-flex justify-content-between mb-2"><span>Shipping Zone</span><span id="cart-shipping-zone"><?php echo htmlspecialchars($orderTotals['shipping_zone_name'] ?? ''); ?></span></div> -->
+                  
+                  <!-- GST Breakdown removed: prices are inclusive of GST -->
+                  <tr style="background:#f0f7ff;border-top:2px solid #e3f2fd;">
+                    <td style="padding:14px 16px;text-align:left;color:#1976d2;font-weight:700;font-size:1.05rem;">Total Amount to Pay</td>
+                    <td style="padding:14px 16px;text-align:right;color:#1976d2;font-weight:800;font-size:1.2rem;" id="order-total-amount">₹<?php echo number_format($orderTotals['total'],0); ?></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
             <!-- Payment Method Section and Place Order Button -->
             <div class="checkout-card mt-3">
               <div class="card-body">
@@ -507,18 +543,97 @@ function editAddress(addressId) {
 // --- Ensure hidden field is always up to date with selected address ---
 function updateSelectedAddressHidden() {
   var selectedAddress = document.querySelector('input[name="selected_address_left"]:checked');
-  document.getElementById('selected_address_hidden').value = selectedAddress ? selectedAddress.value : '';
+  if (selectedAddress) {
+    document.getElementById('selected_address_hidden').value = selectedAddress.value;
+  } else {
+    // If no address is checked, try to select the default address or first address
+    var defaultAddress = document.querySelector('input[name="selected_address_left"][data-default="true"]');
+    if (!defaultAddress) {
+      defaultAddress = document.querySelector('input[name="selected_address_left"]');
+    }
+    if (defaultAddress) {
+      defaultAddress.checked = true;
+      document.getElementById('selected_address_hidden').value = defaultAddress.value;
+    }
+  }
 }
+
 // Update on page load and whenever address is changed
-updateSelectedAddressHidden();
-document.querySelectorAll('input[name="selected_address_left"]').forEach(function(radio) {
-  radio.addEventListener('change', updateSelectedAddressHidden);
+document.addEventListener('DOMContentLoaded', function() {
+  // First, mark default address with data attribute
+  var addressRadios = document.querySelectorAll('input[name="selected_address_left"]');
+  addressRadios.forEach(function(radio) {
+    var label = radio.nextElementSibling;
+    if (label && label.classList.contains('form-check-label')) {
+      var parent = radio.closest('.form-check');
+      if (radio.checked) {
+        radio.setAttribute('data-default', 'true');
+      }
+    }
+    radio.addEventListener('change', updateSelectedAddressHidden);
+  });
+  updateSelectedAddressHidden();
 });
-// On form submit, update hidden field just before submit
-  document.getElementById('checkoutForm').addEventListener('submit', function(e) {
-    updateSelectedAddressHidden();
-    var gstNumber = document.getElementById('gst_number_left').value;
-    document.getElementById('gst_number_hidden').value = gstNumber;
+
+// On form submit, validate and update hidden field just before submit
+document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+  // First, sync the selected address before any validation
+  var selectedAddressRadio = document.querySelector('input[name="selected_address_left"]:checked');
+  if (selectedAddressRadio) {
+    document.getElementById('selected_address_hidden').value = selectedAddressRadio.value;
+  } else {
+    // Try to select default or first address
+    var defaultAddress = document.querySelector('input[name="selected_address_left"][data-default="true"]');
+    if (!defaultAddress) {
+      defaultAddress = document.querySelector('input[name="selected_address_left"]');
+    }
+    if (defaultAddress) {
+      defaultAddress.checked = true;
+      document.getElementById('selected_address_hidden').value = defaultAddress.value;
+    }
+  }
+  
+  var selectedAddressId = document.getElementById('selected_address_hidden').value;
+  var paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+  
+  // Validate address selection
+  if (!selectedAddressId || selectedAddressId.trim() === '') {
+    e.preventDefault();
+    Swal.fire({
+      icon: 'error',
+      title: 'Address Required',
+      text: 'Please select a delivery address to continue.',
+      confirmButtonText: 'OK',
+      confirmButtonColor: '#d32f2f'
+    });
+    
+    // Highlight the address section to draw attention
+    var addressSection = document.querySelector('input[name="selected_address_left"]');
+    if (addressSection && addressSection.closest('.checkout-card')) {
+      addressSection.closest('.checkout-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      addressSection.closest('.checkout-card').style.borderColor = '#d32f2f';
+      setTimeout(function() {
+        addressSection.closest('.checkout-card').style.borderColor = '';
+      }, 3000);
+    }
+    return false;
+  }
+  
+  // Validate payment method
+  if (!paymentMethod) {
+    e.preventDefault();
+    Swal.fire({
+      icon: 'error',
+      title: 'Payment Method Required',
+      text: 'Please select a payment method to continue.',
+      confirmButtonText: 'OK',
+      confirmButtonColor: '#d32f2f'
+    });
+    return false;
+  }
+  
+  var gstNumber = document.getElementById('gst_number_left').value;
+  document.getElementById('gst_number_hidden').value = gstNumber;
     // --- Razorpay client-side flow ---
     var paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
     if (paymentMethod === 'razorpay') {
@@ -951,25 +1066,37 @@ function showOrderSuccessPopup() {
     title: 'Thank You!',
     html: `
       <div style="text-align: center;">
-        <i class="fas fa-check-circle text-success" style="font-size: 3rem; color: #9fbe1b; margin-bottom: 15px;"></i>
-        <p style="font-size: 16px; margin: 15px 0;">Your order has been placed successfully.</p>
-        <p style="font-size: 14px; color: #666; margin: 10px 0;">We'll send you updates about your order via email and SMS.</p>
+        <div style="margin-bottom: 25px;">
+          <img src="img/EVERYTHING2C_LOGO.png" alt="EverythingB2C" style="max-height: 50px; width: auto; margin-bottom: 20px;">
+        </div>
+        <div style="margin-bottom: 20px;">
+          <i class="fas fa-check-circle" style="font-size: 4rem; color: #9fbe1b; display: inline-block; margin: 0;"></i>
+        </div>
+        <h2 style="font-size: 28px; color: #333; margin: 15px 0 10px 0; font-weight: 700; letter-spacing: -0.5px;">Your Order Has Been Placed Successfully</h2>
+        <p style="font-size: 15px; color: #666; margin: 15px 0; line-height: 1.5;">We'll send you updates about your order via email and SMS.</p>
       </div>
     `,
     icon: null,
     showConfirmButton: true,
     showCancelButton: true,
-    confirmButtonText: 'Go to My Account',
-    cancelButtonText: 'Continue Shopping',
+    confirmButtonText: '<i class="fas fa-user me-2"></i>Go to My Account',
+    cancelButtonText: '<i class="fas fa-shopping-bag me-2"></i>Continue Shopping',
     confirmButtonColor: '#9fbe1b',
     cancelButtonColor: '#6c757d',
-    width: '380px',
-    padding: '20px',
+    width: '420px',
+    padding: '30px 25px',
     customClass: {
-      popup: 'swal-with-logo order-success-popup'
+      popup: 'swal-with-logo order-success-popup',
+      confirmButton: 'order-success-confirm-btn',
+      cancelButton: 'order-success-cancel-btn',
+      title: 'order-success-title',
+      htmlContainer: 'order-success-content'
     },
     allowOutsideClick: false,
-    allowEscapeKey: false
+    allowEscapeKey: false,
+    didOpen: (modal) => {
+      modal.classList.add('show-success-animation');
+    }
   }).then((result) => {
     if (result.isConfirmed) {
       window.location.href = 'myaccount.php';
@@ -991,45 +1118,149 @@ if (window.history.replaceState) {
 <style>
 /* Order Success Popup Styling */
 .order-success-popup {
-  max-width: 380px !important;
-  width: 90% !important;
-  max-height: 80vh !important;
-  border-radius: 8px !important;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2) !important;
-  padding: 20px !important;
+  max-width: 450px !important;
+  width: 95% !important;
+  max-height: 90vh !important;
+  border-radius: 12px !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25), 0 0 1px rgba(0, 0, 0, 0.1) !important;
+  padding: 30px 25px !important;
+  background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%) !important;
 }
 
 /* Ensure consistent styling with other popups */
 .swal2-popup.order-success-popup {
-  padding: 20px !important;
-  border-radius: 8px !important;
+  padding: 30px 25px !important;
+  border-radius: 12px !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Order Success Title */
+.order-success-popup .order-success-title {
+  display: none !important;
+}
+
+/* Order Success Content */
+.order-success-popup .order-success-content {
+  text-align: center !important;
+  margin: 0 !important; 
+  padding: 0 !important;
 }
 
 /* Green button styling for order success */
-.swal2-confirm.swal2-styled {
+.order-success-confirm-btn.swal2-styled {
   background-color: #9fbe1b !important;
   border-color: #9fbe1b !important;
+  color: white !important;
+  padding: 12px 24px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  border-radius: 6px !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 12px rgba(159, 190, 27, 0.3) !important;
+  width: 100% !important;
+  margin-bottom: 12px !important;
 }
 
-.swal2-confirm.swal2-styled:hover {
+.order-success-confirm-btn.swal2-styled:hover {
   background-color: #8ba817 !important;
   border-color: #8ba817 !important;
+  box-shadow: 0 6px 16px rgba(159, 190, 27, 0.4) !important;
+  transform: translateY(-2px) !important;
+}
+
+.order-success-confirm-btn.swal2-styled:active {
+  transform: translateY(0) !important;
 }
 
 /* Cancel button styling */
-.swal2-cancel.swal2-styled {
-  background-color: #6c757d !important;
-  border-color: #6c757d !important;
+.order-success-cancel-btn.swal2-styled {
+  background-color: #e9ecef !important;
+  border-color: #dee2e6 !important;
+  color: #495057 !important;
+  padding: 12px 24px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  border-radius: 6px !important;
+  transition: all 0.3s ease !important;
+  width: 100% !important;
 }
 
-.swal2-cancel.swal2-styled:hover {
-  background-color: #5a6268 !important;
-  border-color: #5a6268 !important;
+.order-success-cancel-btn.swal2-styled:hover {
+  background-color: #dee2e6 !important;
+  border-color: #adb5bd !important;
+  color: #212529 !important;
 }
 
-/* Success icon styling */
+.order-success-cancel-btn.swal2-styled:active {
+  transform: translateY(0) !important;
+}
+
+/* Button container styling */
+.swal2-actions.order-success-popup {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0 !important;
+  margin-top: 25px !important;
+}
+
+/* Icon styling */
 .order-success-popup .fas.fa-check-circle {
   color: #9fbe1b !important;
+  filter: drop-shadow(0 4px 8px rgba(159, 190, 27, 0.25));
+  animation: scaleInPulse 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+/* Success animation */
+@keyframes scaleInPulse {
+  0% {
+    transform: scale(0) !important;
+    opacity: 0 !important;
+  }
+  50% {
+    transform: scale(1.1) !important;
+  }
+  100% {
+    transform: scale(1) !important;
+    opacity: 1 !important;
+  }
+}
+
+@keyframes slideInDown {
+  0% {
+    transform: translateY(-30px) !important;
+    opacity: 0 !important;
+  }
+  100% {
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+  }
+}
+
+.show-success-animation {
+  animation: slideInDown 0.4s ease-out !important;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 480px) {
+  .order-success-popup {
+    max-width: 90vw !important;
+    width: 90vw !important;
+    padding: 25px 20px !important;
+  }
+  
+  .order-success-popup .order-success-content h2 {
+    font-size: 24px !important;
+  }
+  
+  .order-success-popup .order-success-content p {
+    font-size: 14px !important;
+  }
+  
+  .order-success-confirm-btn.swal2-styled,
+  .order-success-cancel-btn.swal2-styled {
+    padding: 14px 20px !important;
+    font-size: 14px !important;
+  }
 }
 </style>
 <style>
@@ -1079,4 +1310,5 @@ function confirmDeleteCheckoutAddress(form) {
     return false;
 }
 </script>
+<?php include 'includes/back_to_top_button.php'; ?>
 <?php include 'includes/footer.php'; ?> 

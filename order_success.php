@@ -140,4 +140,5 @@ include 'includes/header.php';
     </div>
 </div>
 
+<?php include 'includes/back_to_top_button.php'; ?>
 <?php include 'includes/footer.php'; ?> 

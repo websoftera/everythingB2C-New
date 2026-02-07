@@ -4092,6 +4092,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const prevBtn = document.querySelector('.category-nav-btn.prev-btn');
     const nextBtn = document.querySelector('.category-nav-btn.next-btn');
     
+    // Force make arrows visible
+    if (prevBtn) {
+        prevBtn.style.display = 'flex';
+        prevBtn.style.visibility = 'visible';
+        prevBtn.style.opacity = '1';
+        prevBtn.style.zIndex = '9999';
+    }
+    
+    if (nextBtn) {
+        nextBtn.style.display = 'flex';
+        nextBtn.style.visibility = 'visible';
+        nextBtn.style.opacity = '1';
+        nextBtn.style.zIndex = '9999';
+    }
+    
     if (categoryContainer && prevBtn && nextBtn) {
         // Simple scroll function
         const scrollAmount = 200; // Fixed scroll amount
@@ -4119,6 +4134,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const discountedContainer = document.getElementById('discounted-slider');
     const discountedPrevBtn = document.querySelector('.discounted-nav-btn.prev-btn');
     const discountedNextBtn = document.querySelector('.discounted-nav-btn.next-btn');
+    
+    // Force make arrows visible
+    if (discountedPrevBtn) {
+        discountedPrevBtn.style.display = 'flex';
+        discountedPrevBtn.style.visibility = 'visible';
+        discountedPrevBtn.style.opacity = '1';
+        discountedPrevBtn.style.zIndex = '9999';
+    }
+    
+    if (discountedNextBtn) {
+        discountedNextBtn.style.display = 'flex';
+        discountedNextBtn.style.visibility = 'visible';
+        discountedNextBtn.style.opacity = '1';
+        discountedNextBtn.style.zIndex = '9999';
+    }
     
     if (discountedContainer && discountedPrevBtn && discountedNextBtn) {
 

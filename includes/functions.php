@@ -964,6 +964,53 @@ function updatePaymentStatus($orderId, $paymentStatus, $razorpayOrderId = null, 
     return $stmt->execute([$paymentStatus, $razorpayOrderId, $razorpayPaymentId, $orderId]);
 }
 
+// Delete Order - Cascading delete of all related records
+function deleteOrder($orderId) {
+    global $pdo;
+    
+    try {
+        // Start transaction
+        $pdo->beginTransaction();
+        
+        // 1. Delete order items
+        $stmt = $pdo->prepare("DELETE FROM order_items WHERE order_id = ?");
+        $stmt->execute([$orderId]);
+        
+        // 2. Delete order status history
+        $stmt = $pdo->prepare("DELETE FROM order_status_history WHERE order_id = ?");
+        $stmt->execute([$orderId]);
+        
+        // 3. Delete payment transactions
+        $stmt = $pdo->prepare("DELETE FROM payment_transactions WHERE order_id = ?");
+        $stmt->execute([$orderId]);
+        
+        // 4. Delete DTDC tracking events (first, as they reference dtdc_orders)
+        $stmt = $pdo->prepare("DELETE FROM dtdc_tracking_events WHERE dtdc_order_id IN (SELECT id FROM dtdc_orders WHERE order_id = ?)");
+        $stmt->execute([$orderId]);
+        
+        // 5. Delete DTDC orders
+        $stmt = $pdo->prepare("DELETE FROM dtdc_orders WHERE order_id = ?");
+        $stmt->execute([$orderId]);
+        
+        // 6. Delete DTDC API logs
+        $stmt = $pdo->prepare("DELETE FROM dtdc_api_logs WHERE order_id = ?");
+        $stmt->execute([$orderId]);
+        
+        // 7. Delete the main order record
+        $stmt = $pdo->prepare("DELETE FROM orders WHERE id = ?");
+        $success = $stmt->execute([$orderId]);
+        
+        // Commit transaction
+        $pdo->commit();
+        
+        return $success;
+    } catch (Exception $e) {
+        // Rollback on error
+        $pdo->rollBack();
+        return false;
+    }
+}
+
 // Helper function to build a nested category tree with level
 function buildCategoryTree(array $categories, $parentId = null, $level = 0) {
     $branch = [];

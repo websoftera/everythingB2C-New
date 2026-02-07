@@ -828,4 +828,5 @@ function confirmRemoveWishlist(productId) {
     border-color: #5a6268 !important;
 }
 </style>
+<?php include 'includes/back_to_top_button.php'; ?>
 <?php include 'includes/footer.php'; ?>

@@ -97,4 +97,5 @@ echo renderBreadcrumb($breadcrumbs);
     <?php endif; ?>
 </div>
 
+<?php include 'includes/back_to_top_button.php'; ?>
 <?php include 'includes/footer.php'; ?> 

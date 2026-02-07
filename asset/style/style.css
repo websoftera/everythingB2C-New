@@ -62,12 +62,12 @@
 }
 
 .user-signin-link:hover .user-signin-icon {
-  color: #20c997 !important; /* Lighter green on hover */
+  color: #97c02c !important;
   transform: scale(1.1) !important;
 }
 
 .user-signin-link:hover .user-signin-text {
-  color: #20c997 !important; /* Lighter green on hover */
+  color: #97c02c !important;
 }
 
 .user-signout-icon {
@@ -178,11 +178,11 @@
   transition: background-color 0.2s ease !important;
 }
 
-.user-signin-link:hover,
+/* .user-signin-link:hover,
 .user-signout-link:hover,
 .user-account-link:hover {
   background-color: rgba(0, 0, 0, 0.05) !important;
-}
+} */
 
 /* Home Icon Styles */
 .home-icon {
@@ -192,7 +192,7 @@
 }
 
 .home-link:hover .home-icon {
-  color: #16BAE4 !important; /* Same color on hover */
+  color: #008AD1 !important; /* Same color on hover */
 }
 
 /* Wishlist Icon Styles */
@@ -794,6 +794,8 @@ h3{
 .navbar .dropdown-menu {
   position: absolute;
   z-index: 9999 !important; /* Dropdown above both navbars */
+  left: auto;
+  right: 0;
 }
 
 /* Ensure dropdown menus are clickable and visible */
@@ -806,6 +808,9 @@ h3{
   border: 1px solid #dee2e6;
   border-radius: 0.375rem;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  left: 0;
+  right: auto;
+  margin-top: 0.5rem;
 }
 
 .navbar-nav .dropdown-menu.show {
@@ -865,6 +870,7 @@ h3{
   background-color: #fff;
   border-bottom: 1px solid #dee2e6;
   padding: 0 0.5px !important;
+  overflow: visible !important;
 }
 
 .navbar .logo {

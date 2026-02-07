@@ -355,7 +355,7 @@ echo renderBreadcrumb($breadcrumbs);
   width: 100%;
   height: auto;
   max-height: 155px;
-  min-height: 155px;
+  min-height: 110px;
   object-fit: cover;
 }
 
@@ -658,4 +658,5 @@ echo renderBreadcrumb($breadcrumbs);
 }
 </style>
 
+<?php include 'includes/back_to_top_button.php'; ?>
 <?php include 'includes/footer.php'; ?> 

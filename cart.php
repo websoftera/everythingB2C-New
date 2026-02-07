@@ -106,27 +106,48 @@ echo renderBreadcrumb($breadcrumbs);
             <div class="col-md-4">
                 <div class="shopping-card">
                     <div class="card-header">
-                        <h5>Price Summary</h5>
+                        <h5 style="margin:0;">Price Summary</h5>
                     </div>
                     <div class="card-body">
-                        <div class="floating-cart-summary-box" style="border:1px solid #cfd8dc;border-radius:8px;padding:16px 16px 8px 16px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:10px;">
-                                      <div class="d-flex justify-content-between mb-2"><span class="text-muted">Total MRP</span><span class="cart-summary-total-mrp" style="font-weight:600;text-decoration:line-through;">₹<?php echo number_format($orderTotals['total_mrp'], 0); ?></span></div>
-                                      <div class="d-flex justify-content-between mb-2"><span class="text-muted">You Pay</span><span class="cart-summary-you-pay" style="font-weight:600;">₹<?php echo number_format($orderTotals['subtotal'], 0); ?></span></div>
-                                                  <div class="d-flex justify-content-between mb-2"><span class="text-muted">Savings</span><span class="cart-summary-savings fw-bold" style="color:#2e7d32;">₹<?php
+                        <div class="price-summary-table" style="border:1px solid #e0e0e0;border-radius:8px;background:#fff;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+                            <table style="width:100%;border-collapse:collapse;margin:0;">
+                                <tbody>
+                                    <tr style="border-bottom:1px solid #f0f0f0;background:#fafafa;">
+                                        <td style="padding:12px 16px;text-align:left;color:#666;font-size:0.95rem;">Total MRP</td>
+                                        <td style="padding:12px 16px;text-align:right;font-weight:600;text-decoration:line-through;color:#999;font-size:0.95rem;" class="cart-summary-total-mrp">₹<?php echo number_format($orderTotals['total_mrp'], 0); ?></td>
+                                    </tr>
+                                    <tr style="border-bottom:1px solid #f0f0f0;">
+                                        <td style="padding:12px 16px;text-align:left;color:#666;font-size:0.95rem;">You Pay</td>
+                                        <td style="padding:12px 16px;text-align:right;font-weight:700;color:#1976d2;font-size:1rem;" class="cart-summary-you-pay">₹<?php echo number_format($orderTotals['subtotal'], 0); ?></td>
+                                    </tr>
+                                    <tr style="border-bottom:2px solid #f0f0f0;background:#f5f5f5;">
+                                        <td style="padding:12px 16px;text-align:left;color:#2e7d32;font-weight:600;font-size:0.95rem;">Savings</td>
+                                        <td style="padding:12px 16px;text-align:right;color:#2e7d32;font-weight:700;font-size:1rem;" class="cart-summary-savings">₹<?php
                                 $total_savings = 0;
                                 foreach ($cartItems as $item) {
                                     $total_savings += ($item['mrp'] - $item['selling_price']) * $item['quantity'];
                                 }
                                 echo number_format($total_savings, 0);
-                            ?></span></div>
-            <div class="d-flex justify-content-between mb-2"><span class="text-muted">Delivery Charge <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
-            <div class="d-flex justify-content-between mb-2"></div>
-                          <div class="d-grid mt-3 mb-2">
-                            <a href='checkout.php' class='btn btn-success btn-lg fw-bold' style='font-size:1.08rem;'>PROCEED TO CHECKOUT</a>
-                          </div>
-                          <div class="d-grid mb-2">
-                            <a href='index.php' class='btn btn-outline-secondary btn-lg fw-bold' style='font-size:1.08rem;'>CONTINUE SHOPPING</a>
-                          </div>
+                            ?></td>
+                                    </tr>
+                                    <tr style="border-bottom:1px solid #f0f0f0;">
+                                        <td style="padding:12px 16px;text-align:left;color:#666;font-size:0.95rem;">Delivery Charge <i class='bi bi-info-circle' title='Delivery charges may vary' style='cursor:help;color:#0288d1;'></i></td>
+                                        <td style="padding:12px 16px;text-align:right;color:#d32f2f;font-weight:600;font-size:0.95rem;">+ Extra</td>
+                                    </tr>
+                                    <tr style="background:#f0f7ff;border-top:2px solid #e3f2fd;">
+                                        <td style="padding:14px 16px;text-align:left;color:#1976d2;font-weight:700;font-size:1.05rem;">Total Amount</td>
+                                        <td style="padding:14px 16px;text-align:right;color:#1976d2;font-weight:800;font-size:1.2rem;" id="cart-total-amount">₹<?php echo number_format($orderTotals['subtotal'], 0); ?></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div style="margin-top:16px;padding:0 0;">
+                            <div class="d-grid mb-2">
+                                <a href='checkout.php' class='btn btn-success btn-lg fw-bold' style='font-size:1.08rem;padding:12px;'>PROCEED TO CHECKOUT</a>
+                            </div>
+                            <div class="d-grid mb-2">
+                                <a href='index.php' class='btn btn-outline-secondary btn-lg fw-bold' style='font-size:1.08rem;padding:12px;'>CONTINUE SHOPPING</a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -145,6 +166,7 @@ echo renderBreadcrumb($breadcrumbs);
     </div>
 </div>
 
+<?php include 'includes/back_to_top_button.php'; ?>
 <?php include 'includes/footer.php'; ?>
 
 <script>

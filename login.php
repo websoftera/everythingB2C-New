@@ -186,4 +186,21 @@ echo renderBreadcrumb($breadcrumbs);
         </div>
     </div>
 </div>
+
+<script>
+    // Check if register tab is requested via URL parameter
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('tab') === 'register') {
+            // Scroll to register form
+            const registerForm = document.querySelector('.register-form');
+            if (registerForm) {
+                registerForm.scrollIntoView({ behavior: 'smooth' });
+                registerForm.querySelector('input').focus();
+            }
+        }
+    });
+</script>
+
+<?php include 'includes/back_to_top_button.php'; ?>
 <?php include 'includes/footer.php'; ?> 

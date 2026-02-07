@@ -412,18 +412,40 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
                 
                 <!-- Account/Login Icon -->
                 <?php if (isLoggedIn()): ?>
-                    <a href="myaccount.php" class="text-decoration-none text-dark mobile-nav-link me-2 d-flex align-items-center">
-                        <i class="fas fa-user me-1" style="font-size: 24px; color: #007bff;"></i>
-                        <div class="user-welcome-text" style="display: block !important;">
-                            <div class="welcome-line-1" style="font-size: 10px; line-height: 1; margin: 0; color: #333;">Welcome</div>
-                            <div class="welcome-line-2" style="font-size: 10px; line-height: 1; font-weight: 600; margin: 0; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?php echo htmlspecialchars($currentUser['name']); ?></div>
-                        </div>
-                    </a>
+                    <!-- User Account Dropdown -->
+                    <div class="dropdown me-2">
+                        <button class="btn text-dark mobile-nav-link d-flex align-items-center" style="border: none; background: none; padding: 0;" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user me-1" style="font-size: 24px; color: #007bff;"></i>
+                            <div class="user-welcome-text" style="display: block !important;">
+                                <div class="welcome-line-1" style="font-size: 10px; line-height: 1; margin: 0; color: #333;">Welcome</div>
+                                <div class="welcome-line-2" style="font-size: 10px; line-height: 1; font-weight: 600; margin: 0; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?php echo htmlspecialchars($currentUser['name']); ?></div>
+                            </div>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="myaccount.php"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
+                            <li><a class="dropdown-item" href="myaccount.php#orders"><i class="fas fa-shopping-bag me-2"></i>My Orders</a></li>
+                            <li><a class="dropdown-item" href="myaccount.php#addresses"><i class="fas fa-map-marker-alt me-2"></i>Addresses</a></li>
+                            <li><a class="dropdown-item" href="wishlist.php"><i class="fas fa-heart me-2"></i>Wishlist</a></li>
+                            <li><a class="dropdown-item" href="myaccount.php#account"><i class="fas fa-user-cog me-2"></i>Account Info</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
                 <?php else: ?>
-                    <a href="login.php" class="text-decoration-none text-dark mobile-nav-link me-2 d-flex align-items-center">
-                        <i class="fas fa-user me-1" style="font-size: 24px; color: #99d052;"></i>
-                        <span class="user-signin-text" style="font-size: 10px; font-weight: 600; display: block !important; color: #333; white-space: nowrap; overflow: visible;">Sign In</span>
-                    </a>
+                    <!-- Login/Register Dropdown -->
+                    <div class="dropdown me-2">
+                        <button class="btn text-dark mobile-nav-link d-flex align-items-center" style="border: none; background: none; padding: 0;" type="button" id="loginDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user me-1" style="font-size: 24px; color: #99d052;"></i>
+                            <span class="user-signin-text" style="font-size: 10px; font-weight: 600; display: block !important; color: #333; white-space: nowrap; overflow: visible;">Sign In</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="loginDropdown">
+                            <li><a class="dropdown-item" href="login.php"><i class="fas fa-user-circle me-2"></i>Customer Login</a></li>
+                            <li><a class="dropdown-item" href="login.php?tab=register"><i class="fas fa-user-plus me-2"></i>Customer Register</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="seller/login.php"><i class="fas fa-store me-2"></i>Seller Login</a></li>
+                            <li><a class="dropdown-item" href="seller/login.php?register=1"><i class="fas fa-briefcase me-2"></i>Seller Register</a></li>
+                        </ul>
+                    </div>
                 <?php endif; ?>
                 
                 <!-- Cart Icon -->
@@ -1227,15 +1249,30 @@ function updateFloatingCartSummary() {
       
       const totals = data.totals;
       summary.innerHTML = `
-        <div class="floating-cart-summary-box" style="border:1px solid #cfd8dc;border-radius:8px;padding:8px 10px 4px 10px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:6px;">
-          <div style="font-weight:600;font-size:1.02rem;margin-bottom:6px;">Price Summary</div>
-          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Total MRP</span><span style="font-weight:600;text-decoration:line-through;">₹${parseFloat(totals.total_mrp || totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-          <div class="d-flex justify-content-between mb-1"><span class="text-muted">You Pay</span><span style="font-weight:600;">₹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Savings</span><span class="fw-bold" style="color:#2e7d32;">₹${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Delivery <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
-          <div class="d-grid mt-2 mb-1">
-            <a href='checkout.php' class='btn btn-success btn-sm fw-bold' style='font-size:0.98rem;'>PROCEED TO CHECKOUT</a>
-          </div>
+        <div class="price-summary-table" style="border:1px solid #e0e0e0;border-radius:8px;background:#fff;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:6px;">
+          <table style="width:100%;border-collapse:collapse;margin:0;font-size:0.95rem;">
+            <tbody>
+              <tr style="border-bottom:1px solid #f0f0f0;background:#fafafa;">
+                <td style="padding:10px 12px;text-align:left;color:#666;">Total MRP</td>
+                <td style="padding:10px 12px;text-align:right;font-weight:600;text-decoration:line-through;color:#999;">₹${parseFloat(totals.total_mrp || totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+              </tr>
+              <tr style="border-bottom:1px solid #f0f0f0;">
+                <td style="padding:10px 12px;text-align:left;color:#666;">You Pay</td>
+                <td style="padding:10px 12px;text-align:right;font-weight:700;color:#1976d2;">₹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+              </tr>
+              <tr style="border-bottom:2px solid #f0f0f0;background:#f5f5f5;">
+                <td style="padding:10px 12px;text-align:left;color:#2e7d32;font-weight:600;">Savings</td>
+                <td style="padding:10px 12px;text-align:right;color:#2e7d32;font-weight:700;">₹${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+              </tr>
+              <tr style="background:#f0f7ff;border-top:2px solid #e3f2fd;">
+                <td style="padding:10px 12px;text-align:left;color:#1976d2;font-weight:700;">Delivery Charge <i class='bi bi-info-circle' title='Delivery charges may vary' style='cursor:help;color:#0288d1;font-size:0.85rem;'></i></td>
+                <td style="padding:10px 12px;text-align:right;color:#d32f2f;font-weight:600;">+ Extra</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="d-grid mb-1">
+          <a href='checkout.php' class='btn btn-success btn-sm fw-bold' style='font-size:0.9rem;padding:8px;'>PROCEED TO CHECKOUT</a>
         </div>
       `;
     })
@@ -1287,15 +1324,30 @@ function renderFloatingCart() {
       // Summary
       const totals = data.totals;
       summary.innerHTML = `
-        <div class="floating-cart-summary-box" style="border:1px solid #cfd8dc;border-radius:8px;padding:8px 10px 4px 10px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:6px;">
-          <div style="font-weight:600;font-size:1.02rem;margin-bottom:6px;">Price Summary</div>
-          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Total MRP</span><span style="font-weight:600;text-decoration:line-through;">₹${parseFloat(totals.total_mrp || totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-          <div class="d-flex justify-content-between mb-1"><span class="text-muted">You Pay</span><span style="font-weight:600;">₹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Savings</span><span class="fw-bold" style="color:#2e7d32;">₹${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Delivery <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
-          <div class="d-grid mt-2 mb-1">
-            <a href='checkout.php' class='btn btn-success btn-sm fw-bold' style='font-size:0.98rem;'>PROCEED TO CHECKOUT</a>
-          </div>
+        <div class="price-summary-table" style="border:1px solid #e0e0e0;border-radius:8px;background:#fff;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:6px;">
+          <table style="width:100%;border-collapse:collapse;margin:0;font-size:0.95rem;">
+            <tbody>
+              <tr style="border-bottom:1px solid #f0f0f0;background:#fafafa;">
+                <td style="padding:10px 12px;text-align:left;color:#666;">Total MRP</td>
+                <td style="padding:10px 12px;text-align:right;font-weight:600;text-decoration:line-through;color:#999;">₹${parseFloat(totals.total_mrp || totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+              </tr>
+              <tr style="border-bottom:1px solid #f0f0f0;">
+                <td style="padding:10px 12px;text-align:left;color:#666;">You Pay</td>
+                <td style="padding:10px 12px;text-align:right;font-weight:700;color:#1976d2;">₹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+              </tr>
+              <tr style="border-bottom:2px solid #f0f0f0;background:#f5f5f5;">
+                <td style="padding:10px 12px;text-align:left;color:#2e7d32;font-weight:600;">Savings</td>
+                <td style="padding:10px 12px;text-align:right;color:#2e7d32;font-weight:700;">₹${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+              </tr>
+              <tr style="background:#f0f7ff;border-top:2px solid #e3f2fd;">
+                <td style="padding:10px 12px;text-align:left;color:#1976d2;font-weight:700;">Delivery Charge <i class='bi bi-info-circle' title='Delivery charges may vary' style='cursor:help;color:#0288d1;font-size:0.85rem;'></i></td>
+                <td style="padding:10px 12px;text-align:right;color:#d32f2f;font-weight:600;">+ Extra</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="d-grid mb-1">
+          <a href='checkout.php' class='btn btn-success btn-sm fw-bold' style='font-size:0.9rem;padding:8px;'>PROCEED TO CHECKOUT</a>
         </div>
       `;
       // Attach direct handlers to floating cart buttons
@@ -1664,12 +1716,26 @@ function updateFloatingCartSummary() {
         `;
       } else {
         summary.innerHTML = `
-          <div class="floating-cart-summary-box" style="border:1px solid #cfd8dc;border-radius:8px;padding:16px 16px 8px 16px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:10px;">
-            <div style="font-weight:600;font-size:1.1rem;margin-bottom:12px;">Price Summary</div>
-            <div class="d-flex justify-content-between mb-2"><span class="text-muted">Total MRP</span><span style="font-weight:600;">₹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-            <div class="d-flex justify-content-between mb-2"><span class="text-muted">Savings</span><span class="fw-bold" style="color:#2e7d32;">₹${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-            <div class="d-flex justify-content-between mb-2"><span class="text-muted">Delivery Charge <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
-            <div class="d-grid mt-3 mb-2"><a href='checkout.php' class='btn btn-success btn-lg fw-bold' style='font-size:1.08rem;'>PROCEED TO CHECKOUT</a></div>
+          <div class="price-summary-table" style="border:1px solid #e0e0e0;border-radius:8px;background:#fff;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:10px;">
+            <table style="width:100%;border-collapse:collapse;margin:0;">
+              <tbody>
+                <tr style="border-bottom:1px solid #f0f0f0;background:#fafafa;">
+                  <td style="padding:12px 16px;text-align:left;color:#666;font-size:0.95rem;">Total MRP</td>
+                  <td style="padding:12px 16px;text-align:right;font-weight:600;text-decoration:line-through;color:#999;font-size:0.95rem;">₹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                </tr>
+                <tr style="border-bottom:2px solid #f0f0f0;background:#f5f5f5;">
+                  <td style="padding:12px 16px;text-align:left;color:#2e7d32;font-weight:600;font-size:0.95rem;">Savings</td>
+                  <td style="padding:12px 16px;text-align:right;color:#2e7d32;font-weight:700;font-size:1rem;">₹${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                </tr>
+                <tr style="background:#f0f7ff;border-top:2px solid #e3f2fd;">
+                  <td style="padding:14px 16px;text-align:left;color:#1976d2;font-weight:700;font-size:1.05rem;">Delivery Charge <i class='bi bi-info-circle' title='Delivery charges may vary' style='cursor:help;color:#0288d1;'></i></td>
+                  <td style="padding:14px 16px;text-align:right;color:#d32f2f;font-weight:600;font-size:0.95rem;">+ Extra</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="d-grid mb-2">
+            <a href='checkout.php' class='btn btn-success btn-lg fw-bold' style='font-size:1.08rem;padding:12px;'>PROCEED TO CHECKOUT</a>
           </div>
         `;
       }
