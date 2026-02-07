@@ -2485,4 +2485,42 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   });
+
+  /* Dropdown positioning fix for mobile navigation */
+  document.addEventListener('DOMContentLoaded', function() {
+    const userDropdown = document.getElementById('userDropdown');
+    const loginDropdown = document.getElementById('loginDropdown');
+    
+    if (userDropdown) {
+      userDropdown.addEventListener('show.bs.dropdown', function() {
+        const menu = this.nextElementSibling;
+        if (menu && menu.classList.contains('dropdown-menu')) {
+          setTimeout(() => {
+            const rect = this.getBoundingClientRect();
+            menu.style.position = 'fixed';
+            menu.style.top = (rect.bottom + 5) + 'px';
+            menu.style.right = '10px';
+            menu.style.left = 'auto';
+            menu.style.zIndex = '9999';
+          }, 0);
+        }
+      });
+    }
+    
+    if (loginDropdown) {
+      loginDropdown.addEventListener('show.bs.dropdown', function() {
+        const menu = this.nextElementSibling;
+        if (menu && menu.classList.contains('dropdown-menu')) {
+          setTimeout(() => {
+            const rect = this.getBoundingClientRect();
+            menu.style.position = 'fixed';
+            menu.style.top = (rect.bottom + 5) + 'px';
+            menu.style.right = '10px';
+            menu.style.left = 'auto';
+            menu.style.zIndex = '9999';
+          }, 0);
+        }
+      });
+    }
+  });
 </script>

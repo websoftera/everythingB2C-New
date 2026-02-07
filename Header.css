@@ -586,67 +586,37 @@ body {
 .navbar:first-of-type {
   position: relative;
   z-index: 1050; /* Ensure first navbar is above second */
+  overflow: visible !important;
 }
-
-.navbar .dropdown-menu {
-  position: absolute;
-  z-index: 1060; /* Dropdown above both navbars */
-}
-
-.navbar form .btn-primary {
-  background-color: #0288d1;
-  border: none;
-}
-
-.navbar form .form-control {
-  border-left: none;
-}
-
-.badge {
-  font-size: 0.6rem;
-}
-
-
-/* Mobile All button styling */
-.dropdown-mobile .btn {
-  background-color: #99d052;  
-  color: #fff;                /* White text */
-  border: none;               
-}
-#categoryDropdownMobile{
-  padding-right: 5px !important;
-}
-
-.dropdown-mobile {
-  padding-right: 5px !important;             
-}
-
-.dropdown-mobile .btn:hover {
-  background-color: #88be45;  
-}
-
-/* Custom border-radius on 3 sides */
-.dropdown-desktop .btn,
-.dropdown-mobile .btn,
-.input-group .btn,
-.input-group .form-control {
-  border-top-left-radius: 6px;
-  border-top-right-radius: 6px;
-  border-bottom-left-radius: 6px;
-  border-bottom-right-radius: 6; /* no rounding */
-}
-
-
-/* navbar.css */
 
 .navbar {
   background-color: #fff;
   border-bottom: 1px solid #dee2e6;
   padding: 0 0.5px !important;
+  overflow: visible !important;
 }
 
-.navbar .logo {
-  max-height: 75px;
+.navbar .dropdown-menu {
+  position: fixed !important;
+  z-index: 9999 !important; /* Dropdown above all other content */
+  min-width: 200px;
+  margin: 0 !important;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+}
+
+/* Ensure dropdown doesn't constrain to parent */
+.mobile-nav-icons .dropdown {
+  position: relative;
+  overflow: visible !important;
+}
+
+.mobile-nav-icons .dropdown .dropdown-menu {
+  position: fixed !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  z-index: 9999 !important;
 }
 
 .input-group .dropdown-toggle {
@@ -684,10 +654,63 @@ body {
   text-align: center;
 }
 
+/* Dropdown positioning fixes to prevent clipping */
+.dropdown-menu {
+  overflow: visible !important;
+  clip-path: unset !important;
+}
 
+/* Ensure dropdown items are fully visible */
+.dropdown-menu .dropdown-item {
+  padding: 0.75rem 1rem;
+  transition: background-color 0.2s ease;
+}
 
+.dropdown-menu .dropdown-item:active {
+  background-color: #0d6efd;
+  color: white;
+}
 
+/* Divider styling */
+.dropdown-divider {
+  margin: 0.5rem 0;
+  border-color: rgba(0, 0, 0, 0.1);
+}
 
+/* User account dropdown specific styling */
+.dropdown .dropdown-menu {
+  min-width: 210px;
+  padding: 0.5rem 0;
+}
+
+.dropdown .dropdown-item i {
+  width: 20px;
+  text-align: center;
+}
+
+/* Ensure dropdown appears above all content */
+.dropdown-menu.show {
+  z-index: 9999 !important;
+}
+
+/* Bootstrap dropdown positioning override */
+.dropdown-toggle::after {
+  display: none;
+}
+
+/* Mobile dropdown positioning */
+@media (max-width: 991.98px) {
+  .mobile-nav-icons .dropdown .dropdown-menu {
+    position: fixed !important;
+    top: 75px !important;
+    right: 10px !important;
+    left: auto !important;
+    min-width: 200px;
+    margin: 0 !important;
+  }
+}
+
+/*---------------------------------------------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------------------------------------------*/
 
@@ -1598,8 +1621,6 @@ padding-right: 20px;
 }
 
 
-
-
 /*---------------------------------------------------------------------------------------------------------------*/
 
 
@@ -1614,60 +1635,42 @@ padding-right: 20px;
 .navbar:first-of-type {
   position: relative;
   z-index: 1050; /* Ensure first navbar is above second */
+  overflow: visible !important;
 }
-
-.navbar .dropdown-menu {
-  position: absolute;
-  z-index: 1060; /* Dropdown above both navbars */
-}
-
-.navbar form .btn-primary {
-  background-color: #0288d1;
-  border: none;
-}
-
-.navbar form .form-control {
-  border-left: none;
-}
-
-.badge {
-  font-size: 0.6rem;
-}
-
-
-/* Mobile All button styling */
-.dropdown-mobile .btn {
-  background-color: #99d052;  
-  color: #fff;                /* White text */
-  border: none;               
-}
-
-.dropdown-mobile .btn:hover {
-  background-color: #88be45;  
-}
-
-/* Custom border-radius on 3 sides */
-.dropdown-desktop .btn,
-.dropdown-mobile .btn,
-.input-group .btn,
-.input-group .form-control {
-  border-top-left-radius: 6px;
-  border-top-right-radius: 6px;
-  border-bottom-left-radius: 6px;
-  border-bottom-right-radius: 6; /* no rounding */
-}
-
-
-/* navbar.css */
 
 .navbar {
   background-color: #fff;
   border-bottom: 1px solid #dee2e6;
   padding: 0 0.5px !important;
+  overflow: visible !important;
 }
 
-.navbar .logo {
-  max-height: 75px;
+.navbar .dropdown-menu {
+  position: fixed !important;
+  z-index: 9999 !important; /* Dropdown above all other content */
+  min-width: 200px;
+  margin: 0 !important;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+}
+
+/* Ensure dropdown doesn't constrain to parent */
+.mobile-nav-icons .dropdown {
+  position: relative;
+  overflow: visible !important;
+}
+
+.mobile-nav-icons .dropdown .dropdown-menu {
+  position: fixed !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  z-index: 9999 !important;
+}
+
+.navbar form .btn-primary {
+  background-color: #0288d1;
+  border: none;
 }
 
 .input-group .dropdown-toggle {
