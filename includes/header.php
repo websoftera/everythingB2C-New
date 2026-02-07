@@ -2491,36 +2491,111 @@ document.addEventListener('DOMContentLoaded', function() {
     const userDropdown = document.getElementById('userDropdown');
     const loginDropdown = document.getElementById('loginDropdown');
     
+    function positionDropdown(button, menu) {
+      if (!button || !menu) return;
+      
+      const btnRect = button.getBoundingClientRect();
+      const menuHeight = menu.offsetHeight || 200;
+      const viewportHeight = window.innerHeight;
+      const viewportWidth = window.innerWidth;
+      
+      // Calculate position
+      let top = btnRect.bottom + 8;
+      let right = Math.max(10, viewportWidth - btnRect.right - 10);
+      
+      // Check if menu goes below viewport, adjust if needed
+      if (top + menuHeight > viewportHeight) {
+        top = btnRect.top - menuHeight - 8;
+      }
+      
+      menu.style.position = 'fixed';
+      menu.style.top = top + 'px';
+      menu.style.right = right + 'px';
+      menu.style.left = 'auto';
+      menu.style.zIndex = '99999';
+      menu.style.maxHeight = '90vh';
+      menu.style.overflowY = 'auto';
+    }
+    
+    // Setup for user dropdown
     if (userDropdown) {
+      const userMenu = userDropdown.nextElementSibling;
+      
       userDropdown.addEventListener('show.bs.dropdown', function() {
         const menu = this.nextElementSibling;
         if (menu && menu.classList.contains('dropdown-menu')) {
-          setTimeout(() => {
-            const rect = this.getBoundingClientRect();
-            menu.style.position = 'fixed';
-            menu.style.top = (rect.bottom + 5) + 'px';
-            menu.style.right = '10px';
-            menu.style.left = 'auto';
-            menu.style.zIndex = '9999';
-          }, 0);
+          positionDropdown(this, menu);
+        }
+      });
+      
+      userDropdown.addEventListener('shown.bs.dropdown', function() {
+        const menu = this.nextElementSibling;
+        if (menu) {
+          positionDropdown(this, menu);
+        }
+      });
+      
+      // Reposition on window resize and scroll
+      window.addEventListener('resize', function() {
+        if (userMenu && userMenu.classList.contains('show')) {
+          positionDropdown(userDropdown, userMenu);
+        }
+      });
+      
+      window.addEventListener('scroll', function() {
+        if (userMenu && userMenu.classList.contains('show')) {
+          positionDropdown(userDropdown, userMenu);
         }
       });
     }
     
+    // Setup for login dropdown
     if (loginDropdown) {
+      const loginMenu = loginDropdown.nextElementSibling;
+      
       loginDropdown.addEventListener('show.bs.dropdown', function() {
         const menu = this.nextElementSibling;
         if (menu && menu.classList.contains('dropdown-menu')) {
-          setTimeout(() => {
-            const rect = this.getBoundingClientRect();
-            menu.style.position = 'fixed';
-            menu.style.top = (rect.bottom + 5) + 'px';
-            menu.style.right = '10px';
-            menu.style.left = 'auto';
-            menu.style.zIndex = '9999';
-          }, 0);
+          positionDropdown(this, menu);
+        }
+      });
+      
+      loginDropdown.addEventListener('shown.bs.dropdown', function() {
+        const menu = this.nextElementSibling;
+        if (menu) {
+          positionDropdown(this, menu);
+        }
+      });
+      
+      // Reposition on window resize and scroll
+      window.addEventListener('resize', function() {
+        if (loginMenu && loginMenu.classList.contains('show')) {
+          positionDropdown(loginDropdown, loginMenu);
+        }
+      });
+      
+      window.addEventListener('scroll', function() {
+        if (loginMenu && loginMenu.classList.contains('show')) {
+          positionDropdown(loginDropdown, loginMenu);
         }
       });
     }
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+      const isUserBtn = userDropdown && userDropdown.contains(e.target);
+      const isLoginBtn = loginDropdown && loginDropdown.contains(e.target);
+      const isUserMenu = userDropdown && userDropdown.nextElementSibling && userDropdown.nextElementSibling.contains(e.target);
+      const isLoginMenu = loginDropdown && loginDropdown.nextElementSibling && loginDropdown.nextElementSibling.contains(e.target);
+      
+      if (!isUserBtn && !isUserMenu && userDropdown) {
+        userDropdown.setAttribute('aria-expanded', 'false');
+        userDropdown.nextElementSibling?.classList.remove('show');
+      }
+      if (!isLoginBtn && !isLoginMenu && loginDropdown) {
+        loginDropdown.setAttribute('aria-expanded', 'false');
+        loginDropdown.nextElementSibling?.classList.remove('show');
+      }
+    });
   });
 </script>

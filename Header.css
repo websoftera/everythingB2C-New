@@ -603,6 +603,11 @@ body {
   margin: 0 !important;
   border: 1px solid rgba(0, 0, 0, 0.15);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+  top: auto !important;
+  bottom: auto !important;
+  left: auto !important;
+  right: auto !important;
+  transform: none !important;
 }
 
 /* Ensure dropdown doesn't constrain to parent */
@@ -616,7 +621,21 @@ body {
   top: auto !important;
   left: auto !important;
   right: auto !important;
+  bottom: auto !important;
   z-index: 9999 !important;
+  transform: none !important;
+}
+
+/* Override Popper.js positioning */
+.dropdown-menu[data-popper-placement] {
+  position: fixed !important;
+  z-index: 9999 !important;
+}
+
+/* Ensure no transform constraints */
+.dropdown {
+  transform: none !important;
+  perspective: none !important;
 }
 
 .input-group .dropdown-toggle {
@@ -698,15 +717,41 @@ body {
   display: none;
 }
 
+/* Global overflow fixes for internal pages */
+body,
+html,
+.account-wrapper,
+.product-wrapper,
+.cart-wrapper,
+.checkout-wrapper,
+.wishlist-wrapper,
+[class*="container"],
+[class*="wrapper"],
+[class*="main"],
+[class*="content"] {
+  overflow-x: visible !important;
+  overflow-y: auto !important;
+  clip-path: none !important;
+}
+
+/* Ensure navbar is not constrained */
+.navbar,
+.navbar-expand-lg,
+nav {
+  clip-path: unset !important;
+  overflow: visible !important;
+}
+
 /* Mobile dropdown positioning */
 @media (max-width: 991.98px) {
   .mobile-nav-icons .dropdown .dropdown-menu {
     position: fixed !important;
-    top: 75px !important;
+    top: auto !important;
     right: 10px !important;
     left: auto !important;
     min-width: 200px;
     margin: 0 !important;
+    z-index: 9999 !important;
   }
 }
 
