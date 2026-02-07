@@ -43,7 +43,9 @@ return [
         'auto_tracking' => true, // Automatically fetch tracking updates
         'cache_duration' => 300, // Cache tracking data for 5 minutes
         'webhook_enabled' => false, // Enable webhook for real-time updates
-        'webhook_secret' => 'your_webhook_secret_key'
+        'webhook_secret' => 'your_webhook_secret_key',
+        'use_mock_on_failure' => true, // Use mock data when API fails
+        'debug_mode' => true // Enable debug logging
     ],
     
     // Order Status Mapping

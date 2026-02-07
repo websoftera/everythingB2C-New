@@ -1270,19 +1270,25 @@ function getDTDCTracking($trackingId) {
         $dtdcApi = new DTDCAPINew();
         
         if (!$dtdcApi->isEnabled()) {
+            error_log("DTDC Service is disabled");
             return false;
         }
         
         // Check cache first
         $cachedData = getDTDCCache($trackingId);
         if ($cachedData) {
+            error_log("Returning cached DTDC tracking data for ID: $trackingId");
             return $cachedData;
         }
         
-        // Fetch from DTDC API
+        error_log("Fetching fresh DTDC tracking data for ID: $trackingId");
+        
+        // Fetch from DTDC API or get mock data
         $trackingData = $dtdcApi->trackShipment($trackingId);
         
         if ($trackingData) {
+            error_log("DTDC tracking data received, caching it");
+            
             // Cache the data
             setDTDCCache($trackingId, $trackingData);
             
@@ -1292,6 +1298,7 @@ function getDTDCTracking($trackingId) {
             return $trackingData;
         }
         
+        error_log("DTDC tracking data fetch failed for ID: $trackingId");
         return false;
         
     } catch (Exception $e) {
@@ -1523,8 +1530,13 @@ function getDTDCCache($trackingId) {
     if (file_exists($cacheFile)) {
         $cacheData = json_decode(file_get_contents($cacheFile), true);
         if ($cacheData && (time() - $cacheData['timestamp']) < 300) { // 5 minutes cache
+            error_log("DTDC Cache HIT for tracking ID: $trackingId");
             return $cacheData['data'];
+        } else {
+            error_log("DTDC Cache EXPIRED for tracking ID: $trackingId");
         }
+    } else {
+        error_log("DTDC Cache MISS for tracking ID: $trackingId");
     }
     
     return false;
@@ -1533,7 +1545,7 @@ function getDTDCCache($trackingId) {
 function setDTDCCache($trackingId, $data) {
     $cacheDir = __DIR__ . '/../cache';
     if (!is_dir($cacheDir)) {
-        mkdir($cacheDir, 0755, true);
+        @mkdir($cacheDir, 0755, true);
     }
     
     $cacheFile = $cacheDir . '/dtdc_' . md5($trackingId) . '.json';
@@ -1542,6 +1554,12 @@ function setDTDCCache($trackingId, $data) {
         'data' => $data
     ];
     
-    return file_put_contents($cacheFile, json_encode($cacheData)) !== false;
+    $result = file_put_contents($cacheFile, json_encode($cacheData)) !== false;
+    if ($result) {
+        error_log("DTDC Cache SET for tracking ID: $trackingId");
+    } else {
+        error_log("DTDC Cache FAILED to write for tracking ID: $trackingId");
+    }
+    return $result;
 }
 ?> 
