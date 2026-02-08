@@ -151,8 +151,16 @@ $stmt->execute($params);
 $total_orders = $stmt->fetchColumn();
 $total_pages = ceil($total_orders / $per_page);
 
-// Get all statuses for filter
-$statuses = getAllOrderStatuses();
+// Get all statuses for filter and deduplicate by name
+$all_statuses = getAllOrderStatuses();
+$statuses = [];
+$seen_names = [];
+foreach ($all_statuses as $status) {
+    if (!in_array($status['name'], $seen_names)) {
+        $statuses[] = $status;
+        $seen_names[] = $status['name'];
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
