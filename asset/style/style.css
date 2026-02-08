@@ -1115,13 +1115,14 @@ h3 {
 
 .navigationtext {
   text-transform: capitalize !important;
-  font-size: 14px !important;
+  font-size: 12px !important;
   color: #373737 !important;
 }
 
 .navigationtext:hover {
   color: #fff !important;
   background: var(--dark-green) !important;
+  padding: 5px 2px !important;
 }
 
 /* =========== Tablet View (2 Columns) ============ */
@@ -2281,7 +2282,7 @@ input[type="checkbox"]:checked+.wishlist-label i {
   }
 
   .category-navbar .nav-link {
-    padding: 5px 1rem;
+    padding: 5px 2px;
     transition: color 0.2s ease-in-out, text-decoration 0.2s;
     white-space: nowrap;
     position: relative;

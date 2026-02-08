@@ -1150,7 +1150,7 @@ function topFunction(e) {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 100;
+  z-index: 2000 !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1176,13 +1176,13 @@ function topFunction(e) {
 }
 
 .category-nav-btn.prev-btn {
-  left: -20px;
-  z-index: 10;
+  left: 5px !important;
+  z-index: 2000 !important;
 }
 
 .category-nav-btn.next-btn {
-  right: -20px;
-  z-index: 10;
+  right: 5px !important;
+  z-index: 2000 !important;
 }
 
 /* Responsive Categories Section */
@@ -1606,14 +1606,14 @@ function topFunction(e) {
 @media (max-width: 768px) {
   /* Fix featured products container overflow */
   .featured-products-section {
-    overflow: hidden !important;
+    overflow: visible !important;
     padding: 20px 0px !important;
     padding-top: 10px !important;
     padding-bottom: 20px !important;
   }
   
   .featured-products-card {
-    overflow: hidden !important;
+    overflow: visible !important;
     margin: 0 10px !important;
     padding: 7px !important;
     padding-bottom: 0 !important;
@@ -1621,7 +1621,7 @@ function topFunction(e) {
   }
   
   .featured-products-slider-wrapper {
-    overflow: hidden !important;
+    overflow: visible !important;
     width: 100% !important;
     max-width: 100% !important;
   }
@@ -2093,7 +2093,7 @@ function topFunction(e) {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 100;
+  z-index: 2000 !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2121,13 +2121,13 @@ function topFunction(e) {
 /* Desktop styles for discounted navigation */
 @media (min-width: 769px) {
 .discounted-nav-btn.prev-btn {
-  left: -35px;
-  z-index: 10;
+  left: 10px !important;
+  z-index: 2000 !important;
 }
 
 .discounted-nav-btn.next-btn {
-  right: -35px;
-  z-index: 10;
+  right: 10px !important;
+  z-index: 2000 !important;
   }
 }
 
@@ -2163,7 +2163,7 @@ function topFunction(e) {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 100;
+  z-index: 2000 !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2191,13 +2191,13 @@ function topFunction(e) {
 /* Desktop styles for featured navigation */
 @media (min-width: 769px) {
   .featured-nav-btn.prev-btn {
-    left: -35px;
-    z-index: 10;
+    left: 10px !important;
+    z-index: 2000 !important;
   }
   
   .featured-nav-btn.next-btn {
-    right: -35px;
-    z-index: 10;
+    right: 10px !important;
+    z-index: 2000 !important;
   }
 }
 
@@ -2235,19 +2235,23 @@ function topFunction(e) {
 }
 
 .discounted-nav-btn.prev-btn {
-  left: -30px !important;
+  left: 10px !important;
+  z-index: 2000 !important;
 }
 
 .discounted-nav-btn.next-btn {
-  right: -30px !important;
+  right: 10px !important;
+  z-index: 2000 !important;
 }
 
 .featured-nav-btn.prev-btn {
-  left: -30px !important;
+  left: 10px !important;
+  z-index: 2000 !important;
 }
 
 .featured-nav-btn.next-btn {
-  right: -30px !important;
+  right: 10px !important;
+  z-index: 2000 !important;
 }
 
 /* Ensure perfect circular shape */
@@ -2643,14 +2647,14 @@ function topFunction(e) {
 /* Mobile: Show 1.3 cards for featured products */
 @media (max-width: 575px) {
   .featured-products-section {
-    overflow: hidden !important;
+    overflow: visible !important;
     padding: 20px 0px !important;
     padding-top: 10px !important;
     padding-bottom: 20px !important;
   }
   
   .featured-products-card {
-    overflow: hidden !important;
+    overflow: visible !important;
     margin: 0 10px !important;
     padding: 15px !important;
     padding-bottom: 0 !important;
@@ -2658,7 +2662,7 @@ function topFunction(e) {
   }
   
   .featured-products-slider-wrapper {
-    overflow: hidden !important;
+    overflow: visible !important;
     width: 100% !important;
     max-width: 100% !important;
   }
@@ -2777,7 +2781,7 @@ function topFunction(e) {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 100;
+  z-index: 2000 !important;
   display: flex;
   align-items: center;
   justify-content: center;
