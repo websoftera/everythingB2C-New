@@ -4,6 +4,13 @@
 /* Global font family for entire website - EXCEPT Font Awesome icons */
 * {
   font-family: 'Mulish', sans-serif !important;
+  box-sizing: border-box !important;
+}
+
+*,
+::before,
+::after {
+  box-sizing: border-box;
 }
 
 /* Preserve Font Awesome icon fonts */
@@ -758,7 +765,7 @@ html,
 [class*="wrapper"],
 [class*="main"],
 [class*="content"] {
-  overflow-x: visible !important;
+  overflow-x: hidden !important;
   overflow-y: auto !important;
   clip-path: none !important;
 }

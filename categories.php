@@ -762,7 +762,7 @@ function buildCategoriesPaginationUrl($page, $params = []) {
     }
 
     .category-card {
-        max-width: 200px !important;
+        padding: 0;
     }
 }
 

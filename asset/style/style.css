@@ -1024,15 +1024,15 @@ h3 {
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
-  gap: 38px !important;
+  gap: 20px !important;
   margin: 5px 0;
 }
 
 .step {
   text-align: center;
   /* Make each step take 16.66% width on desktop to fit 6 per row */
-  flex: 0 1 20.66%;
-  max-width: 20.66%;
+  flex: 0 1 21%;
+  max-width: 21%;
   box-sizing: border-box;
 }
 
