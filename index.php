@@ -1002,6 +1002,7 @@ function topFunction(e) {
   padding: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: relative;
+  overflow: visible !important;
 }
 
 /* Responsive adjustments for categories card */
@@ -1138,340 +1139,82 @@ function topFunction(e) {
   text-align: center;
 }
 
-.category-nav-btn {
-  background: #ffffff;
-  border: none;
-  color: var(--light-blue);
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-  width: 30px;
-  height: 40px;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 2000 !important;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
-  opacity: 1;
-  pointer-events: auto;
-  text-decoration: none;
-  line-height: 1;
-  user-select: none;
-}
-
-.category-nav-btn:hover {
-  background: #ffffff;
-  color: var(--dark-blue);
-  border-color: var(--light-blue);
-  box-shadow: 0 4px 12px rgba(206, 229, 239, 0.3);
-  transform: translateY(-50%) scale(1.05);
-}
-
-.category-nav-btn:active {
-  transform: translateY(-50%) scale(0.95);
-}
-
-.category-nav-btn.prev-btn {
-  left: 5px !important;
-  z-index: 2000 !important;
-}
-
-.category-nav-btn.next-btn {
-  right: 5px !important;
-  z-index: 2000 !important;
-}
-
-/* Responsive Categories Section */
-/* Desktop: Show as many categories as possible (current behavior) */
-@media (min-width: 1200px) {
-  .categories-container {
-    gap: 16px;
-  }
-  
-  .category-item {
-    width: 220px;
-    min-width: 220px;
-  }
-  
-  .category-illustration {
-    width: 200px;
-    height: 200px;
-  }
-  
-  .category-label {
-    font-size: 14px;
-  }
-}
-
-/* Tablet: Show at least 5 categories */
-@media (min-width: 768px) and (max-width: 1199px) {
-  .categories-container {
-    gap: 6px !important;
-    padding: 0 10px !important;
-  }
-  
-  .category-item {
-    width: 140px !important;
-    min-width: 140px !important;
-    /* margin-right: 4px !important; */
-    flex-shrink: 0 !important;
-  }
-  
-  .category-illustration {
-    width: 120px !important;
-    height: 120px !important;
-    margin: 0 auto 6px !important;
-  }
-  
-  .category-label {
-    font-size: 11px !important;
-    font-weight: 600 !important;
-  }
-  
-  /* Ensure 5 categories are visible */
-  .categories-slider-wrapper {
-    padding: 0 8px !important;
-  }
-}
-
-/* Mobile: Show at least 4 categories */
-@media (max-width: 767px) {
-  .categories-container {
-    gap: 4px !important;
-    padding: 8px 0px !important;
-    overflow-x: auto !important;
-    scroll-behavior: smooth !important;
-  }
-  
-  .category-item {
-    width: 120px !important;
-    min-width: 120px !important;
-    /* margin-right: 4px !important; */
-    flex-shrink: 0 !important;
-  }
-  
-  .category-illustration {
-    width: 100px !important;
-    height: 100px !important;
-    margin: 0 auto 6px !important;
-  }
-  
-  .category-label {
-    font-size: 10px !important;
-    font-weight: 600 !important;
-    line-height: 1.1 !important;
-    word-wrap: break-word !important;
-    max-width: 100% !important;
-  }
-  
-  /* Ensure 4 categories are visible */
-  .categories-slider-wrapper {
-    padding: 0 8px !important;
-    position: relative !important;
-  }
-  
-  /* Adjust navigation buttons for mobile */
-  .category-nav-btn,
-  .discounted-nav-btn,
-  .featured-nav-btn {
-    width: 20px !important;
-    height: 20px !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    background: #ffffff !important;
-    border: 1px solid #e0e0e0 !important;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
-    z-index: 100 !important;
-  }
-  
-  .category-nav-btn.prev-btn,
-  .discounted-nav-btn.prev-btn,
-  .featured-nav-btn.prev-btn {
-    left: 5px !important;
-  }
-  
-  .category-nav-btn.next-btn,
-  .discounted-nav-btn.next-btn,
-  .featured-nav-btn.next-btn {
-    right: 5px !important;
-  }
-  
-  /* Adjust navigation button images for mobile */
-  .category-nav-btn img,
-  .discounted-nav-btn img,
-  .featured-nav-btn img {
-    width: 10px !important;
-    height: 10px !important;
-  }
-}
-
-/* Small Mobile: Optimize for very small screens */
-@media (max-width: 480px) {
-  .categories-container {
-    gap: 3px !important;
-    padding: 8px 0px !important;
-  }
-  
-  .category-item {
-    width: 100px !important;
-    min-width: 100px !important;
-    /* margin-right: 3px !important; */
-    flex-shrink: 0 !important;
-  }
-  
-  .category-illustration {
-    width: 80px !important;
-    height: 80px !important;
-    margin: 0 auto 5px !important;
-  }
-  
-  .category-label {
-    font-size: 9px !important;
-    font-weight: 600 !important;
-    word-wrap: break-word !important;
-    max-width: 100% !important;
-    line-height: 1.1 !important;
-  }
-  
-  .categories-slider-wrapper {
-    padding: 0 8px !important;
-    position: relative !important;
-  }
-  
-  .category-nav-btn,
-  .discounted-nav-btn,
-  .featured-nav-btn {
-    width: 18px !important;
-    height: 18px !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    background: #ffffff !important;
-    border: 1px solid #e0e0e0 !important;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
-    z-index: 100 !important;
-  }
-  
-  .category-nav-btn.prev-btn,
-  .discounted-nav-btn.prev-btn,
-  .featured-nav-btn.prev-btn {
-    left: 3px !important;
-  }
-  
-  .category-nav-btn.next-btn,
-  .discounted-nav-btn.next-btn,
-  .featured-nav-btn.next-btn {
-    right: 3px !important;
-  }
-  
-  /* Adjust navigation button images for small mobile */
-  .category-nav-btn img,
-  .discounted-nav-btn img,
-  .featured-nav-btn img {
-    width: 10px !important;
-    height: 10px !important;
-  }
-}
-
-/* Extra small screens - ensure no overlapping */
-@media (max-width: 360px) {
-  .categories-container {
-    gap: 2px !important;
-    padding: 8px 0px !important;
-  }
-  
-  .category-item {
-    width: 85px !important;
-    min-width: 85px !important;
-    /* margin-right: 2px !important; */
-    flex-shrink: 0 !important;
-  }
-  
-  .category-illustration {
-    width: 70px !important;
-    height: 70px !important;
-    margin: 0 auto 4px !important;
-  }
-  
-  .category-label {
-    font-size: 8px !important;
-    font-weight: 600 !important;
-  }
-  
-  .categories-slider-wrapper {
-    padding: 0 8px !important;
-  }
-  
-  .category-nav-btn,
-  .discounted-nav-btn,
-  .featured-nav-btn {
-    width: 16px !important;
-    height: 16px !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    background: #ffffff !important;
-    border: 1px solid #e0e0e0 !important;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
-    z-index: 100 !important;
-  }
-  
-  .category-nav-btn.prev-btn,
-  .discounted-nav-btn.prev-btn,
-  .featured-nav-btn.prev-btn {
-    left: 2px !important;
-  }
-  
-  .category-nav-btn.next-btn,
-  .discounted-nav-btn.next-btn,
-  .featured-nav-btn.next-btn {
-    right: 2px !important;
-  }
-  
-  /* Adjust navigation button images for ultra small mobile */
-  .category-nav-btn img,
-  .discounted-nav-btn img,
-  .featured-nav-btn img {
-    width: 8px !important;
-    height: 8px !important;
-  }
-}
-
-/* Ensure arrows are always visible */
-.category-nav-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: #ffffff;
-  z-index: -1;
-}
-
-/* Force arrow visibility */
-.category-nav-btn {
-  color: var(--light-blue) !important;
+/* Standardize Navigation Buttons for all sliders */
+.category-nav-btn,
+.discounted-nav-btn,
+.featured-nav-btn {
   background: #ffffff !important;
   border: 1px solid #e0e0e0 !important;
-  cursor: pointer !important;
-  pointer-events: auto !important;
+  width: 30px !important;
+  height: 30px !important;
   position: absolute !important;
-  z-index: 100 !important;
-  width: 22px !important;
-  height: 22px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  z-index: 2005 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  border-radius: 50% !important;
+  transition: all 0.3s ease !important;
 }
 
-/* Mobile override for navigation buttons */
+.category-nav-btn:hover,
+.discounted-nav-btn:hover,
+.featured-nav-btn:hover {
+  transform: translateY(-50%) scale(1.1) !important;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3) !important;
+  background: #f8f9fa !important;
+}
+
+.category-nav-btn.prev-btn,
+.discounted-nav-btn.prev-btn,
+.featured-nav-btn.prev-btn {
+  left: 10px !important;
+}
+
+.category-nav-btn.next-btn,
+.discounted-nav-btn.next-btn,
+.featured-nav-btn.next-btn {
+  right: 10px !important;
+}
+
+.category-nav-btn img,
+.discounted-nav-btn img,
+.featured-nav-btn img {
+  width: 16px !important;
+  height: 16px !important;
+  object-fit: contain !important;
+}
+
+/* Specific Section Overflow Fixes */
+.popular-categories-section,
+.discounted-products-section,
+.featured-products-section {
+  overflow: visible !important;
+  position: relative !important;
+}
+
+.categories-slider-wrapper,
+.discounted-products-slider-wrapper,
+.featured-products-slider-wrapper {
+  overflow: visible !important;
+  position: relative !important;
+}
+
+/* Mobile responsive adjustments */
 @media (max-width: 768px) {
+  .category-nav-btn,
+  .discounted-nav-btn,
+  .featured-nav-btn {
+    width: 26px !important;
+    height: 26px !important;
+    left: auto;
+    right: auto;
+  }
+  
   .category-nav-btn.prev-btn,
   .discounted-nav-btn.prev-btn,
   .featured-nav-btn.prev-btn {
@@ -1483,17 +1226,7 @@ function topFunction(e) {
   .featured-nav-btn.next-btn {
     right: 5px !important;
   }
-  
-  /* Force override any conflicting styles */
-  .category-nav-btn,
-  .discounted-nav-btn,
-  .featured-nav-btn {
-    position: absolute !important;
-    z-index: 1000 !important;
-    background: #ffffff !important;
-    border: 1px solid #e0e0e0 !important;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
-  }
+}
   
   /* Specific overrides for discounted products section */
   .discounted-products-slider-wrapper .discounted-nav-btn.prev-btn {
@@ -2081,220 +1814,26 @@ function topFunction(e) {
   background: #ffffff !important;
 }
 
-.discounted-nav-btn {
-  background: #ffffff;
-  border: none;
-  color: var(--light-blue); /* Light blue color as per image */
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-  width: 20px;
-  height: 20px;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 2000 !important;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
-  opacity: 1;
-  pointer-events: auto;
-  text-decoration: none;
-  line-height: 1;
-  user-select: none;
+/* Consolidated Product Section Styles */
+.discounted-products-card,
+.featured-products-card {
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: visible !important;
 }
 
-.discounted-nav-btn:hover {
-  background: #ffffff;
-  color: var(--dark-blue); /* Darker blue on hover */
-  border-color: var(--light-blue);
-  box-shadow: 0 4px 12px rgba(206, 229, 239, 0.3);
-  transform: translateY(-50%) scale(1.05);
+.discounted-products-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
 }
 
-.discounted-nav-btn:active {
-  transform: translateY(-50%) scale(0.95);
+.featured-products-card {
+  background: var(--light-green); /* Light green background as per image */
+  border: 1px solid #e0e0e0;
 }
 
-/* Desktop styles for discounted navigation */
-@media (min-width: 769px) {
-.discounted-nav-btn.prev-btn {
-  left: 10px !important;
-  z-index: 2000 !important;
-}
-
-.discounted-nav-btn.next-btn {
-  right: 10px !important;
-  z-index: 2000 !important;
-  }
-}
-
-/* Ensure discounted arrows are always visible */
-.discounted-nav-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  /* border-radius: 50%; */
-  background: #ffffff;
-  z-index: -1;
-}
-
-/* Force discounted arrow visibility */
-.discounted-nav-btn {
-  color: var(--light-blue) !important; /* Light blue color as per image */
-  background: #ffffff !important;
-  border: 1px solid #e0e0e0 !important;
-}
-
-.featured-nav-btn {
-  background: #ffffff;
-  border: none;
-  color: var(--light-green); /* Light green color as per image */
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-  width: 20px;
-  height: 20px;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 2000 !important;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
-  opacity: 1;
-  pointer-events: auto;
-  text-decoration: none;
-  line-height: 1;
-  user-select: none;
-}
-
-.featured-nav-btn:hover {
-  background: #ffffff;
-  color: var(--dark-green); /* Darker green on hover */
-  border-color: var(--light-green);
-  box-shadow: 0 4px 12px rgba(206, 229, 239, 0.3);
-  transform: translateY(-50%) scale(1.05);
-}
-
-.featured-nav-btn:active {
-  transform: translateY(-50%) scale(0.95);
-}
-
-/* Desktop styles for featured navigation */
-@media (min-width: 769px) {
-  .featured-nav-btn.prev-btn {
-    left: 10px !important;
-    z-index: 2000 !important;
-  }
-  
-  .featured-nav-btn.next-btn {
-    right: 10px !important;
-    z-index: 2000 !important;
-  }
-}
-
-/* Ensure featured arrows are always visible */
-.featured-nav-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  /* border-radius: 50%; */
-  background: #ffffff;
-  z-index: -1;
-}
-
-/* Force featured arrow visibility */
-.featured-nav-btn {
-  color: var(--light-green) !important; /* Light green color as per image */
-  background: #ffffff !important;
-  border: 1px solid #e0e0e0 !important;
-  cursor: pointer !important;
-  pointer-events: auto !important;
-  position: absolute !important;
-  z-index: 100 !important;
-  /* border-radius: 50% !important; */
-  width: 22px !important;
-  height: 22px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
-}
-
-.discounted-nav-btn.prev-btn {
-  left: 10px !important;
-  z-index: 2000 !important;
-}
-
-.discounted-nav-btn.next-btn {
-  right: 10px !important;
-  z-index: 2000 !important;
-}
-
-.featured-nav-btn.prev-btn {
-  left: 10px !important;
-  z-index: 2000 !important;
-}
-
-.featured-nav-btn.next-btn {
-  right: 10px !important;
-  z-index: 2000 !important;
-}
-
-/* Ensure perfect circular shape */
-.discounted-nav-btn img,
-.featured-nav-btn img {
-  width: 10px !important;
-  height: 10px !important;
-  object-fit: contain !important;
-  display: block !important;
-}
-
-/* Navigation button hover effects */
-.discounted-nav-btn:hover,
-.featured-nav-btn:hover {
-  transform: translateY(-50%) scale(1.05) !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
-}
-
-/* Ensure discounted arrows are clickable */
-.discounted-nav-btn:hover {
-  cursor: pointer !important;
-  pointer-events: auto !important;
-  background: #f8f9fa !important;
-  color: var(--dark-blue) !important; /* Darker blue on hover */
-}
-
-.discounted-nav-btn:active {
-  cursor: pointer !important;
-  pointer-events: auto !important;
-  transform: translateY(-50%) scale(0.95) !important;
-}
-
-/* Additional debugging styles for discounted arrows */
-.discounted-nav-btn::after {
-  content: '';
-  position: absolute;
-  top: -5px;
-  left: -5px;
-  right: -5px;
-  bottom: -5px;
-  background: transparent;
-  z-index: 99;
-}
 
 /* Mobile Responsive Design */
 @media (max-width: 768px) {
@@ -2769,63 +2308,8 @@ function topFunction(e) {
   display: none;
 }
 
-.featured-nav-btn {
-  background: #ffffff;
-  border: none;
-  color: var(--light-green); /* Light green color as per image */
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-  width: 30px;
-  height: 40px;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 2000 !important;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
-  opacity: 1;
-  pointer-events: auto;
-  text-decoration: none;
-  line-height: 1;
-  user-select: none;
-}
+/* Standardized styles moved to top section for better maintainability */
 
-/* Desktop styles for featured navigation */
-@media (min-width: 769px) {
-.featured-nav-btn.prev-btn {
-  left: -25px !important;
-}
-
-.featured-nav-btn.next-btn {
-  right: -25px !important;
-  }
-}
-
-.featured-nav-btn:hover {
-  background: #ffffff;
-  color: var(--dark-green); /* Darker green on hover */
-  border-color: var(--light-green);
-  box-shadow: 0 4px 12px rgba(227, 242, 170, 0.3);
-  transform: translateY(-50%) scale(1.05);
-}
-
-.featured-nav-btn:active {
-  transform: translateY(-50%) scale(0.95);
-}
-
-.featured-nav-btn.prev-btn {
-  left: -35px;
-  z-index: 10;
-}
-
-.featured-nav-btn.next-btn {
-  right: -35px;
-  z-index: 10;
-}
 
 /* Featured Products Mobile Responsive */
 @media (max-width: 480px) {
@@ -2842,11 +2326,8 @@ function topFunction(e) {
     padding-left: 0px !important;
     border-radius: 6px;
     max-width: 100%;
+    overflow: visible !important;
   }
-  
-  /* .featured-products-header {
-    margin-bottom: 15px;
-  } */
   
   .featured-products-title {
     font-size: 14px;
@@ -2856,175 +2337,20 @@ function topFunction(e) {
   .featured-products-slider-wrapper {
     padding: 0;
     max-width: 100%;
+    overflow: visible !important;
   }
   
   .featured-products-container .card.product-card {
     flex: 0 0 180px !important;
     width: 180px !important;
-    /* min-width: 180px !important; */
     max-width: 180px !important;
-  }
-  
-  .featured-nav-btn {
-    width: 44px !important;
-    height: 44px !important;
-    font-size: 20px !important;
-    color: var(--light-green) !important;
-    background: #ffffff !important;
-    border: 1px solid #e0e0e0 !important;
-  }
-  
-  .featured-nav-btn.prev-btn {
-    left: 5px !important;
-  }
-  
-  .featured-nav-btn.next-btn {
-    right: 5px !important;
   }
 }
 
 
 /* Featured Products Tablet Responsive (768px - 1024px) */
-@media (max-width: 1024px) and (min-width: 769px) {
-  .featured-products-section {
-    padding: 18px 0px;
-    margin: 18px 0;
-  }
-  
-  .featured-products-card {
-    padding: 18px;
-    padding-bottom: 0 !important;
-    max-width: 100%;
-    padding-left: 0px !important;
-  }
-  
-  .featured-products-title {
-    font-size: 18px;
-  }
-  
-  .featured-products-slider-wrapper {
-    padding: 0;
-    max-width: 100%;
-  }
-  
-  .featured-products-container .card.product-card {
-    flex: 0 0 220px !important;
-    width: 220px !important;
-    min-width: 220px !important;
-    max-width: 220px !important;
-  }
-  
-  .featured-nav-btn {
-    width: 48px !important;
-    height: 48px !important;
-    font-size: 22px !important;
-    color: var(--light-green) !important;
-    background: #ffffff !important;
-    border: 1px solid #e0e0e0 !important;
-  }
-}
+/* Cleaned up conflicting styles */
 
-/* Featured Products Medium Mobile Responsive (481px - 768px) */
-@media (max-width: 768px) and (min-width: 481px) {
-  .featured-products-section {
-    padding: 16px 0px;
-    padding-top: 10px !important;
-    padding-bottom: 20px !important;
-    margin: 16px 0;
-  }
-  
-  .featured-products-card {
-    padding: 16px;
-    max-width: 100%;
-    padding-left: 0px !important;
-  }
-  
-  .featured-products-title {
-    font-size: 16px;
-  }
-  
-  .featured-products-slider-wrapper {
-    padding: 0;
-    max-width: 100%;
-  }
-  
-  .featured-products-container .card.product-card {
-    flex: 0 0 200px !important;
-    width: 200px !important;
-    min-width: 200px !important;
-    max-width: 200px !important;
-  }
-  
-  .featured-nav-btn {
-    width: 22px !important;
-    height: 22px !important;
-    font-size: 12px !important;
-    color: var(--light-green) !important;
-    background: #ffffff !important;
-    border: 1px solid #e0e0e0 !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
-  }
-}
-
-/* Force Featured Arrow Visibility - Override any conflicts */
-.featured-nav-btn,
-.featured-nav-btn.prev-btn,
-.featured-nav-btn.next-btn {
-  visibility: visible !important;
-  display: flex !important;
-  opacity: 1 !important;
-  pointer-events: auto !important;
-  position: absolute !important;
-  z-index: 9999 !important;
-}
-
-/* Ensure featured section containers don't hide arrows */
-.featured-products-section,
-.featured-products-card,
-.featured-products-slider-wrapper {
-  overflow: visible !important;
-  position: relative !important;
-}
-
-/* Force featured arrow visibility - matching discounted products */
-.featured-nav-btn {
-  color: var(--light-green) !important;
-  background: #ffffff !important;
-  border: 1px solid #e0e0e0 !important;
-  cursor: pointer !important;
-  pointer-events: auto !important;
-  position: absolute !important;
-  z-index: 100 !important;
-  width: 22px !important;
-  height: 22px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
-}
-
-.featured-nav-btn.prev-btn {
-  left: -30px !important;
-}
-
-.featured-nav-btn.next-btn {
-  right: -30px !important;
-}
-
-/* Additional arrow styling to ensure visibility */
-.featured-nav-btn::before {
-  content: '';
-  position: absolute !important;
-  top: -2px !important;
-  left: -2px !important;
-  right: -2px !important;
-  bottom: -2px !important;
-  background: transparent !important;
-  border-radius: 50% !important;
-  z-index: -1 !important;
-}
 
 /* Custom Hero Banner Carousel - Ultra Smooth Transitions */
 .hero-slider-section {
@@ -4099,20 +3425,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const prevBtn = document.querySelector('.category-nav-btn.prev-btn');
     const nextBtn = document.querySelector('.category-nav-btn.next-btn');
     
-    // Force make arrows visible
-    if (prevBtn) {
-        prevBtn.style.display = 'flex';
-        prevBtn.style.visibility = 'visible';
-        prevBtn.style.opacity = '1';
-        prevBtn.style.zIndex = '9999';
-    }
-    
-    if (nextBtn) {
-        nextBtn.style.display = 'flex';
-        nextBtn.style.visibility = 'visible';
-        nextBtn.style.opacity = '1';
-        nextBtn.style.zIndex = '9999';
-    }
+    // Standardized CSS handles visibility and z-index via !important
+
     
     if (categoryContainer && prevBtn && nextBtn) {
         // Simple scroll function
@@ -4142,20 +3456,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const discountedPrevBtn = document.querySelector('.discounted-nav-btn.prev-btn');
     const discountedNextBtn = document.querySelector('.discounted-nav-btn.next-btn');
     
-    // Force make arrows visible
-    if (discountedPrevBtn) {
-        discountedPrevBtn.style.display = 'flex';
-        discountedPrevBtn.style.visibility = 'visible';
-        discountedPrevBtn.style.opacity = '1';
-        discountedPrevBtn.style.zIndex = '9999';
-    }
-    
-    if (discountedNextBtn) {
-        discountedNextBtn.style.display = 'flex';
-        discountedNextBtn.style.visibility = 'visible';
-        discountedNextBtn.style.opacity = '1';
-        discountedNextBtn.style.zIndex = '9999';
-    }
+    // Standardized CSS handles visibility and z-index via !important
+
     
     if (discountedContainer && discountedPrevBtn && discountedNextBtn) {
 
@@ -4194,20 +3496,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const featuredPrevBtn = document.querySelector('.featured-nav-btn.prev-btn');
     const featuredNextBtn = document.querySelector('.featured-nav-btn.next-btn');
     
-    // Force make arrows visible
-    if (featuredPrevBtn) {
-        featuredPrevBtn.style.display = 'flex';
-        featuredPrevBtn.style.visibility = 'visible';
-        featuredPrevBtn.style.opacity = '1';
-        featuredPrevBtn.style.zIndex = '9999';
-    }
-    
-    if (featuredNextBtn) {
-        featuredNextBtn.style.display = 'flex';
-        featuredNextBtn.style.visibility = 'visible';
-        featuredNextBtn.style.opacity = '1';
-        featuredNextBtn.style.zIndex = '9999';
-    }
+    // Standardized CSS handles visibility and z-index via !important
+
     
     if (featuredContainer && featuredPrevBtn && featuredNextBtn) {
         
