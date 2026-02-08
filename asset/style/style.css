@@ -1122,7 +1122,6 @@ h3 {
 .navigationtext:hover {
   color: #fff !important;
   background: var(--dark-green) !important;
-  border-radius: 4px !important;
 }
 
 /* =========== Tablet View (2 Columns) ============ */

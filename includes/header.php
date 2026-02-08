@@ -578,7 +578,7 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
 function renderCategoryMenu($tree, $level = 0) {
     foreach ($tree as $cat) {
         $hasChildren = !empty($cat['children']);
-        $liClass = $hasChildren ? 'nav-item navigationtext dropdown' : 'navigationtext nav-item';
+        $liClass = $hasChildren ? 'nav-item dropdown' : 'nav-item';
         echo '<li class="' . $liClass . '">';
         
         if ($hasChildren) {

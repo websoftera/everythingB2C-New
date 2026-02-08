@@ -2000,15 +2000,11 @@ body {
   padding-left: 0;
   padding-right: 0;
   margin-bottom: 0px;
-
-
 }
 
 .navbar-nav a:hover {
   text-decoration: underline;
   color: rgb(230, 22, 22);
-  transform: scale(1.05);
-
 }
 
 
@@ -2054,7 +2050,6 @@ body {
   }
 
   .category-navbar .nav-link:hover {
-
     text-decoration: underline;
     color: red;
   }
@@ -3822,11 +3817,9 @@ body {
 
 .header2 .nav-links a:hover {
   color: #495057;
-  transform: scale(1.1);
 }
 
 .header2 .nav-links a:hover i {
-  transform: scale(1.1);
   color: #495057;
   /* All icons turn dark gray on hover */
 }
@@ -3971,11 +3964,9 @@ body {
 
 .topbar-nav-items a:hover {
   color: #495057;
-  transform: scale(1.1);
 }
 
 .topbar-nav-items a:hover i {
-  transform: scale(1.1);
   color: #495057;
   /* All icons turn dark gray on hover */
 }
