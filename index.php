@@ -1145,12 +1145,12 @@ function topFunction(e) {
 .featured-nav-btn {
   background: #ffffff !important;
   border: 1px solid #e0e0e0 !important;
-  width: 30px !important;
-  height: 30px !important;
+  width: 32px !important;
+  height: 32px !important;
   position: absolute !important;
   top: 50% !important;
   transform: translateY(-50%) !important;
-  z-index: 2005 !important;
+  z-index: 2100 !important; /* Increased for maximum priority */
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -1159,6 +1159,8 @@ function topFunction(e) {
   pointer-events: auto !important;
   border-radius: 50% !important;
   transition: all 0.3s ease !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 .category-nav-btn:hover,
@@ -1195,6 +1197,7 @@ function topFunction(e) {
 .featured-products-section {
   overflow: visible !important;
   position: relative !important;
+  z-index: 1 !important;
 }
 
 .categories-slider-wrapper,
@@ -1202,6 +1205,7 @@ function topFunction(e) {
 .featured-products-slider-wrapper {
   overflow: visible !important;
   position: relative !important;
+  z-index: 2 !important;
 }
 
 /* Mobile responsive adjustments */
@@ -1886,21 +1890,9 @@ function topFunction(e) {
     font-size: 8px;
   }
   
-  .category-nav-btn {
-    width: 44px;
-    height: 44px;
-    font-size: 20px;
-    color: #16BAE4 !important;
-    background: #ffffff !important;
-    border: 1px solid #e0e0e0 !important;
-  }
-  
-  .category-nav-btn.prev-btn {
-    left: 0px;
-  }
-  
-  .category-nav-btn.next-btn {
-    right: 0px;
+  .category-illustration img {
+    width: 100%;
+    height: 100%;
   }
 }
 
@@ -1951,21 +1943,8 @@ function topFunction(e) {
     font-size: 8px;
   }
   
-  .category-nav-btn {
-    width: 40px;
-    height: 40px;
-    font-size: 18px;
-    color: #16BAE4 !important;
-    background: #ffffff !important;
-    border: 1px solid #e0e0e0 !important;
-  }
-  
-  .category-nav-btn.prev-btn {
-    left: 0px;
-  }
-  
-  .category-nav-btn.next-btn {
-    right: 0px;
+  .category-label {
+    font-size: 8px;
   }
   
   /* Discounted Products Mobile Responsive */
@@ -2001,21 +1980,11 @@ function topFunction(e) {
     max-width: 220px !important;
   }
   
-  .discounted-nav-btn {
-    width: 20px;
-    height: 20px;
-    font-size: 20px;
-    color: var(--light-blue) !important; /* Light blue color as per image */
-    background: #ffffff !important;
-    border: 1px solid #e0e0e0 !important;
-  }
-  
-  .discounted-nav-btn.prev-btn {
-    left: 5px;
-  }
-  
-  .discounted-nav-btn.next-btn {
-    right: 5px;
+  .discounted-products-container .card.product-card {
+    flex: 0 0 220px !important;
+    width: 220px !important;
+    min-width: 220px !important;
+    max-width: 220px !important;
   }
 }
 
@@ -2046,12 +2015,6 @@ function topFunction(e) {
     min-width: 220px !important;
     max-width: 220px !important;
   }
-  
-  .discounted-nav-btn {
-    width: 20px;
-    height: 20px;
-    font-size: 16px;
-  }
 }
 
 /* Medium Mobile Responsive (481px - 768px) */
@@ -2080,12 +2043,6 @@ function topFunction(e) {
     width: 200px !important;
     min-width: 200px !important;
     max-width: 200px !important;
-  }
-  
-  .discounted-nav-btn {
-    width: 20px;
-    height: 20px;
-    font-size: 16px;
   }
 }
 
@@ -3425,12 +3382,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const prevBtn = document.querySelector('.category-nav-btn.prev-btn');
     const nextBtn = document.querySelector('.category-nav-btn.next-btn');
     
-    // Standardized CSS handles visibility and z-index via !important
-
     
     if (categoryContainer && prevBtn && nextBtn) {
-        // Simple scroll function
-        const scrollAmount = 200; // Fixed scroll amount
+        // Standardized CSS handles visibility and z-index via !important
+        prevBtn.style.display = 'flex';
+        prevBtn.style.visibility = 'visible';
+        nextBtn.style.display = 'flex';
+        nextBtn.style.visibility = 'visible';
+
+        const scrollAmount = 300; // Fixed scroll amount
         
         prevBtn.addEventListener('click', function(e) {
             e.preventDefault();
@@ -3456,12 +3416,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const discountedPrevBtn = document.querySelector('.discounted-nav-btn.prev-btn');
     const discountedNextBtn = document.querySelector('.discounted-nav-btn.next-btn');
     
-    // Standardized CSS handles visibility and z-index via !important
-
     
     if (discountedContainer && discountedPrevBtn && discountedNextBtn) {
+        // Standardized CSS handles visibility and z-index via !important
+        discountedPrevBtn.style.display = 'flex';
+        discountedPrevBtn.style.visibility = 'visible';
+        discountedNextBtn.style.display = 'flex';
+        discountedNextBtn.style.visibility = 'visible';
 
-        
         // Dynamic scroll amount based on screen size
         function getDiscountedScrollAmount() {
             const width = window.innerWidth;
@@ -3496,10 +3458,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const featuredPrevBtn = document.querySelector('.featured-nav-btn.prev-btn');
     const featuredNextBtn = document.querySelector('.featured-nav-btn.next-btn');
     
-    // Standardized CSS handles visibility and z-index via !important
-
     
     if (featuredContainer && featuredPrevBtn && featuredNextBtn) {
+        // Standardized CSS handles visibility and z-index via !important
+        featuredPrevBtn.style.display = 'flex';
+        featuredPrevBtn.style.visibility = 'visible';
+        featuredNextBtn.style.display = 'flex';
+        featuredNextBtn.style.visibility = 'visible';
         
         // Dynamic scroll amount based on screen size
         function getFeaturedScrollAmount() {
