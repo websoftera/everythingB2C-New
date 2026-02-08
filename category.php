@@ -539,8 +539,6 @@ echo renderBreadcrumb($breadcrumbs);
 
 .col-lg-9 {
   padding: 0 15px;
-  width: 100%;
-  max-width: 100%;
 }
 
 /* Ensure no horizontal scroll */
