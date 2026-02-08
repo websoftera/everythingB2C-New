@@ -125,15 +125,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Get categories with product counts
-$stmt = $pdo->query("SELECT c.*, COUNT(p.id) as product_count 
-                     FROM categories c 
-                     LEFT JOIN products p ON c.id = p.category_id 
-                     GROUP BY c.id 
-                     ORDER BY c.name");
-$categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+try {
+    $stmt = $pdo->query("SELECT c.*, COUNT(p.id) as product_count 
+                         FROM categories c 
+                         LEFT JOIN products p ON c.id = p.category_id 
+                         GROUP BY c.id 
+                         ORDER BY c.name");
+    $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {
+    die("Database error (Categories): " . $e->getMessage());
+}
 
-// Fetch all categories for parent selection (excluding the category being edited)
-$allCategories = $pdo->query("SELECT id, name, parent_id FROM categories ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
+// Fetch all categories for parent selection
+try {
+    $allCategories = $pdo->query("SELECT id, name, parent_id FROM categories ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {
+    die("Database error (All Categories): " . $e->getMessage());
+}
 
 // Helper functions
 function createSlug($string) {
@@ -165,30 +173,25 @@ function uploadImage($file, $folder) {
     return false;
 }
 
-function buildCategoryTree($categories) {
-    $tree = [];
-    $lookup = [];
+function buildCategoryTree($categories, $parentId = null, $depth = 0) {
+    if ($depth > 10) return []; // Safety limit to prevent infinite recursion
     
-    // Create lookup table with children array
+    $branch = [];
     foreach ($categories as $category) {
-        $category['children'] = [];
-        $lookup[$category['id']] = $category;
-    }
-    
-    // Build tree by establishing parent-child relationships
-    foreach ($categories as $category) {
-        if (is_null($category['parent_id'])) {
-            // Main category - add to root of tree
-            $tree[] = &$lookup[$category['id']];
-        } else if (isset($lookup[$category['parent_id']])) {
-            // Sub-category - add to parent's children
-            $lookup[$category['parent_id']]['children'][] = &$lookup[$category['id']];
+        if ($category['parent_id'] == $parentId) {
+            $children = buildCategoryTree($categories, $category['id'], $depth + 1);
+            if ($children) {
+                $category['children'] = $children;
+            } else {
+                $category['children'] = [];
+            }
+            $branch[] = $category;
         }
     }
-    
-    return $tree;
+    return $branch;
 }
 
+// Build the category tree for display
 $categoryTree = buildCategoryTree($categories);
 ?>
 
@@ -263,6 +266,7 @@ $categoryTree = buildCategoryTree($categories);
                                         <tbody>
                                             <?php 
                                             function displayCategories($categories, $level = 0) {
+                                                if ($level > 10) return; // Recursion depth limit
                                                 foreach ($categories as $category) {
                                                     echo '<tr>';
                                                     echo '<td>';
@@ -339,6 +343,7 @@ $categoryTree = buildCategoryTree($categories);
                                 // Build hierarchical category options
                                 $categoryTree = buildCategoryTree($allCategories);
                                 function displayCategoryOptions($categories, $level = 0) {
+                                    if ($level > 10) return; // Recursion depth limit
                                     foreach ($categories as $category) {
                                         $indent = str_repeat('— ', $level);
                                         echo '<option value="' . $category['id'] . '">';
@@ -400,6 +405,7 @@ $categoryTree = buildCategoryTree($categories);
                                 <?php 
                                 // Build hierarchical category options for edit form
                                 function displayCategoryOptionsForEdit($categories, $level = 0, $excludeId = null) {
+                                    if ($level > 10) return; // Recursion depth limit
                                     foreach ($categories as $category) {
                                         // Skip the category being edited to prevent self-reference
                                         if ($excludeId && $category['id'] == $excludeId) {
