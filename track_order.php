@@ -26,6 +26,7 @@ if ($trackingId) {
 }
 
 $pageTitle = 'Track Order';
+$pageCss = ['asset/style/track-order.css'];
 include 'includes/header.php';
 ?>
 
@@ -313,55 +314,6 @@ include 'includes/header.php';
     <?php endif; ?>
 </div>
 
-<style>
-.timeline {
-    position: relative;
-    padding-left: 30px;
-}
-
-.trackorder-card{
-    width: 100%;
-    min-width: 270px;
-}
-
-.timeline::before {
-    content: '';
-    position: absolute;
-    left: 15px;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background-color: #e9ecef;
-}
-
-.timeline-item {
-    position: relative;
-    margin-bottom: 30px;
-}
-
-.timeline-marker {
-    position: absolute;
-    left: -22px;
-    top: 0;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    border: 2px solid #fff;
-    box-shadow: 0 0 0 2px #e9ecef;
-}
-
-.timeline-content {
-    background-color: #f8f9fa;
-    padding: 15px;
-    border-radius: 8px;
-    margin-left: 10px;
-}
-
-.timeline-item:first-child .timeline-content {
-    background-color: #e3f2fd;
-    border-left: 4px solid #2196f3;
-}
-</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

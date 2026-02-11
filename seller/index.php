@@ -31,27 +31,7 @@ $sellerDetails = getSellerDetails($sellerId);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="../admin/assets/css/admin.css" rel="stylesheet">
-    <style>
-        .seller-stats-card {
-            background: linear-gradient(135deg, #9fbe1b 0%, #7a9615 100%);
-            color: white;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        .stat-icon {
-            font-size: 2.5rem;
-            opacity: 0.8;
-        }
-        .pending-badge {
-            background: #ffc107;
-            color: #000;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: bold;
-        }
-    </style>
+    <link rel="stylesheet" href="assets/css/seller-dashboard.css">
 </head>
 <body>
     <div class="everythingb2c-admin-container">

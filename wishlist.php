@@ -11,6 +11,7 @@ if (isLoggedIn()) {
     $wishlistItems = getWishlistItems();
 }
 
+$pageCss = ['asset/style/wishlist.css'];
 require_once 'includes/header.php';
 
 // Breadcrumb Navigation
@@ -21,7 +22,6 @@ echo renderBreadcrumb($breadcrumbs);
 <!-- Banner/Breadcrumb (skip homepage) -->
 <?php
 ?>
-<link rel="stylesheet" href="./asset/style/style.css">
 <div class="container mt-4 wishlist-container">
     <!-- <h1>My Wishlist</h1> -->
     

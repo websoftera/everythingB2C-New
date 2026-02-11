@@ -1,0 +1,281 @@
+/* ==========================================================================
+   Header Global Styles
+   Extracted from includes/header.php - shared across all pages
+   ========================================================================== */
+
+html, body {
+  overflow-x: hidden !important;
+  max-width: 100vw;
+}
+.container, .row {
+  max-width: 100vw !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box;
+}
+/* Hide spinner arrows for quantity input in floating cart */
+.cart-qty-input::-webkit-inner-spin-button,
+.cart-qty-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.cart-qty-input {
+  -moz-appearance: textfield;
+}
+
+/* Force breadcrumb separator to be ">" only */
+
+/* Cart Added Highlight - Maximum Specificity Override */
+html body .cart-added-highlight,
+html body .add-to-cart.cart-added-highlight,
+html body .add-to-cart-btn.cart-added-highlight,
+html body .shop-page-add-to-cart-btn.cart-added-highlight,
+html body .related-products-container .add-to-cart-btn.cart-added-highlight,
+html body .product-card .add-to-cart-btn.cart-added-highlight,
+html body .card .add-to-cart-btn.cart-added-highlight,
+html body .discounted-products-section .add-to-cart-btn.cart-added-highlight,
+html body .category-section .add-to-cart-btn.cart-added-highlight,
+html body .products-grid .add-to-cart-btn.cart-added-highlight,
+html body .search-results .add-to-cart-btn.cart-added-highlight,
+html body .homepage-section .add-to-cart-btn.cart-added-highlight,
+html body .top-products-section .add-to-cart-btn.cart-added-highlight,
+html body button.cart-added-highlight,
+html body input[type="button"].cart-added-highlight,
+html body input[type="submit"].cart-added-highlight,
+html body [data-product-id].cart-added-highlight {
+  border: 2.5px solid #ffd600 !important;
+  background: #9fbe1b !important;
+  color: #fff !important;
+  box-shadow: 0 0 0 6px rgba(255,214,0,0.18), 0 2px 12px rgba(40,167,69,0.22) !important;
+  transition: box-shadow 0.2s, border 0.2s, background 0.2s, color 0.2s !important;
+  transform: scale(1.02) !important;
+  position: relative !important;
+  z-index: 999 !important;
+}
+.breadcrumb-item::before,
+.breadcrumb-item::after {
+  content: none !important;
+}
+.breadcrumb-item:not(:last-child)::after {
+  content: ">" !important;
+  margin-left: 4px !important;
+  color: #adb5bd !important;
+  font-weight: bold !important;
+}
+
+/* Breadcrumb item colors */
+.breadcrumb-item a {
+  color: #878787 !important;
+  text-decoration: none !important;
+  font-weight: bold !important;
+}
+.breadcrumb-item a:hover {
+  color: #878787 !important;
+  text-decoration: none !important;
+  font-weight: bold !important;
+}
+.breadcrumb-item.active {
+  color: #878787 !important;
+  font-weight: bold !important;
+}
+
+/* Universal card bottom padding for entire site */
+.card,
+.product-card,
+.products .card,
+#wishlist-container .card,
+.swiper-slide .card {
+  padding-bottom: 0 !important;
+  border-radius: 0 !important;
+}
+
+#floatingCartPanel.fixed-panel {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  bottom: 20px;
+  right: 0;
+  width: 340px;
+  max-width: 90vw;
+  height: 540px;
+  max-height: 90vh;
+  background: #fff;
+  border: 1px solid #ddd;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  z-index: 2000;
+  border-radius: 12px;
+  padding: 0;
+  overflow: hidden;
+}
+#floatingCartPanel.fixed-panel .floating-cart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px 8px 18px;
+  border-bottom: 1px solid #eee;
+  flex-shrink: 0;
+}
+/* Product list area always scrolls, never summary or actions */
+#floatingCartPanel.fixed-panel #floatingCartContent {
+  height: 140px;
+  max-height: 140px;
+  overflow-y: auto;
+  min-height: 0;
+  padding: 6px 10px 0 10px;
+}
+#floatingCartPanel.fixed-panel #floatingCartSummary {
+  padding: 4px 10px 0 10px;
+  font-size: 0.93rem;
+  background: #fff;
+}
+#floatingCartPanel.fixed-panel .floating-cart-actions {
+  padding: 10px 18px 10px 18px;
+  flex-shrink: 0;
+  background: #fff;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
+}
+#floatingCartPanel.fixed-panel .floating-cart-summary-box {
+  padding: 7px 10px; 4px 10px !important;
+  margin-bottom: 6px !important;
+}
+#floatingCartPanel.fixed-panel .floating-cart-summary-box > div {
+  margin-bottom: 6px !important;
+}
+#floatingCartPanel.fixed-panel .floating-cart-summary-box .d-flex {
+  margin-bottom: 4px !important;
+}
+#floatingCartPanel.fixed-panel .floating-cart-summary-box .d-grid {
+  margin-top: 8px !important;
+  margin-bottom: 4px !important;
+}
+/* Sticky header styles moved to Header.css */
+.floating-cart {
+  z-index: 99999 !important;
+}
+#floatingCartBtn {
+  z-index: 99999 !important;
+}
+
+/* Product Added Highlight Effect */
+.product-added-highlight {
+  animation: productAddedPulse 0.6s ease-in-out;
+  border: 2px solid #9fbe1b !important;
+  box-shadow: 0 0 15px rgba(40, 167, 69, 0.3) !important;
+  transform: scale(1.02);
+  transition: all 0.3s ease;
+}
+
+@keyframes productAddedPulse {
+  0% {
+    border-color: #9fbe1b;
+    box-shadow: 0 0 5px rgba(40, 167, 69, 0.2);
+    transform: scale(1);
+  }
+  50% {
+    border-color: #20c997;
+    box-shadow: 0 0 20px rgba(40, 167, 69, 0.5);
+    transform: scale(1.03);
+  }
+  100% {
+    border-color: #9fbe1b;
+    box-shadow: 0 0 15px rgba(40, 167, 69, 0.3);
+    transform: scale(1.02);
+  }
+}
+
+/* Ensure smooth transitions for all product cards */
+.card, .product-detail-card, [data-id^="prod-"] {
+  transition: all 0.3s ease;
+  border: 1px solid #dee2e6;
+}
+/* Multi-level dropdowns for Bootstrap 5 - Improved UI */
+.dropdown-menu {
+  min-width: 220px;
+  border-radius: 0.6rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.13);
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  padding: 0.3rem 0;
+}
+.dropdown-menu .dropdown-item {
+  padding: 0.55rem 1.25rem 0.55rem 1.25rem;
+  font-size: 1rem;
+  color: #222;
+  border-radius: 0.4rem;
+  transition: background 0.15s, color 0.15s;
+}
+.dropdown-menu .dropdown-item:hover, .dropdown-menu .dropdown-item:focus {
+  background: #f3f8f3;
+  color: #9fbe1b;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu > .dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -1px;
+  margin-left: 0.1rem;
+  border-radius: 0.6rem;
+  min-width: 210px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.13);
+  background: #fff;
+  border: 1px solid #e0e0e0;
+}
+.dropdown-menu > .dropdown-submenu > .dropdown-toggle:after {
+  content: "\25B6";
+  float: right;
+  margin-left: 0.7em;
+  font-size: 0.95em;
+  color: #888;
+}
+.dropdown-menu .dropdown-menu {
+  display: none;
+  position: absolute;
+  left: 100%;
+  top: 0;
+  z-index: 1051;
+}
+.dropdown-menu > .dropdown-submenu:hover > .dropdown-menu {
+  display: block;
+}
+.dropdown-menu > .dropdown-submenu > .dropdown-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+/* Prevent submenu from going off the right edge */
+@media (min-width: 992px) {
+  .dropdown-menu .dropdown-menu {
+    right: auto;
+    left: 100%;
+  }
+}
+
+/* CSS: Make sure pointer events and hover work for both link and submenu */
+
+.dropdown-menu > .dropdown-submenu > .dropdown-toggle:after {
+  content: "\25B6";
+  float: right;
+  margin-left: 0.7em;
+  font-size: 0.95em;
+  color: #888;
+}
+.dropdown-menu > .dropdown-submenu > .dropdown-toggle {
+  cursor: pointer;
+}
+.dropdown-menu.show {
+  display: block !important;
+}
+.dropdown-menu .submenu-arrow.dropdown-toggle::after {
+  display: none !important;
+}
+    .submenu-arrow span {
+      color: #222 !important;
+    }
+    .submenu-arrow.dropdown-toggle::after,
+    .submenu-arrow::after {
+      display: none !important;
+      content: none !important;
+    }

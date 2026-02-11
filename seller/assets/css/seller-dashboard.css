@@ -1,0 +1,23 @@
+/* ==========================================================================
+   Seller Dashboard Styles - Extracted from seller/index.php
+   ========================================================================== */
+
+        .seller-stats-card {
+            background: linear-gradient(135deg, #9fbe1b 0%, #7a9615 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .stat-icon {
+            font-size: 2.5rem;
+            opacity: 0.8;
+        }
+        .pending-badge {
+            background: #ffc107;
+            color: #000;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }

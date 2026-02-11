@@ -1,6 +1,9 @@
 <?php
 require_once 'config/database.php';
 require_once 'includes/functions.php';
+
+$pageCss = ['asset/style/search.css'];
+
 require_once 'includes/header.php';
 
 // Function to get all descendant category IDs recursively
@@ -119,7 +122,6 @@ if (!empty($searchTerm)) {
 $breadcrumbs = generateBreadcrumb($pageTitle);
 echo renderBreadcrumb($breadcrumbs);
 ?>
-<link rel="stylesheet" href="./asset/style/style.css">
 <div class="container-fluid">
   <div class="row">
     <!-- Sidebar Filter -->
@@ -226,137 +228,6 @@ echo renderBreadcrumb($breadcrumbs);
   </div>
 </div>
 
-<style>
-/* Search Page Layout Styles */
-.products-container {
-  padding: 20px 0;
-}
-
-.search-header {
-  margin-bottom: 30px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #e9ecef;
-}
-
-.search-header h2 {
-  margin: 0 0 10px 0;
-  font-size: 28px;
-  font-weight: 600;
-  color: #333;
-}
-
-.search-term {
-  font-size: 16px;
-  color: #666;
-  margin-bottom: 5px;
-}
-
-.results-count {
-  font-size: 14px;
-  color: #666;
-}
-
-.products-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
-  margin-bottom: 40px;
-}
-
-.no-products {
-  text-align: center;
-  padding: 60px 20px;
-  grid-column: 1 / -1;
-}
-
-.no-products-icon {
-  font-size: 48px;
-  color: #ccc;
-  margin-bottom: 20px;
-}
-
-.no-products h3 {
-  font-size: 20px;
-  color: #333;
-  margin-bottom: 10px;
-}
-
-.no-products p {
-  color: #666;
-  margin-bottom: 20px;
-}
-
-/* Search Page - Matching Products Offering Discount Design */
-.product-card {
-  background: #fff !important;
-  border-radius: 8px !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
-  border: 1px solid var(--light-blue) !important;
-}
-
-.product-info {
-  padding: 5px 6px !important;
-}
-
-.product-card .product-image img {
-  max-height: 155px !important;
-  min-height: 155px !important;
-}
-
-.product-card .discount-banner {
-  background: var(--site-blue) !important;
-  color: #fff !important;
-  border-radius: 4px !important;
-}
-
-.product-card .price-btn.mrp {
-  background: var(--mrp-light-blue) !important;
-  color: var(--dark-blue) !important;
-}
-
-.product-card .price-btn.pay {
-  background: var(--pay-light-green) !important;
-  color: var(--dark-grey) !important;
-}
-
-.product-card .add-to-cart-btn,
-.product-card .add-to-cart {
-  background: var(--cart-button) !important;
-  color: #ffffff !important;
-}
-
-.product-card .add-to-cart-btn:hover,
-.product-card .add-to-cart:hover {
-  background: var(--dark-blue) !important;
-}
-
-.product-card .product-details {
-  background-image: none !important;
-}
-
-.product-card .product-image {
-  background-image: none !important;
-}
-
-/* Responsive Design */
-@media (max-width: 991.98px) {
-  .search-header {
-    text-align: center;
-  }
-  
-  .products-grid {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 15px;
-  }
-}
-
-@media (max-width: 767.98px) {
-  .products-grid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 10px;
-  }
-}
-</style>
 
 <?php include 'includes/back_to_top_button.php'; ?>
 <?php include 'includes/footer.php'; ?> 

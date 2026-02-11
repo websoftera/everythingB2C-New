@@ -1,0 +1,223 @@
+/* ==========================================================================
+   Checkout Page Styles - Extracted from checkout.php
+   ========================================================================== */
+
+.address-actions {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #eee;
+}
+.address-actions .btn {
+    margin-right: 5px;
+    font-size: 0.8rem;
+    padding: 2px 8px;
+}
+.form-check-label {
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    border:1px solid #000;
+}
+.form-check-label:hover {
+    background-color: #f8f9fa;
+}
+.form-check-input:checked + .form-check-label {
+    background-color: #e3f2fd;
+    border: 1px solid #2196f3;
+}
+.modal-dialog {
+    max-width: 600px;
+}
+.btn-outline-primary {
+    border-color: #007bff;
+    color: #007bff;
+}
+.btn-outline-primary:hover {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+}
+.btn-outline-danger {
+    border-color: #dc3545;
+    color: #dc3545;
+}
+.btn-outline-danger:hover {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white;
+}
+
+/* Order Success Popup Styling */
+.order-success-popup {
+  max-width: 450px !important;
+  width: 95% !important;
+  max-height: 90vh !important;
+  border-radius: 12px !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25), 0 0 1px rgba(0, 0, 0, 0.1) !important;
+  padding: 30px 25px !important;
+  background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%) !important;
+}
+
+/* Ensure consistent styling with other popups */
+.swal2-popup.order-success-popup {
+  padding: 30px 25px !important;
+  border-radius: 12px !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Order Success Title */
+.order-success-popup .order-success-title {
+  display: none !important;
+}
+
+/* Order Success Content */
+.order-success-popup .order-success-content {
+  text-align: center !important;
+  margin: 0 !important; 
+  padding: 0 !important;
+}
+
+/* Green button styling for order success */
+.order-success-confirm-btn.swal2-styled {
+  background-color: #9fbe1b !important;
+  border-color: #9fbe1b !important;
+  color: white !important;
+  padding: 12px 24px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  border-radius: 6px !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 12px rgba(159, 190, 27, 0.3) !important;
+  width: 100% !important;
+  margin-bottom: 12px !important;
+}
+
+.order-success-confirm-btn.swal2-styled:hover {
+  background-color: #8ba817 !important;
+  border-color: #8ba817 !important;
+  box-shadow: 0 6px 16px rgba(159, 190, 27, 0.4) !important;
+  transform: translateY(-2px) !important;
+}
+
+.order-success-confirm-btn.swal2-styled:active {
+  transform: translateY(0) !important;
+}
+
+/* Cancel button styling */
+.order-success-cancel-btn.swal2-styled {
+  background-color: #e9ecef !important;
+  border-color: #dee2e6 !important;
+  color: #495057 !important;
+  padding: 12px 24px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  border-radius: 6px !important;
+  transition: all 0.3s ease !important;
+  width: 100% !important;
+}
+
+.order-success-cancel-btn.swal2-styled:hover {
+  background-color: #dee2e6 !important;
+  border-color: #adb5bd !important;
+  color: #212529 !important;
+}
+
+.order-success-cancel-btn.swal2-styled:active {
+  transform: translateY(0) !important;
+}
+
+/* Button container styling */
+.swal2-actions.order-success-popup {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0 !important;
+  margin-top: 25px !important;
+}
+
+/* Icon styling */
+.order-success-popup .fas.fa-check-circle {
+  color: #9fbe1b !important;
+  filter: drop-shadow(0 4px 8px rgba(159, 190, 27, 0.25));
+  animation: scaleInPulse 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+/* Success animation */
+@keyframes scaleInPulse {
+  0% {
+    transform: scale(0) !important;
+    opacity: 0 !important;
+  }
+  50% {
+    transform: scale(1.1) !important;
+  }
+  100% {
+    transform: scale(1) !important;
+    opacity: 1 !important;
+  }
+}
+
+@keyframes slideInDown {
+  0% {
+    transform: translateY(-30px) !important;
+    opacity: 0 !important;
+  }
+  100% {
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+  }
+}
+
+.show-success-animation {
+  animation: slideInDown 0.4s ease-out !important;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 480px) {
+  .order-success-popup {
+    max-width: 90vw !important;
+    width: 90vw !important;
+    padding: 25px 20px !important;
+  }
+  
+  .order-success-popup .order-success-content h2 {
+    font-size: 24px !important;
+  }
+  
+  .order-success-popup .order-success-content p {
+    font-size: 14px !important;
+  }
+  
+  .order-success-confirm-btn.swal2-styled,
+  .order-success-cancel-btn.swal2-styled {
+    padding: 14px 20px !important;
+    font-size: 14px !important;
+  }
+}
+
+.popup-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.popup {
+  background: white;
+  padding: 30px 24px 24px 24px;
+  border-radius: 12px;
+  text-align: center;
+  width: 340px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  position: relative;
+}
+.popup-close {
+  position: absolute;
+  top: 10px; right: 15px;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: bold;
+}

@@ -171,6 +171,7 @@ foreach ($all_statuses as $status) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="assets/css/admin.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/admin-orders.css">
 </head>
 <body>
     <div class="everythingb2c-admin-container">
@@ -794,49 +795,5 @@ foreach ($all_statuses as $status) {
     }
     </script>
 
-    <style>
-    /* DTDC Tracking Events Timeline Styles */
-    .timeline {
-        position: relative;
-        padding-left: 30px;
-    }
-    
-    .timeline-item {
-        position: relative;
-        margin-bottom: 20px;
-    }
-    
-    .timeline-marker {
-        position: absolute;
-        left: -30px;
-        top: 5px;
-        width: 12px;
-        height: 12px;
-        background-color: #007bff;
-        border-radius: 50%;
-        border: 2px solid #fff;
-        box-shadow: 0 0 0 2px #007bff;
-    }
-    
-    .timeline-item:not(:last-child)::before {
-        content: '';
-        position: absolute;
-        left: -24px;
-        top: 17px;
-        width: 2px;
-        height: calc(100% + 10px);
-        background-color: #dee2e6;
-    }
-    
-    .timeline-content h6 {
-        margin-bottom: 5px;
-        color: #333;
-    }
-    
-    .timeline-content p {
-        margin-bottom: 5px;
-        font-size: 14px;
-    }
-    </style>
 </body>
 </html> 

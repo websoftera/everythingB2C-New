@@ -2,6 +2,8 @@
 require_once 'config/database.php';
 require_once 'includes/functions.php';
 
+$pageCss = ['asset/style/returns.css'];
+
 // Include header
 include 'includes/header.php';
 
@@ -91,141 +93,6 @@ echo renderBreadcrumb($breadcrumbs);
     </div>
 </div>
 
-<style>
-/* Returns Policy Page Styles */
-.returns-policy-content {
-    background: #fff;
-    padding: 40px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    margin-bottom: 40px;
-}
-
-.page-title {
-    color: #333;
-    font-size: 32px;
-    font-weight: 700;
-    margin-bottom: 30px;
-    text-align: center;
-    border-bottom: 3px solid var(--site-blue);
-    padding-bottom: 15px;
-}
-
-.policy-section {
-    margin-bottom: 35px;
-}
-
-.policy-section h2 {
-    color: var(--dark-blue);
-    font-size: 24px;
-    font-weight: 600;
-    margin-bottom: 15px;
-    border-left: 4px solid var(--site-blue);
-    padding-left: 15px;
-}
-
-.intro-text {
-    font-size: 16px;
-    line-height: 1.6;
-    color: #555;
-    margin-bottom: 25px;
-    text-align: center;
-    font-style: italic;
-}
-
-.policy-section p {
-    font-size: 15px;
-    line-height: 1.7;
-    color: #666;
-    margin-bottom: 15px;
-}
-
-.policy-list {
-    list-style: none;
-    padding-left: 0;
-}
-
-.policy-list li {
-    font-size: 15px;
-    line-height: 1.7;
-    color: #666;
-    margin-bottom: 12px;
-    padding-left: 25px;
-    position: relative;
-}
-
-.policy-list li::before {
-    content: "•";
-    color: var(--site-blue);
-    font-weight: bold;
-    position: absolute;
-    left: 0;
-    top: 0;
-}
-
-.policy-list li strong {
-    color: #333;
-    font-weight: 600;
-}
-
-.contact-info {
-    background: #f8f9fa;
-    padding: 20px;
-    border-radius: 6px;
-    border-left: 4px solid var(--site-blue);
-    margin-top: 15px;
-}
-
-.contact-info a {
-    color: var(--site-blue);
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.contact-info a:hover {
-    color: var(--dark-blue);
-    text-decoration: underline;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .returns-policy-content {
-        padding: 25px 20px;
-        margin: 0 10px 30px 10px;
-    }
-    
-    .page-title {
-        font-size: 26px;
-    }
-    
-    .policy-section h2 {
-        font-size: 20px;
-    }
-    
-    .intro-text {
-        font-size: 15px;
-    }
-    
-    .policy-section p,
-    .policy-list li {
-        font-size: 14px;
-    }
-}
-
-@media (max-width: 480px) {
-    .returns-policy-content {
-        padding: 20px 15px;
-    }
-    
-    .page-title {
-        font-size: 22px;
-    }
-    
-    .policy-section h2 {
-        font-size: 18px;
-    }
-}
-</style>
 
 <?php include 'includes/back_to_top_button.php'; ?>
 <?php include 'includes/footer.php'; ?>

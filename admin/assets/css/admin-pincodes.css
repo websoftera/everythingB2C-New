@@ -1,0 +1,29 @@
+/* ==========================================================================
+   Admin Manage Pincodes Page Styles - Extracted from admin/manage_pincodes.php
+   ========================================================================== */
+
+        .sidebar {
+            min-height: 100vh;
+            background-color: #343a40;
+        }
+        .sidebar .nav-link {
+            color: #fff;
+        }
+        .sidebar .nav-link:hover {
+            background-color: #495057;
+        }
+        .main-content {
+            padding: 20px;
+        }
+        .pincode-card {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .status-active {
+            color: #9fbe1b;
+        }
+        .status-inactive {
+            color: #dc3545;
+        }
