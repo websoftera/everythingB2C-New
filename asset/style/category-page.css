@@ -27,13 +27,13 @@
 
 /* Product Grid - Fixed width cards matching homepage */
 .products-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 15px !important;
   margin-bottom: 40px;
   width: 100%;
   max-width: 100%;
-  justify-content: flex-start;
+  justify-content: flex-start !important;
 }
 
 /* Product Card - Matching Products Offering Discount Design */
