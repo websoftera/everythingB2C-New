@@ -35,7 +35,7 @@
   gap: 15px !important;
   margin-bottom: 40px;
   width: 100%;
-  max-width: 100%;
+  max-width: 1020px !important;
   justify-content: flex-start !important;
 }
 
