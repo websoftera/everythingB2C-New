@@ -781,7 +781,9 @@ nav {
 /* Prevent scrollbar on navbar containers */
 .navbar .container-fluid,
 .category-navbar .container-fluid,
-.second-navbar .container-fluid {
+.second-navbar .container-fluid,
+.navbar-collapse,
+.category-navbar .navbar-collapse {
   overflow: visible !important;
 }
 
