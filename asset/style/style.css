@@ -2055,7 +2055,7 @@ input[type="checkbox"]:checked+.wishlist-label i {
   }
 }
 
-.wishlist-icon {
+.wishlist-modal .wishlist-icon {
   font-size: 32px;
   margin-bottom: 16px;
 }

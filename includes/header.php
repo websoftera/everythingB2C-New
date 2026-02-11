@@ -134,7 +134,7 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
             <div class="d-lg-none ms-auto mobile-nav-icons">
                 <!-- Wishlist Icon -->
                 <a href="wishlist.php" class="text-decoration-none text-dark mobile-nav-link position-relative me-2">
-                    <i class="bi <?php echo $wishlistCount > 0 ? 'bi-heart-fill' : 'bi-heart'; ?>" style="font-size: 24px; color: #DE0085;"></i>
+                    <i class="bi <?php echo $wishlistCount > 0 ? 'bi-heart-fill' : 'bi-heart'; ?>" style="font-size: 20px; color: #DE0085;"></i>
                     <?php if ($wishlistCount > 0): ?>
                         <span class="position-absolute badge rounded-pill wishlist-count-badge" style="background-color: #DE0085; font-size: 10px; min-width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; transform: translate(50%, -50%);">
                             <?php echo $wishlistCount; ?>

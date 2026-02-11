@@ -2372,7 +2372,7 @@ input[type="checkbox"]:checked+.heart-icon {
   animation: fadeIn 0.3s ease;
 }
 
-#wishlist-icon {
+.wishlist-modal #wishlist-icon {
   font-size: 40px;
   color: #e91e63;
   margin-bottom: 10px;
@@ -3966,7 +3966,7 @@ body {
 /* Override style.css .wishlist-icon.bi-heart color for navbar */
 .topbar-nav-items .wishlist-icon {
   color: #DE0085 !important;
-  font-size: 24px !important;
+  font-size: 20px !important;
   margin-bottom: 0 !important;
 }
 
