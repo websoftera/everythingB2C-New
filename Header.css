@@ -783,7 +783,10 @@ nav {
 .category-navbar .container-fluid,
 .second-navbar .container-fluid,
 .navbar-collapse,
-.category-navbar .navbar-collapse {
+.category-navbar .navbar-collapse,
+.wishlist-icon-container,
+.topbar-nav-items,
+.topbar-nav-items * {
   overflow: visible !important;
 }
 
