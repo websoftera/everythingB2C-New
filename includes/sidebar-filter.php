@@ -101,7 +101,7 @@ $categoryTree = buildCategoryTree($categories);
               <div class="price-input-group">
                 <label>Min</label>
                 <div class="price-input-wrapper">
-                  <span class="currency-symbol">â‚¹</span>
+                  <span class="currency-symbol">&#8377;</span>
                   <input type="number" id="minPriceInput" class="price-input" 
                          min="<?php echo $siteMinPrice; ?>" max="<?php echo $siteMaxPrice; ?>" 
                          value="<?php echo $currentMinPrice; ?>" step="10">
@@ -110,7 +110,7 @@ $categoryTree = buildCategoryTree($categories);
               <div class="price-input-group">
                 <label>Max</label>
                 <div class="price-input-wrapper">
-                  <span class="currency-symbol">â‚¹</span>
+                  <span class="currency-symbol">&#8377;</span>
                   <input type="number" id="maxPriceInput" class="price-input" 
                          min="<?php echo $siteMinPrice; ?>" max="<?php echo $siteMaxPrice; ?>" 
                          value="<?php echo $currentMaxPrice; ?>" step="10">
@@ -130,7 +130,7 @@ $categoryTree = buildCategoryTree($categories);
                    value="<?php echo $currentMaxPrice; ?>" step="10">
           </div>
           <div class="price-range-info">
-            <span class="range-label">Range: â‚¹<?php echo number_format($siteMinPrice); ?> - â‚¹<?php echo number_format($siteMaxPrice); ?></span>
+            <span class="range-label">Range: &#8377;<?php echo number_format($siteMinPrice); ?> - &#8377;<?php echo number_format($siteMaxPrice); ?></span>
           </div>
         </div>
       </div>

@@ -107,16 +107,19 @@
 }
 
 .cart-controls input.quantity-input {
-  width: 50px;
-  height: 38px;
+  width: 33.33%;
+  height: 32px;
   padding: 0;
   font-size: 14px;
   font-weight: bold;
   text-align: center;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  background-color: #007bff;
-  color: white;
+  border: none;
+  border-left: 1px solid #d1d5db;
+  border-right: 1px solid #d1d5db;
+  border-radius: 0;
+  background-color: #ffffff;
+  color: #333333;
+  box-sizing: border-box;
 }
 
 .cart-controls .add-to-cart {

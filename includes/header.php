@@ -986,15 +986,15 @@ function updateFloatingCartSummary() {
             <tbody>
               <tr style="border-bottom:1px solid #f0f0f0;background:#fafafa;">
                 <td style="padding:10px 12px;text-align:left;color:#666;">Total MRP</td>
-                <td style="padding:10px 12px;text-align:right;font-weight:600;text-decoration:line-through;color:#999;">â‚¹${parseFloat(totals.total_mrp || totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                <td style="padding:10px 12px;text-align:right;font-weight:600;text-decoration:line-through;color:#999;">\u20B9${parseFloat(totals.total_mrp || totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
               </tr>
               <tr style="border-bottom:1px solid #f0f0f0;">
                 <td style="padding:10px 12px;text-align:left;color:#666;">You Pay</td>
-                <td style="padding:10px 12px;text-align:right;font-weight:700;color:#1976d2;">â‚¹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                <td style="padding:10px 12px;text-align:right;font-weight:700;color:#1976d2;">\u20B9${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
               </tr>
               <tr style="border-bottom:2px solid #f0f0f0;background:#f5f5f5;">
                 <td style="padding:10px 12px;text-align:left;color:#2e7d32;font-weight:600;">Savings</td>
-                <td style="padding:10px 12px;text-align:right;color:#2e7d32;font-weight:700;">â‚¹${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                <td style="padding:10px 12px;text-align:right;color:#2e7d32;font-weight:700;">\u20B9${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
               </tr>
               <tr style="background:#f0f7ff;border-top:2px solid #e3f2fd;">
                 <td style="padding:10px 12px;text-align:left;color:#1976d2;font-weight:700;">Delivery Charge <i class='bi bi-info-circle' title='Delivery charges may vary' style='cursor:help;color:#0288d1;font-size:0.85rem;'></i></td>
@@ -1042,11 +1042,11 @@ function renderFloatingCart() {
                 <button class="btn btn-xs btn-outline-secondary btn-qty-minus" data-cart-id="${cartId}" ${item.quantity <= 1 ? 'disabled' : ''} style="width:22px;height:22px;padding:0 0 2px 0;line-height:1;">-</button>
                 <input type="number" min="1" class="form-control form-control-xs cart-qty-input" data-cart-id="${cartId}" value="${item.quantity}" style="width:32px;text-align:center;display:inline-block;padding:0 2px;font-size:0.9rem;height:22px;">
                 <button class="btn btn-xs btn-outline-secondary btn-qty-plus" data-cart-id="${cartId}" style="width:22px;height:22px;padding:0 0 2px 0;line-height:1;">+</button>
-                <span class="ms-1">x â‚¹${parseFloat(item.selling_price).toFixed(2)}</span>
+                <span class="ms-1">x \u20B9${parseFloat(item.selling_price).toFixed(2)}</span>
               </div>
             </div>
             <div class="text-end ms-1" style="min-width:54px;">
-              <div data-cart-total-id="${cartId}" style="font-weight:700;font-size:0.98rem;">â‚¹${(item.selling_price * item.quantity).toFixed(2)}</div>
+              <div data-cart-total-id="${cartId}" style="font-weight:700;font-size:0.98rem;">\u20B9${(item.selling_price * item.quantity).toFixed(2)}</div>
               <button class="btn btn-xs btn-outline-danger mt-1 remove-cart-item-btn" data-cart-id="${cartId}" style="padding:0 5px;font-size:0.9rem;"><i class="fas fa-trash"></i></button>
             </div>
           </div>
@@ -1061,15 +1061,15 @@ function renderFloatingCart() {
             <tbody>
               <tr style="border-bottom:1px solid #f0f0f0;background:#fafafa;">
                 <td style="padding:10px 12px;text-align:left;color:#666;">Total MRP</td>
-                <td style="padding:10px 12px;text-align:right;font-weight:600;text-decoration:line-through;color:#999;">â‚¹${parseFloat(totals.total_mrp || totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                <td style="padding:10px 12px;text-align:right;font-weight:600;text-decoration:line-through;color:#999;">\u20B9${parseFloat(totals.total_mrp || totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
               </tr>
               <tr style="border-bottom:1px solid #f0f0f0;">
                 <td style="padding:10px 12px;text-align:left;color:#666;">You Pay</td>
-                <td style="padding:10px 12px;text-align:right;font-weight:700;color:#1976d2;">â‚¹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                <td style="padding:10px 12px;text-align:right;font-weight:700;color:#1976d2;">\u20B9${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
               </tr>
               <tr style="border-bottom:2px solid #f0f0f0;background:#f5f5f5;">
                 <td style="padding:10px 12px;text-align:left;color:#2e7d32;font-weight:600;">Savings</td>
-                <td style="padding:10px 12px;text-align:right;color:#2e7d32;font-weight:700;">â‚¹${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                <td style="padding:10px 12px;text-align:right;color:#2e7d32;font-weight:700;">\u20B9${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
               </tr>
               <tr style="background:#f0f7ff;border-top:2px solid #e3f2fd;">
                 <td style="padding:10px 12px;text-align:left;color:#1976d2;font-weight:700;">Delivery Charge <i class='bi bi-info-circle' title='Delivery charges may vary' style='cursor:help;color:#0288d1;font-size:0.85rem;'></i></td>
@@ -1096,17 +1096,17 @@ function renderFloatingCart() {
             // Update total in DOM
             const priceSpan = row.querySelector('.ms-1');
             const unitPriceText = priceSpan ? priceSpan.textContent : '';
-            const unitPrice = parseFloat(unitPriceText.match(/â‚¹(\d+\.?\d*)/)?.[1] || 0);
+            const unitPrice = parseFloat(unitPriceText.match(/\u20B9(\d+\.?\d*)/)?.[1] || 0);
             const totalDiv = row.querySelector('div[data-cart-total-id]');
             if (totalDiv && unitPrice) {
-              totalDiv.textContent = 'â‚¹' + ((qty - 1) * unitPrice).toFixed(2);
+              totalDiv.textContent = '\u20B9' + ((qty - 1) * unitPrice).toFixed(2);
             }
             updateFloatingCartSummary(); // Real-time update
             updateCartQuantity(cartId, qty - 1, input, btn, function(success, updatedItem) {
               if (!success) {
                 input.value = prevQty;
                 if (totalDiv && unitPrice) {
-                  totalDiv.textContent = 'â‚¹' + (prevQty * unitPrice).toFixed(2);
+                  totalDiv.textContent = '\u20B9' + (prevQty * unitPrice).toFixed(2);
                 }
                 if (typeof Swal !== 'undefined') {
                     Swal.fire({
@@ -1127,7 +1127,7 @@ function renderFloatingCart() {
               } else {
                 updateFloatingCartCount('updated');
                 // Update the per-item total directly
-                const unitPrice = parseFloat(priceSpan.textContent.match(/â‚¹(\d+\.?\d*)/)?.[1] || 0);
+                const unitPrice = parseFloat(priceSpan.textContent.match(/\u20B9(\d+\.?\d*)/)?.[1] || 0);
                 if (unitPrice > 0) {
                   updateItemTotal(cartId, qty - 1, unitPrice);
                 }
@@ -1202,17 +1202,17 @@ function renderFloatingCart() {
           // Update total in DOM
           const priceSpan = row.querySelector('.ms-1');
           const unitPriceText = priceSpan ? priceSpan.textContent : '';
-          const unitPrice = parseFloat(unitPriceText.match(/â‚¹(\d+\.?\d*)/)?.[1] || 0);
+          const unitPrice = parseFloat(unitPriceText.match(/\u20B9(\d+\.?\d*)/)?.[1] || 0);
           const totalDiv = row.querySelector('div[data-cart-total-id]');
           if (totalDiv && unitPrice) {
-            totalDiv.textContent = 'â‚¹' + (newQty * unitPrice).toFixed(2);
+            totalDiv.textContent = '\u20B9' + (newQty * unitPrice).toFixed(2);
           }
           updateFloatingCartSummary(); // Real-time update
           updateCartQuantity(cartId, newQty, input, btn, function(success, updatedItem) {
             if (!success) {
               input.value = prevQty;
               if (totalDiv && unitPrice) {
-                totalDiv.textContent = 'â‚¹' + (prevQty * unitPrice).toFixed(2);
+                totalDiv.textContent = '\u20B9' + (prevQty * unitPrice).toFixed(2);
               }
               if (typeof Swal !== 'undefined') {
                   Swal.fire({
@@ -1233,7 +1233,7 @@ function renderFloatingCart() {
             } else {
               updateFloatingCartCount();
               // Update the per-item total directly
-              const unitPrice = parseFloat(priceSpan.textContent.match(/â‚¹(\d+\.?\d*)/)?.[1] || 0);
+              const unitPrice = parseFloat(priceSpan.textContent.match(/\u20B9(\d+\.?\d*)/)?.[1] || 0);
               if (unitPrice > 0) {
                 updateItemTotal(cartId, newQty, unitPrice);
               }
@@ -1384,10 +1384,10 @@ function renderFloatingCart() {
           // Update total price display immediately
           const priceSpan = row.querySelector('.ms-1');
           const unitPriceText = priceSpan ? priceSpan.textContent : '';
-          const unitPrice = parseFloat(unitPriceText.match(/â‚¹(\d+\.?\d*)/)?.[1] || 0);
+          const unitPrice = parseFloat(unitPriceText.match(/\u20B9(\d+\.?\d*)/)?.[1] || 0);
           const totalDiv = row.querySelector('div[data-cart-total-id]');
           if (totalDiv && unitPrice) {
-            totalDiv.textContent = 'â‚¹' + (qty * unitPrice).toFixed(2);
+            totalDiv.textContent = '\u20B9' + (qty * unitPrice).toFixed(2);
           }
           
           updateCartQuantity(cartId, qty, this, null, function(success, updatedItem) {
@@ -1397,7 +1397,7 @@ function renderFloatingCart() {
           });
           // Update the per-item total directly after backend update
           setTimeout(() => {
-            const unitPrice = parseFloat(priceSpan.textContent.match(/â‚¹(\d+\.?\d*)/)?.[1] || 0);
+            const unitPrice = parseFloat(priceSpan.textContent.match(/\u20B9(\d+\.?\d*)/)?.[1] || 0);
             if (unitPrice > 0) {
               updateItemTotal(cartId, qty, unitPrice);
             }
@@ -1415,10 +1415,10 @@ function renderFloatingCart() {
           // Update total price display immediately
           const priceSpan = row.querySelector('.ms-1');
           const unitPriceText = priceSpan ? priceSpan.textContent : '';
-          const unitPrice = parseFloat(unitPriceText.match(/â‚¹(\d+\.?\d*)/)?.[1] || 0);
+          const unitPrice = parseFloat(unitPriceText.match(/\u20B9(\d+\.?\d*)/)?.[1] || 0);
           const totalDiv = row.querySelector('div[data-cart-total-id]');
           if (totalDiv && unitPrice) {
-            totalDiv.textContent = 'â‚¹' + (qty * unitPrice).toFixed(2);
+            totalDiv.textContent = '\u20B9' + (qty * unitPrice).toFixed(2);
           }
         };
       });
@@ -1453,11 +1453,11 @@ function updateFloatingCartSummary() {
               <tbody>
                 <tr style="border-bottom:1px solid #f0f0f0;background:#fafafa;">
                   <td style="padding:12px 16px;text-align:left;color:#666;font-size:0.95rem;">Total MRP</td>
-                  <td style="padding:12px 16px;text-align:right;font-weight:600;text-decoration:line-through;color:#999;font-size:0.95rem;">â‚¹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                  <td style="padding:12px 16px;text-align:right;font-weight:600;text-decoration:line-through;color:#999;font-size:0.95rem;">\u20B9${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
                 </tr>
                 <tr style="border-bottom:2px solid #f0f0f0;background:#f5f5f5;">
                   <td style="padding:12px 16px;text-align:left;color:#2e7d32;font-weight:600;font-size:0.95rem;">Savings</td>
-                  <td style="padding:12px 16px;text-align:right;color:#2e7d32;font-weight:700;font-size:1rem;">â‚¹${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
+                  <td style="padding:12px 16px;text-align:right;color:#2e7d32;font-weight:700;font-size:1rem;">\u20B9${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</td>
                 </tr>
                 <tr style="background:#f0f7ff;border-top:2px solid #e3f2fd;">
                   <td style="padding:14px 16px;text-align:left;color:#1976d2;font-weight:700;font-size:1.05rem;">Delivery Charge <i class='bi bi-info-circle' title='Delivery charges may vary' style='cursor:help;color:#0288d1;'></i></td>
@@ -1854,8 +1854,8 @@ function updateItemTotal(cartId, quantity, unitPrice) {
   if (totalDiv) {
     const oldText = totalDiv.textContent;
     const newTotal = (quantity * unitPrice).toFixed(2);
-    totalDiv.textContent = 'â‚¹' + newTotal;
-    console.log('[updateItemTotal] Updated from', oldText, 'to â‚¹' + newTotal);
+    totalDiv.textContent = '\u20B9' + newTotal;
+    console.log('[updateItemTotal] Updated from', oldText, 'to \u20B9' + newTotal);
   } else {
     console.log('[updateItemTotal] ERROR: Could not find totalDiv for cartId:', cartId);
     console.log('[updateItemTotal] Available elements with data-cart-total-id:');
@@ -1878,7 +1878,7 @@ document.body.addEventListener('input', function(e) {
     
     const priceSpan = row.querySelector('.ms-1');
     
-    const unitPrice = parseFloat(priceSpan.textContent.match(/â‚¹(\d+\.?\d*)/)?.[1] || 0);
+    const unitPrice = parseFloat(priceSpan.textContent.match(/\u20B9(\d+\.?\d*)/)?.[1] || 0);
     
     if (unitPrice > 0) {
       updateItemTotal(cartId, quantity, unitPrice);
@@ -1896,7 +1896,7 @@ document.body.addEventListener('change', function(e) {
     
     const priceSpan = row.querySelector('.ms-1');
     
-    const unitPrice = parseFloat(priceSpan.textContent.match(/â‚¹(\d+\.?\d*)/)?.[1] || 0);
+    const unitPrice = parseFloat(priceSpan.textContent.match(/\u20B9(\d+\.?\d*)/)?.[1] || 0);
     
     if (unitPrice > 0) {
       updateItemTotal(cartId, quantity, unitPrice);
@@ -1910,7 +1910,7 @@ document.body.addEventListener('change', function(e) {
 function smoothUpdatePerItemTotal(cartId, newTotal) {
   const totalDiv = document.querySelector('div[data-cart-total-id="' + cartId + '"]');
   if (totalDiv) {
-    const oldTotal = parseFloat(totalDiv.textContent.replace('â‚¹', '')) || 0;
+    const oldTotal = parseFloat(totalDiv.textContent.replace('\u20B9', '')) || 0;
     const newTotalValue = parseFloat(newTotal);
     
     // Immediate visual feedback
@@ -1920,7 +1920,7 @@ function smoothUpdatePerItemTotal(cartId, newTotal) {
     totalDiv.style.padding = '2px 4px';
     
     // Update value
-    totalDiv.textContent = 'â‚¹' + newTotalValue.toFixed(2);
+    totalDiv.textContent = '\u20B9' + newTotalValue.toFixed(2);
     
     // Remove highlight
     setTimeout(() => {

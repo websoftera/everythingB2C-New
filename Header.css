@@ -778,6 +778,13 @@ nav {
   overflow: visible !important;
 }
 
+/* Prevent scrollbar on navbar containers */
+.navbar .container-fluid,
+.category-navbar .container-fluid,
+.second-navbar .container-fluid {
+  overflow: visible !important;
+}
+
 /* Mobile dropdown positioning */
 @media (max-width: 991.98px) {
   .mobile-nav-icons .dropdown .dropdown-menu {
@@ -1212,7 +1219,7 @@ html body .product-info .wishlist .heart-checkbox:checked+.wishlist-label .heart
   }
 }
 
-.wishlist-icon {
+.wishlist-modal .wishlist-icon {
   font-size: 32px;
   margin-bottom: 16px;
 }
@@ -3952,6 +3959,21 @@ body {
 .topbar-nav-items a[href*="wishlist.php"] i {
   color: #DE0085;
   /* Wishlist - pink/magenta */
+}
+
+/* Override style.css .wishlist-icon.bi-heart color for navbar */
+.topbar-nav-items .wishlist-icon {
+  color: #DE0085 !important;
+  font-size: 24px !important;
+  margin-bottom: 0 !important;
+}
+
+.topbar-nav-items .wishlist-icon.bi-heart {
+  color: #DE0085 !important;
+}
+
+.topbar-nav-items .wishlist-icon.bi-heart-fill {
+  color: #DE0085 !important;
 }
 
 .topbar-nav-items a[href*="myaccount.php"] i {

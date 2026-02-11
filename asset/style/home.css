@@ -425,7 +425,7 @@
   background: #fff;
   border-radius: 8px;
   border: 1px solid #e0e0e0;
-  padding: 20px;
+  padding: 18px 24px 10px 24px !important;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: relative;
   overflow: visible !important;
@@ -434,13 +434,13 @@
 /* Responsive adjustments for categories card */
 @media (max-width: 767px) {
   .categories-card {
-    padding: 15px;
+    padding: 15px !important;
   }
 }
 
 @media (max-width: 480px) {
   .categories-card {
-    padding: 10px;
+    padding: 10px !important;
   }
 }
 
@@ -479,7 +479,7 @@
 .categories-container {
   display: flex;
   gap: 16px;
-  overflow-x: auto;
+  overflow-x: auto !important;
   scroll-behavior: smooth;
   padding: 10px 0;
   scroll-snap-type: x mandatory;
@@ -744,11 +744,11 @@
 /* Desktop styles */
 @media (min-width: 769px) {
 .category-nav-btn.prev-btn {
-  left: -20px !important;
+  left: -12px !important;
 }
 
 .category-nav-btn.next-btn {
-  right: -20px !important;
+  right: -12px !important;
   }
 }
 @media (max-width: 768px){

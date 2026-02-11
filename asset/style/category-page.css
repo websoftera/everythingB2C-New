@@ -120,20 +120,7 @@
   flex-shrink: 0;
 }
 
-.product-card .quantity-control {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  width: 100%;
-  justify-content: center;
-}
-
-.product-card .quantity-input {
-  width: 50px;
-  text-align: center;
-  font-size: 12px;
-  flex-shrink: 0;
-}
+/* Quantity control styles handled by product-card.css */
 
 .product-card .add-to-cart-btn {
   width: 100%;

@@ -242,16 +242,21 @@
 .quantity-control {
   display: flex !important;
   align-items: center !important;
-  gap: 4px !important;
+  gap: 0 !important;
   flex: 1 1 0 !important;
   min-width: 0 !important;
-  border: 1px solid #b3b3b3 !important;
+  border: 1px solid #d1d5db !important;
   border-radius: 4px !important;
-  background: #b3b3b382 !important;
+  background: #ffffff !important;
   overflow: hidden !important;
+  height: 32px !important;
+  min-height: 32px !important;
+  max-width: 120px !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+  box-sizing: border-box !important;
 }
 .quantity-input {
-  width: 48px !important;
+  width: 33.33% !important;
   min-width: 0 !important;
   flex: 1 1 0 !important;
 }
@@ -275,13 +280,13 @@
 
 /* Quantity Control Container */
 .quantity-control .btn-qty {
-    width: 100% !important;
+    width: 33.33% !important;
     height: 32px !important;
     font-size: 14px !important;
     font-weight: bold !important;
     border: none !important;
-    background: none !important;
-    border: 1px solid #b3b3b3 !important;
+    background: #ffffff !important;
+    color: #333333 !important;
     cursor: pointer !important;
     display: flex !important;
     align-items: center !important;
@@ -289,10 +294,19 @@
     transition: background-color 0.2s ease !important;
     padding: 0 !important;
     margin: 0 !important;
+    border-right: 1px solid #d1d5db !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    border-radius: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.quantity-control .btn-qty:last-child {
+    border-right: none !important;
 }
 
 .quantity-control .btn-qty:hover {
-    background: #e4e4e4 !important;
+    background: #f3f4f6 !important;
 }
 
 .quantity-control .btn-qty:disabled {
@@ -302,7 +316,7 @@
 
 /* Quantity Input */
 .quantity-control .quantity-input {
-    width: 56px !important;
+    width: 33.33% !important;
     height: 32px !important;
     font-size: 14px !important;
     font-weight: bold !important;
@@ -312,6 +326,12 @@
     color: #333 !important;
     padding: 0 !important;
     margin: 0 !important;
+    border-left: 1px solid #d1d5db !important;
+    border-right: 1px solid #d1d5db !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    border-radius: 0 !important;
+    box-sizing: border-box !important;
     -webkit-appearance: none !important;
     -moz-appearance: textfield !important;
     appearance: textfield !important;

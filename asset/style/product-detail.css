@@ -99,7 +99,7 @@
 .cart-actions .quantity-control {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 0;
 }
 
 .cart-actions .add-to-cart-btn {
@@ -129,35 +129,47 @@
 .zoom-nav-btn:hover { background: #007bff; }
 
 .qty-minus, .qty-plus, .btn-qty-minus, .btn-qty-plus {
-  width: 36px;
-  height: 36px;
+  width: 33.33%;
+  height: 32px;
   border: none;
-  background: #f0f0f0;
-  color: #007bff;
-  font-size: 1.5rem;
-  border-radius: 4px;
-  margin: 0 4px;
+  background: #ffffff;
+  color: #333333;
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 0;
+  border-right: 1px solid #d1d5db;
+  margin: 0;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
   user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
 }
 .qty-minus:hover, .qty-plus:hover, .btn-qty-minus:hover, .btn-qty-plus:hover {
-  background: #e0eaff;
+  background: #f3f4f6;
 }
 .qty-minus:active, .qty-plus:active, .btn-qty-minus:active, .btn-qty-plus:active {
-  background: #d0e0ff;
+  background: #e5e7eb;
 }
 .quantity-input {
-  width: 60px;
+  width: 33.33%;
   text-align: center;
-  font-size: 1.1rem;
-  margin: 0 4px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  height: 36px;
+  font-size: 14px;
+  font-weight: bold;
+  margin: 0;
+  border: none;
+  border-left: 1px solid #d1d5db;
+  border-right: 1px solid #d1d5db;
+  border-radius: 0;
+  height: 32px;
+  background: #ffffff;
+  color: #333333;
+  box-sizing: border-box;
 }
 
 /* Related Products Section - Matching Products Offering Discount Design */
