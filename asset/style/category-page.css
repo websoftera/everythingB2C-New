@@ -49,6 +49,10 @@
   border-radius: 0 !important;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
   border: 1px solid #ccc !important;
+  width: 240px !important;
+  min-width: 240px !important;
+  max-width: 240px !important;
+  flex: 0 0 240px !important;
 }
 
 .product-info {
@@ -207,9 +211,17 @@
 }
 
 /* Mobile-specific fixes - Ensure cards fit properly */
-@media (max-width: 767px) {
+@media (max-width: 600px) {
   .products-grid {
     padding: 0 5px;
+    justify-content: center;
+  }
+  
+  .product-card {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
   }
   
   .product-card .product-details {
