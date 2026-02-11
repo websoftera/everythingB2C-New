@@ -1562,4 +1562,3 @@ function setDTDCCache($trackingId, $data) {
     }
     return $result;
 }
-?> 

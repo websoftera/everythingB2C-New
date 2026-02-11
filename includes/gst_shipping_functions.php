@@ -421,4 +421,3 @@ function getGSTBreakdownForDisplay($gst_type, $gst_rate) {
         ];
     }
 }
-?> 
