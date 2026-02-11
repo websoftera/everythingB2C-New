@@ -45,6 +45,36 @@
   gap: 8px;
   align-items: center;
   margin-bottom: 18px;
+  position: relative;
+}
+
+/* Wishlist heart inside product detail price row */
+.price-buttons1 .wishlist {
+  position: relative !important;
+  top: auto !important;
+  right: auto !important;
+  width: 36px !important;
+  height: 36px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.price-buttons1 .wishlist .wishlist-label {
+  font-size: 18px !important;
+  color: #ccc !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.price-buttons1 .wishlist .heart-checkbox:checked + .wishlist-label,
+.price-buttons1 .wishlist .wishlist-label.wishlist-active {
+  color: #DE0085 !important;
 }
 
 .price-buttons1 .price-btn {
