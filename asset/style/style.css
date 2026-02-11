@@ -2359,7 +2359,9 @@ input[type="checkbox"]:checked+.wishlist-label i {
 }
 
 /* Wishlist Icon Styling */
-.wishlist {
+.price-buttons .wishlist,
+.product-card .wishlist,
+.card .wishlist {
   display: inline-block;
   position: absolute;
   top: 0px;

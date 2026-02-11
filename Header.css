@@ -1008,7 +1008,7 @@ nav {
 }
 
 /* Wishlist inside price-buttons */
-.wishlist {
+.price-buttons .wishlist {
   background: none !important;
   border-radius: 6px;
   width: 36px;
@@ -1023,7 +1023,7 @@ nav {
   cursor: pointer;
 }
 
-.wishlist input[type="checkbox"] {
+.price-buttons .wishlist input[type="checkbox"] {
   opacity: 0;
   position: absolute;
   width: 100%;
@@ -2248,7 +2248,7 @@ body {
 }
 
 /* Wishlist inside price-buttons */
-.wishlist {
+.price-buttons .wishlist {
   background: none;
   border-radius: 6px;
   width: 36px;
@@ -2260,7 +2260,7 @@ body {
   cursor: pointer;
 }
 
-.wishlist input[type="checkbox"] {
+.price-buttons .wishlist input[type="checkbox"] {
   opacity: 0;
   position: absolute;
   width: 100%;

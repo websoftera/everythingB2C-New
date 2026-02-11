@@ -147,7 +147,7 @@
   text-overflow: ellipsis !important;
   overflow: hidden !important;
 }
-.wishlist, .wishlist-label, .wishlist input[type="checkbox"] {
+.price-buttons .wishlist, .price-buttons .wishlist-label, .price-buttons .wishlist input[type="checkbox"] {
   flex: 0 0 38px !important;
   width: 38px !important;
   min-width: 38px !important;
