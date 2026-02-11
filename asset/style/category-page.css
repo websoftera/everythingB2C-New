@@ -28,7 +28,7 @@
 /* Product Grid - Truly Responsive */
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* Tablet/Desktop Default: 3 cards per row to fit with sidebar */
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 20px;
   margin-bottom: 40px;
   width: 100%;
@@ -37,14 +37,10 @@
 
 /* Product Card - Matching Products Offering Discount Design */
 .product-card {
-  width: 100% !important;
-  max-width: 100% !important;
-  min-width: 0 !important; /* Override fixed 240px from product-card.css */
   overflow: hidden;
   word-wrap: break-word;
   word-break: break-word;
   box-sizing: border-box;
-  margin: 0 !important;
   padding: 0;
   display: flex;
   flex-direction: column;
@@ -191,22 +187,17 @@
 }
 
 /* Responsive Design - Progressive Enhancement */
-@media (max-width: 1200px) {
+@media (max-width: 991px) {
   .products-grid {
-    grid-template-columns: repeat(2, 1fr); /* Smaller desktop/Tablet: 2 cards per row */
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 15px;
   }
 }
 
-@media (max-width: 576px) {
+@media (max-width: 767px) {
   .products-grid {
-    grid-template-columns: repeat(1, 1fr); /* Mobile: 1 card per row */
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 15px;
-  }
-  
-  .product-card {
-    max-width: 320px !important;
-    margin: 0 auto 15px auto !important;
   }
 }
 
