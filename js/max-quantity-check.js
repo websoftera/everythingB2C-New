@@ -1,4 +1,4 @@
-// Max Quantity Check JavaScript
+﻿// Max Quantity Check JavaScript
 // This file handles maximum quantity validation for cart operations
 
 class MaxQuantityChecker {
@@ -217,7 +217,7 @@ class MaxQuantityChecker {
     }
 
     showSuccess(message) {
-        this.showAlert('✓ ' + message, 'success');
+        this.showAlert('âœ“ ' + message, 'success');
     }
 
     showError(message) {
@@ -282,7 +282,7 @@ class MaxQuantityChecker {
             // Reset button after 2 seconds
             setTimeout(() => {
                 button.classList.remove('btn-success');
-                button.innerHTML = '<i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>ADD TO CART';
+                button.innerHTML = '<i class="fas fa-shopping-cart" style="margin-right: 2px; transform: scaleX(-1); font-size: 11px;"></i>ADD TO CART';
             }, 2000);
             
             // Remove highlight after 3 seconds

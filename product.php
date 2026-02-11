@@ -100,7 +100,7 @@ echo renderBreadcrumb($breadcrumbs);
                 <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
             </div>
                                         <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">
-                                <i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>
+                                <i class="fas fa-shopping-cart" style="margin-right: 2px; transform: scaleX(-1); font-size: 11px;"></i>
                                 ADD TO CART
                             </button>
         </div>
@@ -198,7 +198,7 @@ echo renderBreadcrumb($breadcrumbs);
                                   </div>
                                   <div class="cart-actions d-flex align-items-center gap-2 justify-content-center">
                                       <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $relatedProduct['id']; ?>">
-                                          <i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>
+                                          <i class="fas fa-shopping-cart" style="margin-right: 2px; transform: scaleX(-1); font-size: 11px;"></i>
                                           ADD TO CART
                                       </button>
                                   </div>

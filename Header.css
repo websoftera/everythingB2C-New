@@ -960,8 +960,8 @@ nav {
 .product-image img {
   max-width: 100%;
   height: auto;
-  max-height: 140px;
-  min-height: 140px;
+  max-height: 120px;
+  min-height: 120px;
 }
 
 .product-details {
@@ -1123,32 +1123,34 @@ html body .product-info .wishlist .heart-checkbox:checked+.wishlist-label .heart
   align-items: center;
   gap: 6px;
   margin: 10px 0 15px;
+  padding: 0 6px;
 }
 
 .add-to-cart {
-
   background-color: #000;
   color: white;
-  padding: 8px 12px;
-  font-size: 13px;
+  padding: 4px 6px;
+  font-size: 10px;
   font-weight: bold;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   width: 70%;
   justify-content: center;
+  height: 28px;
 }
 
 .quantity-input {
-  width: 50px;
-  padding: 6px 8px;
-  font-size: 14px;
+  width: 33.33%;
+  padding: 0;
+  font-size: 12px;
   font-weight: bold;
-  color: white;
-  background-color: #007bff;
+  color: #333333;
+  background-color: #ffffff;
   border: none;
-  border-radius: 10px;
+  border-radius: 0;
   text-align: center;
+  height: 28px;
   -moz-appearance: none;
   -webkit-appearance: none;
   appearance: none;
@@ -2291,32 +2293,34 @@ input[type="checkbox"]:checked+.heart-icon {
   align-items: center;
   gap: 6px;
   margin: 10px 0 15px;
+  padding: 0 6px;
 }
 
 .add-to-cart {
-
   background-color: #000;
   color: white;
-  padding: 8px 12px;
-  font-size: 13px;
+  padding: 4px 6px;
+  font-size: 10px;
   font-weight: bold;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   width: 70%;
   justify-content: center;
+  height: 28px;
 }
 
 .quantity-input {
-  width: 50px;
-  padding: 6px 8px;
-  font-size: 14px;
+  width: 33.33%;
+  padding: 0;
+  font-size: 12px;
   font-weight: bold;
-  color: white;
-  background-color: #007bff;
+  color: #333333;
+  background-color: #ffffff;
   border: none;
-  border-radius: 10px;
+  border-radius: 0;
   text-align: center;
+  height: 28px;
   -moz-appearance: none;
   -webkit-appearance: none;
   appearance: none;
@@ -4157,7 +4161,7 @@ input[type="checkbox"]:checked+.heart-icon,
 }
 
 .category-navbar .dropdown-menu .dropdown-item.subcategory::before {
-  content: "└─";
+  content: "â””â”€";
   position: absolute;
   left: 20px;
   color: #adb5bd;
@@ -4172,7 +4176,7 @@ input[type="checkbox"]:checked+.heart-icon,
 }
 
 .category-navbar .dropdown-menu .dropdown-item.subcategory-level-1::before {
-  content: "└─";
+  content: "â””â”€";
   position: absolute;
   left: 20px;
   color: #adb5bd;
@@ -4186,7 +4190,7 @@ input[type="checkbox"]:checked+.heart-icon,
 }
 
 .category-navbar .dropdown-menu .dropdown-item.subcategory-level-2::before {
-  content: "└─";
+  content: "â””â”€";
   position: absolute;
   left: 40px;
   color: #adb5bd;
@@ -4200,7 +4204,7 @@ input[type="checkbox"]:checked+.heart-icon,
 }
 
 .category-navbar .dropdown-menu .dropdown-item.subcategory-level-3::before {
-  content: "└─";
+  content: "â””â”€";
   position: absolute;
   left: 60px;
   color: #adb5bd;

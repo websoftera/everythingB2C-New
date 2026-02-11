@@ -1132,7 +1132,7 @@
   box-sizing: border-box !important;
   /* background: var(--light-blue) !important; */
   background: #fff !important; /* Light blue background as per image */
-  border-radius: 8px !important;
+  border-radius: 0 !important;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
   border: 1px solid var(--light-blue) !important;
   /* Override any global white background */
@@ -1152,7 +1152,7 @@
   margin: 0 !important;
   box-sizing: border-box !important;
   background: #fff !important; /* White background */
-  border-radius: 8px !important;
+  border-radius: 0 !important;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
   border: 1px solid var(--light-green) !important;
   /* Override any global white background */

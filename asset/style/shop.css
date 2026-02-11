@@ -690,7 +690,7 @@
 
 .add-to-cart {
   flex: 1 1 auto !important;
-  height: 30px !important;
+  height: 28px !important;
   min-width: 70px !important;
   max-width: 140px !important;
   background: #222e3a !important;
@@ -698,47 +698,48 @@
   font-weight: bold !important;
   border: none !important;
   border-radius: 2px !important;
-  font-size: 13px !important;
+  font-size: 10px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   box-sizing: border-box !important;
   margin: 0 !important;
+  padding: 4px 6px !important;
 }
 
 /* Desktop-specific add-to-cart button size reduction */
 @media (min-width: 1025px) {
   .add-to-cart {
     font-size: 10px !important;
-    height: 26px !important;
+    height: 28px !important;
   }
   
   .add-to-cart i {
-    font-size: 12px !important;
-    margin-right: 3px !important;
+    font-size: 11px !important;
+    margin-right: 2px !important;
   }
 }
 
 .quantity-control {
   display: flex !important;
   align-items: center !important;
-  flex: 1 1 0 !important;
+  flex: 0 0 auto !important;
   min-width: 0 !important;
   border: 1px solid #d1d5db !important; /* Light grey border */
   border-radius: 4px !important;
   background: #ffffff !important; /* White background */
   overflow: hidden !important;
   box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important; /* Subtle shadow */
-  height: 32px !important;
-  min-height: 32px !important;
-  max-width: 120px !important;
+  height: 28px !important;
+  min-height: 28px !important;
+  max-width: 90px !important;
   margin: 0 !important;
 }
 
 .btn-qty {
   width: 33.33% !important; /* Equal width for each section */
-  height: 32px !important;
-  font-size: 14px !important;
+  height: 28px !important;
+  font-size: 12px !important;
   font-weight: bold !important;
   border: none !important;
   background: #ffffff !important; /* White background */
@@ -772,8 +773,8 @@
 
 .quantity-input {
   width: 33.33% !important; /* Equal width for center section */
-  height: 32px !important;
-  font-size: 14px !important;
+  height: 28px !important;
+  font-size: 12px !important;
   font-weight: bold !important;
   text-align: center !important;
   border: none !important;

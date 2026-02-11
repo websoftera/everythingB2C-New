@@ -1620,17 +1620,17 @@ h3 {
 .product-image img {
   max-width: 100%;
   height: auto;
-  max-height: 140px;
-  min-height: 140px;
+  max-height: 120px;
+  min-height: 120px;
 }
 
 .product-details h3 {
   margin: 2px 2px !important;
   font-weight: bold;
 
-  /* min-height: 32px !important;
+  min-height: 32px !important;
   max-height: 32px !important;
-  height: 32px !important; */
+  height: 32px !important;
   display: -webkit-box !important;
   -webkit-line-clamp: 2 !important;
   -webkit-box-orient: vertical !important;
@@ -1712,8 +1712,9 @@ input[type="checkbox"]:checked+.wishlist-label i {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 12px;
+  gap: 6px;
   width: 100%;
+  padding: 0 6px;
 }
 
 .quantity-control {
@@ -1735,18 +1736,19 @@ input[type="checkbox"]:checked+.wishlist-label i {
 .add-to-cart-btn,
 .add-to-cart {
   flex: 1 1 0;
-  height: 30px;
-  min-height: 30px;
-  max-height: 30px;
+  height: 28px;
+  min-height: 28px;
+  max-height: 28px;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-left: 12px;
-  padding-right: 12px;
+  padding-left: 6px;
+  padding-right: 6px;
   box-sizing: border-box;
+  font-size: 10px;
 }
 
 .modern-prices {
@@ -1809,8 +1811,8 @@ input[type="checkbox"]:checked+.wishlist-label i {
 }
 
 .products-section .product-card {
-  max-width: 200px;
-  min-width: 200px;
+  max-width: 240px;
+  min-width: 240px;
   margin: 0 auto 5px;
   /* Reduced bottom margin */
   flex-grow: 0;
@@ -2515,9 +2517,9 @@ html body .product-info .wishlist .heart-checkbox:checked+.wishlist-label .heart
 /* The card itself defines its size */
 .card,
 .product-card {
-  width: 208px;
-  max-width: 208px;
-  min-width: 208px;
+  width: 240px;
+  max-width: 240px;
+  min-width: 240px;
   margin-bottom: 20px;
   float: none;
   display: inline-block;
@@ -2566,7 +2568,7 @@ button {
 .quantity-control {
   display: flex !important;
   align-items: center !important;
-  flex: 1 1 0 !important;
+  flex: 0 0 auto !important;
   min-width: 0 !important;
   border: 1px solid #d1d5db !important;
   /* Light grey border */
@@ -2576,9 +2578,9 @@ button {
   overflow: hidden !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
   /* Subtle shadow */
-  height: 32px !important;
-  min-height: 32px !important;
-  max-width: 120px !important;
+  height: 28px !important;
+  min-height: 28px !important;
+  max-width: 90px !important;
   gap: 0 !important;
 }
 
@@ -2587,8 +2589,8 @@ button {
 .btn-qty {
   width: 33.33% !important;
   /* Equal width for each section */
-  height: 32px !important;
-  font-size: 14px !important;
+  height: 28px !important;
+  font-size: 12px !important;
   font-weight: bold !important;
   border: none !important;
   background: #ffffff !important;
@@ -2632,8 +2634,8 @@ button {
 .quantity-input {
   width: 33.33% !important;
   /* Equal width for center section */
-  height: 32px !important;
-  font-size: 14px !important;
+  height: 28px !important;
+  font-size: 12px !important;
   font-weight: bold !important;
   text-align: center !important;
   border: none !important;
@@ -2669,22 +2671,22 @@ button {
 
 @media (max-width: 600px) {
   .quantity-control {
-    height: 28px !important;
-    min-height: 28px !important;
-    max-width: 100px !important;
+    height: 24px !important;
+    min-height: 24px !important;
+    max-width: 70px !important;
   }
 
   .quantity-control .btn-qty {
     width: 33.33% !important;
-    height: 28px !important;
-    font-size: 12px !important;
+    height: 24px !important;
+    font-size: 10px !important;
   }
 
   .quantity-control input[type="number"],
   .quantity-control .quantity-input {
     width: 33.33% !important;
-    height: 28px !important;
-    font-size: 12px !important;
+    height: 24px !important;
+    font-size: 10px !important;
   }
 
   /* Wishlist mobile responsive styles */

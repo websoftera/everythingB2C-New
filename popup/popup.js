@@ -1,4 +1,4 @@
-// popup.js
+﻿// popup.js
 function showPopup() {
   var overlay = document.getElementById("popupOverlay");
   var form = document.getElementById("popupForm");
@@ -764,10 +764,10 @@ document.body.addEventListener('click', function(e) {
     .then(res => res.json())
     .then(data => {
       btn.disabled = false;
-      btn.innerHTML = '<i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>ADD TO CART';
+      btn.innerHTML = '<i class="fas fa-shopping-cart" style="margin-right: 2px; transform: scaleX(-1); font-size: 11px;"></i>ADD TO CART';
       if (data.success) {
         btn.innerHTML = 'UPDATED!';
-        setTimeout(function(){ btn.innerHTML = '<i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>ADD TO CART'; }, 1200);
+        setTimeout(function(){ btn.innerHTML = '<i class="fas fa-shopping-cart" style="margin-right: 2px; transform: scaleX(-1); font-size: 11px;"></i>ADD TO CART'; }, 1200);
         // Refresh quantity inputs on the page
         initializeQuantityInputs();
         
@@ -871,13 +871,13 @@ function initializeCartButtonStates() {
             .then(data => {
                 if (data.success && data.in_cart) {
                     // Product is in cart, highlight the button but keep it enabled
-                    btn.innerHTML = '<i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>Added to Cart';
+                    btn.innerHTML = '<i class="fas fa-shopping-cart" style="margin-right: 2px; transform: scaleX(-1); font-size: 11px;"></i>Added to Cart';
                     btn.disabled = false; // Keep enabled so user can add more
                     btn.classList.add('cart-added-highlight');
                     
                 } else {
                     // Product not in cart, ensure button is normal
-                    btn.innerHTML = '<i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>Add to Cart';
+                    btn.innerHTML = '<i class="fas fa-shopping-cart" style="margin-right: 2px; transform: scaleX(-1); font-size: 11px;"></i>Add to Cart';
                     btn.disabled = false;
                     btn.classList.remove('cart-added-highlight');
     
@@ -934,11 +934,11 @@ function updateButtonState(productId, inCart) {
     
     if (btn) {
         if (inCart) {
-            btn.innerHTML = '<i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>Added to Cart';
+            btn.innerHTML = '<i class="fas fa-shopping-cart" style="margin-right: 2px; transform: scaleX(-1); font-size: 11px;"></i>Added to Cart';
             btn.disabled = false; // Keep enabled so user can add more
             btn.classList.add('cart-added-highlight');
         } else {
-            btn.innerHTML = '<i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>Add to Cart';
+            btn.innerHTML = '<i class="fas fa-shopping-cart" style="margin-right: 2px; transform: scaleX(-1); font-size: 11px;"></i>Add to Cart';
             btn.disabled = false;
             btn.classList.remove('cart-added-highlight');
         }
