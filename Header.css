@@ -1,4 +1,4 @@
-/* Google Font Import - Mulish */
+﻿/* Google Font Import - Mulish */
 @import url('https://fonts.googleapis.com/css2?family=Mulish:wght@200;300;400;500;600;700;800;900&display=swap');
 
 /* Global font family for entire website - EXCEPT Font Awesome icons */
@@ -4161,7 +4161,7 @@ input[type="checkbox"]:checked+.heart-icon,
 }
 
 .category-navbar .dropdown-menu .dropdown-item.subcategory::before {
-  content: "â””â”€";
+  content: "\2514\2500";
   position: absolute;
   left: 20px;
   color: #adb5bd;
@@ -4176,7 +4176,7 @@ input[type="checkbox"]:checked+.heart-icon,
 }
 
 .category-navbar .dropdown-menu .dropdown-item.subcategory-level-1::before {
-  content: "â””â”€";
+  content: "\2514\2500";
   position: absolute;
   left: 20px;
   color: #adb5bd;
@@ -4190,7 +4190,7 @@ input[type="checkbox"]:checked+.heart-icon,
 }
 
 .category-navbar .dropdown-menu .dropdown-item.subcategory-level-2::before {
-  content: "â””â”€";
+  content: "\2514\2500";
   position: absolute;
   left: 40px;
   color: #adb5bd;
@@ -4204,7 +4204,7 @@ input[type="checkbox"]:checked+.heart-icon,
 }
 
 .category-navbar .dropdown-menu .dropdown-item.subcategory-level-3::before {
-  content: "â””â”€";
+  content: "\2514\2500";
   position: absolute;
   left: 60px;
   color: #adb5bd;
