@@ -244,7 +244,7 @@
   display: flex !important;
   align-items: center !important;
   gap: 0 !important;
-  flex: 0 0 auto !important;
+  flex: 1 1 0 !important;
   min-width: 0 !important;
   border: 1px solid #d1d5db !important;
   border-radius: 4px !important;
@@ -262,9 +262,9 @@
   flex: 1 1 0 !important;
 }
 .add-to-cart-btn, .add-to-cart {
-  flex: 1 1 0 !important;
+  flex: 0 1 auto !important;
   min-width: 0 !important;
-  max-width: 200px !important;
+  max-width: 120px !important;
   height: 28px !important;
   min-height: 28px !important;
   max-height: 28px !important;

@@ -689,10 +689,10 @@
 }
 
 .add-to-cart {
-  flex: 1 1 auto !important;
+  flex: 0 1 auto !important;
   height: 28px !important;
   min-width: 70px !important;
-  max-width: 140px !important;
+  max-width: 120px !important;
   background: #222e3a !important;
   color: #fff !important;
   font-weight: bold !important;
@@ -723,7 +723,7 @@
 .quantity-control {
   display: flex !important;
   align-items: center !important;
-  flex: 0 0 auto !important;
+  flex: 1 1 0 !important;
   min-width: 0 !important;
   border: 1px solid #d1d5db !important; /* Light grey border */
   border-radius: 4px !important;

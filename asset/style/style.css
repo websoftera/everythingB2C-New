@@ -1735,7 +1735,7 @@ input[type="checkbox"]:checked+.wishlist-label i {
 
 .add-to-cart-btn,
 .add-to-cart {
-  flex: 1 1 0;
+  flex: 0 1 auto;
   height: 28px;
   min-height: 28px;
   max-height: 28px;
@@ -2568,7 +2568,7 @@ button {
 .quantity-control {
   display: flex !important;
   align-items: center !important;
-  flex: 0 0 auto !important;
+  flex: 1 1 0 !important;
   min-width: 0 !important;
   border: 1px solid #d1d5db !important;
   /* Light grey border */
