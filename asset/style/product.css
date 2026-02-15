@@ -2,7 +2,7 @@
 
 body {
   margin: 0;
-  
+
 }
 
 
@@ -24,16 +24,17 @@ body {
 
 
 
-.header2{
+.header2 {
   background-color: #16BAE4;
-  
+
   display: flex;
   justify-content: flex-end;
   align-items: center;
   padding: 0 20px;
   box-shadow: 0 0 3px #000;
 }
-.header2 a:hover{
+
+.header2 a:hover {
   text-decoration: underline;
   color: #000;
 }
@@ -43,13 +44,15 @@ body {
   color: white;
   text-decoration: none;
   font-size: 13px;
-  padding: 0 4px; /* Adjust spacing around text */
+  padding: 0 4px;
+  /* Adjust spacing around text */
 }
 
 .nav-links span {
   color: white;
   font-size: 13px;
-  padding: 0 2px; /* Tight space around '|' */
+  padding: 0 2px;
+  /* Tight space around '|' */
 }
 
 
@@ -167,7 +170,7 @@ body {
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
   padding: 20px 10px;
-  margin: 20px 0px 20px ;
+  margin: 20px 0px 20px;
 }
 
 .product-card {
@@ -241,7 +244,8 @@ body {
 .add-to-cart button {
   background-color: #1b2d50;
   color: white;
-  padding: 7px 10px;;
+  padding: 7px 10px;
+  ;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -286,7 +290,8 @@ body {
 }
 
 .footer-column ul li a:hover {
-  color: #ccc; /* Optional: subtle hover color change */
+  color: #ccc;
+  /* Optional: subtle hover color change */
   text-decoration: none;
 }
 
@@ -294,7 +299,7 @@ body {
   background-color: #223459;
   color: white;
   padding: 40px 30px 20px;
-  
+
 }
 
 .footer-container {
@@ -303,7 +308,7 @@ body {
   align-items: flex-start;
   flex-wrap: nowrap;
   gap: 40px;
- 
+
 }
 
 .footer-column {
@@ -360,32 +365,32 @@ body {
     padding: 20px 30px;
 
   }
-  
+
   .footer-container {
     flex-wrap: wrap;
     flex-direction: column;
     gap: 30px;
   }
-  
+
   .footer-column {
     min-width: 100%;
     flex: none;
   }
-  
+
   .footer-column h3 {
     font-size: 18px;
     margin-bottom: 15px;
   }
-  
+
   .footer-column ul li {
     font-size: 16px;
   }
-  
+
   .footer-column.social .icons i {
     font-size: 20px;
     margin-right: 15px;
   }
-  
+
   .footer-bottom {
     font-size: 16px;
     margin-top: 20px;
@@ -428,12 +433,14 @@ body {
 
 .navbar:first-of-type {
   position: relative;
-  z-index: 1050; /* Ensure first navbar is above second */
+  z-index: 1050;
+  /* Ensure first navbar is above second */
 }
 
 .navbar .dropdown-menu {
   position: absolute;
-  z-index: 1060; /* Dropdown above both navbars */
+  z-index: 1060;
+  /* Dropdown above both navbars */
 }
 
 .navbar form .btn-primary {
@@ -452,13 +459,14 @@ body {
 
 /* Mobile All button styling */
 .dropdown-mobile .btn {
-  background-color: #99d052;  
-  color: #fff;                /* White text */
-  border: none;               
+  background-color: #99d052;
+  color: #fff;
+  /* White text */
+  border: none;
 }
 
 .dropdown-mobile .btn:hover {
-  background-color: #88be45;  
+  background-color: #88be45;
 }
 
 /* Custom border-radius on 3 sides */
@@ -469,7 +477,8 @@ body {
   border-top-left-radius: 6px;
   border-top-right-radius: 6px;
   border-bottom-left-radius: 6px;
-  border-bottom-right-radius: 6; /* no rounding */
+  border-bottom-right-radius: 6;
+  /* no rounding */
 }
 
 
@@ -529,7 +538,7 @@ body {
 
 
 
- /*  2nd Nav bar Css */
+/*  2nd Nav bar Css */
 
 /* For second navbar */
 .second-navbar {
@@ -548,11 +557,12 @@ body {
 
 
 }
-.navbar-nav a:hover{
+
+.navbar-nav a:hover {
   text-decoration: underline;
   color: rgb(230, 22, 22);
- transform: scale(1.05);
- 
+  transform: scale(1.05);
+
 }
 
 
@@ -570,18 +580,21 @@ body {
   .category-navbar {
     position: sticky;
     top: 0;
-    z-index: 900; /* Keeps it below primary nav (z-index ~1050) */
+    z-index: 900;
+    /* Keeps it below primary nav (z-index ~1050) */
     background-color: #ffffff;
     border-top: 1px solid #e0e0e0;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-    padding: 0; /* Remove default padding */
+    padding: 0;
+    /* Remove default padding */
   }
 
   .category-navbar .navbar-nav {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 1rem; /* Better spacing between items */
+    gap: 2px;
+    /* Better spacing between items */
   }
 }
 
@@ -618,7 +631,7 @@ body {
 .card {
   background: #fff;
   border-radius: 0 !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   margin: 0 auto 8px auto;
@@ -727,7 +740,7 @@ body {
   transition: color 0.3s ease;
 }
 
-input[type="checkbox"]:checked + .heart-icon {
+input[type="checkbox"]:checked+.heart-icon {
   color: red;
 }
 
@@ -741,8 +754,8 @@ input[type="checkbox"]:checked + .heart-icon {
 }
 
 .add-to-cart {
-  
-    background-color: #000;
+
+  background-color: #000;
   color: white;
   padding: 8px 12px;
   font-size: 13px;
@@ -767,4 +780,3 @@ input[type="checkbox"]:checked + .heart-icon {
   -webkit-appearance: none;
   appearance: none;
 }
-
