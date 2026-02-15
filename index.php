@@ -1175,12 +1175,12 @@ function topFunction(e) {
 }
 
 .category-nav-btn.prev-btn {
-  left: -20px;
+  left: 10px;
   z-index: 10;
 }
 
 .category-nav-btn.next-btn {
-  right: -20px;
+  right: 10px;
   z-index: 10;
 }
 
@@ -1580,11 +1580,11 @@ function topFunction(e) {
 /* Desktop styles */
 @media (min-width: 769px) {
 .category-nav-btn.prev-btn {
-  left: -20px !important;
+  left: 10px !important;
 }
 
 .category-nav-btn.next-btn {
-  right: -20px !important;
+  right: 10px !important;
   }
 }
 @media (max-width: 768px){
@@ -2221,8 +2221,8 @@ function topFunction(e) {
   position: absolute !important;
   z-index: 100 !important;
   /* border-radius: 50% !important; */
-  width: 22px !important;
-  height: 22px !important;
+  width: 20px !important;
+  height: 20px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
