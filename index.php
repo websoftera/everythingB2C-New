@@ -2188,12 +2188,12 @@ function topFunction(e) {
 /* Desktop styles for featured navigation */
 @media (min-width: 769px) {
   .featured-nav-btn.prev-btn {
-    left: -35px;
+    left: 0px;
     z-index: 10;
   }
   
   .featured-nav-btn.next-btn {
-    right: -35px;
+    right: 0px;
     z-index: 10;
   }
 }
@@ -2790,11 +2790,11 @@ function topFunction(e) {
 /* Desktop styles for featured navigation */
 @media (min-width: 769px) {
 .featured-nav-btn.prev-btn {
-  left: -25px !important;
+  left: 0px !important;
 }
 
 .featured-nav-btn.next-btn {
-  right: -25px !important;
+  right: 0px !important;
   }
 }
 
@@ -2811,12 +2811,12 @@ function topFunction(e) {
 }
 
 .featured-nav-btn.prev-btn {
-  left: -35px;
+  left: 0px;
   z-index: 10;
 }
 
 .featured-nav-btn.next-btn {
-  right: -35px;
+  right: 0px;
   z-index: 10;
 }
 
@@ -2999,11 +2999,11 @@ function topFunction(e) {
 }
 
 .featured-nav-btn.prev-btn {
-  left: -30px !important;
+  left: 0px !important;
 }
 
 .featured-nav-btn.next-btn {
-  right: -30px !important;
+  right: 0px !important;
 }
 
 /* Additional arrow styling to ensure visibility */

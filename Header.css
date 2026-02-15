@@ -5259,7 +5259,7 @@ input[type="checkbox"]:checked+.heart-icon,
 .category-nav-btn img,
 .discounted-nav-btn img,
 .featured-nav-btn img {
-  width: 20px !important;
+  width: 10px !important;
   height: 20px !important;
   display: block !important;
   object-fit: contain !important;
