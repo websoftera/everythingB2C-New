@@ -2232,19 +2232,19 @@ function topFunction(e) {
 }
 
 .discounted-nav-btn.prev-btn {
-  left: -30px !important;
+  left: 0px !important;
 }
 
 .discounted-nav-btn.next-btn {
-  right: -30px !important;
+  right: 0px !important;
 }
 
 .featured-nav-btn.prev-btn {
-  left: -30px !important;
+  left: 0px !important;
 }
 
 .featured-nav-btn.next-btn {
-  right: -30px !important;
+  right: 0px !important;
 }
 
 /* Ensure perfect circular shape */

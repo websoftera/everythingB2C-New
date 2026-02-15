@@ -5301,3 +5301,24 @@ header,
 nav {
   overflow: visible !important;
 }
+
+/* Fix Vertical Alignment for "All Categories" Dropdown in Header */
+.input-group {
+  align-items: center !important;
+}
+
+.dropdown-desktop {
+  display: flex !important;
+  align-items: center !important;
+  height: 100% !important;
+}
+
+.dropdown-desktop .btn {
+  display: flex !important;
+  align-items: center !important;
+  height: 100% !important;
+  /* Match input height */
+  margin: 0 !important;
+  border-radius: 6px 0 0 6px !important;
+  /* Ensure proper corner rounding */
+}
