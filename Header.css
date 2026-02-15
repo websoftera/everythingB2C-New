@@ -4616,7 +4616,6 @@ input[type="checkbox"]:checked+.heart-icon,
     width: 20px !important;
     height: 20px !important;
     background: #ffffff !important;
-    border: 1px solid #e0e0e0 !important;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
     z-index: 100 !important;
   }
@@ -4958,7 +4957,6 @@ input[type="checkbox"]:checked+.heart-icon,
     width: 18px !important;
     height: 18px !important;
     background: #ffffff !important;
-    border: 1px solid #e0e0e0 !important;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
     z-index: 100 !important;
   }
@@ -5134,7 +5132,6 @@ input[type="checkbox"]:checked+.heart-icon,
     width: 16px !important;
     height: 16px !important;
     background: #ffffff !important;
-    border: 1px solid #e0e0e0 !important;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
     z-index: 100 !important;
   }
@@ -5228,9 +5225,7 @@ input[type="checkbox"]:checked+.heart-icon,
   width: 20px !important;
   height: 20px !important;
   background-color: #fff !important;
-  border-radius: 50% !important;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
-  border: 1px solid #e0e0e0 !important;
   z-index: 100 !important;
   display: flex !important;
   align-items: center !important;

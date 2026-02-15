@@ -1282,7 +1282,6 @@ function topFunction(e) {
     top: 50% !important;
     transform: translateY(-50%) !important;
     background: #ffffff !important;
-    border: 1px solid #e0e0e0 !important;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
     z-index: 100 !important;
   }
@@ -1349,7 +1348,7 @@ function topFunction(e) {
     top: 50% !important;
     transform: translateY(-50%) !important;
     background: #ffffff !important;
-    border: 1px solid #e0e0e0 !important;
+
     box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
     z-index: 100 !important;
   }
@@ -1412,7 +1411,6 @@ function topFunction(e) {
     top: 50% !important;
     transform: translateY(-50%) !important;
     background: #ffffff !important;
-    border: 1px solid #e0e0e0 !important;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
     z-index: 100 !important;
   }
@@ -1672,7 +1670,6 @@ function topFunction(e) {
     position: absolute !important;
     z-index: 1000 !important;
     background: #ffffff !important;
-    border: 1px solid #e0e0e0 !important;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
     width: 20px !important;
     height: 20px !important;
@@ -2215,7 +2212,6 @@ function topFunction(e) {
 .featured-nav-btn {
   color: var(--light-green) !important; /* Light green color as per image */
   background: #ffffff !important;
-  border: 1px solid #e0e0e0 !important;
   cursor: pointer !important;
   pointer-events: auto !important;
   position: absolute !important;
@@ -2864,7 +2860,6 @@ function topFunction(e) {
     font-size: 20px !important;
     color: var(--light-green) !important;
     background: #ffffff !important;
-    border: 1px solid #e0e0e0 !important;
   }
   
   .featured-nav-btn.prev-btn {
@@ -2913,7 +2908,6 @@ function topFunction(e) {
     font-size: 22px !important;
     color: var(--light-green) !important;
     background: #ffffff !important;
-    border: 1px solid #e0e0e0 !important;
   }
 }
 
@@ -2954,7 +2948,6 @@ function topFunction(e) {
     font-size: 12px !important;
     color: var(--light-green) !important;
     background: #ffffff !important;
-    border: 1px solid #e0e0e0 !important;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
   }
 }
