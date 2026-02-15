@@ -5225,8 +5225,8 @@ input[type="checkbox"]:checked+.heart-icon,
   position: absolute !important;
   top: 50% !important;
   transform: translateY(-50%) !important;
-  width: 40px !important;
-  height: 40px !important;
+  width: 20px !important;
+  height: 20px !important;
   background-color: #fff !important;
   border-radius: 50% !important;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
@@ -5321,4 +5321,13 @@ nav {
   margin: 0 !important;
   border-radius: 6px 0 0 6px !important;
   /* Ensure proper corner rounding */
+}
+
+/* Smooth Home Banner Animation */
+#heroCarousel .carousel-item {
+  transition: transform 1.2s ease-in-out, opacity 1.2s ease-in-out !important;
+}
+
+#heroCarousel .carousel-inner .carousel-item {
+  transition-property: transform, opacity;
 }

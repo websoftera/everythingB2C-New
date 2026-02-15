@@ -2769,8 +2769,8 @@ function topFunction(e) {
   font-size: 14px;
   font-weight: bold;
   cursor: pointer;
-  width: 30px;
-  height: 40px;
+  width: 20px;
+  height: 20px;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -2859,8 +2859,8 @@ function topFunction(e) {
   }
   
   .featured-nav-btn {
-    width: 44px !important;
-    height: 44px !important;
+    width: 20px !important;
+    height: 20px !important;
     font-size: 20px !important;
     color: var(--light-green) !important;
     background: #ffffff !important;
@@ -2908,8 +2908,8 @@ function topFunction(e) {
   }
   
   .featured-nav-btn {
-    width: 48px !important;
-    height: 48px !important;
+    width: 20px !important;
+    height: 20px !important;
     font-size: 22px !important;
     color: var(--light-green) !important;
     background: #ffffff !important;
@@ -2949,8 +2949,8 @@ function topFunction(e) {
   }
   
   .featured-nav-btn {
-    width: 22px !important;
-    height: 22px !important;
+    width: 20px !important;
+    height: 20px !important;
     font-size: 12px !important;
     color: var(--light-green) !important;
     background: #ffffff !important;
@@ -2988,8 +2988,8 @@ function topFunction(e) {
   pointer-events: auto !important;
   position: absolute !important;
   z-index: 100 !important;
-  width: 22px !important;
-  height: 22px !important;
+  width: 20px !important;
+  height: 20px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
