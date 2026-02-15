@@ -5269,18 +5269,35 @@ input[type="checkbox"]:checked+.heart-icon,
 .dropdown-desktop:hover .dropdown-menu {
   display: block !important;
   margin-top: 0;
-  z-index: 9999 !important;
+  z-index: 99999 !important;
 }
 
 /* Fix for Category Navbar Dropdowns (Second Navbar) - Ensure High Z-Index */
-.category-navbar {
+.category-navbar,
+.second-navbar,
+.navbar {
   z-index: 1040 !important;
-  /* Higher than page content, lower than main nav */
+  /* Higher than page content */
   overflow: visible !important;
+  position: relative !important;
 }
 
-.category-navbar .dropdown:hover .dropdown-menu {
+/* Specific fix for dropdowns inside category navbar */
+.category-navbar .dropdown:hover .dropdown-menu,
+.category-navbar .nav-item:hover .dropdown-menu,
+.category-navbar .dropdown-toggle:hover+.dropdown-menu {
   display: block !important;
   margin-top: 0;
-  z-index: 9999 !important;
+  z-index: 99999 !important;
+  top: 100%;
+  left: 0;
+}
+
+/* Ensure parent containers don't clip the dropdown */
+.navbar-collapse,
+.container-fluid,
+.row,
+header,
+nav {
+  overflow: visible !important;
 }
