@@ -2540,47 +2540,39 @@ html body .product-info .wishlist .heart-checkbox:checked+.wishlist-label .heart
   }
 }
 
-/* Category Page Specific Grid Fix - 4 Cards Per Row */
+/* Category Page Specific Grid Fix - CSS Grid Approach */
 .products-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: flex-start;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+  width: 100%;
 }
 
 .products-grid .product-card {
-  width: calc(25% - 10px) !important;
-  /* Force 4 cards per row accounting for gap */
-  min-width: 0 !important;
-  /* Allow shrinking below fixed width */
+  width: 100% !important;
   max-width: none !important;
-  margin: 0 0 20px 0 !important;
-  /* Reset margin (gap handles spacing) */
-  flex: 0 0 calc(25% - 10px) !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  float: none !important;
+  display: block !important;
 }
 
 /* Responsive adjustments for smaller screens */
 @media (max-width: 1200px) {
-  .products-grid .product-card {
-    width: calc(33.33% - 10px) !important;
-    /* 3 per row on slightly smaller screens */
-    flex: 0 0 calc(33.33% - 10px) !important;
+  .products-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
 @media (max-width: 768px) {
-  .products-grid .product-card {
-    width: calc(50% - 10px) !important;
-    /* 2 per row on tablets */
-    flex: 0 0 calc(50% - 10px) !important;
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 480px) {
-  .products-grid .product-card {
-    width: 100% !important;
-    /* 1 per row on mobile */
-    flex: 0 0 100% !important;
+  .products-grid {
+    grid-template-columns: 1fr;
   }
 }
 
