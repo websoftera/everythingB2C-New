@@ -5264,3 +5264,23 @@ input[type="checkbox"]:checked+.heart-icon,
   display: block !important;
   object-fit: contain !important;
 }
+
+/* Fix for All Categories Dropdown in Search Bar */
+.dropdown-desktop:hover .dropdown-menu {
+  display: block !important;
+  margin-top: 0;
+  z-index: 9999 !important;
+}
+
+/* Fix for Category Navbar Dropdowns (Second Navbar) - Ensure High Z-Index */
+.category-navbar {
+  z-index: 1040 !important;
+  /* Higher than page content, lower than main nav */
+  overflow: visible !important;
+}
+
+.category-navbar .dropdown:hover .dropdown-menu {
+  display: block !important;
+  margin-top: 0;
+  z-index: 9999 !important;
+}
