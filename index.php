@@ -1277,8 +1277,8 @@ function topFunction(e) {
   .category-nav-btn,
   .discounted-nav-btn,
   .featured-nav-btn {
-    width: 20px !important;
-    height: 20px !important;
+    width: 25px !important;
+    height: 25px !important;
     top: 50% !important;
     transform: translateY(-50%) !important;
     background: #ffffff !important;
@@ -1671,8 +1671,8 @@ function topFunction(e) {
     z-index: 1000 !important;
     background: #ffffff !important;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
-    width: 20px !important;
-    height: 20px !important;
+    width: 25px !important;
+    height: 25px !important;
   }
   
   .featured-products-slider-wrapper .featured-nav-btn.prev-btn {
@@ -2152,8 +2152,8 @@ function topFunction(e) {
   font-size: 14px;
   font-weight: bold;
   cursor: pointer;
-  width: 20px;
-  height: 20px;
+  width: 25px;
+  height: 25px;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -2217,8 +2217,8 @@ function topFunction(e) {
   position: absolute !important;
   z-index: 100 !important;
   /* border-radius: 50% !important; */
-  width: 20px !important;
-  height: 20px !important;
+  width: 25px !important;
+  height: 25px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -2765,8 +2765,8 @@ function topFunction(e) {
   font-size: 14px;
   font-weight: bold;
   cursor: pointer;
-  width: 20px;
-  height: 20px;
+  width: 25px;
+  height: 25px;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -2855,8 +2855,8 @@ function topFunction(e) {
   }
   
   .featured-nav-btn {
-    width: 20px !important;
-    height: 20px !important;
+    width: 25px !important;
+    height: 25px !important;
     font-size: 20px !important;
     color: var(--light-green) !important;
     background: #ffffff !important;
@@ -2903,8 +2903,8 @@ function topFunction(e) {
   }
   
   .featured-nav-btn {
-    width: 20px !important;
-    height: 20px !important;
+    width: 25px !important;
+    height: 25px !important;
     font-size: 22px !important;
     color: var(--light-green) !important;
     background: #ffffff !important;
@@ -2943,8 +2943,8 @@ function topFunction(e) {
   }
   
   .featured-nav-btn {
-    width: 20px !important;
-    height: 20px !important;
+    width: 25px !important;
+    height: 25px !important;
     font-size: 12px !important;
     color: var(--light-green) !important;
     background: #ffffff !important;
@@ -2981,8 +2981,8 @@ function topFunction(e) {
   pointer-events: auto !important;
   position: absolute !important;
   z-index: 100 !important;
-  width: 20px !important;
-  height: 20px !important;
+  width: 25px !important;
+  height: 25px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;

@@ -3237,8 +3237,8 @@ html .cart-added-highlight,
   .category-nav-btn,
   .discounted-nav-btn,
   .featured-nav-btn {
-    width: 20px !important;
-    height: 20px !important;
+    width: 25px !important;
+    height: 25px !important;
     background: #ffffff !important;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
     z-index: 100 !important;
