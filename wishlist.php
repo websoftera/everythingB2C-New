@@ -74,14 +74,12 @@ echo renderBreadcrumb($breadcrumbs);
                                 <?php if ($isOutOfStock): ?>
                                     <a href="product.php?slug=<?php echo $item['slug']; ?>" class="read-more">READ MORE</a>
                                 <?php else: ?>
-                                    <div class="cart-actions d-flex align-items-center gap-2">
+                                    <div class="cart-actions d-flex align-items-center gap-2 justify-content-center">
                                         <div class="quantity-control d-inline-flex align-items-center">
                                             <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
                                             <input type="number" class="quantity-input" value="1" min="1" max="99" data-product-id="<?php echo $item['product_id']; ?>">
                                             <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
                                         </div>
-                                    </div>
-                                    <div class="cart-actions d-flex align-items-center gap-2">
                                         <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $item['product_id']; ?>">
                                             <i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>
                                             ADD TO CART
