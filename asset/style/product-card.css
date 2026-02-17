@@ -884,7 +884,7 @@ html body .product-card .wishlist .heart-checkbox:checked + .wishlist-label .hea
     }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
     .products-grid {
         grid-template-columns: 1fr;
         justify-items: center;
