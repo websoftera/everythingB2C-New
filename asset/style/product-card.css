@@ -268,8 +268,8 @@
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 8px !important;
-    padding: 0 14px !important;
+    gap: 4px !important;
+    padding: 0 12px !important;
     box-sizing: border-box !important;
 }
 .add-to-cart-btn i, .add-to-cart i {
@@ -278,6 +278,7 @@
     align-items: center !important;
     justify-content: center !important;
     font-size: 16px !important;
+    margin-right: 4px !important;
 }
 
 /* Quantity Control Container */
@@ -828,4 +829,55 @@ html body .product-card .wishlist .heart-checkbox:checked + .wishlist-label .hea
   color: #fff !important;
   box-shadow: 0 0 0 6px rgba(255,214,0,0.18), 0 2px 12px rgba(40,167,69,0.22) !important;
   transition: box-shadow 0.2s, border 0.2s, background 0.2s, color 0.2s;
+}
+
+/* --- Unified Product Card Grid Layouts --- */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    width: 100%;
+}
+
+.products-grid .product-card {
+    width: 100% !important;
+    max-width: 240px !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    float: none !important;
+    display: block !important;
+    justify-self: center;
+}
+
+.wishlist-grid .card.product-card {
+    height: 100%;
+    max-width: 240px !important;
+}
+
+@media (max-width: 1200px) {
+    .products-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    }
+}
+
+@media (max-width: 1000px) {
+    .products-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .products-grid {
+        grid-template-columns: 1fr;
+        justify-items: center;
+    }
+    .products-grid .product-card {
+        width: 100% !important;
+        max-width: 240px !important;
+    }
+}
+
+/* Ensure wishlist overlay positions correctly on card */
+.product-info {
+    position: relative;
 }

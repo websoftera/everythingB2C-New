@@ -162,61 +162,7 @@ body {
 
 /*---------------------------------------------------------------------------------------------------------------*/
 
-/*----------------------------prodct section-------------------------------*/
-
-/* Grid layout: 4-4-2 structure */
-.products {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  padding: 20px 10px;
-  margin: 20px 0px 20px;
-}
-
-.product-card {
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.2s;
-}
-
-.product-card:hover {
-  transform: translateY(-5px);
-}
-
-.discount {
-  background-color: #9fbe1b;
-  color: white;
-  font-size: 13px;
-  padding: 6px;
-  font-weight: bold;
-  text-align: center;
-}
-
-.product-card img {
-  width: 100%;
-  height: 250px;
-  object-fit: contain;
-  padding: 10px;
-}
-
-.product-title {
-  font-size: 15px;
-  font-weight: bold;
-  text-align: center;
-  padding: 10px;
-  min-height: 60px;
-}
-
-.price {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 10px;
-}
+/* Product card styling centralized in asset/style/product-card.css */
 
 .mrp {
   background-color: #007bff;
@@ -235,29 +181,49 @@ body {
 
 .add-to-cart {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 10px;
+  justify-content: center;
+  gap: 8px;
+  padding: 0;
   border-top: 1px solid #eee;
 }
 
 .add-to-cart button {
   background-color: #1b2d50;
   color: white;
-  padding: 7px 10px;
-  ;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-size: 13px;
-  flex-grow: 1;
-  margin-right: 10px;
+  flex: 1 1 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  min-height: 34px;
+  max-height: 34px;
+  padding: 0 12px;
+  gap: 4px;
+  margin: 0;
+}
+
+.add-to-cart button i {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  margin-right: 4px;
 }
 
 .add-to-cart select {
-  padding: 5px;
+  padding: 0 10px;
   border-radius: 4px;
   font-size: 13px;
+  height: 34px;
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
 }
 
 /* Responsive for tablets and phones */

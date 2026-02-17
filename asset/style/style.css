@@ -1737,8 +1737,8 @@ input[type="checkbox"]:checked+.wishlist-label i {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 0 14px;
+  gap: 4px;
+  padding: 0 12px;
   box-sizing: border-box;
 }
 .add-to-cart-btn i,
@@ -1748,6 +1748,7 @@ input[type="checkbox"]:checked+.wishlist-label i {
   align-items: center;
   justify-content: center;
   font-size: 16px;
+  margin-right: 4px !important;
 }
 
 .modern-prices {
@@ -1809,21 +1810,7 @@ input[type="checkbox"]:checked+.wishlist-label i {
   transform: translateY(-5px);
 }
 
-.products-section .product-card {
-  max-width: 200px;
-  min-width: 200px;
-  margin: 0 auto 5px;
-  /* Reduced bottom margin */
-  flex-grow: 0;
-  /* Prevent card from growing */
-  flex-shrink: 0;
-  /* Prevent card from shrinking */
-}
-
-/* Ensure single product card on pages like wishlist doesn't stretch */
-.products .card {
-  padding-bottom: 6px !important;
-}
+/* Product cards sized in asset/style/product-card.css */
 
 /*-----------------------------------------Product Categories css---------------------------------------------------------*/
 
@@ -2398,212 +2385,9 @@ input[type="checkbox"]:checked+.wishlist-label i {
   line-height: 1;
 }
 
-/* Ensure heart icon styling */
-.wishlist .heart-icon {
-  color: transparent !important;
-  -webkit-text-stroke: 1px #666 !important;
-  text-stroke: 1px #666 !important;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2)) !important;
-  transition: all 0.3s ease-in-out !important;
-}
+/* Wishlist heart styling lives in asset/style/product-card.css */
 
-.wishlist .wishlist-label:hover {
-  transform: scale(1.1);
-  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.3));
-  /* Enhanced shadow on hover */
-}
-
-.wishlist .heart-checkbox:checked+.wishlist-label {
-  color: #DE0085;
-  /* Pink fill when in wishlist */
-  -webkit-text-stroke: 2px #DE0085;
-  /* Pink border when in wishlist */
-  text-stroke: 2px #DE0085;
-  /* Pink border for non-webkit browsers */
-  filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3));
-  /* Pink shadow when in wishlist */
-}
-
-.wishlist .heart-checkbox:checked+.wishlist-label .heart-icon {
-  color: #DE0085;
-  /* Pink fill when in wishlist */
-  -webkit-text-stroke: 2px #DE0085;
-  /* Pink border when in wishlist */
-  text-stroke: 2px #DE0085;
-  /* Pink border for non-webkit browsers */
-  filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3));
-  /* Pink shadow when in wishlist */
-}
-
-.wishlist .heart-checkbox:checked+.wishlist-label:hover {
-  filter: drop-shadow(0 3px 6px rgba(222, 0, 133, 0.4));
-  /* Enhanced pink shadow on hover */
-}
-
-.wishlist .heart-checkbox:checked+.wishlist-label:hover .heart-icon {
-  filter: drop-shadow(0 3px 6px rgba(222, 0, 133, 0.4));
-  /* Enhanced pink shadow on hover */
-}
-
-/* Additional specific selectors for initial state */
-.wishlist .wishlist-label.wishlist-active .heart-icon {
-  color: #DE0085 !important;
-  -webkit-text-stroke: 2px #DE0085 !important;
-  text-stroke: 2px #DE0085 !important;
-  filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3)) !important;
-}
-
-/* Most specific selectors for page load state */
-.product-info .wishlist .wishlist-label.wishlist-active .heart-icon,
-.product-info .wishlist .heart-checkbox:checked+.wishlist-label .heart-icon,
-.card .wishlist .wishlist-label.wishlist-active .heart-icon,
-.card .wishlist .heart-checkbox:checked+.wishlist-label .heart-icon,
-.product-card .wishlist .wishlist-label.wishlist-active .heart-icon,
-.product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart-icon {
-  color: #DE0085 !important;
-  -webkit-text-stroke: 2px #DE0085 !important;
-  text-stroke: 2px #DE0085 !important;
-  filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3)) !important;
-}
-
-/* Force pink color for wishlist-active state on page load */
-.wishlist-label.wishlist-active .heart-icon,
-.wishlist-label.wishlist-active span.heart-icon {
-  color: #DE0085 !important;
-  -webkit-text-stroke: 2px #DE0085 !important;
-  text-stroke: 2px #DE0085 !important;
-  filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3)) !important;
-}
-
-/* Most aggressive selectors for page load state */
-body .product-info .wishlist .wishlist-label.wishlist-active .heart-icon,
-body .product-info .wishlist .heart-checkbox:checked+.wishlist-label .heart-icon,
-body .card .wishlist .wishlist-label.wishlist-active .heart-icon,
-body .card .wishlist .heart-checkbox:checked+.wishlist-label .heart-icon,
-body .product-card .wishlist .wishlist-label.wishlist-active .heart-icon,
-body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart-icon,
-html body .product-info .wishlist .wishlist-label.wishlist-active .heart-icon,
-html body .product-info .wishlist .heart-checkbox:checked+.wishlist-label .heart-icon {
-  color: #DE0085 !important;
-  -webkit-text-stroke: 2px #DE0085 !important;
-  text-stroke: 2px #DE0085 !important;
-  filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3)) !important;
-}
-
-/* Ensure product-info has relative positioning for absolute wishlist positioning */
-.product-info {
-  position: relative;
-}
-
-/* --- Definitive Card Width Solution --- */
-/* Target all contexts where product cards appear */
-.products-section .row,
-.products .row,
-.wishlist-container .row {
-  /* Assuming a container for wishlist */
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  /* Align items to the start */
-  gap: 1.5rem;
-  /* Consistent gap between cards */
-}
-
-/* Override Bootstrap's column behavior within these rows */
-.products-section .row>[class*='col-'],
-.products .row>[class*='col-'],
-.wishlist-container .row>[class*='col-'] {
-  flex: 0 0 auto;
-  /* Prevent growing and shrinking */
-  width: auto;
-  /* Let the card's width dominate */
-}
-
-/* The card itself defines its size */
-.card,
-.product-card {
-  width: 208px;
-  max-width: 208px;
-  min-width: 208px;
-  margin-bottom: 20px;
-  float: none;
-  display: inline-block;
-  background: #fff;
-  border-radius: 0 !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  margin: 0 auto 8px auto;
-  padding-bottom: 6px !important;
-}
-
-/* Mobile responsive override for cards */
-@media (max-width: 600px) {
-
-  .card,
-  .product-card {
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 100% !important;
-  }
-}
-
-/* Category Page Specific Grid Fix - CSS Grid Approach */
-.products-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 15px;
-  width: 100%;
-}
-
-.products-grid .product-card {
-  width: 100% !important;
-  max-width: 240px !important;
-  min-width: 0 !important;
-  margin: 0 !important;
-  float: none !important;
-  display: block !important;
-}
-
-.wishlist-grid .card.product-card {
-  height: 100%;
-  max-width: 240px !important;
-}
-
-/* Responsive adjustments for smaller screens */
-@media (max-width: 1200px) {
-  .products-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  }
-}
-
-@media (max-width: 1000px) {
-  .products-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-}
-
-@media (max-width: 480px) {
-  .products-grid {
-    grid-template-columns: 1fr;
-    justify-items: center;
-  }
-  .products-grid .product-card {
-    width: 100% !important;
-    max-width: 240px !important;
-  }
-}
-
-/* --- End Definitive Solution --- */
-
-.products-section .product-card {
-  margin: 0 auto 1.5rem;
-  /* Center card and provide bottom margin */
-  flex-grow: 0;
-  /* Prevent card from growing */
-}
-
-/* Add any other general styles here */
+/* Product card styling centralized in asset/style/product-card.css */
 
 input,
 select,
@@ -3261,32 +3045,6 @@ html .cart-added-highlight,
     padding-right: 6px !important;
   }
 
-  /* Compact product cards */
-  .product-card {
-    margin-bottom: 10px !important;
-    padding: 8px !important;
-  }
-
-  .product-info {
-    padding: 8px !important;
-  }
-
-  .product-details h3 {
-    font-size: 12px !important;
-    margin-bottom: 5px !important;
-    line-height: 1.2 !important;
-  }
-
-  .price-buttons {
-    gap: 5px !important;
-    margin-bottom: 8px !important;
-  }
-
-  .price-btn {
-    padding: 4px 6px !important;
-    font-size: 10px !important;
-  }
-
   /* Compact navigation */
   .category-nav-btn,
   .discounted-nav-btn,
@@ -3393,31 +3151,6 @@ html .cart-added-highlight,
   .card-title {
     font-size: 12px !important;
     margin-bottom: 6px !important;
-  }
-
-  /* Smaller product cards */
-  .product-card {
-    margin-bottom: 8px !important;
-    padding: 6px !important;
-  }
-
-  .product-info {
-    padding: 6px !important;
-  }
-
-  .product-details h3 {
-    font-size: 11px !important;
-    margin-bottom: 4px !important;
-  }
-
-  .price-buttons {
-    gap: 4px !important;
-    margin-bottom: 6px !important;
-  }
-
-  .price-btn {
-    padding: 3px 5px !important;
-    font-size: 9px !important;
   }
 
   /* Smaller navigation */
@@ -3548,31 +3281,6 @@ html .cart-added-highlight,
   .card-title {
     font-size: 11px !important;
     margin-bottom: 5px !important;
-  }
-
-  /* Minimal product cards */
-  .product-card {
-    margin-bottom: 6px !important;
-    padding: 5px !important;
-  }
-
-  .product-info {
-    padding: 5px !important;
-  }
-
-  .product-details h3 {
-    font-size: 10px !important;
-    margin-bottom: 3px !important;
-  }
-
-  .price-buttons {
-    gap: 3px !important;
-    margin-bottom: 5px !important;
-  }
-
-  .price-btn {
-    padding: 2px 4px !important;
-    font-size: 8px !important;
   }
 
   /* Minimal navigation */

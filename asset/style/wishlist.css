@@ -366,42 +366,7 @@ input[type="checkbox"]:checked+.heart-icon {
   /* Pink shadow when in wishlist */
 }
 
-/* Most specific selectors for page load state */
-.product-info .wishlist .wishlist-label.wishlist-active .heart-icon,
-.product-info .wishlist .heart-checkbox:checked+.wishlist-label .heart-icon,
-.card .wishlist .wishlist-label.wishlist-active .heart-icon,
-.card .wishlist .heart-checkbox:checked+.wishlist-label .heart-icon,
-.product-card .wishlist .wishlist-label.wishlist-active .heart-icon,
-.product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart-icon {
-  color: #DE0085 !important;
-  -webkit-text-stroke: 2px #DE0085 !important;
-  text-stroke: 2px #DE0085 !important;
-  filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3)) !important;
-}
-
-/* Force pink color for wishlist-active state on page load */
-.wishlist-label.wishlist-active .heart-icon,
-.wishlist-label.wishlist-active span.heart-icon {
-  color: #DE0085 !important;
-  -webkit-text-stroke: 2px #DE0085 !important;
-  text-stroke: 2px #DE0085 !important;
-  filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3)) !important;
-}
-
-/* Most aggressive selectors for page load state */
-body .product-info .wishlist .wishlist-label.wishlist-active .heart-icon,
-body .product-info .wishlist .heart-checkbox:checked+.wishlist-label .heart-icon,
-body .card .wishlist .wishlist-label.wishlist-active .heart-icon,
-body .card .wishlist .heart-checkbox:checked+.wishlist-label .heart-icon,
-body .product-card .wishlist .wishlist-label.wishlist-active .heart-icon,
-body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart-icon,
-html body .product-info .wishlist .wishlist-label.wishlist-active .heart-icon,
-html body .product-info .wishlist .heart-checkbox:checked+.wishlist-label .heart-icon {
-  color: #DE0085 !important;
-  -webkit-text-stroke: 2px #DE0085 !important;
-  text-stroke: 2px #DE0085 !important;
-  filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3)) !important;
-}
+/* Product card wishlist styling centralized in asset/style/product-card.css */
 
 /* ---------------------- Cart Actions ---------------------- */
 .cart-actions {
@@ -415,12 +380,29 @@ html body .product-info .wishlist .heart-checkbox:checked+.wishlist-label .heart
 .add-to-cart {
   background-color: #1c1f26;
   color: white;
-  padding: 8px 12px;
   font-size: 13px;
   font-weight: bold;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 12px;
+  height: 34px;
+  min-height: 34px;
+  max-height: 34px;
+  box-sizing: border-box;
+}
+
+.add-to-cart i {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  margin-right: 4px;
 }
 
 .quantity-input {
@@ -965,10 +947,11 @@ html body .product-info .wishlist .heart-checkbox:checked+.wishlist-label .heart
 }
 
 .cart-controls .add-to-cart {
-  height: 38px;
+  height: 34px;
+  min-height: 34px;
   width: 100%;
   max-width: 190px;
-  padding: 0 20px;
+  padding: 0 12px;
   font-size: 13px;
   font-weight: bold;
   background-color: #050505;
@@ -976,9 +959,10 @@ html body .product-info .wishlist .heart-checkbox:checked+.wishlist-label .heart
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  display: flex;
-
-
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
 }
 
 @media (max-width: 546px) {
@@ -1255,28 +1239,4 @@ html body .product-info .wishlist .heart-checkbox:checked+.wishlist-label .heart
   display: inline-block;
 }
 
-.card {
-  background: #fff;
-  border-radius: 0 !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  margin: 0 auto 8px auto;
-  padding-bottom: 6px !important;
-}
-
-#wishlist-container .card {
-  padding-bottom: 6px !important;
-  border-radius: 0 !important;
-}
-
-.card,
-.product-card {
-  background: #fff;
-  border-radius: 0 !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  margin: 0 auto 8px auto;
-  padding-bottom: 6px !important;
-}
+/* Product card presentation centralized in asset/style/product-card.css */
