@@ -2558,7 +2558,7 @@ html body .product-info .wishlist .heart-checkbox:checked+.wishlist-label .heart
 
 .products-grid .product-card {
   width: 100% !important;
-  max-width: none !important;
+  max-width: 240px !important;
   min-width: 0 !important;
   margin: 0 !important;
   float: none !important;
@@ -2567,6 +2567,7 @@ html body .product-info .wishlist .heart-checkbox:checked+.wishlist-label .heart
 
 .wishlist-grid .card.product-card {
   height: 100%;
+  max-width: 240px !important;
 }
 
 /* Responsive adjustments for smaller screens */
