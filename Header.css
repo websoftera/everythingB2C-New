@@ -43,7 +43,6 @@ body {
   font-family: 'Mulish', sans-serif;
 }
 
-
 .logo-wrapper {
   max-height: 75px;
 }
@@ -1725,6 +1724,11 @@ body {
 /* Hide second navbar by default */
 .second-navbar {
   display: none;
+}
+
+nav {
+  position: fixed !important;
+  top:0 !important;
 }
 
 /* Show only on large screens (desktop and up) */
