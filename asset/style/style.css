@@ -88,13 +88,13 @@
 }
 
 .user-signin-link:hover .user-signin-icon {
-  color: #20c997 !important;
+  color: #028bc2 !important;
   /* Lighter green on hover */
   transform: scale(1.1) !important;
 }
 
 .user-signin-link:hover .user-signin-text {
-  color: #20c997 !important;
+  color: #028bc2 !important;
   /* Lighter green on hover */
 }
 
@@ -232,7 +232,7 @@
 }
 
 .home-link:hover .home-icon {
-  color: #16BAE4 !important;
+  color: #028bc2 !important;
   /* Same color on hover */
 }
 
