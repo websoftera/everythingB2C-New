@@ -3210,7 +3210,7 @@ body {
 .mobile-nav-icons {
   display: flex;
   align-items: center;
-  gap: 26px;
+  gap: 14px;
   margin-left: auto;
 }
 
@@ -3218,8 +3218,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 40px;
-  height: 40px;
+  min-width: 34px;
+  height: 36px;
   transition: all 0.3s ease;
   position: relative;
   background: none;
@@ -3308,6 +3308,41 @@ body {
   margin: 0;
   padding: 0;
   display: block !important;
+}
+
+/* Tight mobile header layout so icons sit on one line */
+@media (max-width: 768px) {
+  .navbar .container-fluid {
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+  }
+
+  .navbar .container-fluid > .d-flex.align-items-center {
+    flex: 1 0 auto !important;
+    min-width: 0 !important;
+  }
+
+  .logo-wrapper {
+    margin-right: 6px !important;
+  }
+
+  .mobile-nav-icons {
+    gap: 10px !important;
+  }
+
+  .mobile-nav-link {
+    min-width: 32px !important;
+    height: 32px !important;
+    padding: 0 !important;
+  }
+
+  /* Hide text on very small screens to prevent wrapping */
+  .mobile-nav-link .user-signin-text,
+  .mobile-nav-link .user-welcome-text,
+  .mobile-nav-link .welcome-line-1,
+  .mobile-nav-link .welcome-line-2 {
+    display: none !important;
+  }
 }
 
 /* Mobile cart section - now part of mobile-nav-icons */
