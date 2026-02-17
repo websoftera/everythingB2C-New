@@ -3802,20 +3802,20 @@ input[type="checkbox"]:checked+.heart-icon,
 }
 
 .category-navbar .dropdown-menu .dropdown-item {
-  padding: 2px 20px !important;
-  font-size: 0.875rem !important;
+  padding: 6px 12px !important;
+  font-size: 12px !important;
   color: #495057;
-  border-bottom: 1px solid #f8f9fa;
   text-decoration: none !important;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   text-transform: capitalize !important;
+  border: 0 !important;
 }
 
 .category-navbar .dropdown-menu .dropdown-item:hover,
 .category-navbar .dropdown-menu .dropdown-item:focus {
-  background-color: #99d052 !important;
+  background-color: #9fbe1b !important;
   color: white !important;
   text-decoration: none !important;
 }
@@ -3846,9 +3846,9 @@ input[type="checkbox"]:checked+.heart-icon,
 
 /* Subcategory styling with indentation */
 .category-navbar .dropdown-menu .dropdown-item.subcategory {
-  padding-left: 45px !important;
+  padding-left: 32px !important;
   color: #6c757d;
-  font-size: 0.875rem !important;
+  font-size: 12px !important;
   position: relative;
   text-transform: capitalize !important;
 }
@@ -3863,8 +3863,8 @@ input[type="checkbox"]:checked+.heart-icon,
 
 /* Multiple levels of subcategories */
 .category-navbar .dropdown-menu .dropdown-item.subcategory-level-1 {
-  padding-left: 45px !important;
-  font-size: 0.875rem !important;
+  padding-left: 32px !important;
+  font-size: 12px !important;
   text-transform: capitalize !important;
 }
 
@@ -3877,8 +3877,8 @@ input[type="checkbox"]:checked+.heart-icon,
 }
 
 .category-navbar .dropdown-menu .dropdown-item.subcategory-level-2 {
-  padding-left: 65px !important;
-  font-size: 0.875rem !important;
+  padding-left: 48px !important;
+  font-size: 12px !important;
   text-transform: capitalize !important;
 }
 
@@ -3891,8 +3891,8 @@ input[type="checkbox"]:checked+.heart-icon,
 }
 
 .category-navbar .dropdown-menu .dropdown-item.subcategory-level-3 {
-  padding-left: 85px !important;
-  font-size: 0.875rem !important;
+  padding-left: 64px !important;
+  font-size: 12px !important;
   text-transform: capitalize !important;
 }
 
@@ -3923,10 +3923,8 @@ input[type="checkbox"]:checked+.heart-icon,
 
 /* Reduce dropdown item padding and font size */
 .dropdown-menu .dropdown-item {
-  padding: 2px 20px !important;
-  /* Reduced from default 8px to 2px for top/bottom */
-  font-size: 0.875rem !important;
-  /* Reduced font size (14px) */
+  padding: 6px 12px !important;
+  font-size: 12px !important;
 }
 
 /* Breadcrumb Navigation Styling */

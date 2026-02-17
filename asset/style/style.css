@@ -217,11 +217,11 @@
   transition: background-color 0.2s ease !important;
 }
 
-.user-signin-link:hover,
+/* .user-signin-link:hover,
 .user-signout-link:hover,
 .user-account-link:hover {
   background-color: rgba(0, 0, 0, 0.05) !important;
-}
+} */
 
 /* Home Icon Styles */
 .home-icon {
@@ -956,7 +956,7 @@ h3 {
 }
 
 .dropdown-menu .dropdown-item:hover {
-  background-color: #3faee1;
+  background-color: #9fbe1b;
   color: white;
 }
 
@@ -2995,12 +2995,12 @@ html .cart-added-highlight,
 
   /* Compact dropdowns */
   .dropdown-menu {
-    padding: 5px 0 !important;
+    padding: 6px 0 !important;
   }
 
   .dropdown-item {
-    padding: 6px 15px !important;
-    font-size: 13px !important;
+    padding: 6px 12px !important;
+    font-size: 12px !important;
   }
 
   /* Compact navbar */

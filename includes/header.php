@@ -265,22 +265,22 @@ html body [data-product-id].cart-added-highlight {
 /* Multi-level dropdowns for Bootstrap 5 - Improved UI */
 .dropdown-menu {
   min-width: 220px;
-  border-radius: 0.6rem;
+  border-radius: 6px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.13);
   background: #fff;
   border: 1px solid #e0e0e0;
-  padding: 0.3rem 0;
+  padding: 6px 0;
 }
 .dropdown-menu .dropdown-item {
-  padding: 0.55rem 1.25rem 0.55rem 1.25rem;
-  font-size: 1rem;
+  padding: 6px 12px;
+  font-size: 12px;
   color: #222;
-  border-radius: 0.4rem;
+  border-radius: 4px;
   transition: background 0.15s, color 0.15s;
 }
 .dropdown-menu .dropdown-item:hover, .dropdown-menu .dropdown-item:focus {
-  background: #f3f8f3;
-  color: #9fbe1b;
+  background: #9fbe1b;
+  color: #fff;
 }
 .dropdown-submenu {
   position: relative;
