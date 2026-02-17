@@ -2585,12 +2585,6 @@ html body .product-info .wishlist .heart-checkbox:checked+.wishlist-label .heart
 @media (max-width: 480px) {
   .products-grid {
     grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 600px) {
-  .products-grid {
-    grid-template-columns: repeat(1, minmax(0, 1fr));
     justify-items: center;
   }
   .products-grid .product-card {
