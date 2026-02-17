@@ -948,12 +948,18 @@ const directPaymentConfirmModal = new bootstrap.Modal(document.getElementById('d
 <script>
 function showOrderSuccessPopup() {
   Swal.fire({
-    title: 'Thank You!',
+    title: '',
     html: `
-      <div style="text-align: center;">
-        <i class="fas fa-check-circle text-success" style="font-size: 3rem; color: #9fbe1b; margin-bottom: 15px;"></i>
-        <p style="font-size: 16px; margin: 15px 0;">Your order has been placed successfully.</p>
-        <p style="font-size: 14px; color: #666; margin: 10px 0;">We'll send you updates about your order via email and SMS.</p>
+      <div class="order-success-wrapper">
+        <div class="order-success-logo">
+          <img src="./Kichen Page/page2/logo.webp" alt="EverythingB2C" />
+        </div>
+        <h2 class="order-success-title">Thank You!</h2>
+        <div class="order-success-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <p class="order-success-lead">Your order has been placed successfully.</p>
+        <p class="order-success-sub">We'll send you updates about your order via email and SMS.</p>
       </div>
     `,
     icon: null,
@@ -1003,6 +1009,48 @@ if (window.history.replaceState) {
 .swal2-popup.order-success-popup {
   padding: 20px !important;
   border-radius: 8px !important;
+}
+
+.order-success-wrapper {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+.order-success-logo img {
+  max-width: 220px;
+  height: auto;
+  display: block;
+  margin: 0 auto 6px auto;
+}
+
+.order-success-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #555;
+  margin: 0;
+}
+
+.order-success-icon i {
+  font-size: 64px;
+  color: #9fbe1b;
+  display: block;
+  margin: 4px auto;
+}
+
+.order-success-lead {
+  font-size: 18px;
+  margin: 8px 0 4px 0;
+  color: #444;
+  font-weight: 600;
+}
+
+.order-success-sub {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
 }
 
 /* Green button styling for order success */
