@@ -432,7 +432,7 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
                       <span class="user-signin-text" style="font-size: 10px; font-weight: 600; display: block !important; color: #333; white-space: nowrap; overflow: visible;">Sign In</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end auth-dropdown-menu">
-                      <li><a class="dropdown-item" href="login.php">Customer Login / Register</a></li>
+                      <li><a class="dropdown-item" href="login.php">Customer Login</a></li>
                       <li><a class="dropdown-item" href="seller/login.php">Seller Login</a></li>
                     </ul>
                   <?php endif; ?>
@@ -527,7 +527,7 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
                       <span class="user-signin-text">Sign In / Register</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end auth-dropdown-menu">
-                      <li><a class="dropdown-item" href="login.php">Customer Login / Register</a></li>
+                      <li><a class="dropdown-item" href="login.php">Customer Login</a></li>
                       <li><a class="dropdown-item" href="seller/login.php">Seller Login</a></li>
                     </ul>
                   <?php endif; ?>

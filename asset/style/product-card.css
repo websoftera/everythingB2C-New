@@ -256,21 +256,28 @@
   flex: 1 1 0 !important;
 }
 .add-to-cart-btn, .add-to-cart {
-  flex: 1 1 0 !important;
-  min-width: 0 !important;
-  max-width: 200px !important;
-  height: 30px !important;
-  min-height: 30px !important;
-  max-height: 30px !important;
-  white-space: nowrap !important;
-  text-overflow: ellipsis !important;
-  overflow: hidden !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  padding-left: 12px !important;
-  padding-right: 12px !important;
-  box-sizing: border-box !important;
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    max-width: 200px !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    max-height: 34px !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+    overflow: visible !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    padding: 0 14px !important;
+    box-sizing: border-box !important;
+}
+.add-to-cart-btn i, .add-to-cart i {
+    flex-shrink: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 16px !important;
 }
 
 /* Quantity Control Container */

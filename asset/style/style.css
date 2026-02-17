@@ -1728,18 +1728,26 @@ input[type="checkbox"]:checked+.wishlist-label i {
 .add-to-cart-btn,
 .add-to-cart {
   flex: 1 1 0;
-  height: 30px;
-  min-height: 30px;
-  max-height: 30px;
+  height: 34px;
+  min-height: 34px;
+  max-height: 34px;
   white-space: nowrap;
   text-overflow: ellipsis;
-  overflow: hidden;
-  display: flex;
+  overflow: visible;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding-left: 12px;
-  padding-right: 12px;
+  gap: 8px;
+  padding: 0 14px;
   box-sizing: border-box;
+}
+.add-to-cart-btn i,
+.add-to-cart i {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
 }
 
 .modern-prices {
@@ -2555,6 +2563,10 @@ html body .product-info .wishlist .heart-checkbox:checked+.wishlist-label .heart
   margin: 0 !important;
   float: none !important;
   display: block !important;
+}
+
+.wishlist-grid .card.product-card {
+  height: 100%;
 }
 
 /* Responsive adjustments for smaller screens */

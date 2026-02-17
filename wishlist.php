@@ -32,10 +32,9 @@ echo renderBreadcrumb($breadcrumbs);
             <a href="index.php" class="btn btn-primary">Start Shopping</a>
         </div>
     <?php else: ?>
-        <div class="row">
+        <div class="products-grid wishlist-grid">
             <?php foreach ($wishlistItems as $item): ?>
-                <div class="col-md-3 col-sm-6 mb-4">
-                    <div class="card product-card" data-id="prod-<?php echo $item['product_id']; ?>">
+                <div class="card product-card" data-id="prod-<?php echo $item['product_id']; ?>">
                         <?php 
                         $discount = $item['mrp'] - $item['selling_price'];
                         $discountPercentage = calculateDiscountPercentage($item['mrp'], $item['selling_price']);
