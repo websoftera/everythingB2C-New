@@ -392,7 +392,7 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
     <div class="container-fluid d-flex align-items-center justify-content-between flex-nowrap">
         <!-- Logo -->
         <a class="navbar-brand m-0" href="index.php" style="flex-shrink: 0;">
-            <img src="logo.webp" alt="EverythingB2C" class="img-fluid" style="max-height: 40px;">
+            <img src="sitelogo.png" alt="EverythingB2C" class="img-fluid" style="max-height: 60px;">
         </a>
 
         <!-- Desktop: Search Bar -->
@@ -448,29 +448,29 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
             <div class="mobile-nav-icons d-flex flex-nowrap align-items-center">
                 <!-- Wishlist -->
                 <a href="wishlist.php" class="mobile-nav-link p-2">
-                    <i class="bi <?php echo $wishlistCount > 0 ? 'bi-heart-fill' : 'bi-heart'; ?> wishlist-icon" style="font-size: 1.3rem;"></i>
-                    <span class="badge bg-danger wishlist-badge"><?= $wishlistCount ?></span>
+                    <i class="bi <?php echo $wishlistCount > 0 ? 'bi-heart-fill' : 'bi-heart'; ?> wishlist-icon" style="font-size: 24px;"></i>
+                    <span class="badge wishlist-badge"><?= $wishlistCount ?></span>
                 </a>
 
                 <!-- User Account / Login -->
                 <?php if (isLoggedIn()): ?>
                     <a href="myaccount.php" class="mobile-nav-link p-2">
-                        <i class="fas fa-user user-account-icon" style="font-size: 1.3rem;"></i>
+                        <i class="fas fa-user user-account-icon" style="font-size: 24px;"></i>
                         <div class="user-welcome-text d-none d-sm-block ms-1">
                             <span class="welcome-line-2" style="font-size: 10px;"><?= htmlspecialchars(ucfirst($currentUser['first_name'])) ?></span>
                         </div>
                     </a>
                 <?php else: ?>
                     <a href="login.php" class="mobile-nav-link p-2">
-                        <i class="fas fa-user user-signin-icon" style="font-size: 1.3rem;"></i>
+                        <i class="fas fa-user user-signin-icon" style="font-size: 24px;"></i>
                         <span class="user-signin-text d-none d-sm-block ms-1" style="font-size: 10px;">Sign In</span>
                     </a>
                 <?php endif; ?>
 
                 <!-- Cart -->
                 <a href="cart.php" class="mobile-nav-link p-2" id="cart-icon-mobile">
-                    <img src="./asset/images/Cart_Icon.png" alt="Cart" class="cart-icon" style="width:30px;height:25px;object-fit:contain;">
-                    <span class="badge bg-success cart-badge"><?= $cartCount ?></span>
+                    <img src="./asset/images/Cart_Icon.png" alt="Cart" class="cart-icon" style="width:45px;height:35px;object-fit:contain;">
+                    <span id="cart-count-mobile" class="badge cart-badge"><?= $cartCount ?></span>
                 </a>
             </div>
         </div>
