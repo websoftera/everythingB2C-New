@@ -392,107 +392,91 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
     <div class="container-fluid">
         <div class="d-flex align-items-center">
             <!-- Logo -->
-            <div class="logo-wrapper d-flex align-items-center">
-                <a href="index.php">
-                    <img src="./Kichen Page/page2/logo.webp" alt="Logo" class="img-fluid logo" />
-                </a>
-            </div>
-            
-            <!-- Mobile Navigation Icons -->
-            <div class="d-lg-none ms-auto mobile-nav-icons">
-                <!-- Wishlist Icon -->
-                <a href="wishlist.php" class="text-decoration-none text-dark mobile-nav-link position-relative me-2">
-                    <i class="bi <?php echo $wishlistCount > 0 ? 'bi-heart-fill' : 'bi-heart'; ?>" style="font-size: 24px; color: #DE0085;"></i>
-                    <?php if ($wishlistCount > 0): ?>
-                        <span class="position-absolute badge rounded-pill wishlist-count-badge" style="background-color: #DE0085; font-size: 10px; min-width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; transform: translate(50%, -50%);">
-                            <?php echo $wishlistCount; ?>
-                        </span>
+            <a class="navbar-brand" href="index.php">
+                <img src="sitelogo.png" alt="EverythingB2C" class="img-fluid" style="max-height: 40px;">
+            </a>
+
+            <!-- Mobile: Icons Wrapper -->
+            <div class="mobile-header-icons-wrapper d-lg-none">
+                <!-- Mobile: Icons (Wishlist, User, Cart) -->
+                <div class="mobile-nav-icons">
+                    <!-- Wishlist -->
+                    <a href="wishlist.php" class="mobile-nav-link">
+                        <i class="fa-solid fa-heart fa-lg"></i>
+                        <span class="badge bg-danger wishlist-badge"><?= $wishlistCount ?></span>
+                    </a>
+
+                    <!-- User Account / Login -->
+                    <?php if (isLoggedIn()): ?>
+                        <a href="myaccount.php" class="mobile-nav-link">
+                            <i class="fa-solid fa-user fa-lg"></i>
+                            <div class="user-welcome-text">
+                                <span class="welcome-line-2"><?= htmlspecialchars(ucfirst($currentUser['first_name'])) ?></span>
+                            </div>
+                        </a>
+                    <?php else: ?>
+                        <a href="login.php" class="mobile-nav-link">
+                            <i class="fa-solid fa-user fa-lg"></i>
+                            <span class="user-signin-text">Sign In</span>
+                        </a>
                     <?php endif; ?>
-                </a>
-                
-                <!-- Account/Login Dropdown -->
-                <div class="dropdown mobile-account-dropdown">
-                  <?php if (isLoggedIn()): ?>
-                    <a href="#" class="text-decoration-none text-dark mobile-nav-link me-2 d-flex align-items-center dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      <i class="fas fa-user me-1" style="font-size: 24px; color: #007bff;"></i>
-                      <div class="user-welcome-text" style="display: block !important;">
-                        <div class="welcome-line-1" style="font-size: 10px; line-height: 1; margin: 0; color: #333;">Welcome</div>
-                        <div class="welcome-line-2" style="font-size: 10px; line-height: 1; font-weight: 600; margin: 0; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?php echo htmlspecialchars($currentUser['name']); ?></div>
-                      </div>
+
+                    <!-- Cart -->
+                    <a href="cart.php" class="mobile-nav-link" id="cart-icon-mobile">
+                        <i class="fa-solid fa-shopping-cart fa-lg"></i>
+                        <span class="badge bg-success cart-badge"><?= $cartCount ?></span>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end auth-dropdown-menu">
-                      <li><a class="dropdown-item" href="myaccount.php">Customer Account</a></li>
-                      <li><a class="dropdown-item" href="logout.php">Logout</a></li>
-                      <li><hr class="dropdown-divider"></li>
-                      <li><a class="dropdown-item" href="seller/login.php">Seller Login</a></li>
-                    </ul>
-                  <?php else: ?>
-                    <a href="#" class="text-decoration-none text-dark mobile-nav-link me-2 d-flex align-items-center dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      <i class="fas fa-user me-1" style="font-size: 24px; color: #99d052;"></i>
-                      <span class="user-signin-text" style="font-size: 10px; font-weight: 600; display: block !important; color: #333; white-space: nowrap; overflow: visible;">Sign In</span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end auth-dropdown-menu">
-                      <li><a class="dropdown-item" href="login.php">Customer Login</a></li>
-                      <li><a class="dropdown-item" href="seller/login.php">Seller Login</a></li>
-                    </ul>
-                  <?php endif; ?>
                 </div>
-                
-                <!-- Cart Icon -->
-                <a href="cart.php" class="text-decoration-none text-dark cart-link position-relative">
-                    <img src="./asset/images/Cart_Icon.png" alt="Cart" class="cart-icon" style="width:30px;height:30px;">
-                    <span id="cart-count-mobile" class="position-absolute" style="display:<?php echo $cartCount > 0 ? 'inline-block' : 'none'; ?>; top: -2px; right: -2px; transform: translate(50%, -50%); color: var(--dark-green); font-size: 11px; font-weight: 600; background: none; border: none;">
-                        <?php echo $cartCount > 0 ? $cartCount : ''; ?>
-                    </span>
-                </a>
+            </div>
+
+            <!-- Desktop: Search Bar -->
+            <div class="mx-auto my-2 my-lg-0 search-bar-desktop d-none d-lg-block">
+                <form class="d-flex flex-grow-1 mx-4 position-relative" role="search" autocomplete="off" onsubmit="return false;">
+                    <div class="input-group w-100 flex-wrap">
+                        <!-- DESKTOP Dropdown -->
+                        <div class="dropdown-desktop">
+                          <button id="categoryDropdownDesktop" class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" data-selected-category="all">
+                            <span id="selectedCategoryDesktop">All Categories</span>
+                          </button>
+                          <ul class="dropdown-menu">
+                            <li><a class="dropdown-item category-option" href="#" data-category="all">All Categories</a></li>
+                            <?php
+                            function renderCategoryDropdown($tree, $level = 0) {
+                                foreach ($tree as $cat) {
+                                    $indent = str_repeat('&nbsp;&nbsp;&nbsp;', $level);
+                                    if (!empty($cat['children'])) {
+                                        // Parent category as clickable item
+                                        echo '<li><a class="dropdown-item category-option" href="#" data-category="' . $cat['slug'] . '">' . $indent . '<strong>' . htmlspecialchars($cat['name']) . '</strong></a></li>';
+                                        renderCategoryDropdown($cat['children'], $level + 1);
+                                    } else {
+                                        // Selectable category
+                                        echo '<li><a class="dropdown-item category-option" href="#" data-category="' . $cat['slug'] . '">' . $indent . htmlspecialchars($cat['name']) . '</a></li>';
+                                    }
+                                }
+                            }
+                            renderCategoryDropdown($categoryTree);
+                            ?>
+                          </ul>
+                        </div>
+                        <!-- MOBILE Dropdown -->
+                        <div class="dropdown-mobile">
+                          <button id="categoryDropdownMobile" class="btn btn-light dropdown-toggle mobile-category-btn" type="button" data-bs-toggle="dropdown" data-selected-category="all">
+                            <span id="selectedCategoryMobile">All</span>
+                          </button>
+                          <ul class="dropdown-menu">
+                            <li><a class="dropdown-item category-option" href="#" data-category="all">All Categories</a></li>
+                            <?php renderCategoryDropdown($categoryTree); ?>
+                          </ul>
+                        </div>
+                        <input class="form-control mobile-search-input" id="headerSearchInput" type="search" name="query" placeholder="Search for Products" aria-label="Search" autocomplete="off">
+                        <button class="btn btn-primary mobile-search-btn" id="headerSearchBtn" type="button">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                    <div id="headerSearchResultsPopup" class="position-absolute w-100" style="z-index: 9999; display: none;"></div>
+                </form>
             </div>
         </div>
-        
-        <!-- Search Form -->
-        <form class="d-flex flex-grow-1 mx-4 position-relative" role="search" autocomplete="off" onsubmit="return false;">
-            <div class="input-group w-100 flex-wrap">
-                <!-- DESKTOP Dropdown -->
-                <div class="dropdown-desktop">
-                  <button id="categoryDropdownDesktop" class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" data-selected-category="all">
-                    <span id="selectedCategoryDesktop">All Categories</span>
-                  </button>
-                  <ul class="dropdown-menu">
-                    <li><a class="dropdown-item category-option" href="#" data-category="all">All Categories</a></li>
-                    <?php
-                    function renderCategoryDropdown($tree, $level = 0) {
-                        foreach ($tree as $cat) {
-                            $indent = str_repeat('&nbsp;&nbsp;&nbsp;', $level);
-                            if (!empty($cat['children'])) {
-                                // Parent category as clickable item
-                                echo '<li><a class="dropdown-item category-option" href="#" data-category="' . $cat['slug'] . '">' . $indent . '<strong>' . htmlspecialchars($cat['name']) . '</strong></a></li>';
-                                renderCategoryDropdown($cat['children'], $level + 1);
-                            } else {
-                                // Selectable category
-                                echo '<li><a class="dropdown-item category-option" href="#" data-category="' . $cat['slug'] . '">' . $indent . htmlspecialchars($cat['name']) . '</a></li>';
-                            }
-                        }
-                    }
-                    renderCategoryDropdown($categoryTree);
-                    ?>
-                  </ul>
-                </div>
-                <!-- MOBILE Dropdown -->
-                <div class="dropdown-mobile">
-                  <button id="categoryDropdownMobile" class="btn btn-light dropdown-toggle mobile-category-btn" type="button" data-bs-toggle="dropdown" data-selected-category="all">
-                    <span id="selectedCategoryMobile">All</span>
-                  </button>
-                  <ul class="dropdown-menu">
-                    <li><a class="dropdown-item category-option" href="#" data-category="all">All Categories</a></li>
-                    <?php renderCategoryDropdown($categoryTree); ?>
-                  </ul>
-                </div>
-                <input class="form-control mobile-search-input" id="headerSearchInput" type="search" name="query" placeholder="Search for Products" aria-label="Search" autocomplete="off">
-                <button class="btn btn-primary mobile-search-btn" id="headerSearchBtn" type="button">
-                    <i class="bi bi-search"></i>
-                </button>
-            </div>
-            <div id="headerSearchResultsPopup" class="position-absolute w-100" style="z-index: 9999; display: none;"></div>
-        </form>
         
         <!-- Desktop Right Section -->
         <div class="d-none d-lg-flex align-items-center">
@@ -512,7 +496,7 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
                       <i class="fas fa-user user-account-icon me-2"></i>
                       <div class="user-welcome-text">
                         <div class="welcome-line-1">Welcome</div>
-                        <div class="welcome-line-2"><?php echo htmlspecialchars($currentUser['name']); ?></div>
+                        <div class="welcome-line-2"><?= htmlspecialchars(ucfirst($currentUser['first_name'])) ?></div>
                       </div>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end auth-dropdown-menu">
@@ -624,6 +608,7 @@ renderCategoryMenu($categoryTree);
         </div>
     </nav>
 </div>
+<script src="js/sticky-category.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="popup/popup.js"></script>
 <script src="popup/searchbar.js"></script>
