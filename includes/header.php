@@ -388,7 +388,7 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
 
 
 <!-- NAVBAR START -->
-<nav class="navbar navbar-expand-lg sticky-top bg-white">
+<nav class="nav-stickyclass navbar navbar-expand-lg sticky-top bg-white">
     <div class="container-fluid">
         <div class="d-flex align-items-center">
             <!-- Logo -->
