@@ -1727,7 +1727,7 @@ body {
 }
 
 nav {
-  position: static;
+  position: static !important;
   top: 0;
 }
 
