@@ -730,34 +730,34 @@
 .heart-checkbox:checked + .wishlist-label .heart-icon,
 .heart-checkbox:checked + .wishlist-label {
     color: #DE0085 !important;
-    -webkit-text-stroke: 0.8px #DE0085 !important;
-    text-stroke: 0.8px #DE0085 !important;
-    filter: drop-shadow(0 1px 2px rgba(222, 0, 133, 0.16)) !important;
+    -webkit-text-stroke: 2px #DE0085 !important;
+    text-stroke: 2px #DE0085 !important;
+    filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3)) !important;
 }
 
 .wishlist-label.wishlist-active,
 .wishlist-label.wishlist-active .heart-icon {
     color: #DE0085 !important;
-    -webkit-text-stroke: 0.8px #DE0085 !important;
-    text-stroke: 0.8px #DE0085 !important;
-    filter: drop-shadow(0 1px 2px rgba(222, 0, 133, 0.16)) !important;
+    -webkit-text-stroke: 2px #DE0085 !important;
+    text-stroke: 2px #DE0085 !important;
+    filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3)) !important;
 }
 
 /* Additional specific selectors for initial state */
 .wishlist .heart-checkbox:checked + .wishlist-label .heart-icon,
 .wishlist .wishlist-label.wishlist-active .heart-icon {
     color: #DE0085 !important;
-    -webkit-text-stroke: 0.8px #DE0085 !important;
-    text-stroke: 0.8px #DE0085 !important;
-    filter: drop-shadow(0 1px 2px rgba(222, 0, 133, 0.16)) !important;
+    -webkit-text-stroke: 2px #DE0085 !important;
+    text-stroke: 2px #DE0085 !important;
+    filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3)) !important;
 }
 
 /* Ensure the heart icon itself gets the pink color */
 .heart-icon {
     color: transparent !important;
-        -webkit-text-stroke: 0.32px #b0b0b0 !important;
-        text-stroke: 0.32px #b0b0b0 !important;
-        filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.06)) !important;
+        -webkit-text-stroke: 1px #666 !important;
+        text-stroke: 1px #666 !important;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2)) !important;
   transition: all 0.3s ease-in-out !important;
 }
 
@@ -765,9 +765,9 @@
 .wishlist-label.wishlist-active .heart-icon,
 .heart-checkbox:checked + .wishlist-label .heart-icon {
     color: #DE0085 !important;
-    -webkit-text-stroke: 0.8px #DE0085 !important;
-    text-stroke: 0.8px #DE0085 !important;
-    filter: drop-shadow(0 1px 2px rgba(222, 0, 133, 0.16)) !important;
+    -webkit-text-stroke: 2px #DE0085 !important;
+    text-stroke: 2px #DE0085 !important;
+    filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3)) !important;
 }
 
 /* Most specific selectors for page load state */
@@ -778,9 +778,9 @@
 .product-card .wishlist .wishlist-label.wishlist-active .heart-icon,
 .product-card .wishlist .heart-checkbox:checked + .wishlist-label .heart-icon {
   color: #DE0085 !important;
-    -webkit-text-stroke: 0.8px #DE0085 !important;
-    text-stroke: 0.8px #DE0085 !important;
-    filter: drop-shadow(0 1px 2px rgba(222, 0, 133, 0.16)) !important;
+    -webkit-text-stroke: 2px #DE0085 !important;
+    text-stroke: 2px #DE0085 !important;
+    filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3)) !important;
 }
 
 /* Force pink color for wishlist-active state on page load - maximum specificity */
