@@ -65,6 +65,25 @@
     justify-content: center;
 }
 
+.product-image.no-image {
+    padding: 0;
+}
+
+.no-image-placeholder {
+    background: #f8f9fa;
+    border: 1px dashed #dee2e6;
+    color: #6c757d;
+    height: 155px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 12px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
 .product-image img {
     max-height: 120px;
     max-width: 92%;

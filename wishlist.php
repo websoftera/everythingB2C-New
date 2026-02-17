@@ -52,7 +52,11 @@ echo renderBreadcrumb($breadcrumbs);
                             </div>
                             <div class="product-image">
                                 <a href="product.php?slug=<?php echo $item['slug']; ?>">
-                                    <img src="./<?php echo $item['main_image']; ?>" alt="<?php echo cleanProductName($item['name']); ?>">
+                                    <?php if (!empty($item['main_image'])): ?>
+                                        <img src="./<?php echo $item['main_image']; ?>" alt="<?php echo cleanProductName($item['name']); ?>" onerror="this.onerror=null; this.closest('.product-image').classList.add('no-image'); this.remove();">
+                                    <?php else: ?>
+                                        <div class="no-image-placeholder">No image available</div>
+                                    <?php endif; ?>
                                 </a>
                                 <?php if ($isOutOfStock): ?>
                                     <div class="out-of-stock">OUT OF STOCK</div>
