@@ -927,6 +927,19 @@ h3 {
   background-color: #88be45;
 }
 
+/* Force single-column product grid on small devices */
+@media (max-width: 768px) {
+  .products-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    justify-items: center !important;
+  }
+  .products-grid .product-card {
+    max-width: 240px !important;
+    width: 100% !important;
+  }
+}
+
 /* Custom border-radius on 3 sides */
 .dropdown-desktop .btn,
 .dropdown-mobile .btn,
