@@ -689,34 +689,49 @@
 }
 
 .add-to-cart {
-  flex: 1 1 auto !important;
-  height: 30px !important;
-  min-width: 70px !important;
-  max-width: 140px !important;
-  background: #222e3a !important;
-  color: #fff !important;
-  font-weight: bold !important;
-  border: none !important;
-  border-radius: 2px !important;
-  font-size: 13px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  box-sizing: border-box !important;
-  margin: 0 !important;
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    max-width: 200px !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    max-height: 34px !important;
+    background: #222e3a !important;
+    color: #fff !important;
+    font-weight: bold !important;
+    border: none !important;
+    border-radius: 4px !important;
+    font-size: 13px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    padding: 0 14px !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    overflow: visible !important;
 }
 
 /* Desktop-specific add-to-cart button size reduction */
 @media (min-width: 1025px) {
   .add-to-cart {
-    font-size: 10px !important;
-    height: 26px !important;
+        font-size: 12px !important;
+        height: 34px !important;
+        min-height: 34px !important;
+        max-height: 34px !important;
   }
   
   .add-to-cart i {
-    font-size: 12px !important;
-    margin-right: 3px !important;
+        font-size: 16px !important;
+        margin-right: 6px !important;
   }
+}
+
+.add-to-cart i {
+    flex-shrink: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 16px !important;
 }
 
 .quantity-control {
