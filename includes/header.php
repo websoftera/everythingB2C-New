@@ -443,34 +443,33 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
             </form>
         </div>
 
-        <!-- Mobile: Icons Wrapper -->
         <div class="mobile-header-icons-wrapper d-lg-none ms-auto">
             <!-- Mobile: Icons (Wishlist, User, Cart) -->
             <div class="mobile-nav-icons d-flex flex-nowrap align-items-center">
                 <!-- Wishlist -->
                 <a href="wishlist.php" class="mobile-nav-link p-2">
-                    <i class="fa-solid fa-heart fa-lg"></i>
+                    <i class="bi <?php echo $wishlistCount > 0 ? 'bi-heart-fill' : 'bi-heart'; ?> wishlist-icon" style="font-size: 1.3rem;"></i>
                     <span class="badge bg-danger wishlist-badge"><?= $wishlistCount ?></span>
                 </a>
 
                 <!-- User Account / Login -->
                 <?php if (isLoggedIn()): ?>
                     <a href="myaccount.php" class="mobile-nav-link p-2">
-                        <i class="fa-solid fa-user fa-lg"></i>
+                        <i class="fas fa-user user-account-icon" style="font-size: 1.3rem;"></i>
                         <div class="user-welcome-text d-none d-sm-block ms-1">
                             <span class="welcome-line-2" style="font-size: 10px;"><?= htmlspecialchars(ucfirst($currentUser['first_name'])) ?></span>
                         </div>
                     </a>
                 <?php else: ?>
                     <a href="login.php" class="mobile-nav-link p-2">
-                        <i class="fa-solid fa-user fa-lg"></i>
+                        <i class="fas fa-user user-signin-icon" style="font-size: 1.3rem;"></i>
                         <span class="user-signin-text d-none d-sm-block ms-1" style="font-size: 10px;">Sign In</span>
                     </a>
                 <?php endif; ?>
 
                 <!-- Cart -->
                 <a href="cart.php" class="mobile-nav-link p-2" id="cart-icon-mobile">
-                    <i class="fa-solid fa-shopping-cart fa-lg"></i>
+                    <img src="./asset/images/Cart_Icon.png" alt="Cart" class="cart-icon" style="width:30px;height:25px;object-fit:contain;">
                     <span class="badge bg-success cart-badge"><?= $cartCount ?></span>
                 </a>
             </div>
