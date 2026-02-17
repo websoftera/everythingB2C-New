@@ -643,6 +643,40 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 <script>
+// Fallback dropdown toggler if Bootstrap JS fails to wire up (keeps Sign In dropdown clickable)
+document.addEventListener('DOMContentLoaded', function () {
+  if (window.bootstrap && window.bootstrap.Dropdown) return; // Bootstrap handles it
+
+  function closeAll() {
+    document.querySelectorAll('.dropdown-menu.show').forEach(function (menu) {
+      menu.classList.remove('show');
+      const toggle = menu.previousElementSibling;
+      if (toggle && toggle.matches('[data-bs-toggle="dropdown"]')) {
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
+  document.addEventListener('click', function (evt) {
+    const toggle = evt.target.closest('[data-bs-toggle="dropdown"]');
+    if (!toggle) {
+      closeAll();
+      return;
+    }
+    const menu = toggle.nextElementSibling;
+    if (!menu || !menu.classList.contains('dropdown-menu')) return;
+    evt.preventDefault();
+    evt.stopPropagation();
+    const willOpen = !menu.classList.contains('show');
+    closeAll();
+    if (willOpen) {
+      menu.classList.add('show');
+      toggle.setAttribute('aria-expanded', 'true');
+    }
+  });
+});
+</script>
+<script>
 // Store the original SweetAlert before overriding
 const OriginalSwal = window.Swal;
 
