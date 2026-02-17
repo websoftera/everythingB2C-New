@@ -1727,7 +1727,7 @@ body {
 }
 
 nav {
-  position: fixed !important;
+  position: -webkit-sticky !important;
   top:0 !important;
 }
 
