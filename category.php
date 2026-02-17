@@ -490,7 +490,7 @@ echo renderBreadcrumb($breadcrumbs);
 /* Responsive Design - Progressive Enhancement */
 @media (max-width: 767px) {
   .products-grid {
-    grid-template-columns: repeat(2, 1fr); /* Mobile: 2 cards per row */
+    grid-template-columns: 1fr; /* Mobile: 1 card per row */
     gap: 15px;
   }
 }
@@ -648,7 +648,7 @@ echo renderBreadcrumb($breadcrumbs);
   
   /* Force 2 column layout on mobile */
   .products-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-columns: 1fr !important;
     gap: 12px;
     width: 100%;
   }
