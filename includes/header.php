@@ -677,6 +677,48 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 <script>
+// Force-open Sign In / Account dropdowns even if other scripts interfere
+document.addEventListener('DOMContentLoaded', function () {
+  const toggles = document.querySelectorAll('.user-auth-dropdown .dropdown-toggle, .user-signin-link.dropdown-toggle, .mobile-account-dropdown .dropdown-toggle');
+  const menus = [];
+
+  function closeAll(except) {
+    menus.forEach(function (menu) {
+      if (menu !== except) {
+        menu.classList.remove('show');
+        const t = menu.previousElementSibling;
+        if (t && t.matches('[data-bs-toggle="dropdown"]')) t.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
+  toggles.forEach(function (toggle) {
+    const menu = toggle.nextElementSibling;
+    if (menu && menu.classList.contains('dropdown-menu')) {
+      menus.push(menu);
+      toggle.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const willOpen = !menu.classList.contains('show');
+        closeAll(willOpen ? menu : null);
+        if (willOpen) {
+          menu.classList.add('show');
+          toggle.setAttribute('aria-expanded', 'true');
+        } else {
+          menu.classList.remove('show');
+          toggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+  });
+
+  document.addEventListener('click', function () { closeAll(null); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeAll(null);
+  });
+});
+</script>
+<script>
 // Store the original SweetAlert before overriding
 const OriginalSwal = window.Swal;
 
