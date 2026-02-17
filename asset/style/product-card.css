@@ -239,8 +239,8 @@
 .price-buttons .wishlist-label {
     font-size: 12px !important;
     color: transparent !important;
-    -webkit-text-stroke: 0.35px #a0a0a0 !important;
-    text-stroke: 0.35px #a0a0a0 !important;
+    -webkit-text-stroke: 0.99px #a0a0a0 !important;
+    text-stroke: 0.99px #a0a0a0 !important;
     filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.06)) !important;
     transition: all 0.3s ease-in-out !important;
     display: flex !important;
