@@ -1727,8 +1727,11 @@ body {
 }
 
 nav {
-  position: -webkit-sticky !important;
-  top:0 !important;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: #ffffff;
+  width: 100%;
 }
 
 /* Show only on large screens (desktop and up) */
