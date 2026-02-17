@@ -410,21 +410,33 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
                     <?php endif; ?>
                 </a>
                 
-                <!-- Account/Login Icon -->
-                <?php if (isLoggedIn()): ?>
-                    <a href="myaccount.php" class="text-decoration-none text-dark mobile-nav-link me-2 d-flex align-items-center">
-                        <i class="fas fa-user me-1" style="font-size: 24px; color: #007bff;"></i>
-                        <div class="user-welcome-text" style="display: block !important;">
-                            <div class="welcome-line-1" style="font-size: 10px; line-height: 1; margin: 0; color: #333;">Welcome</div>
-                            <div class="welcome-line-2" style="font-size: 10px; line-height: 1; font-weight: 600; margin: 0; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?php echo htmlspecialchars($currentUser['name']); ?></div>
-                        </div>
+                <!-- Account/Login Dropdown -->
+                <div class="dropdown mobile-account-dropdown">
+                  <?php if (isLoggedIn()): ?>
+                    <a href="#" class="text-decoration-none text-dark mobile-nav-link me-2 d-flex align-items-center dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      <i class="fas fa-user me-1" style="font-size: 24px; color: #007bff;"></i>
+                      <div class="user-welcome-text" style="display: block !important;">
+                        <div class="welcome-line-1" style="font-size: 10px; line-height: 1; margin: 0; color: #333;">Welcome</div>
+                        <div class="welcome-line-2" style="font-size: 10px; line-height: 1; font-weight: 600; margin: 0; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?php echo htmlspecialchars($currentUser['name']); ?></div>
+                      </div>
                     </a>
-                <?php else: ?>
-                    <a href="login.php" class="text-decoration-none text-dark mobile-nav-link me-2 d-flex align-items-center">
-                        <i class="fas fa-user me-1" style="font-size: 24px; color: #99d052;"></i>
-                        <span class="user-signin-text" style="font-size: 10px; font-weight: 600; display: block !important; color: #333; white-space: nowrap; overflow: visible;">Sign In</span>
+                    <ul class="dropdown-menu dropdown-menu-end auth-dropdown-menu">
+                      <li><a class="dropdown-item" href="myaccount.php">Customer Account</a></li>
+                      <li><a class="dropdown-item" href="logout.php">Logout</a></li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li><a class="dropdown-item" href="seller/login.php">Seller Login</a></li>
+                    </ul>
+                  <?php else: ?>
+                    <a href="#" class="text-decoration-none text-dark mobile-nav-link me-2 d-flex align-items-center dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      <i class="fas fa-user me-1" style="font-size: 24px; color: #99d052;"></i>
+                      <span class="user-signin-text" style="font-size: 10px; font-weight: 600; display: block !important; color: #333; white-space: nowrap; overflow: visible;">Sign In</span>
                     </a>
-                <?php endif; ?>
+                    <ul class="dropdown-menu dropdown-menu-end auth-dropdown-menu">
+                      <li><a class="dropdown-item" href="login.php">Customer Login / Register</a></li>
+                      <li><a class="dropdown-item" href="seller/login.php">Seller Login</a></li>
+                    </ul>
+                  <?php endif; ?>
+                </div>
                 
                 <!-- Cart Icon -->
                 <a href="cart.php" class="text-decoration-none text-dark cart-link position-relative">
@@ -494,20 +506,32 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
                         <i class="bi <?php echo $wishlistCount > 0 ? 'bi-heart-fill' : 'bi-heart'; ?> wishlist-icon"></i>
                     </div>
                 </a>
-                <?php if (isLoggedIn()): ?>
-                    <a href="myaccount.php" title="My Account" class="text-decoration-none me-3 user-account-link d-flex align-items-center">
-                        <i class="fas fa-user user-account-icon me-2"></i>
-                        <div class="user-welcome-text">
-                            <div class="welcome-line-1">Welcome</div>
-                            <div class="welcome-line-2"><?php echo htmlspecialchars($currentUser['name']); ?></div>
-                        </div>
+                <div class="dropdown user-auth-dropdown me-3">
+                  <?php if (isLoggedIn()): ?>
+                    <a href="#" title="Account" class="text-decoration-none user-account-link d-flex align-items-center dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      <i class="fas fa-user user-account-icon me-2"></i>
+                      <div class="user-welcome-text">
+                        <div class="welcome-line-1">Welcome</div>
+                        <div class="welcome-line-2"><?php echo htmlspecialchars($currentUser['name']); ?></div>
+                      </div>
                     </a>
-                <?php else: ?>
-                    <a href="login.php" title="Sign In" class="text-decoration-none me-3 user-signin-link d-flex align-items-center">
-                        <i class="fas fa-user user-signin-icon me-1"></i>
-                        <span class="user-signin-text">Sign In / Register</span>
+                    <ul class="dropdown-menu dropdown-menu-end auth-dropdown-menu">
+                      <li><a class="dropdown-item" href="myaccount.php">Customer Account</a></li>
+                      <li><a class="dropdown-item" href="logout.php">Logout</a></li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li><a class="dropdown-item" href="seller/login.php">Seller Login</a></li>
+                    </ul>
+                  <?php else: ?>
+                    <a href="#" title="Sign In" class="text-decoration-none user-signin-link d-flex align-items-center dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      <i class="fas fa-user user-signin-icon me-1"></i>
+                      <span class="user-signin-text">Sign In / Register</span>
                     </a>
-                <?php endif; ?>
+                    <ul class="dropdown-menu dropdown-menu-end auth-dropdown-menu">
+                      <li><a class="dropdown-item" href="login.php">Customer Login / Register</a></li>
+                      <li><a class="dropdown-item" href="seller/login.php">Seller Login</a></li>
+                    </ul>
+                  <?php endif; ?>
+                </div>
             </div>
             <!-- Cart Section -->
             <div class="cart-section">

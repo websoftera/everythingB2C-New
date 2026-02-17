@@ -22,10 +22,18 @@
 
 <section class="header2">
   <div class="nav-links">
-    <a href="index.html">HOME</a><span>|</span>
-    <a href="wishlist.html">WISHLIST</a><span>|</span>
-    <a href="my-account/myaccount.html">MY ACCOUNT</a><span>|</span>
-    <a href="my-account/form.html">LOGIN</a>
+    <a href="index.php">HOME</a><span>|</span>
+    <a href="wishlist.php">WISHLIST</a><span>|</span>
+    <a href="myaccount.php">MY ACCOUNT</a><span>|</span>
+    <div class="dropdown header-login-dropdown d-inline">
+      <a class="dropdown-toggle login-dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        LOGIN / REGISTER
+      </a>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><a class="dropdown-item" href="login.php">Customer Login / Register</a></li>
+        <li><a class="dropdown-item" href="seller/login.php">Seller Login</a></li>
+      </ul>
+    </div>
   </div>
 <!-- Support & Cart icons for mobile only -->
 <div class="mobile-support-cart d-flex d-md-none">

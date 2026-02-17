@@ -125,12 +125,13 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                     <div class="category-item">
                     <a href="category.php?slug=<?php echo $category['slug']; ?>">
                             <div class="category-illustration">
-                                <?php if (!empty($category['image']) && file_exists('./' . $category['image'])): ?>
-                        <img src="./<?php echo $category['image']; ?>" alt="<?php echo $category['name']; ?>" />
+                                <?php $categoryImage = !empty($category['image']) ? ltrim($category['image'], './') : ''; ?>
+                                <?php if (!empty($categoryImage)): ?>
+                            <img src="./<?php echo htmlspecialchars($categoryImage); ?>" alt="<?php echo htmlspecialchars($category['name']); ?>" />
                                 <?php else: ?>
-                                    <div class="category-placeholder">
-                                        <i class="fas fa-box"></i>
-                                    </div>
+                                  <div class="category-placeholder">
+                                    <i class="fas fa-box"></i>
+                                  </div>
                                 <?php endif; ?>
                             </div>
                             <p class="category-label"><?php echo ucfirst($category['name']); ?></p>

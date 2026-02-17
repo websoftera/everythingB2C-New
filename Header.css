@@ -86,6 +86,32 @@ body {
   /* Adjust spacing around text */
 }
 
+.header-login-dropdown .login-dropdown-toggle {
+  color: white;
+  font-size: 13px;
+  padding: 0 4px;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+}
+.header-login-dropdown .login-dropdown-toggle::after {
+  margin-left: 4px;
+  vertical-align: middle;
+}
+.header-login-dropdown .dropdown-menu {
+  min-width: 210px;
+}
+.header-login-dropdown .dropdown-item {
+  font-size: 13px;
+}
+.user-auth-dropdown .dropdown-toggle::after,
+.mobile-account-dropdown .dropdown-toggle::after {
+  margin-left: 6px;
+}
+.auth-dropdown-menu {
+  min-width: 210px;
+}
+
 .nav-links span {
   color: white;
   font-size: 13px;
