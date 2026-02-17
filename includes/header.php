@@ -392,7 +392,7 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
     <div class="container-fluid d-flex align-items-center justify-content-between flex-nowrap">
         <!-- Logo -->
         <a class="navbar-brand m-0" href="index.php" style="flex-shrink: 0;">
-            <img src="sitelogo.png" alt="EverythingB2C" class="img-fluid" style="max-height: 40px;">
+            <img src="logo.webp" alt="EverythingB2C" class="img-fluid" style="max-height: 40px;">
         </a>
 
         <!-- Desktop: Search Bar -->
