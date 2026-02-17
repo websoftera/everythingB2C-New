@@ -3936,3 +3936,67 @@ nav {
 #heroCarousel .carousel-inner .carousel-item {
   transition-property: transform, opacity;
 }
+
+/* --- Consolidated Mobile & Sticky Header Fixes --- */
+
+/* 1. Mobile Header Alignment (Ensures 1 line, no wrapping) */
+.mobile-header-icons-wrapper {
+  margin-left: auto !important;
+  flex-shrink: 0 !important;
+  display: flex !important;
+}
+
+.mobile-nav-icons {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 15px !important;
+  flex-wrap: nowrap !important;
+}
+
+.mobile-nav-link {
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-decoration: none !important;
+  color: #333 !important;
+  padding: 5px !important;
+  flex-shrink: 0 !important;
+}
+
+.mobile-nav-link i {
+  font-size: 20px !important;
+}
+
+.mobile-nav-link .badge {
+  position: absolute !important;
+  top: 0 !important;
+  right: -2px !important;
+  padding: 2px 5px !important;
+  font-size: 10px !important;
+  border-radius: 50% !important;
+}
+
+/* 2. Sticky Category Menu Fix */
+.navbar.sticky-top {
+  z-index: 1060 !important;
+}
+
+/* Ensure mobile stickiness */
+.category-scroll-container.d-block.d-lg-none {
+  position: sticky !important;
+  top: 56px !important; /* Height of main mobile navbar */
+  z-index: 1050 !important;
+  background-color: #fff !important;
+  box-shadow: 0 4px 6px -4px rgba(0,0,0,0.2) !important;
+}
+
+/* Ensure desktop stickiness */
+.second-navbar.d-none.d-lg-block {
+  position: sticky !important;
+  top: 72px !important; /* Height of main desktop navbar */
+  z-index: 1050 !important;
+  background-color: #fff !important;
+  box-shadow: 0 4px 6px -4px rgba(0,0,0,0.1) !important;
+}
