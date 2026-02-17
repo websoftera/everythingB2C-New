@@ -199,6 +199,20 @@
 }
 </style>
 
+<script>
+// Global product image fallback: swap in a sample image if any product img fails to load
+(function() {
+  const fallbackSrc = 'https://via.placeholder.com/240x155?text=Product';
+  document.addEventListener('error', function (evt) {
+    const el = evt.target;
+    if (el && el.tagName === 'IMG' && !el.dataset.fallbackApplied) {
+      el.dataset.fallbackApplied = '1';
+      el.src = fallbackSrc;
+    }
+  }, true);
+})();
+</script>
+
 <!-- Bootstrap Bundle with Popper -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

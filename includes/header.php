@@ -630,6 +630,19 @@ renderCategoryMenu($categoryTree);
 <script src="js/real-time-max-quantity.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+// Ensure all dropdown toggles (e.g., Sign In) initialize correctly
+document.addEventListener('DOMContentLoaded', function () {
+  if (!window.bootstrap || !window.bootstrap.Dropdown) return;
+  document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(function (toggleEl) {
+    new bootstrap.Dropdown(toggleEl);
+    // Prevent jumping to top on "#" anchors
+    if (toggleEl.getAttribute('href') === '#') {
+      toggleEl.addEventListener('click', function (e) { e.preventDefault(); });
+    }
+  });
+});
+</script>
+<script>
 // Store the original SweetAlert before overriding
 const OriginalSwal = window.Swal;
 
