@@ -99,8 +99,9 @@ body {
   vertical-align: middle;
 }
 .header-login-dropdown .dropdown-menu {
-  min-width: 210px;
-  z-index: 2000;
+  min-width: auto;
+  width: max-content;
+  z-index: 3000;
 }
 .header-login-dropdown .dropdown-item {
   font-size: 13px;
@@ -110,8 +111,10 @@ body {
   margin-left: 6px;
 }
 .auth-dropdown-menu {
-  min-width: 210px;
-  z-index: 2000;
+  min-width: auto;
+  width: max-content;
+  white-space: nowrap;
+  z-index: 3000;
 }
 
 .nav-links span {
@@ -703,6 +706,8 @@ body {
   background-color: #fff;
   border-bottom: 1px solid #dee2e6;
   padding: 0 0.5px !important;
+  overflow: visible !important;
+  z-index: 1200 !important;
 }
 
 .navbar .logo {
@@ -717,6 +722,15 @@ body {
 .dropdown-menu .dropdown-item:hover {
   background-color: #3faee1;
   color: white;
+}
+
+/* Keep dropdowns above category bar and allow natural width */
+.navbar .dropdown-menu {
+  z-index: 3200 !important;
+  overflow: visible !important;
+}
+.category-navbar {
+  z-index: 800 !important;
 }
 
 @media (max-width: 991.98px) {
