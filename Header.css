@@ -3960,13 +3960,25 @@ nav {
   align-items: center !important;
   justify-content: center !important;
   text-decoration: none !important;
-  color: #333 !important;
   padding: 5px !important;
   flex-shrink: 0 !important;
 }
 
 .mobile-nav-link i {
   font-size: 20px !important;
+}
+
+/* Individual mobile icon colors matching desktop */
+.mobile-nav-link[href*="wishlist.php"] i {
+  color: #DE0085 !important;
+}
+
+.mobile-nav-link[href*="myaccount.php"] i {
+  color: #007bff !important;
+}
+
+.mobile-nav-link[href*="login.php"] i {
+  color: #99d052 !important;
 }
 
 .mobile-nav-link .badge {
