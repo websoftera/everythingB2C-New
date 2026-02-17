@@ -120,6 +120,24 @@ body {
   z-index: 3000;
 }
 
+/* Reset dropdown sizing/typography to Bootstrap defaults for header + category menus */
+.navbar .dropdown-menu,
+.category-navbar .dropdown-menu,
+.auth-dropdown-menu {
+  min-width: auto !important;
+  padding: 0.5rem 0 !important;
+  font-size: 1rem !important;
+  border-radius: 0.375rem !important;
+}
+
+.navbar .dropdown-menu .dropdown-item,
+.category-navbar .dropdown-menu .dropdown-item,
+.auth-dropdown-menu .dropdown-item {
+  padding: 0.25rem 1rem !important;
+  font-size: 1rem !important;
+  line-height: 1.5 !important;
+}
+
 /* Keep login dropdowns visible above nav/category bars */
 .header2,
 .navbar,
