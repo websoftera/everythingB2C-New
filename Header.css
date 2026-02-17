@@ -1726,11 +1726,6 @@ body {
   display: none;
 }
 
-nav {
-  position: fixed !important;
-  top: 0;
-}
-
 /* Show only on large screens (desktop and up) */
 @media (min-width: 992px) {
   .second-navbar {
@@ -2198,7 +2193,7 @@ input[type="checkbox"]:checked+.heart-icon {
 
 .category-navbar {
   position: sticky;
-  /* top: 91px; */
+    top: 91px;
   z-index: 997;
   background-color: #ffffff;
   border-top: 1px solid #e0e0e0;
@@ -2217,7 +2212,7 @@ input[type="checkbox"]:checked+.heart-icon {
   }
 
   .category-navbar {
-    /* top: 83px; */
+    top: 83px;
   }
 }
 
