@@ -719,6 +719,45 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 <script>
+// Force-open category dropdowns (All Categories desktop/mobile + category navbar) when clicks are blocked
+document.addEventListener('DOMContentLoaded', function () {
+  const catToggles = document.querySelectorAll('#categoryDropdownDesktop, #categoryDropdownMobile, .category-navbar .dropdown-toggle');
+  const catMenus = [];
+
+  function closeCat(except) {
+    catMenus.forEach(function (menu) {
+      if (menu !== except) {
+        menu.classList.remove('show');
+        const t = menu.previousElementSibling;
+        if (t && t.matches('[data-bs-toggle="dropdown"]')) t.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
+  catToggles.forEach(function (toggle) {
+    const menu = toggle.nextElementSibling;
+    if (!menu || !menu.classList.contains('dropdown-menu')) return;
+    catMenus.push(menu);
+    toggle.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      const willOpen = !menu.classList.contains('show');
+      closeCat(willOpen ? menu : null);
+      if (willOpen) {
+        menu.classList.add('show');
+        toggle.setAttribute('aria-expanded', 'true');
+      } else {
+        menu.classList.remove('show');
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+  });
+
+  document.addEventListener('click', function () { closeCat(null); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeCat(null); });
+});
+</script>
+<script>
 // Store the original SweetAlert before overriding
 const OriginalSwal = window.Swal;
 
