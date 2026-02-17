@@ -312,7 +312,7 @@ echo renderBreadcrumb($breadcrumbs);
 /* Product Grid - Truly Responsive */
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* Desktop: 4 cards per row */
+  grid-template-columns: repeat(3, 1fr); /* Default desktop: 3 cards per row */
   gap: 20px;
   margin-bottom: 40px;
   width: 100%;
@@ -504,8 +504,14 @@ echo renderBreadcrumb($breadcrumbs);
 
 @media (min-width: 1200px) {
   .products-grid {
-    grid-template-columns: repeat(4, 1fr); /* Desktop: 4 cards per row */
+    grid-template-columns: repeat(3, 1fr); /* Standard desktop: 3 cards per row */
     gap: 20px;
+  }
+}
+
+@media (min-width: 1400px) {
+  .products-grid {
+    grid-template-columns: repeat(4, 1fr); /* Wide screens: 4 cards per row */
   }
 }
 
