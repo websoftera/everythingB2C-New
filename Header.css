@@ -70,6 +70,9 @@ body {
   align-items: center;
   padding: 0 20px;
   box-shadow: 0 0 3px #000;
+  position: relative;
+  overflow: visible;
+  z-index: 1400;
 }
 
 .header2 a:hover {
@@ -710,6 +713,14 @@ body {
   z-index: 1200 !important;
 }
 
+.navbar .container-fluid,
+.navbar .collapse,
+.navbar-nav {
+  overflow: visible !important;
+  position: relative;
+  z-index: 1200;
+}
+
 .navbar .logo {
   max-height: 75px;
 }
@@ -809,7 +820,7 @@ body {
   .category-navbar {
     position: sticky;
     top: 0;
-    z-index: 900;
+    z-index: 700;
     /* Keeps it below primary nav (z-index ~1050) */
     background-color: #ffffff;
     border-top: 1px solid #e0e0e0;
