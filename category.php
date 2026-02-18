@@ -173,31 +173,32 @@ $subcategories = getSubcategoriesByParentId($category['id']);
     <div class="categories-card">
         <div class="category-products-header">
             <h2 class="category-products-title">Subcategories</h2>
-            <!-- No View All link needed here as we are already on the parent category page -->
         </div>
         <div class="categories-slider-wrapper">
             <button class="category-nav-btn prev-btn" aria-label="Scroll Left">
                 <img src="asset/icons/blue_arrow.png" alt="Previous" style="width: 20px; height: 10px;">
             </button>
             <div class="categories-container" id="category-slider">
-            <?php foreach ($subcategories as $subcat): ?>
-                    <div class="category-item">
-                    <a href="category.php?slug=<?php echo $subcat['slug']; ?>">
-                            <div class="category-illustration">
-                                <?php $subcatImage = !empty($subcat['image']) ? ltrim($subcat['image'], './') : ''; ?>
-                                <?php if (!empty($subcatImage)): ?>
-                            <img src="./<?php echo htmlspecialchars($subcatImage); ?>" alt="<?php echo htmlspecialchars($subcat['name']); ?>" class="category-img" />
-                                <?php else: ?>
-                                  <div class="category-placeholder">
-                                    <i class="fas fa-box"></i>
-                                  </div>
-                                <?php endif; ?>
-                            </div>
-                            <p class="category-label"><?php echo ucfirst($subcat['name']); ?></p>
-                    </a>
+                <div class="d-flex flex-nowrap">
+                    <?php foreach ($subcategories as $subcat): ?>
+                        <div class="category-item">
+                            <a href="category.php?slug=<?php echo $subcat['slug']; ?>">
+                                <div class="category-illustration">
+                                    <?php $subcatImage = !empty($subcat['image']) ? ltrim($subcat['image'], './') : ''; ?>
+                                    <?php if (!empty($subcatImage)): ?>
+                                        <img src="./<?php echo htmlspecialchars($subcatImage); ?>" alt="<?php echo htmlspecialchars($subcat['name']); ?>" class="category-img" />
+                                    <?php else: ?>
+                                        <div class="category-placeholder">
+                                            <i class="fas fa-box"></i>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                                <p class="category-label"><?php echo ucfirst($subcat['name']); ?></p>
+                            </a>
+                        </div>
+                    <?php endforeach; ?>
                 </div>
-            <?php endforeach; ?>
-        </div>
+            </div>
             <button class="category-nav-btn next-btn" aria-label="Scroll Right">
                 <img src="asset/icons/blue_arrow.png" alt="Next" style="transform: rotate(180deg); width: 20px; height: 10px;">
             </button>

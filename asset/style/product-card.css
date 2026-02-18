@@ -344,9 +344,9 @@
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    font-size: 14px !important;
-    /* Reduced from 16px/18px */
-    margin-right: 6px !important;
+    font-size: 11px !important;
+    /* Reduced from 14px */
+    margin-right: 4px !important;
     transform: scaleX(-1);
     /* Mirror icon as per design */
 }
@@ -409,16 +409,19 @@
     border-radius: 4px !important;
     padding: 10px 12px !important;
     width: 100% !important;
-    font-size: 12px !important;
+    font-size: 11px !important;
     cursor: pointer !important;
     transition: all 0.2s ease !important;
-    letter-spacing: 0.5px !important;
+    letter-spacing: 0.3px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     box-sizing: border-box !important;
     height: 36px !important;
+    padding: 2px 4px !important;
     text-transform: uppercase !important;
+    flex: 2 1 0 !important;
+    /* Give more space to button */
 }
 
 /* Desktop-specific add-to-cart button size reduction */
