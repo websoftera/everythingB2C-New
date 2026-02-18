@@ -62,10 +62,13 @@
     position: relative;
     background: #fff;
     padding: 5px 14px;
-    min-height: 150px;
+    height: 155px;
+    /* Fixed height */
+    min-height: 155px;
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
 }
 
 .product-image.no-image {
@@ -77,6 +80,7 @@
     border: 1px dashed #dee2e6;
     color: #6c757d;
     height: 155px;
+    /* Standardize with images */
     width: 100%;
     display: flex;
     align-items: center;
@@ -85,11 +89,13 @@
     font-size: 12px;
     padding: 10px;
     box-sizing: border-box;
+    border-radius: 4px;
 }
 
 .product-image img {
     max-height: 155px;
     min-height: 155px;
+    height: 155px !important;
     max-width: 92%;
     object-fit: contain;
     margin: 0 auto;
@@ -297,7 +303,8 @@
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
-    gap: 12px !important;
+    gap: 6px !important;
+    /* Reduced for better fit */
     width: 100% !important;
 }
 

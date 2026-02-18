@@ -204,9 +204,12 @@
     font-size: 24px;
     color: #ccc;
     cursor: pointer;
-    transition: color 0.2s;
+    transition: all 0.3s ease;
     line-height: 1;
     margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .heart-checkbox {
@@ -214,7 +217,8 @@
 }
 
 .heart-checkbox:checked+.wishlist-label {
-    color: #dc3545;
+    color: #DE0085;
+    filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3));
 }
 
 .heart-checkbox:checked+.wishlist-label i {
@@ -225,8 +229,7 @@
 .cart-actions {
     display: flex;
     align-items: center;
-    gap: 8px;
-    /* Reduced gap */
+    gap: 6px;
     margin-bottom: 18px;
     justify-content: flex-start;
     width: 100%;
@@ -251,7 +254,7 @@
     border: 1px solid #dee2e6;
     background: #f8f9fa;
     color: #333;
-    font-size: 1.2rem;
+    font-size: 16px;
     border-radius: 4px;
     margin: 0;
     cursor: pointer;
@@ -271,33 +274,35 @@
 }
 
 .quantity-input {
-    width: 50px;
+    width: 45px;
     text-align: center;
-    font-size: 1.1rem;
+    font-size: 14px;
     margin: 0;
     border: 1px solid #ced4da;
     border-radius: 4px;
     height: 36px;
     padding: 0;
+    background: #fff;
 }
 
 .cart-actions .add-to-cart-btn {
-    background: var(--cart-button, #28a745);
+    background: var(--dark-green, #9FBE1B);
     color: #ffffff;
     border: none;
-    padding: 0 16px;
+    padding: 0 20px;
     height: 36px;
     border-radius: 4px;
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 13px;
+    font-weight: 700;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all 0.3s ease;
     white-space: nowrap;
     display: flex;
     align-items: center;
     justify-content: center;
     flex: 1;
-    /* Ensure it grows */
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
 }
 
 .cart-actions .add-to-cart-btn:hover {

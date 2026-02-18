@@ -76,6 +76,7 @@ if (isLoggedIn()) {
     <link rel="stylesheet" href="asset/style/popup.css">
     <link rel="stylesheet" href="asset/style/style.css">
     <link rel="stylesheet" href="asset/style/product-card.css">
+    <script src="asset/js/sliders.js" defer></script>
     <style>
 html, body {
   overflow-x: hidden !important;

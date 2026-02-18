@@ -165,11 +165,9 @@ echo renderBreadcrumb($breadcrumbs);
 // Fetch subcategories
 $subcategories = getSubcategoriesByParentId($category['id']);
 ?>
-<link rel="stylesheet" href="./asset/style/style.css">
-
 <!-- Subcategories Slider Section (Same design as Home Page) -->
 <?php if (!empty($subcategories)): ?>
-<section class="popular-categories-section" style="margin-top: 20px; margin-bottom: 30px;">
+<section class="popular-categories-section">
     <div class="categories-card">
         <div class="category-products-header">
             <h2 class="category-products-title">Subcategories</h2>
@@ -179,25 +177,23 @@ $subcategories = getSubcategoriesByParentId($category['id']);
                 <img src="asset/icons/blue_arrow.png" alt="Previous" style="width: 20px; height: 10px;">
             </button>
             <div class="categories-container" id="category-slider">
-                <div class="d-flex flex-nowrap">
-                    <?php foreach ($subcategories as $subcat): ?>
-                        <div class="category-item">
-                            <a href="category.php?slug=<?php echo $subcat['slug']; ?>">
-                                <div class="category-illustration">
-                                    <?php $subcatImage = !empty($subcat['image']) ? ltrim($subcat['image'], './') : ''; ?>
-                                    <?php if (!empty($subcatImage)): ?>
-                                        <img src="./<?php echo htmlspecialchars($subcatImage); ?>" alt="<?php echo htmlspecialchars($subcat['name']); ?>" class="category-img" />
-                                    <?php else: ?>
-                                        <div class="category-placeholder">
-                                            <i class="fas fa-box"></i>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                                <p class="category-label"><?php echo ucfirst($subcat['name']); ?></p>
-                            </a>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
+                <?php foreach ($subcategories as $subcat): ?>
+                    <div class="category-item">
+                        <a href="category.php?slug=<?php echo $subcat['slug']; ?>">
+                            <div class="category-illustration">
+                                <?php $subcatImage = !empty($subcat['image']) ? ltrim($subcat['image'], './') : ''; ?>
+                                <?php if (!empty($subcatImage)): ?>
+                                    <img src="./<?php echo htmlspecialchars($subcatImage); ?>" alt="<?php echo htmlspecialchars($subcat['name']); ?>" class="category-img" />
+                                <?php else: ?>
+                                    <div class="category-placeholder">
+                                        <i class="fas fa-box"></i>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                            <p class="category-label"><?php echo ucfirst($subcat['name']); ?></p>
+                        </a>
+                    </div>
+                <?php endforeach; ?>
             </div>
             <button class="category-nav-btn next-btn" aria-label="Scroll Right">
                 <img src="asset/icons/blue_arrow.png" alt="Next" style="transform: rotate(180deg); width: 20px; height: 10px;">
@@ -205,36 +201,6 @@ $subcategories = getSubcategoriesByParentId($category['id']);
         </div>
     </div>
 </section>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Category slider functionality for this page
-    const categoryContainer = document.getElementById('category-slider');
-    const prevBtn = document.querySelector('.category-nav-btn.prev-btn');
-    const nextBtn = document.querySelector('.category-nav-btn.next-btn');
-    
-    if (categoryContainer && prevBtn && nextBtn) {
-        // Simple scroll function matched to home page
-        const scrollAmount = 200; 
-        
-        prevBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            categoryContainer.scrollBy({
-                left: -scrollAmount,
-                behavior: 'smooth'
-            });
-        });
-        
-        nextBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            categoryContainer.scrollBy({
-                left: scrollAmount,
-                behavior: 'smooth'
-            });
-        });
-    }
-});
-</script>
 <?php endif; ?>
 
 <div class="container-fluid">
