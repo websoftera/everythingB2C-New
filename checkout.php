@@ -116,6 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $pageTitle = 'Checkout';
 include 'includes/header.php';
+echo '<link rel="stylesheet" href="./asset/style/responsive-cart-checkout.css">';
 
 // Breadcrumb Navigation
 $breadcrumbs = generateBreadcrumb($pageTitle);

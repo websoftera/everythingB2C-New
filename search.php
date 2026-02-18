@@ -132,7 +132,12 @@ echo renderBreadcrumb($breadcrumbs);
       <div class="products-container">
         <!-- Search Header -->
         <div class="search-header">
-          <h2>Search Results</h2>
+          <h2><?php echo !empty($searchTerm) ? 'Search Results for "' . htmlspecialchars($searchTerm) . '"' : 'Search Results'; ?></h2>
+          <?php if (!empty($searchTerm)): ?>
+            <p class="search-term">Found <?php echo isset($products) ? count($products) : 0; ?> products matching your query</p>
+          <?php else: ?>
+            <p class="results-count">Showing <?php echo isset($products) ? count($products) : 0; ?> products</p>
+          <?php endif; ?>
         </div>
         
         <!-- Products Grid -->
@@ -207,8 +212,6 @@ echo renderBreadcrumb($breadcrumbs);
                                 <input type="number" class="quantity-input" value="1" min="1" max="99" data-product-id="<?php echo $product['id']; ?>">
                                 <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
                             </div>
-                        </div>
-                        <div class="cart-actions d-flex align-items-center gap-2">
                             <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">
                                 <i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>
                                 ADD TO CART
@@ -284,58 +287,6 @@ echo renderBreadcrumb($breadcrumbs);
 .no-products p {
   color: #666;
   margin-bottom: 20px;
-}
-
-/* Search Page - Matching Products Offering Discount Design */
-.product-card {
-  background: #fff !important;
-  border-radius: 8px !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
-  border: 1px solid var(--light-blue) !important;
-}
-
-.product-info {
-  padding: 5px 6px !important;
-}
-
-.product-card .product-image img {
-  max-height: 155px !important;
-  min-height: 155px !important;
-}
-
-.product-card .discount-banner {
-  background: var(--site-blue) !important;
-  color: #fff !important;
-  border-radius: 4px !important;
-}
-
-.product-card .price-btn.mrp {
-  background: var(--mrp-light-blue) !important;
-  color: var(--dark-blue) !important;
-}
-
-.product-card .price-btn.pay {
-  background: var(--pay-light-green) !important;
-  color: var(--dark-grey) !important;
-}
-
-.product-card .add-to-cart-btn,
-.product-card .add-to-cart {
-  background: var(--cart-button) !important;
-  color: #ffffff !important;
-}
-
-.product-card .add-to-cart-btn:hover,
-.product-card .add-to-cart:hover {
-  background: var(--dark-blue) !important;
-}
-
-.product-card .product-details {
-  background-image: none !important;
-}
-
-.product-card .product-image {
-  background-image: none !important;
 }
 
 /* Responsive Design */

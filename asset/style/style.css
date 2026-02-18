@@ -71,7 +71,7 @@
 
 /* User Sign In/Sign Out Icon and Text Styles */
 .user-signin-icon {
-  color: #9fbe1b !important;
+  color: var(--dark-green) !important;
   /* Green color for sign-in */
   font-size: 20px !important;
   transition: color 0.3s ease, transform 0.2s ease !important;
@@ -88,13 +88,13 @@
 }
 
 .user-signin-link:hover .user-signin-icon {
-  color: #028bc2 !important;
+  color: var(--link-hover-blue) !important;
   /* Lighter green on hover */
   transform: scale(1.1) !important;
 }
 
 .user-signin-link:hover .user-signin-text {
-  color: #028bc2 !important;
+  color: var(--link-hover-blue) !important;
   /* Lighter green on hover */
 }
 
@@ -128,7 +128,7 @@
 
 /* User Account Icon and Welcome Text Styles */
 .user-account-icon {
-  color: #007bff !important;
+  color: var(--site-blue) !important;
   /* Blue color for account icon */
   font-size: 20px !important;
   vertical-align: middle !important;
@@ -151,7 +151,7 @@
 .welcome-line-1 {
   font-size: 10px !important;
   font-weight: 400 !important;
-  color: #666 !important;
+  color: var(--dark-gray) !important;
   text-transform: capitalize !important;
   letter-spacing: 0.5px !important;
   margin: 0 !important;
@@ -232,7 +232,7 @@
 }
 
 .home-link:hover .home-icon {
-  color: #028bc2 !important;
+  color: var(--link-hover-blue) !important;
   /* Same color on hover */
 }
 
@@ -255,18 +255,18 @@
 
 /* Filled wishlist icon (when items exist) */
 .wishlist-icon.bi-heart-fill {
-  color: #DE0085 !important;
+  color: var(--pink) !important;
   /* Pink color when filled */
 }
 
 /* Hover effects for wishlist */
 .wishlist-link:hover .wishlist-icon.bi-heart {
-  color: #DE0085 !important;
+  color: var(--pink) !important;
   /* Pink color on hover */
 }
 
 .wishlist-link:hover .wishlist-icon.bi-heart-fill {
-  color: #B8006B !important;
+  color: var(--hover-pink) !important;
   /* Darker pink on hover when already filled */
 }
 
@@ -292,7 +292,7 @@
   width: 75px !important;
   height: 75px !important;
   background: white !important;
-  border: 3px solid #9FBF1C !important;
+  border: 3px solid var(--dark-green) !important;
   border-radius: 50% !important;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
   cursor: pointer !important;
@@ -307,7 +307,7 @@
 
 .floating-cart-btn:hover {
   box-shadow: 0 6px 20px rgba(159, 191, 28, 0.3) !important;
-  border-color: #8aad19 !important;
+  border-color: var(--hover-green) !important;
 }
 
 .floating-cart-btn:hover .floating-cart-icon {
@@ -349,28 +349,28 @@
   0% {
     transform: scale(1);
     background: white;
-    border-color: #9FBF1C;
+    border-color: var(--dark-green);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
   }
 
   30% {
     transform: scale(1.2);
     background: white;
-    border-color: #8aad19;
+    border-color: var(--hover-green);
     box-shadow: 0 8px 32px rgba(159, 191, 28, 0.3);
   }
 
   60% {
     transform: scale(1.1);
     background: white;
-    border-color: #9FBF1C;
+    border-color: var(--dark-green);
     box-shadow: 0 6px 24px rgba(159, 191, 28, 0.25);
   }
 
   100% {
     transform: scale(1);
     background: white;
-    border-color: #9FBF1C;
+    border-color: var(--dark-green);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
   }
 }
@@ -549,11 +549,11 @@ h3 {
   --secondary-color: #223459;
   --accent-color: #9acd32;
   --text-dark: #333;
-  --text-light: #666;
+  --text-light: var(--dark-gray);
   --white: #fff;
   --light-gray: #f8f9fa;
   --border-color: #e9ecef;
-  --success-color: #9fbe1b;
+  --success-color: var(--dark-green);
   --danger-color: #dc3545;
   --warning-color: #ffc107;
 }
@@ -571,7 +571,7 @@ h3 {
 }
 
 .cart-icon {
-  color: #000000;
+  color: var(--black);
   font-size: 30px !important;
 }
 
@@ -639,7 +639,7 @@ h3 {
 .footer-column ul li {
   margin-bottom: 2px;
   font-size: 14px;
-  color: #ccc;
+  color: var(--border-color);
   cursor: pointer;
 }
 
@@ -651,7 +651,7 @@ h3 {
 .footer-column.social .icons i {
   font-size: 16px;
   margin-right: 12px;
-  color: #ccc;
+  color: var(--border-color);
   cursor: pointer;
 }
 
@@ -663,7 +663,7 @@ h3 {
   text-align: center;
   margin-top: 15px;
   font-size: 14px;
-  color: #ccc;
+  color: var(--border-color);
 }
 
 .footer-bottom p {
@@ -769,7 +769,7 @@ h3 {
   }
 
   .footer-column.social .contact-info a {
-    color: #ccc;
+    color: var(--border-color);
     font-size: 11px;
   }
 }
@@ -821,7 +821,7 @@ h3 {
   }
 
   .footer-column.social .contact-info a {
-    color: #ccc;
+    color: var(--border-color);
     font-size: 10px;
   }
 }
@@ -847,6 +847,12 @@ h3 {
 .Hero {
   padding-top: 120px;
   padding-bottom: 120px;
+}
+
+/* Loading transition for Product Grid */
+.products-grid {
+  transition: opacity 0.3s ease;
+  opacity: 1;
 }
 
 .Hero1 {
@@ -879,7 +885,7 @@ h3 {
   position: absolute;
   z-index: 9999 !important;
   min-width: 200px;
-  background-color: #ffffff;
+  background-color: var(--white);
   border: 1px solid #dee2e6;
   border-radius: 0.375rem;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
@@ -934,6 +940,7 @@ h3 {
     grid-template-columns: 1fr !important;
     justify-items: center !important;
   }
+
   .products-grid .product-card {
     max-width: 240px !important;
     width: 100% !important;
@@ -969,7 +976,7 @@ h3 {
 }
 
 .dropdown-menu .dropdown-item:hover {
-  background-color: #9fbe1b;
+  background-color: var(--dark-green);
   color: white;
 }
 
@@ -1052,7 +1059,7 @@ h3 {
   border-radius: 4px;
   padding: 10px;
   background-color: #fff;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */
 }
 
@@ -1064,7 +1071,7 @@ h3 {
   border-radius: 25px;
   font-size: 14px;
   display: block;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
 }
 
 .step img:hover {
@@ -1096,7 +1103,7 @@ h3 {
 }
 
 .hero-button {
-  background-color: #028bc2;
+  background-color: var(--link-hover-blue);
   color: white;
   padding: 10px 15px;
   border-radius: 25px;
@@ -1350,6 +1357,7 @@ h3 {
     aspect-ratio: 3 / 1;
   }
 }
+
 /*  2nd Nav bar Css */
 
 /* Hide second navbar by default */
@@ -1368,8 +1376,8 @@ h3 {
     top: 0;
     z-index: 900;
     /* Keeps it below primary nav (z-index ~1050) */
-    background-color: #ffffff;
-    border-top: 1px solid #e0e0e0;
+    background-color: var(--white);
+    border-top: 1px solid var(--border-color);
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
     padding: 0;
     /* Remove default padding */
@@ -1535,7 +1543,7 @@ h3 {
 
 /* Individual card styling */
 .card {
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 0px;
   overflow: hidden;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -1605,7 +1613,7 @@ h3 {
   top: 0px;
   left: 0px;
   z-index: 2;
-  background-color: #9fbe1b;
+  background-color: var(--dark-green);
   color: white;
   padding: 3px 8px;
   font-size: 0.8rem;
@@ -1709,7 +1717,7 @@ h3 {
 
 input[type="checkbox"]:checked+.heart-icon,
 input[type="checkbox"]:checked+.wishlist-label i {
-  color: #DE0085 !important;
+  color: var(--pink) !important;
 }
 
 .cart-actions,
@@ -1753,6 +1761,7 @@ input[type="checkbox"]:checked+.wishlist-label i {
   padding: 0 12px;
   box-sizing: border-box;
 }
+
 .add-to-cart-btn i,
 .add-to-cart i {
   flex-shrink: 0;
@@ -1832,7 +1841,7 @@ input[type="checkbox"]:checked+.wishlist-label i {
   width: auto;
   background: #fff;
   margin: 25px 25px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
 }
 
 .category-wrapper {
@@ -2080,11 +2089,11 @@ input[type="checkbox"]:checked+.wishlist-label i {
 }
 
 .wishlist-btn:hover {
-  background-color: #ddd;
+  background-color: var(--border-color);
 }
 
 .wishlist-btn.close {
-  background-color: #f5f5f5;
+  background-color: var(--light-gray);
 }
 
 /*-------------------------------------------- wishlist pop up css-------------------------------------------------------------------*/
@@ -2159,7 +2168,7 @@ input[type="checkbox"]:checked+.wishlist-label i {
   height: 70px;
   object-fit: cover;
   border-radius: 50%;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-color);
 }
 
 .category-label {
@@ -2196,7 +2205,7 @@ input[type="checkbox"]:checked+.wishlist-label i {
 .tab-item {
   /* Example tab item style */
   padding: 8px 16px;
-  background-color: #f5f5f5;
+  background-color: var(--light-gray);
   border-radius: 4px;
   cursor: pointer;
 
@@ -2224,7 +2233,7 @@ input[type="checkbox"]:checked+.wishlist-label i {
   font-size: 14px;
   font-weight: bold;
   color: white;
-  background-color: #007bff;
+  background-color: var(--site-blue);
   border: none;
   border-radius: 10px;
   text-align: center;
@@ -2268,8 +2277,8 @@ input[type="checkbox"]:checked+.wishlist-label i {
     top: 0;
     z-index: 900;
     /* Keeps it below primary nav (z-index ~1050) */
-    background-color: #ffffff;
-    border-top: 1px solid #e0e0e0;
+    background-color: var(--white);
+    border-top: 1px solid var(--border-color);
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
     padding: 0;
     /* Remove default padding */
@@ -2386,9 +2395,9 @@ input[type="checkbox"]:checked+.wishlist-label i {
   /* Smaller icon size */
   color: transparent;
   /* Transparent fill */
-  -webkit-text-stroke: 1px #666;
+  -webkit-text-stroke: 1px var(--dark-gray);
   /* Dark grey border */
-  text-stroke: 1px #666;
+  text-stroke: 1px var(--dark-gray);
   /* Dark grey border for non-webkit browsers */
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
   /* Subtle shadow */
@@ -2417,10 +2426,10 @@ button {
   align-items: center !important;
   flex: 1 1 0 !important;
   min-width: 0 !important;
-  border: 1px solid #d1d5db !important;
+  border: 1px solid var(--medium-gray) !important;
   /* Light grey border */
   border-radius: 4px !important;
-  background: #ffffff !important;
+  background: var(--white) !important;
   /* White background */
   overflow: hidden !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
@@ -2440,9 +2449,9 @@ button {
   font-size: 14px !important;
   font-weight: bold !important;
   border: none !important;
-  background: #ffffff !important;
+  background: var(--white) !important;
   /* White background */
-  color: #333333 !important;
+  color: var(--dark-grey) !important;
   /* Dark grey text */
   cursor: pointer !important;
   display: flex !important;
@@ -2451,7 +2460,7 @@ button {
   transition: background-color 0.2s ease !important;
   padding: 0 !important;
   margin: 0 !important;
-  border-right: 1px solid #d1d5db !important;
+  border-right: 1px solid var(--medium-gray) !important;
   /* Light grey border between sections */
   border-top: none !important;
   border-bottom: none !important;
@@ -2466,7 +2475,7 @@ button {
 }
 
 .quantity-control .btn-qty:hover {
-  background: #f3f4f6 !important;
+  background: var(--light-gray) !important;
   /* Light grey hover */
 }
 
@@ -2486,18 +2495,18 @@ button {
   font-weight: bold !important;
   text-align: center !important;
   border: none !important;
-  background: #ffffff !important;
+  background: var(--white) !important;
   /* White background - override blue from Header.css */
-  color: #333333 !important;
+  color: var(--dark-grey) !important;
   /* Dark grey text - override white from Header.css */
   padding: 0 !important;
   margin: 0 !important;
   -webkit-appearance: none !important;
   -moz-appearance: textfield !important;
   appearance: textfield !important;
-  border-left: 1px solid #d1d5db !important;
+  border-left: 1px solid var(--medium-gray) !important;
   /* Light grey border on left */
-  border-right: 1px solid #d1d5db !important;
+  border-right: 1px solid var(--medium-gray) !important;
   /* Light grey border on right */
   border-top: none !important;
   /* Remove top border */
@@ -2607,7 +2616,7 @@ input[type="submit"].cart-added-highlight,
 [data-product-id].cart-added-highlight {
   border: 2.5px solid #ffd600 !important;
   /* Yellow border */
-  background: #9fbe1b !important;
+  background: var(--dark-green) !important;
   /* Green background */
   color: #fff !important;
   box-shadow: 0 0 0 6px rgba(255, 214, 0, 0.18), 0 2px 12px rgba(40, 167, 69, 0.22) !important;
@@ -2645,7 +2654,7 @@ input[type="submit"].cart-added-highlight,
   max-width: 240px !important;
   max-height: 240px !important;
   object-fit: cover !important;
-  border: 1px solid #ddd !important;
+  border: 1px solid var(--border-color) !important;
   padding: 6px !important;
   display: block !important;
   margin: 0 auto !important;
@@ -2698,7 +2707,7 @@ input[type="submit"].cart-added-highlight,
 .cart-added-highlight {
   border: 2.5px solid #ffd600 !important;
   /* Yellow border */
-  background: #9fbe1b !important;
+  background: var(--dark-green) !important;
   /* Green background */
   color: #fff !important;
   box-shadow: 0 0 0 6px rgba(255, 214, 0, 0.18), 0 2px 12px rgba(40, 167, 69, 0.22) !important;
@@ -2716,7 +2725,7 @@ html .cart-added-highlight,
 .row .cart-added-highlight,
 .col .cart-added-highlight {
   border: 2.5px solid #ffd600 !important;
-  background: #9fbe1b !important;
+  background: var(--dark-green) !important;
   color: #fff !important;
   box-shadow: 0 0 0 6px rgba(255, 214, 0, 0.18), 0 2px 12px rgba(40, 167, 69, 0.22) !important;
   transition: box-shadow 0.2s, border 0.2s, background 0.2s, color 0.2s !important;
@@ -3063,7 +3072,7 @@ html .cart-added-highlight,
   .featured-nav-btn {
     width: 25px !important;
     height: 25px !important;
-    background: #ffffff !important;
+    background: var(--white) !important;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
     z-index: 100 !important;
   }
@@ -3171,7 +3180,7 @@ html .cart-added-highlight,
   .featured-nav-btn {
     width: 18px !important;
     height: 18px !important;
-    background: #ffffff !important;
+    background: var(--white) !important;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
     z-index: 100 !important;
   }
@@ -3301,7 +3310,7 @@ html .cart-added-highlight,
   .featured-nav-btn {
     width: 16px !important;
     height: 16px !important;
-    background: #ffffff !important;
+    background: var(--white) !important;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
     z-index: 100 !important;
   }

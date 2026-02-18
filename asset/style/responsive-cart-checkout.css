@@ -1,0 +1,131 @@
+/* =========================================
+   Mobile Cart & Checkout Responsiveness Fixes
+   ========================================= */
+
+@media (max-width: 767.98px) {
+    /* --- Cart Page --- */
+
+    /* Hide the desktop header row */
+    .cart-header-row {
+        display: none !important;
+    }
+
+    /* Make cart item row wrap content */
+    .cart-item-row {
+        flex-wrap: wrap !important;
+        height: auto !important;
+        padding: 12px !important;
+        position: relative;
+    }
+
+    /* Full width for product info container (image + name) */
+    .cart-item-row>div:nth-child(2) {
+        flex: 0 0 calc(100% - 60px) !important;
+        max-width: calc(100% - 60px) !important;
+        margin-bottom: 8px;
+    }
+
+    /* Image container */
+    .cart-item-row>div:nth-child(1) {
+        margin-bottom: 8px;
+    }
+
+    /* Price (Strike-through MRP) - move to new line or hide if redundant */
+    .cart-item-row>div:nth-child(3) {
+        display: none !important;
+        /* Hide MRP column on mobile to save space */
+    }
+
+    /* Selling Price (You Pay) */
+    .cart-item-row>div:nth-child(4) {
+        flex: 0 0 auto !important;
+        min-width: auto !important;
+        text-align: left !important;
+        font-weight: bold;
+        font-size: 1rem !important;
+        order: 3;
+        margin-right: 15px;
+    }
+
+    .cart-item-row>div:nth-child(4)::before {
+        content: "Price: ";
+        font-weight: normal;
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    /* Savings */
+    .cart-item-row>div:nth-child(5) {
+        display: none !important;
+        /* Hide savings column on mobile */
+    }
+
+    /* Quantity Control */
+    .cart-item-row>div:nth-child(6) {
+        flex: 0 0 auto !important;
+        min-width: auto !important;
+        order: 4;
+        margin-right: auto;
+        /* Push remove button to right */
+    }
+
+    /* Total Row (Duplicate of You Pay * Qty) - Often redundant on mobile, but let's keep it if needed or hide it */
+    .cart-item-row>div:nth-child(7) {
+        display: none !important;
+        /* Hide Total column, user sees subtotal at bottom */
+    }
+
+    /* Remove Button */
+    .cart-item-row>div:nth-child(8) {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        flex: 0 0 auto !important;
+        min-width: auto !important;
+    }
+
+    /* Stack checkout summary */
+    .shopping-card .card-body {
+        padding: 15px;
+    }
+
+    /* --- Checkout Page --- */
+
+    /* Address Actions Buttons */
+    .address-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .address-actions .btn {
+        flex: 1 1 auto;
+        margin-right: 0;
+        margin-bottom: 5px;
+        text-align: center;
+        padding: 6px 10px;
+    }
+
+    /* Payment Method Radio Labels */
+    .form-check-label {
+        padding: 12px;
+    }
+
+    /* Place Order Button */
+    .place-order-btn {
+        padding: 12px;
+        font-size: 1.1rem;
+    }
+
+    /* Add Address Form inputs */
+    #addAddressForm .col-md-6,
+    #addAddressForm .col-md-4,
+    #addAddressForm .col-md-8,
+    #addAddressForm .col-md-12 {
+        margin-bottom: 10px;
+    }
+
+    .checkout-card {
+        margin-bottom: 15px;
+    }
+}

@@ -161,8 +161,81 @@ $products = array_slice($allProducts, $offset, $itemsPerPage);
 <?php
 $breadcrumbs = generateBreadcrumb($pageTitle, $categoryPath);
 echo renderBreadcrumb($breadcrumbs);
+
+// Fetch subcategories
+$subcategories = getSubcategoriesByParentId($category['id']);
 ?>
 <link rel="stylesheet" href="./asset/style/style.css">
+
+<!-- Subcategories Slider Section (Same design as Home Page) -->
+<?php if (!empty($subcategories)): ?>
+<section class="popular-categories-section" style="margin-top: 20px; margin-bottom: 30px;">
+    <div class="categories-card">
+        <div class="category-products-header">
+            <h2 class="category-products-title">Subcategories</h2>
+            <!-- No View All link needed here as we are already on the parent category page -->
+        </div>
+        <div class="categories-slider-wrapper">
+            <button class="category-nav-btn prev-btn" aria-label="Scroll Left">
+                <img src="asset/icons/blue_arrow.png" alt="Previous" style="width: 20px; height: 10px;">
+            </button>
+            <div class="categories-container" id="category-slider">
+            <?php foreach ($subcategories as $subcat): ?>
+                    <div class="category-item">
+                    <a href="category.php?slug=<?php echo $subcat['slug']; ?>">
+                            <div class="category-illustration">
+                                <?php $subcatImage = !empty($subcat['image']) ? ltrim($subcat['image'], './') : ''; ?>
+                                <?php if (!empty($subcatImage)): ?>
+                            <img src="./<?php echo htmlspecialchars($subcatImage); ?>" alt="<?php echo htmlspecialchars($subcat['name']); ?>" />
+                                <?php else: ?>
+                                  <div class="category-placeholder">
+                                    <i class="fas fa-box"></i>
+                                  </div>
+                                <?php endif; ?>
+                            </div>
+                            <p class="category-label"><?php echo ucfirst($subcat['name']); ?></p>
+                    </a>
+                </div>
+            <?php endforeach; ?>
+        </div>
+            <button class="category-nav-btn next-btn" aria-label="Scroll Right">
+                <img src="asset/icons/blue_arrow.png" alt="Next" style="transform: rotate(180deg); width: 20px; height: 10px;">
+            </button>
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Category slider functionality for this page
+    const categoryContainer = document.getElementById('category-slider');
+    const prevBtn = document.querySelector('.category-nav-btn.prev-btn');
+    const nextBtn = document.querySelector('.category-nav-btn.next-btn');
+    
+    if (categoryContainer && prevBtn && nextBtn) {
+        // Simple scroll function matched to home page
+        const scrollAmount = 200; 
+        
+        prevBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            categoryContainer.scrollBy({
+                left: -scrollAmount,
+                behavior: 'smooth'
+            });
+        });
+        
+        nextBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            categoryContainer.scrollBy({
+                left: scrollAmount,
+                behavior: 'smooth'
+            });
+        });
+    }
+});
+</script>
+<?php endif; ?>
+
 <div class="container-fluid">
   <div class="row">
     <!-- Sidebar Filter -->
@@ -319,150 +392,7 @@ echo renderBreadcrumb($breadcrumbs);
   max-width: 100%;
 }
 
-/* Product Card - Matching Products Offering Discount Design */
-.product-card {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  overflow: hidden;
-  word-wrap: break-word;
-  word-break: break-word;
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  background: #fff !important;
-  border-radius: 8px !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
-  border: 1px solid var(--light-blue) !important;
-}
-
-.product-info {
-  padding: 5px 6px !important;
-}
-
-.product-card .product-image {
-  width: 100%;
-  height: auto;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.product-card .product-image img {
-  width: 100%;
-  height: auto;
-  max-height: 155px;
-  min-height: 155px;
-  object-fit: cover;
-}
-
-.product-card .product-details {
-  padding: 10px;
-  width: 100%;
-  box-sizing: border-box;
-  min-width: 0;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.product-card .product-details h3 {
-  font-size: 14px;
-  line-height: 1.3;
-  margin-bottom: 2px;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  hyphens: auto;
-  max-width: 100%;
-  flex-shrink: 0;
-}
-
-.product-card .price-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  width: 100%;
-  min-width: 0;
-  flex-shrink: 0;
-}
-
-.product-card .price-btn {
-  font-size: 11px;
-  padding: 4px 6px;
-  white-space: nowrap;
-  flex-shrink: 0;
-  min-width: fit-content;
-  max-width: 100%;
-}
-
-.product-card .cart-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 100%;
-  flex-shrink: 0;
-}
-
-.product-card .quantity-control {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  width: 100%;
-  justify-content: center;
-}
-
-.product-card .quantity-input {
-  width: 50px;
-  text-align: center;
-  font-size: 12px;
-  flex-shrink: 0;
-}
-
-.product-card .add-to-cart-btn {
-  width: 100%;
-  font-size: 12px;
-  padding: 6px 8px;
-  white-space: nowrap;
-  min-width: 0;
-  max-width: 100%;
-}
-
-/* Category Page Specific Styles - Matching Products Offering Discount */
-.product-card .discount-banner {
-  background: var(--site-blue) !important;
-  color: #fff !important;
-  border-radius: 4px !important;
-}
-
-.product-card .price-btn.mrp {
-  background: var(--mrp-light-blue) !important;
-  color: var(--dark-blue) !important;
-}
-
-.product-card .price-btn.pay {
-  background: var(--pay-light-green) !important;
-  color: var(--dark-grey) !important;
-}
-
-.product-card .add-to-cart-btn,
-.product-card .add-to-cart {
-  background: var(--cart-button) !important;
-  color: #ffffff !important;
-}
-
-.product-card .add-to-cart-btn:hover,
-.product-card .add-to-cart:hover {
-  background: var(--dark-blue) !important;
-}
-
-.product-card .product-details {
-  background-image: none !important;
-}
-
-.product-card .product-image {
-  background-image: none !important;
-}
+/* Product Card - Styles handled by asset/style/product-card.css */
 
 .no-products {
   text-align: center;
@@ -521,92 +451,6 @@ echo renderBreadcrumb($breadcrumbs);
     gap: 12px;
     padding: 0 10px;
   }
-  
-  .product-card {
-    min-width: 0;
-    max-width: 100%;
-    width: 100%;
-  }
-  
-  .product-card .product-details {
-    padding: 8px;
-    min-width: 0;
-    width: 100%;
-  }
-  
-  .product-card .product-details h3 {
-    font-size: 12px;
-    margin-bottom: 2px;
-    max-width: 100%;
-    width: 100%;
-  }
-  
-  .product-card .price-buttons {
-    gap: 3px;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    width: 100%;
-  }
-  
-  .product-card .price-buttons button {
-    font-size: 10px;
-    padding: 3px 4px;
-    flex-shrink: 0;
-    min-width: fit-content;
-    max-width: 100%;
-  }
-  
-  .product-card .add-to-cart-btn {
-    font-size: 11px;
-    padding: 5px 6px;
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-  }
-  
-  .product-card .cart-actions {
-    width: 100%;
-    min-width: 0;
-  }
-  
-  .product-card .quantity-control {
-    width: 100%;
-    justify-content: center;
-  }
-}
-
-/* Tablet adjustments */
-@media (min-width: 768px) and (max-width: 1199px) {
-  .product-card .product-details h3 {
-    font-size: 13px;
-  }
-  
-  .product-card .price-buttons button {
-    font-size: 10px;
-    padding: 3px 4px;
-  }
-  
-  .product-card .add-to-cart-btn {
-    font-size: 11px;
-    padding: 5px 6px;
-  }
-}
-
-/* Desktop adjustments */
-@media (min-width: 1200px) {
-  .product-card .product-details h3 {
-    font-size: 14px;
-  }
-  
-  .product-card .price-buttons button {
-    font-size: 11px;
-    padding: 4px 6px;
-  }
-  
-  .product-card .add-to-cart-btn {
-    font-size: 12px;
-    padding: 6px 8px;
-  }
 }
 
 /* Container and Layout Fixes */
@@ -651,13 +495,6 @@ echo renderBreadcrumb($breadcrumbs);
     grid-template-columns: 1fr !important;
     gap: 12px;
     width: 100%;
-  }
-  
-  /* Ensure cards don't overflow */
-  .product-card {
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
   }
 }
 </style>

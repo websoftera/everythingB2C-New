@@ -38,6 +38,7 @@ echo renderBreadcrumb($breadcrumbs);
 
 <!-- Banner/Breadcrumb (skip homepage) -->
 <link rel="stylesheet" href="./asset/style/style.css">
+<link rel="stylesheet" href="./asset/style/responsive-cart-checkout.css">
 <div class="container mt-4">
     <!-- <h1>Shopping Cart</h1> -->
     
@@ -229,25 +230,17 @@ document.addEventListener('DOMContentLoaded', function() {
                                         // Update You Save
                                         var youSaveCell = row.children[4];
                                         if (youSaveCell) {
-                                            youSaveCell.textContent = (item.mrp - item.selling_price) * item.quantity;
+                                            youSaveCell.textContent = formatPrice((item.mrp - item.selling_price) * item.quantity);
                                         }
                                         // Update Total
                                         var totalCell = row.children[6];
                                         if (totalCell) {
-                                            totalCell.textContent = item.selling_price * item.quantity;
+                                            totalCell.textContent = formatPrice(item.selling_price * item.quantity);
                                         }
                                     }
                                 });
-                                // Update summary
-                                document.querySelectorAll('.cart-summary-you-pay').forEach(function(el) {
-                                    el.textContent = '₹ ' + Number(summary.totals.subtotal).toLocaleString('en-IN');
-                                });
-                                document.querySelectorAll('.cart-summary-total-mrp').forEach(function(el) {
-                                    el.textContent = '₹ ' + Number(summary.totals.total_mrp).toLocaleString('en-IN');
-                                });
-                                document.querySelectorAll('.cart-summary-savings').forEach(function(el) {
-                                    el.textContent = '₹ ' + Number(summary.totals.total_savings).toLocaleString('en-IN');
-                                });
+                                // Update summary components using the unified function
+                                updateCartPageSummary();
                             }
                         });
                     // updateCartPageSummary();
@@ -371,9 +364,9 @@ function updateCartPageSummary() {
             if (summary.success) {
                 const totals = summary.totals;
                 summaryBox.innerHTML = `
-                  <div class="d-flex justify-content-between mb-2"><span class="text-muted">Total MRP</span><span style="font-weight:600;text-decoration:line-through;">₹ ${parseFloat(totals.total_mrp || totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-                  <div class="d-flex justify-content-between mb-2"><span class="text-muted">You Pay</span><span style="font-weight:600;">₹ ${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-                  <div class="d-flex justify-content-between mb-2"><span class="text-muted">Savings</span><span class="fw-bold" style="color:#2e7d32;">₹ ${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+                  <div class="d-flex justify-content-between mb-2"><span class="text-muted">Total MRP</span><span class="cart-summary-total-mrp" style="font-weight:600;text-decoration:line-through;">₹ ${parseFloat(totals.total_mrp || totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+                  <div class="d-flex justify-content-between mb-2"><span class="text-muted">You Pay</span><span class="cart-summary-you-pay" style="font-weight:600;">₹ ${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+                  <div class="d-flex justify-content-between mb-2"><span class="text-muted">Savings</span><span class="cart-summary-savings fw-bold" style="color:#2e7d32;">₹ ${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
                   <div class="d-flex justify-content-between mb-2"><span class="text-muted">Delivery Charge <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
                   <div class="d-grid mt-3 mb-2">
                     <a href='checkout.php' class='btn btn-success btn-lg fw-bold' style='font-size:1.08rem;'>PROCEED TO CHECKOUT</a>

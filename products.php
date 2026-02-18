@@ -305,88 +305,7 @@ echo renderBreadcrumb($breadcrumbs);
   max-width: 100%;
 }
 
-/* Product Card - Matching Products Offering Discount Design */
-.product-card {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  overflow: hidden;
-  word-wrap: break-word;
-  word-break: break-word;
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  background: #fff !important;
-  border-radius: 8px !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
-  border: 1px solid var(--light-blue) !important;
-}
-
-.product-info {
-  padding: 5px 6px !important;
-}
-
-.product-card .product-image {
-  width: 100%;
-  height: auto;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.product-card .product-image img {
-  width: 100%;
-  height: auto;
-  max-height: 155px;
-  min-height: 155px;
-  object-fit: cover;
-}
-
-.product-card .product-details {
-  padding: 10px;
-  width: 100%;
-  box-sizing: border-box;
-  min-width: 0;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.product-card .discount-banner {
-  background: var(--site-blue) !important;
-  color: #fff !important;
-  border-radius: 4px !important;
-}
-
-.product-card .price-btn.mrp {
-  background: var(--mrp-light-blue) !important;
-  color: var(--dark-blue) !important;
-}
-
-.product-card .price-btn.pay {
-  background: var(--pay-light-green) !important;
-  color: var(--dark-grey) !important;
-}
-
-.product-card .add-to-cart-btn,
-.product-card .add-to-cart {
-  background: var(--cart-button) !important;
-  color: #ffffff !important;
-}
-
-.product-card .add-to-cart-btn:hover,
-.product-card .add-to-cart:hover {
-  background: var(--dark-blue) !important;
-}
-
-.product-card .product-details {
-  background-image: none !important;
-}
-
-.product-card .product-image {
-  background-image: none !important;
-}
+/* Product Card - Styles handled by asset/style/product-card.css */
 
 /* No Products Found */
 .no-products {
@@ -444,125 +363,9 @@ echo renderBreadcrumb($breadcrumbs);
     padding: 0 0px; /* Reduced padding for better space utilization */
   }
   
-  .product-card {
-    min-width: 0;
-    max-width: 100%;
-    width: 100%;
-  }
-  
   /* Force mobile cart actions to stack vertically */
-  .product-card .cart-actions.d-flex {
-    flex-direction: column !important;
-    align-items: center !important;
-  }
-  
-  .product-card .product-details {
-    padding: 8px;
-    min-width: 0;
-    width: 100%;
-  }
-  
-  .product-card .product-details h3 {
-    font-size: 12px;
-    margin-bottom: 2px;
-    max-width: 100%;
-    width: 100%;
-  }
-  
-  .product-card .price-buttons {
-    gap: 3px;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    width: 100%;
-  }
-  
-  .product-card .price-btn {
-    font-size: 10px;
-    padding: 3px 4px;
-    flex-shrink: 0;
-    min-width: fit-content;
-    max-width: 100%;
-  }
-  
-  .product-card .add-to-cart-btn {
-    font-size: 11px;
-    padding: 5px 6px;
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-  }
-  
-  .product-card .cart-actions {
-    width: 100% !important;
-    min-width: 0;
-    flex-direction: column !important; /* Force vertical stacking on mobile */
-    align-items: center !important;
-    gap: 8px !important; /* Space between quantity and add-to-cart */
-    display: flex !important;
-  }
-  
-  .product-card .quantity-control {
-    flex-shrink: 0 !important;
-    margin-right: 0 !important; /* Remove right margin since they're stacked */
-    width: 100% !important;
-    justify-content: center !important;
-    display: flex !important;
-    margin-bottom: 0 !important;
-  }
-  
-  .product-card .add-to-cart-btn {
-    width: 100% !important;
-    min-width: 0;
-    max-width: none;
-    flex: none !important; /* Remove flex to prevent stretching */
-    margin-top: 0 !important;
-  }
-  
-  /* Ensure quantity buttons are properly sized for mobile */
-  .product-card .btn-qty {
-    min-width: 32px;
-    height: 32px;
-  }
-  
-  .product-card .quantity-input {
-    width: 50px;
-    text-align: center;
-    font-size: 14px;
-  }
-}
-
-/* Tablet adjustments */
-@media (min-width: 768px) and (max-width: 1199px) {
-  .product-card .product-details h3 {
-    font-size: 13px;
-  }
-  
-  .product-card .price-btn {
-    font-size: 10px;
-    padding: 3px 4px;
-  }
-  
-  .product-card .add-to-cart-btn {
-    font-size: 11px;
-    padding: 5px 6px;
-  }
-}
-
-/* Desktop adjustments */
-@media (min-width: 1200px) {
-  .product-card .product-details h3 {
-    font-size: 14px;
-  }
-  
-  .product-card .price-btn {
-    font-size: 11px;
-    padding: 4px 6px;
-  }
-  
-  .product-card .add-to-cart-btn {
-    font-size: 12px;
-    padding: 6px 8px;
-  }
+  /* These might need to be in product-card.css or kept here if specific to grid view */
+  /* product-card.css handles responsiveness too, let's trust it for card internals. */
 }
 
 /* Container and Layout Fixes */
@@ -607,13 +410,6 @@ echo renderBreadcrumb($breadcrumbs);
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 2px;
     width: 100%;
-  }
-  
-  /* Ensure cards don't overflow */
-  .product-card {
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
   }
 }
 </style>
