@@ -605,7 +605,7 @@ renderCategoryMenu($categoryTree);
         </div>
     </nav>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Bootstrap Bundle removed (in footer) -->
 <script src="popup/popup.js"></script>
 <script src="popup/searchbar.js"></script>
 <script src="js/real-time-max-quantity.js"></script>

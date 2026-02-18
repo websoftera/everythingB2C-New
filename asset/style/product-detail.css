@@ -318,20 +318,18 @@
 /* Related Products Section */
 .related-products-section {
     padding: 20px 0;
-    background: none !important;
     margin: 0;
     overflow: visible;
 }
 
 .related-products-card {
-    background: var(--light-blue, #f0f8ff);
-    border-radius: 8px;
-    border: 1px solid #e0e0e0;
-    padding: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    background: transparent;
+    /* Changed from light-blue to match standard */
+    border: none;
+    /* Remove border/box if we want just cards */
+    padding: 0;
     margin: 0;
-    /* Let container handle margins */
-    position: relative;
+    box-shadow: none;
     overflow: visible;
 }
 
@@ -343,9 +341,10 @@
 }
 
 .related-products-title {
-    font-size: 18px;
-    font-weight: bold;
-    color: var(--dark-blue, #333);
+    font-size: 24px;
+    /* Updated to match standard headers */
+    font-weight: 700;
+    color: #333;
     margin: 0;
 }
 
@@ -365,47 +364,14 @@
     scroll-behavior: smooth;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    padding: 5px 0;
+    padding: 10px 5px;
+    /* Add padding for shadow */
     margin: 0;
     width: 100%;
 }
 
 .related-products-container::-webkit-scrollbar {
     display: none;
-}
-
-/* Related Product Cards */
-.related-products-container .product-card {
-    background: #fff !important;
-    border-radius: 8px !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
-    border: 1px solid #eee !important;
-    min-width: 240px;
-    width: 240px;
-    flex-shrink: 0;
-    padding: 0;
-    margin: 0 2px;
-}
-
-.related-products-container .product-info {
-    padding: 12px !important;
-}
-
-.related-products-container .product-image {
-    position: relative;
-    padding: 10px;
-    text-align: center;
-    height: 180px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.related-products-container .product-image img {
-    max-height: 160px !important;
-    width: auto;
-    max-width: 100%;
-    object-fit: contain;
 }
 
 /* Navigation Buttons */
