@@ -539,8 +539,7 @@
     .add-to-cart {
         font-size: 11px !important;
         height: 32px !important;
-        padding: 7px 10px;
-        !important;
+        padding: 7px 10px !important;
     }
 
     .quantity-control {
