@@ -102,7 +102,7 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                     <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
                 </div>
                                             <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">
-                                    <i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>
+                                    <i class="fas fa-shopping-cart"></i>
                                     ADD TO CART
                                 </button>
             </div>
@@ -155,55 +155,60 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                             <?php if ($relatedProduct['is_discounted']): ?>
                                 <div class="discount-banner">SAVE ₹<?php echo $relatedProduct['mrp'] - $relatedProduct['selling_price']; ?> (<?php echo $relatedProduct['discount_percentage']; ?>% OFF)</div>
                             <?php endif; ?>
+                            
                             <div class="product-info">
-                              <div class="wishlist">
-                                <input type="checkbox" class="heart-checkbox" id="wishlist-checkbox-related-<?php echo $relatedProduct['id']; ?>" data-product-id="<?php echo $relatedProduct['id']; ?>" <?php if ($inWishlist) echo 'checked'; ?>>
-                                <label for="wishlist-checkbox-related-<?php echo $relatedProduct['id']; ?>" class="wishlist-label <?php echo $inWishlist ? 'wishlist-active' : ''; ?>">
-                                    <span class="heart-icon">&#10084;</span>
-                                </label>
-                              </div>
-                              <div class="product-image">
-                                  <a href="product.php?slug=<?php echo $relatedProduct['slug']; ?>">
-                                      <?php if (!empty($relatedProduct['main_image'])): ?>
-                                          <img src="<?php echo $relatedProduct['main_image']; ?>" alt="<?php echo cleanProductName($relatedProduct['name']); ?>">
-                                      <?php else: ?>
-                                          <div style="background: #f8f9fa; height: 155px; display: flex; align-items: center; justify-content: center; border: 1px dashed #dee2e6;">
-                                              <small style="color: #6c757d;">No image available</small>
-                                          </div>
-                                      <?php endif; ?>
-                                  </a>
-                                  <?php if ($isOutOfStock): ?>
-                                      <div class="out-of-stock">OUT OF STOCK</div>
-                                  <?php endif; ?>
-                              </div>
-                              <div class="product-details">
-                                  <h3><?php echo strtoupper(cleanProductName($relatedProduct['name'])); ?></h3>
-                                  <div class="price-buttons">
-                                      <div class="price-btn mrp">
-                                          <span class="label">MRP</span>
-                                          <span class="value"><?php echo formatPrice($relatedProduct['mrp']); ?></span>
-                                      </div>
-                                      <div class="price-btn pay">
-                                          <span class="label">PAY</span>
-                                          <span class="value"><?php echo formatPrice($relatedProduct['selling_price']); ?></span>
-                                      </div>
-                                  </div>
-                                  <?php if ($isOutOfStock): ?>
-                                      <a href="product.php?slug=<?php echo $relatedProduct['slug']; ?>" class="read-more">READ MORE</a>
-                                  <?php else: ?>
-                                      <div class="cart-actions d-flex align-items-center gap-2">
-                                          <div class="quantity-control d-inline-flex align-items-center">
-                                              <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
-                                              <input type="number" class="quantity-input" value="1" min="1" max="99" data-product-id="<?php echo $relatedProduct['id']; ?>">
-                                              <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
-                                          </div>
-                                          <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $relatedProduct['id']; ?>">
-                                              <i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>
-                                              ADD TO CART
-                                          </button>
-                                      </div>
-                                  <?php endif; ?>
-                              </div>
+                                <div class="wishlist">
+                                    <input type="checkbox" class="heart-checkbox" id="wishlist-checkbox-related-<?php echo $relatedProduct['id']; ?>" data-product-id="<?php echo $relatedProduct['id']; ?>" <?php if ($inWishlist) echo 'checked'; ?>>
+                                    <label for="wishlist-checkbox-related-<?php echo $relatedProduct['id']; ?>" class="wishlist-label <?php echo $inWishlist ? 'wishlist-active' : ''; ?>">
+                                        <i class="fas fa-heart"></i>
+                                    </label>
+                                </div>
+                                
+                                <div class="product-image">
+                                    <a href="product.php?slug=<?php echo $relatedProduct['slug']; ?>">
+                                        <?php if (!empty($relatedProduct['main_image'])): ?>
+                                            <img src="<?php echo $relatedProduct['main_image']; ?>" alt="<?php echo cleanProductName($relatedProduct['name']); ?>">
+                                        <?php else: ?>
+                                            <div class="no-image-placeholder">
+                                                <i class="fas fa-image fa-2x"></i>
+                                            </div>
+                                        <?php endif; ?>
+                                    </a>
+                                    <?php if ($isOutOfStock): ?>
+                                        <div class="out-of-stock">OUT OF STOCK</div>
+                                    <?php endif; ?>
+                                </div>
+                                
+                                <div class="product-details">
+                                    <h3><?php echo cleanProductName($relatedProduct['name']); ?></h3>
+                                    
+                                    <div class="price-buttons">
+                                        <div class="price-btn mrp">
+                                            <span class="label">MRP</span>
+                                            <span class="value"><?php echo formatPrice($relatedProduct['mrp']); ?></span>
+                                        </div>
+                                        <div class="price-btn pay">
+                                            <span class="label">PAY</span>
+                                            <span class="value"><?php echo formatPrice($relatedProduct['selling_price']); ?></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <?php if ($isOutOfStock): ?>
+                                        <a href="product.php?slug=<?php echo $relatedProduct['slug']; ?>" class="read-more">READ MORE</a>
+                                    <?php else: ?>
+                                        <div class="cart-actions d-flex align-items-center gap-2">
+                                            <div class="quantity-control d-inline-flex align-items-center">
+                                                <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
+                                                <input type="number" class="quantity-input" value="1" min="1" max="99" data-product-id="<?php echo $relatedProduct['id']; ?>">
+                                                <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
+                                            </div>
+                                            <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $relatedProduct['id']; ?>">
+                                                <i class="fas fa-shopping-cart"></i>
+                                                ADD TO CART
+                                            </button>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
                             </div>
                         </div>
                     <?php endforeach; ?>

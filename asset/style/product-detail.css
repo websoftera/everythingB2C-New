@@ -83,6 +83,7 @@
     background-repeat: no-repeat;
     background-size: 200% 200%;
     z-index: 10;
+    /* Keep low to avoid blocking header */
 }
 
 .thumbnail-row {

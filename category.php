@@ -186,7 +186,7 @@ $subcategories = getSubcategoriesByParentId($category['id']);
                             <div class="category-illustration">
                                 <?php $subcatImage = !empty($subcat['image']) ? ltrim($subcat['image'], './') : ''; ?>
                                 <?php if (!empty($subcatImage)): ?>
-                            <img src="./<?php echo htmlspecialchars($subcatImage); ?>" alt="<?php echo htmlspecialchars($subcat['name']); ?>" />
+                            <img src="./<?php echo htmlspecialchars($subcatImage); ?>" alt="<?php echo htmlspecialchars($subcat['name']); ?>" class="category-img" />
                                 <?php else: ?>
                                   <div class="category-placeholder">
                                     <i class="fas fa-box"></i>
@@ -317,7 +317,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
                             </div>
                             <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">
-                                <i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>
+                                <i class="fas fa-shopping-cart"></i>
                                 ADD TO CART
                             </button>
                         </div>
