@@ -3816,9 +3816,11 @@ input[type="checkbox"]:checked+.heart-icon,
 }
 
 /* Fix for Navigation Dropdowns on Hover */
-.dropdown:hover .dropdown-menu {
-  display: block;
-  margin-top: 0;
+.dropdown:hover>.dropdown-menu,
+.dropdown-desktop:hover>.dropdown-menu,
+.dropdown-mobile:hover>.dropdown-menu {
+  display: block !important;
+  margin-top: 0 !important;
 }
 
 /* Slider Navigation Arrow Visibility Fix (Desktop & Global) */

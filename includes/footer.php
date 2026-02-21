@@ -200,6 +200,35 @@
 </style>
 
 <script>
+// Global Quantity Control Logic
+document.addEventListener('click', function(e) {
+    if (e.target.matches('.btn-qty-minus, .btn-qty-plus') || e.target.closest('.btn-qty-minus, .btn-qty-plus')) {
+        const btn = e.target.matches('.btn-qty-minus, .btn-qty-plus') ? e.target : e.target.closest('.btn-qty-minus, .btn-qty-plus');
+        const container = btn.closest('.quantity-control');
+        if (!container) return;
+        
+        const input = container.querySelector('.quantity-input');
+        if (!input) return;
+        
+        let value = parseInt(input.value) || 1;
+        let min = parseInt(input.getAttribute('min')) || 1;
+        let max = parseInt(input.getAttribute('max')) || 99;
+        
+        if (btn.classList.contains('btn-qty-minus')) {
+            if (value > min) {
+                input.value = value - 1;
+            }
+        } else {
+            if (value < max) {
+                input.value = value + 1;
+            }
+        }
+        
+        // Trigger change event for any other listeners
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+});
+
 // Global product image fallback: swap in a sample image if any product img fails to load
 (function() {
   const fallbackSrc = 'https://via.placeholder.com/240x155?text=Product';
