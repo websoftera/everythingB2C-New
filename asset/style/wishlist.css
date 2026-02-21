@@ -587,7 +587,7 @@ input[type="checkbox"]:checked+.heart-icon {
   outline: none !important;
 }
 
-.category-item {
+.category-scroll-container .category-item {
   flex: 0 0 auto;
   width: 70px;
   text-align: center;
@@ -609,7 +609,7 @@ input[type="checkbox"]:checked+.heart-icon {
   border: 1px solid #ccc;
 }
 
-.category-label {
+.category-scroll-container .category-label {
   font-size: 8px;
   font-weight: bold;
   color: #6c757d;
@@ -649,7 +649,7 @@ input[type="checkbox"]:checked+.heart-icon {
   -webkit-overflow-scrolling: touch;
 }
 
-.category-item {
+.category-scroll-container .category-item {
   flex: 0 0 auto;
   min-width: 70px;
   /* Adjust as needed */

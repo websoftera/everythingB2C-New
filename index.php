@@ -1029,15 +1029,6 @@ function topFunction(e) {
   }
 }
 
-/* Responsive category styles moved to style.css */
-  /* Adjust navigation button images for mobile */
-  .category-nav-btn img,
-  .discounted-nav-btn img,
-  .featured-nav-btn img {
-    width: 10px !important;
-    height: 10px !important;
-  }
-}
 
 /* Ensure arrows are always visible */
 .category-nav-btn::before {
