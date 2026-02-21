@@ -298,105 +298,83 @@
     justify-content: center !important;
 }
 
-/* --- Cart Actions: Improved Alignment --- */
+/* =========================================================
+   CART ACTIONS — Single authoritative definition
+   All quantity control and add-to-cart button styles live here.
+   Do NOT add these anywhere else (Header.css, style.css, etc.)
+   ========================================================= */
+
+/* Wrapper row for quantity control + add-to-cart button */
 .cart-actions,
 .cart-controls {
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
-    gap: 6px !important;
-    /* Reduced for better fit */
+    gap: 5px !important;
     width: 100% !important;
-}
-
-.quantity-control {
-    display: flex !important;
-    align-items: center !important;
-    gap: 4px !important;
-    flex: 1 1 0 !important;
-    min-width: 0 !important;
-    border: 1px solid #b3b3b3 !important;
-    border-radius: 4px !important;
-    background: #b3b3b382 !important;
-    overflow: hidden !important;
-}
-
-.quantity-input {
-    width: 48px !important;
-    min-width: 0 !important;
-    flex: 1 1 0 !important;
-}
-
-.add-to-cart-btn,
-.add-to-cart {
-    flex: 1 1 0 !important;
-    min-width: 0 !important;
-    max-width: 200px !important;
-    height: 36px !important;
-    min-height: 36px !important;
-    max-height: 36px !important;
-    white-space: nowrap !important;
-    text-overflow: ellipsis !important;
-    overflow: visible !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 4px !important;
-    padding: 0 12px !important;
+    padding: 0 4px !important;
     box-sizing: border-box !important;
 }
 
-.add-to-cart-btn i,
-.add-to-cart i {
-    flex-shrink: 0 !important;
-    display: inline-flex !important;
+/* Quantity control pill: [–] [input] [+] */
+.quantity-control {
+    display: flex !important;
     align-items: center !important;
-    justify-content: center !important;
-    font-size: 18px !important;
-    margin-right: 6px !important;
-    transform: scaleX(-1);
+    gap: 0 !important;
+    flex: 0 0 auto !important;
+    border: 1px solid #b3b3b3 !important;
+    border-radius: 4px !important;
+    background: #f0f0f0 !important;
+    overflow: hidden !important;
+    height: 30px !important;
 }
 
-/* Quantity Control Container */
+/* Minus / Plus buttons */
 .quantity-control .btn-qty {
-    width: 28px !important;
-    min-width: 28px !important;
-    height: 36px !important;
-    font-size: 14px !important;
+    width: 26px !important;
+    min-width: 26px !important;
+    max-width: 26px !important;
+    height: 30px !important;
+    font-size: 15px !important;
     font-weight: bold !important;
     border: none !important;
-    background: none !important;
-    border-right: 1px solid #b3b3b3 !important;
+    background: transparent !important;
     cursor: pointer !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    transition: background-color 0.2s ease !important;
+    transition: background-color 0.15s ease !important;
     padding: 0 !important;
     margin: 0 !important;
     flex-shrink: 0 !important;
+    line-height: 1 !important;
+    color: #333 !important;
+}
+
+.quantity-control .btn-qty-minus {
+    border-right: 1px solid #b3b3b3 !important;
 }
 
 .quantity-control .btn-qty-plus {
-    border-right: none !important;
     border-left: 1px solid #b3b3b3 !important;
 }
 
-
 .quantity-control .btn-qty:hover {
-    background: #e4e4e4 !important;
+    background: #ddd !important;
 }
 
 .quantity-control .btn-qty:disabled {
-    background: #6c757d !important;
+    background: #ccc !important;
     cursor: not-allowed !important;
+    color: #999 !important;
 }
 
-/* Quantity Input */
+/* Number input inside quantity control */
 .quantity-control .quantity-input {
-    width: 56px !important;
-    height: 36px !important;
-    font-size: 14px !important;
+    width: 34px !important;
+    min-width: 34px !important;
+    height: 30px !important;
+    font-size: 13px !important;
     font-weight: bold !important;
     text-align: center !important;
     border: none !important;
@@ -404,6 +382,7 @@
     color: #333 !important;
     padding: 0 !important;
     margin: 0 !important;
+    flex-shrink: 0 !important;
     -webkit-appearance: none !important;
     -moz-appearance: textfield !important;
     appearance: textfield !important;
@@ -415,73 +394,49 @@
     margin: 0 !important;
 }
 
+/* Add to Cart button */
+.add-to-cart-btn,
 .add-to-cart {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    max-height: 30px !important;
     background: var(--cart-button) !important;
     color: #ffffff !important;
     font-weight: bold !important;
+    font-size: 10px !important;
+    letter-spacing: 0.4px !important;
+    text-transform: uppercase !important;
     border: none !important;
     border-radius: 4px !important;
-    padding: 10px 12px !important;
-    width: 100% !important;
-    font-size: 11px !important;
     cursor: pointer !important;
-    transition: all 0.2s ease !important;
-    letter-spacing: 0.3px !important;
-    display: flex !important;
+    display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
+    gap: 4px !important;
+    padding: 0 8px !important;
     box-sizing: border-box !important;
-    height: 36px !important;
-    padding: 2px 4px !important;
-    text-transform: uppercase !important;
-    flex: 2 1 0 !important;
-    /* Give more space to button */
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    transition: background 0.2s ease, transform 0.1s ease !important;
 }
 
-/* Desktop-specific add-to-cart button size reduction */
-@media (min-width: 1025px) {
-    .add-to-cart {
-        font-size: 12px !important;
-        padding: 6px 8px !important;
-        height: auto !important;
-    }
-
-    .add-to-cart i {
-        font-size: 12px !important;
-        margin-right: 3px !important;
-    }
+.add-to-cart-btn i,
+.add-to-cart i {
+    font-size: 11px !important;
+    flex-shrink: 0 !important;
+    transform: scaleX(-1);
 }
 
+.add-to-cart-btn:hover,
 .add-to-cart:hover {
     background: var(--dark-blue) !important;
     transform: translateY(-1px) !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
 }
 
-/* Legacy quantity input styles - only for non-quantity-control inputs */
-.quantity-input:not(.quantity-control .quantity-input) {
-    width: 100% !important;
-    max-width: 50px !important;
-    height: 28px !important;
-    font-size: 12px !important;
-    font-weight: bold !important;
-    color: #fff !important;
-    background: #007bff !important;
-    border: none !important;
-    border-radius: 2px !important;
-    text-align: center !important;
-    margin-left: 2px !important;
-    appearance: textfield !important;
-    box-sizing: border-box !important;
-    -webkit-appearance: none;
-    -moz-appearance: textfield;
-}
-
-.quantity-input:not(.quantity-control .quantity-input)::-webkit-inner-spin-button,
-.quantity-input:not(.quantity-control .quantity-input)::-webkit-outer-spin-button {
-    -webkit-appearance: none !important;
-    margin: 0 !important;
-}
 
 /* --- Read More Button --- */
 .read-more {
@@ -544,33 +499,37 @@
         word-break: break-word !important;
     }
 
-    /* Adjust button sizes for medium screens */
+    /* Medium screen cart layout adjustments */
     .cart-actions {
-        gap: 6px !important;
-        padding: 0 6px !important;
-    }
-
-    .add-to-cart {
-        font-size: 11px !important;
-        height: 32px !important;
-        padding: 7px 10px !important;
+        gap: 4px !important;
+        padding: 0 4px !important;
     }
 
     .quantity-control {
-        max-width: 100px !important;
-        height: 28px !important;
+        height: 26px !important;
     }
 
     .quantity-control .btn-qty {
-        width: 100% !important;
-        height: 28px !important;
+        width: 22px !important;
+        min-width: 22px !important;
+        height: 26px !important;
         font-size: 12px !important;
     }
 
     .quantity-control .quantity-input {
-        width: 44px !important;
-        height: 28px !important;
-        font-size: 12px !important;
+        width: 28px !important;
+        min-width: 28px !important;
+        height: 26px !important;
+        font-size: 11px !important;
+    }
+
+    .add-to-cart-btn,
+    .add-to-cart {
+        height: 26px !important;
+        min-height: 26px !important;
+        max-height: 26px !important;
+        font-size: 9px !important;
+        padding: 0 6px !important;
     }
 }
 
@@ -635,35 +594,39 @@
         word-break: break-word !important;
     }
 
-    /* Mobile-optimized button layout */
+    /* Mobile cart layout adjustments */
     .cart-actions {
-        gap: 4px !important;
-        padding: 0 4px !important;
+        gap: 3px !important;
+        padding: 0 3px !important;
         margin-bottom: 0 !important;
     }
 
-    .add-to-cart {
-        font-size: 10px !important;
-        height: 28px !important;
-        padding: 6px 8px !important;
-        letter-spacing: 0.3px !important;
-    }
-
     .quantity-control {
-        max-width: 80px !important;
         height: 24px !important;
     }
 
     .quantity-control .btn-qty {
-        width: 100% !important;
+        width: 20px !important;
+        min-width: 20px !important;
+        height: 24px !important;
+        font-size: 12px !important;
+    }
+
+    .quantity-control .quantity-input {
+        width: 26px !important;
+        min-width: 26px !important;
         height: 24px !important;
         font-size: 10px !important;
     }
 
-    .quantity-control .quantity-input {
-        width: 32px !important;
+    .add-to-cart-btn,
+    .add-to-cart {
         height: 24px !important;
-        font-size: 10px !important;
+        min-height: 24px !important;
+        max-height: 24px !important;
+        font-size: 8px !important;
+        padding: 0 4px !important;
+        letter-spacing: 0.2px !important;
     }
 }
 
@@ -905,19 +868,6 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
     filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3)) !important;
 }
 
-/* Legacy quantity control styles - overridden by new styles above */
-/* Mobile quantity control styles are now handled in the main responsive section above */
-
-/* Force-hide spinner arrows for .quantity-input inside .quantity-control */
-.quantity-control .quantity-input::-webkit-inner-spin-button,
-.quantity-control .quantity-input::-webkit-outer-spin-button {
-    -webkit-appearance: none !important;
-    margin: 0 !important;
-}
-
-.quantity-control .quantity-input {
-    -moz-appearance: textfield !important;
-}
 
 .price-btn,
 .mrp,

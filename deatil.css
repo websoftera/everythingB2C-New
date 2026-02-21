@@ -17,12 +17,16 @@
 }
 
 .product-image-section img {
-  width: 350px; /* fixed width */
-  height: 300px; /* fixed height */
-  object-fit: contain; /* or 'cover' depending on preference */
+  width: 350px;
+  /* fixed width */
+  height: 300px;
+  /* fixed height */
+  object-fit: contain;
+  /* or 'cover' depending on preference */
   border-radius: 10px;
   padding: 10px;
-  background-color: #fff; /* optional for better contrast */
+  background-color: #fff;
+  /* optional for better contrast */
   /* box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);  */
 }
 
@@ -30,14 +34,16 @@
 .product-info-section {
   flex: 1 1 50%;
 }
-.title{
-    justify-content: flex-start;
-    font-size: 21px;
-    font-weight: bold;
-    margin-bottom: 20px;
+
+.title {
+  justify-content: flex-start;
+  font-size: 21px;
+  font-weight: bold;
+  margin-bottom: 20px;
 }
+
 .product-title {
-    display: flex;
+  display: flex;
   font-size: 5px;
 
   margin-bottom: 20px;
@@ -47,12 +53,15 @@
 .price-buttons1 {
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* aligns to the left */
+  justify-content: flex-start;
+  /* aligns to the left */
   gap: 18px;
   margin-bottom: 20px;
-  flex-wrap: nowrap; /* keep buttons in one line */
+  flex-wrap: nowrap;
+  /* keep buttons in one line */
   padding-left: 0;
-  width: fit-content; /* shrink container width to buttons only */
+  width: fit-content;
+  /* shrink container width to buttons only */
 }
 
 .price-buttons1 button {
@@ -65,7 +74,8 @@
   cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: center; /* center content inside buttons */
+  justify-content: center;
+  /* center content inside buttons */
   white-space: nowrap;
   width: 95px;
 }
@@ -94,43 +104,15 @@
   border-radius: 8px;
 }
 
-.heart-checkbox{
-  display:none;
+.heart-checkbox {
+  display: none;
 }
 
-/* === Cart Controls Section === */
-.cart-controls {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
-}
+/* === Cart Controls Section ===
+   Quantity control and add-to-cart styles are defined globally in:
+   asset/style/product-card.css
+   Do NOT add quantity/cart styles here. */
 
-.cart-controls input.quantity-input {
-  width: 50px;
-  height: 38px;
-  padding: 0;
-  font-size: 14px;
-  font-weight: bold;
-  text-align: center;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  background-color: #007bff;
-  color: white;
-}
-
-.cart-controls .add-to-cart {
-  height: 38px;
-  width: 210px;
-  padding: 0 20px;
-  font-size: 14px;
-  font-weight: bold;
-  background-color: #222;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-}
 
 /* === Description === */
 .product-description h4 {
@@ -162,8 +144,8 @@
 }
 */
 
-.thumbnail-row :hover{
-   transform: scale(1.4); 
+.thumbnail-row :hover {
+  transform: scale(1.4);
   z-index: 10;
 }
 
@@ -173,7 +155,8 @@
   display: flex;
   justify-content: center;
   gap: 15px;
-  overflow: visible; /* Ensure zoomed thumbnails don’t get clipped */
+  overflow: visible;
+  /* Ensure zoomed thumbnails don’t get clipped */
 }
 
 .thumbnail-row img {
@@ -199,7 +182,8 @@
   height: 250px;
   z-index: 10;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  display: none; /* hidden until zoom activated */
+  display: none;
+  /* hidden until zoom activated */
 }
 
 .zoom-btn {
@@ -231,7 +215,7 @@
   z-index: 20;
 }
 
-.heart-checkbox{
+.heart-checkbox {
   display: none;
 }
 
@@ -271,7 +255,7 @@
   font-size: 16px;
   cursor: pointer;
 
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   transition: transform 0.2s ease;
 }
 
@@ -280,20 +264,22 @@
 }
 
 .zoom-preview {
-  max-height: 400px;  /* Limit height */
-  overflow-y: auto;   /* Vertical scroll */
+  max-height: 400px;
+  /* Limit height */
+  overflow-y: auto;
+  /* Vertical scroll */
   overflow-x: hidden;
 }
 
 .img-magnifier-glass {
   position: absolute;
   border: 3px solid #000;
-  border-radius:0;
+  border-radius: 0;
   cursor: none;
   width: 220px;
   height: 190px;
 
-  box-shadow: 0 0 8px rgba(0,0,0,0.3);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
 }
 
 .active-thumbnail {
@@ -307,6 +293,7 @@
     transform: scale(0.3);
     opacity: 0.5;
   }
+
   100% {
     transform: scale(1);
     opacity: 1;
@@ -326,6 +313,7 @@
   cursor: pointer;
   transition: transform 0.2s;
 }
+
 .thumbnail-row img:hover {
   transform: scale(1.05);
 }
@@ -338,7 +326,7 @@
   cursor: none;
   width: 280px;
   height: 200px;
-  box-shadow: 0 0 8px rgba(0,0,0,0.5);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
   z-index: 9999;
   display: none;
 }
@@ -349,7 +337,7 @@
   right: 8px;
   font-size: 18px;
   color: white;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0, 0, 0, 0.6);
   border-radius: 50%;
   width: 24px;
   height: 24px;
@@ -374,4 +362,3 @@
   margin-top: -30px;
 } */
 /*-----------------------------------------------------------------------------------------------------*/
-

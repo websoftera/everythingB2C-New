@@ -575,17 +575,6 @@ body {
 }
 
 
-.quantity-input {
-  width: 50px;
-  padding: 6px 10px;
-  font-size: 14px;
-  font-weight: bold;
-  color: white;
-  background-color: #007bff;
-  border: none;
-  border-radius: 10px;
-  text-align: center;
-}
 
 
 .second-navbar {
@@ -871,42 +860,7 @@ input[type="checkbox"]:checked+.heart-icon {
   color: red;
 }
 
-.cart-actions {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 6px;
-  margin: 10px 0 15px;
-}
 
-.add-to-cart {
-
-  background-color: #000;
-  color: white;
-  padding: 8px 12px;
-  font-size: 13px;
-  font-weight: bold;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  width: 70%;
-  justify-content: center;
-}
-
-.quantity-input {
-  width: 50px;
-  padding: 6px 8px;
-  font-size: 14px;
-  font-weight: bold;
-  color: white;
-  background-color: #007bff;
-  border: none;
-  border-radius: 10px;
-  text-align: center;
-  -moz-appearance: none;
-  -webkit-appearance: none;
-  appearance: none;
-}
 
 
 .pagination {
