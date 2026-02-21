@@ -174,7 +174,7 @@ $subcategories = getSubcategoriesByParentId($category['id']);
         </div>
         <div class="categories-slider-wrapper">
             <button class="category-nav-btn prev-btn" aria-label="Scroll Left">
-                <img src="asset/icons/blue_arrow.png" alt="Previous" style="width: 20px; height: 10px;">
+                <img src="asset/icons/blue_arrow.png" alt="Previous">
             </button>
             <div class="categories-container" id="category-slider">
                 <?php foreach ($subcategories as $subcat): ?>
@@ -196,7 +196,7 @@ $subcategories = getSubcategoriesByParentId($category['id']);
                 <?php endforeach; ?>
             </div>
             <button class="category-nav-btn next-btn" aria-label="Scroll Right">
-                <img src="asset/icons/blue_arrow.png" alt="Next" style="transform: rotate(180deg); width: 20px; height: 10px;">
+                <img src="asset/icons/blue_arrow.png" alt="Next" style="transform: rotate(180deg);">
             </button>
         </div>
     </div>

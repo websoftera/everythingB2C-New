@@ -144,7 +144,7 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
             </div>
             <div class="related-products-slider-wrapper">
                 <button class="related-nav-btn prev-btn" aria-label="Scroll Left">
-                    <img src="asset/icons/blue_arrow.png" alt="Previous" style="width: 24px; height: 24px;">
+                    <img src="asset/icons/blue_arrow.png" alt="Previous">
                 </button>
                 <div class="related-products-container" id="related-slider">
                     <?php foreach ($relatedProducts as $relatedProduct): 
@@ -214,7 +214,7 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                     <?php endforeach; ?>
                 </div>
                 <button class="related-nav-btn next-btn" aria-label="Scroll Right">
-                    <img src="asset/icons/blue_arrow.png" alt="Next" style="transform: rotate(180deg);width: 24px; height: 24px;">
+                    <img src="asset/icons/blue_arrow.png" alt="Next" style="transform: rotate(180deg);">
                 </button>
             </div>
         </div>

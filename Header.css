@@ -872,7 +872,6 @@ input[type="checkbox"]:checked+.heart-icon {
 }
 
 .cart-actions {
-.cart-actions {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1085,7 +1084,7 @@ input[type="checkbox"]:checked+.heart-icon {
 
 .category-navbar {
   position: sticky;
-    top: 91px;
+  top: 91px;
   z-index: 997;
   background-color: #ffffff;
   border-top: 1px solid #e0e0e0;
@@ -2109,7 +2108,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: auto; /* Let it shrink */
+  min-width: auto;
+  /* Let it shrink */
   height: 36px;
   transition: all 0.3s ease;
   position: relative;
@@ -2118,7 +2118,8 @@ body {
   box-shadow: none;
   padding: 0 4px;
   white-space: nowrap;
-  flex-shrink: 0; /* Prevent icons from shrinking */
+  flex-shrink: 0;
+  /* Prevent icons from shrinking */
 }
 
 .mobile-nav-link:hover {
@@ -2163,7 +2164,8 @@ body {
   text-overflow: ellipsis;
   max-width: 60px;
   display: block !important;
-  margin-left: 6px; /* Space between icon and text */
+  margin-left: 6px;
+  /* Space between icon and text */
   font-size: 12px;
 }
 
@@ -2214,7 +2216,7 @@ body {
     align-items: center !important;
   }
 
-  .navbar .container-fluid > .d-flex.align-items-center {
+  .navbar .container-fluid>.d-flex.align-items-center {
     flex: 1 0 auto !important;
     min-width: 0 !important;
   }
@@ -3049,7 +3051,7 @@ input[type="checkbox"]:checked+.heart-icon,
 
 .category-scroll-container .custom-category-item.active .category-img {
   border: 3px solid #99d052;
-  border-radius: 8px;
+  border-radius: 0 !important;
   box-shadow: 0 4px 12px rgba(153, 208, 82, 0.3);
   transform: scale(1.05);
   filter: brightness(1.1) contrast(1.1);
@@ -4005,17 +4007,19 @@ nav {
 /* Ensure mobile stickiness */
 .category-scroll-container.d-block.d-lg-none {
   position: sticky !important;
-  top: 56px !important; /* Height of main mobile navbar */
+  top: 56px !important;
+  /* Height of main mobile navbar */
   z-index: 1050 !important;
   background-color: #fff !important;
-  box-shadow: 0 4px 6px -4px rgba(0,0,0,0.2) !important;
+  box-shadow: 0 4px 6px -4px rgba(0, 0, 0, 0.2) !important;
 }
 
 /* Ensure desktop stickiness */
 .second-navbar.d-none.d-lg-block {
   position: sticky !important;
-  top: 72px !important; /* Height of main desktop navbar */
+  top: 72px !important;
+  /* Height of main desktop navbar */
   z-index: 1050 !important;
   background-color: #fff !important;
-  box-shadow: 0 4px 6px -4px rgba(0,0,0,0.1) !important;
+  box-shadow: 0 4px 6px -4px rgba(0, 0, 0, 0.1) !important;
 }

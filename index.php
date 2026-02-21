@@ -118,7 +118,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
         </div>
         <div class="categories-slider-wrapper">
             <button class="category-nav-btn prev-btn" aria-label="Scroll Left">
-                <img src="asset/icons/blue_arrow.png" alt="Previous" style="width: 20px; height: 10px;">
+                <img src="asset/icons/blue_arrow.png" alt="Previous">
             </button>
             <div class="categories-container" id="slider">
             <?php foreach ($main_categories as $category): ?>
@@ -140,7 +140,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
             <?php endforeach; ?>
         </div>
             <button class="category-nav-btn next-btn" aria-label="Scroll Right">
-                <img src="asset/icons/blue_arrow.png" alt="Next" style="transform: rotate(180deg); width: 20px; height: 10px;">
+                <img src="asset/icons/blue_arrow.png" alt="Next" style="transform: rotate(180deg);">
             </button>
         </div>
     </div>
@@ -155,7 +155,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
         </div>
         <div class="discounted-products-slider-wrapper">
             <button class="discounted-nav-btn prev-btn" aria-label="Scroll Left">
-          <img src="asset/icons/blue_arrow.png" alt="Previous" style="width: 24px; height: 24px;">
+          <img src="asset/icons/blue_arrow.png" alt="Previous">
         </button>
             <div class="discounted-products-container" id="discounted-slider">
         <?php 
@@ -212,7 +212,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                                 <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
                             </div>
                             <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">
-                                <i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>
+                                <i class="fas fa-shopping-cart"></i>
                                 ADD TO CART
                             </button>
                         </div>
@@ -223,7 +223,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
         <?php endforeach; ?>
 </div>
             <button class="discounted-nav-btn next-btn" aria-label="Scroll Right">
-          <img src="asset/icons/blue_arrow.png" alt="Next" style="transform: rotate(180deg);width: 24px; height: 24px;">
+          <img src="asset/icons/blue_arrow.png" alt="Next" style="transform: rotate(180deg);">
         </button>
 </div>
     </div>
@@ -238,7 +238,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
         </div>
         <div class="featured-products-slider-wrapper">
             <button class="featured-nav-btn prev-btn" aria-label="Scroll Left">
-          <img src="asset/icons/green_arrow.png" alt="Previous" style="width: 24px; height: 24px;">
+          <img src="asset/icons/green_arrow.png" alt="Previous">
         </button>
             <div class="featured-products-container" id="featured-slider">
         <?php 
@@ -295,7 +295,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                                 <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
                             </div>
                             <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">
-                                <i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>
+                                <i class="fas fa-shopping-cart"></i>
                                 ADD TO CART
                             </button>
                         </div>
@@ -306,7 +306,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
         <?php endforeach; ?>
 </div>
             <button class="featured-nav-btn next-btn" aria-label="Scroll Right">
-          <img src="asset/icons/green_arrow.png" alt="Next" style="transform: rotate(180deg); width: 24px; height: 24px;">
+          <img src="asset/icons/green_arrow.png" alt="Next" style="transform: rotate(180deg);">
         </button>
 </div>
     </div>
@@ -1090,7 +1090,7 @@ function topFunction(e) {
   height: 200px;
   margin: 0 auto 10px;
   background: #f8f9fa;
-  border-radius: 8px;
+  border-radius: 0 !important;
   border: 1px solid #e0e0e0;
   display: flex;
   align-items: center;
@@ -1111,7 +1111,7 @@ function topFunction(e) {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: 0 !important;
 }
 
 .category-placeholder {
@@ -1121,7 +1121,7 @@ function topFunction(e) {
   align-items: center;
   justify-content: center;
   background: #e9ecef;
-  border-radius: 8px;
+  border-radius: 0 !important;
   color: #6c757d;
 }
 
