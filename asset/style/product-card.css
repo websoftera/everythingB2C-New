@@ -359,13 +359,14 @@
 
 /* Quantity Control Container */
 .quantity-control .btn-qty {
-    width: 100% !important;
+    width: 28px !important;
+    min-width: 28px !important;
     height: 36px !important;
     font-size: 14px !important;
     font-weight: bold !important;
     border: none !important;
     background: none !important;
-    border: 1px solid #b3b3b3 !important;
+    border-right: 1px solid #b3b3b3 !important;
     cursor: pointer !important;
     display: flex !important;
     align-items: center !important;
@@ -373,7 +374,14 @@
     transition: background-color 0.2s ease !important;
     padding: 0 !important;
     margin: 0 !important;
+    flex-shrink: 0 !important;
 }
+
+.quantity-control .btn-qty-plus {
+    border-right: none !important;
+    border-left: 1px solid #b3b3b3 !important;
+}
+
 
 .quantity-control .btn-qty:hover {
     background: #e4e4e4 !important;
