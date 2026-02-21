@@ -3366,6 +3366,7 @@ html .cart-added-highlight,
     padding-right: 3px !important;
   }
 }
+
 /* ==========================================================================
    Global Category Slider Styles (Migrated from index.php)
    ========================================================================== */
@@ -3407,9 +3408,8 @@ html .cart-added-highlight,
   width: 180px;
   height: 180px;
   margin: 0 auto 10px;
-  border-radius: 50%;
   background: var(--white);
-  padding: 15px;
+  padding: 2px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3511,15 +3511,18 @@ html .cart-added-highlight,
     gap: 6px !important;
     padding: 0 10px !important;
   }
+
   .category-item {
     width: 140px !important;
     min-width: 140px !important;
     flex-shrink: 0 !important;
   }
+
   .category-illustration {
     width: 120px !important;
     height: 120px !important;
   }
+
   .category-label {
     font-size: 11px !important;
   }
@@ -3532,18 +3535,22 @@ html .cart-added-highlight,
     overflow-x: auto !important;
     scroll-behavior: smooth !important;
   }
+
   .category-item {
     width: 120px !important;
     min-width: 120px !important;
     flex-shrink: 0 !important;
   }
+
   .category-illustration {
     width: 100px !important;
     height: 100px !important;
   }
+
   .category-label {
     font-size: 10px !important;
   }
+
   .category-nav-btn {
     width: 25px !important;
     height: 25px !important;
@@ -3555,13 +3562,14 @@ html .cart-added-highlight,
     width: 100px !important;
     min-width: 100px !important;
   }
+
   .category-illustration {
     width: 80px !important;
     height: 80px !important;
   }
+
   .category-nav-btn {
     width: 18px !important;
     height: 18px !important;
   }
 }
-
