@@ -3192,7 +3192,7 @@ input[type="checkbox"]:checked+.heart-icon,
 .categories-card,
 .discounted-products-card,
 .featured-products-card {
-  padding: 15px 0 !important;
+  padding: 0 !important;
   margin: 0 !important;
 }
 
@@ -3214,7 +3214,7 @@ input[type="checkbox"]:checked+.heart-icon,
   .featured-products-section,
   .service-section,
   .process-container {
-    padding: 15px 0 !important;
+    padding: 10px 0 !important;
     margin: 0 !important;
   }
 
@@ -3229,7 +3229,7 @@ input[type="checkbox"]:checked+.heart-icon,
 
   /* Reduce section padding */
   section {
-    padding: 15px 0 !important;
+    padding: 10px 0 !important;
   }
 
   /* Compact process section - keep gap and step styling */

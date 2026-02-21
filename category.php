@@ -176,14 +176,14 @@ $subcategories = getSubcategoriesByParentId($category['id']);
             <button class="category-nav-btn prev-btn" aria-label="Scroll Left">
                 <img src="asset/icons/blue_arrow.png" alt="Previous">
             </button>
-            <div class="categories-container" id="category-slider">
+            <div class="categories-container" id="slider">
                 <?php foreach ($subcategories as $subcat): ?>
                     <div class="category-item">
                         <a href="category.php?slug=<?php echo $subcat['slug']; ?>">
                             <div class="category-illustration">
                                 <?php $subcatImage = !empty($subcat['image']) ? ltrim($subcat['image'], './') : ''; ?>
                                 <?php if (!empty($subcatImage)): ?>
-                                    <img src="./<?php echo htmlspecialchars($subcatImage); ?>" alt="<?php echo htmlspecialchars($subcat['name']); ?>" class="category-img" />
+                                    <img src="./<?php echo htmlspecialchars($subcatImage); ?>" alt="<?php echo htmlspecialchars($subcat['name']); ?>" />
                                 <?php else: ?>
                                     <div class="category-placeholder">
                                         <i class="fas fa-box"></i>

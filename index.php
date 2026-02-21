@@ -755,6 +755,11 @@ function topFunction(e) {
   }
 }
 
+@media (max-width: 767px) {
+  .hero-slider-section {
+    padding: 10px 0;
+  }
+}
 @media (max-width: 768px) {
   .service-section {
     padding: 30px 0;
@@ -1008,7 +1013,7 @@ function topFunction(e) {
 /* Responsive adjustments for categories card */
 @media (max-width: 767px) {
   .categories-card {
-    padding: 15px;
+    padding: 0 !important;
   }
 }
 
@@ -1099,6 +1104,7 @@ function topFunction(e) {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   overflow: hidden;
   max-width: 100%;
+  padding: 0 !important;
 }
 
 .category-illustration:hover {
@@ -1110,7 +1116,7 @@ function topFunction(e) {
 .category-illustration img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain !important;
   border-radius: 0 !important;
 }
 

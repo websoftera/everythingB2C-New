@@ -210,7 +210,7 @@ html body [data-product-id].cart-added-highlight {
   box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
 }
 #floatingCartPanel.fixed-panel .floating-cart-summary-box {
-  padding: 7px 10px; 4px 10px !important;
+  padding: 7px 10px 4px 10px !important;
   margin-bottom: 6px !important;
 }
 #floatingCartPanel.fixed-panel .floating-cart-summary-box > div {
@@ -329,7 +329,6 @@ html body [data-product-id].cart-added-highlight {
 }
 
 /* CSS: Make sure pointer events and hover work for both link and submenu */
-<style>
 .dropdown-menu > .dropdown-submenu > .dropdown-toggle:after {
   content: "\25B6";
   float: right;
@@ -401,8 +400,8 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
             <form class="d-flex flex-grow-1 mx-4 position-relative" role="search" autocomplete="off" onsubmit="return false;">
                 <div class="input-group w-100 flex-wrap">
                     <!-- DESKTOP Dropdown -->
-                    <div class="dropdown-desktop">
-                      <button id="categoryDropdownDesktop" class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" data-selected-category="all">
+                    <div class="dropdown dropdown-desktop">
+                      <button id="categoryDropdownDesktop" class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-selected-category="all">
                         <span id="selectedCategoryDesktop">All Categories</span>
                       </button>
                       <ul class="dropdown-menu">
@@ -426,8 +425,8 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
                       </ul>
                     </div>
                     <!-- MOBILE Dropdown -->
-                    <div class="dropdown-mobile">
-                      <button id="categoryDropdownMobile" class="btn btn-light dropdown-toggle mobile-category-btn" type="button" data-bs-toggle="dropdown" data-selected-category="all">
+                    <div class="dropdown dropdown-mobile">
+                      <button id="categoryDropdownMobile" class="btn btn-light dropdown-toggle mobile-category-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-selected-category="all">
                         <span id="selectedCategoryMobile">All</span>
                       </button>
                       <ul class="dropdown-menu">
