@@ -952,9 +952,6 @@ function showOrderSuccessPopup() {
     title: '',
     html: `
       <div class="order-success-wrapper">
-        <div class="order-success-logo">
-          <img src="./Kichen Page/page2/logo.webp" alt="EverythingB2C" />
-        </div>
         <h2 class="order-success-title">Thank You!</h2>
         <div class="order-success-icon">
           <i class="fas fa-check-circle"></i>
@@ -1004,6 +1001,24 @@ if (window.history.replaceState) {
   border-radius: 8px !important;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2) !important;
   padding: 20px !important;
+}
+
+/* Force side-by-side buttons in success popup */
+.order-success-popup .swal2-actions {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  width: 100% !important;
+}
+
+.order-success-popup .swal2-actions button {
+  margin: 5px 0 !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  font-size: 13px !important;
+  padding: 8px 10px !important;
+  white-space: nowrap !important;
 }
 
 /* Ensure consistent styling with other popups */
