@@ -2683,7 +2683,7 @@ input[type="checkbox"]:checked+.heart-icon,
 
 /* Default state for wishlist icons */
 .wishlist-label i {
-  color: #ccc;
+  color: #fff;
 }
 
 /* Hover state for wishlist icons */
