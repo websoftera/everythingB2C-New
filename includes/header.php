@@ -470,9 +470,9 @@ if (!function_exists('renderCategoryDropdown')) {
                   <i class="fas fa-user user-account-icon me-1 me-lg-2"></i>
                   <div class="user-welcome-text d-none d-lg-block">
                     <div class="welcome-line-1">Welcome</div>
-                    <div class="welcome-line-2"><?= htmlspecialchars(ucfirst($currentUser['first_name'])) ?></div>
+                    <div class="welcome-line-2"><?= htmlspecialchars(ucfirst(explode(' ', trim($currentUser['name'] ?? 'Guest'))[0])) ?></div>
                   </div>
-                  <span class="d-lg-none user-signin-text" style="font-size:11px;"><?= htmlspecialchars(ucfirst($currentUser['first_name'])) ?></span>
+                  <span class="d-lg-none user-signin-text" style="font-size:11px;"><?= htmlspecialchars(ucfirst(explode(' ', trim($currentUser['name'] ?? 'Guest'))[0])) ?></span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end auth-dropdown-menu">
                   <li><a class="dropdown-item" href="<?php echo $base_url; ?>myaccount.php">Customer Account</a></li>
