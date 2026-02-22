@@ -448,7 +448,11 @@ if (!function_exists('renderCategoryDropdown')) {
 
         <!-- Nav Icons: Wishlist, Sign In, Cart (visible on all screens) -->
         <div class="d-flex align-items-center header-nav-icons flex-shrink-0">
-            <!-- Wishlist -->
+                        <!-- Home link (desktop only) -->
+            <a href="index.php" title="Home" class="text-decoration-none me-2 me-lg-3 home-link d-none d-lg-inline-flex">
+                <i class="bi bi-house-door home-icon"></i>
+            </a>
+        <!-- Wishlist -->
             <a href="wishlist.php" title="Wishlist" class="text-decoration-none me-2 me-lg-3 position-relative wishlist-link">
                 <div class="wishlist-icon-container position-relative">
                     <i class="bi <?php echo $wishlistCount > 0 ? 'bi-heart-fill' : 'bi-heart'; ?> wishlist-icon"></i>
@@ -486,11 +490,6 @@ if (!function_exists('renderCategoryDropdown')) {
                 </ul>
               <?php endif; ?>
             </div>
-
-            <!-- Home link (desktop only) -->
-            <a href="index.php" title="Home" class="text-decoration-none me-2 me-lg-3 home-link d-none d-lg-inline-flex">
-                <i class="bi bi-house-door home-icon"></i>
-            </a>
 
             <!-- Cart -->
             <div class="cart-section">
