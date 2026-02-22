@@ -4008,3 +4008,21 @@ nav {
   background-color: #fff !important;
   box-shadow: 0 4px 6px -4px rgba(0, 0, 0, 0.1) !important;
 }
+
+/* ── Search bar: fill available flex space between logo and icons ── */
+.search-bar-desktop {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}
+
+.search-bar-desktop form {
+  width: 100% !important;
+}
+
+/* ── Search dropdown must appear ABOVE the sticky second-navbar ── */
+/* second-navbar z-index is 1050, so we need to be above it      */
+.search-bar-desktop .dropdown-menu,
+.search-bar-desktop .dropdown.show .dropdown-menu,
+#categoryDropdownDesktop+.dropdown-menu {
+  z-index: 1100 !important;
+}

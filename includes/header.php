@@ -396,7 +396,7 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
         </a>
 
         <!-- Desktop: Search Bar -->
-        <div class="mx-auto my-2 my-lg-0 search-bar-desktop d-none d-lg-block flex-grow-1" style="max-width: 600px;">
+        <div class="my-2 my-lg-0 search-bar-desktop d-none d-lg-flex flex-grow-1" style="max-width: 600px; min-width: 0;">
             <form class="d-flex flex-grow-1 mx-4 position-relative" role="search" autocomplete="off" onsubmit="return false;">
                 <div class="input-group w-100 flex-wrap">
                     <!-- DESKTOP Dropdown -->
@@ -444,7 +444,7 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
         </div>
 
         <!-- Nav Icons: Wishlist, Sign In, Cart (visible on all screens) -->
-        <div class="d-flex align-items-center header-nav-icons ms-auto">
+        <div class="d-flex align-items-center header-nav-icons flex-shrink-0">
             <!-- Wishlist -->
             <a href="wishlist.php" title="Wishlist" class="text-decoration-none me-2 me-lg-3 position-relative wishlist-link">
                 <div class="wishlist-icon-container position-relative">
