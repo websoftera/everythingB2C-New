@@ -3657,11 +3657,20 @@ html .cart-added-highlight,
   position: relative !important;
 }
 
-.hero-slider-section,
-.popular-categories-section,
-.discounted-products-section,
-.featured-products-section,
-.service-section,
-.process-container {
-  margin: 0 20px !important;
+@media (min-width: 992px) {
+
+  .hero-slider-section,
+  .popular-categories-section,
+  .discounted-products-section,
+  .featured-products-section,
+  .service-section,
+  .process-container {
+    margin: 0 20px !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .category-item {
+    max-height: 52px !important;
+  }
 }
