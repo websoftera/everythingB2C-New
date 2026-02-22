@@ -413,12 +413,12 @@ if (!function_exists('renderCategoryDropdown')) {
         </a>
 
         <!-- Desktop: Search Bar — fills all space between logo and icons -->
-        <div class="search-bar-desktop d-none d-lg-flex my-2 my-lg-0" style="flex: 1 1 auto; min-width: 0; max-width: 1100px;">
+        <div class="search-bar-desktop d-none d-lg-flex my-2 my-lg-0" style="flex: 1 1 auto; min-width: 0; max-width: 850px;">
             <form class="d-flex position-relative w-100" style="padding: 0 8px;" role="search" autocomplete="off" onsubmit="return false;">
                 <div class="input-group flex-nowrap w-100">
                     <!-- DESKTOP Dropdown -->
                     <div class="dropdown dropdown-desktop">
-                      <button id="categoryDropdownDesktop" class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-selected-category="all">
+                      <button id="categoryDropdownDesktop" class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-flip="false" data-selected-category="all">
                         <span id="selectedCategoryDesktop">All Categories</span>
                       </button>
                       <ul class="dropdown-menu" style="z-index: 1100;">
@@ -428,7 +428,7 @@ if (!function_exists('renderCategoryDropdown')) {
                     </div>
                     <!-- MOBILE Dropdown -->
                     <div class="dropdown dropdown-mobile">
-                      <button id="categoryDropdownMobile" class="btn btn-light dropdown-toggle mobile-category-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-selected-category="all">
+                      <button id="categoryDropdownMobile" class="btn btn-light dropdown-toggle mobile-category-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-flip="false" data-selected-category="all">
                         <span id="selectedCategoryMobile">All</span>
                       </button>
                       <ul class="dropdown-menu">
