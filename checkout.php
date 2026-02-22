@@ -1043,17 +1043,17 @@ if (window.history.replaceState) {
 }
 
 .order-success-title {
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 700;
   color: #555;
-  margin: 0;
+  margin: 10px 0 0 0;
 }
 
 .order-success-icon i {
-  font-size: 64px;
+  font-size: 48px;
   color: #9fbe1b;
   display: block;
-  margin: 4px auto;
+  margin: 10px auto;
 }
 
 .order-success-lead {
