@@ -773,7 +773,7 @@ const SwalWithLogo = {
                     
                     // Create logo image
                     const logoImg = document.createElement('img');
-                    logoImg.src = './sitelogo.png';
+                    logoImg.src = (window.BASE_URL || '') + 'logo.webp';
                     logoImg.alt = 'EverythingB2C';
                     logoImg.style.cssText = `
                         max-width: 200px;
