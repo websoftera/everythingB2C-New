@@ -28,13 +28,13 @@
         <div class="footer-column">
             <h3>Quick Links</h3>    
             <div class="footer-links-inline">
-                <a href="returns.php">Returns & Refunds</a>
+                <a href="<?php echo $base_url; ?>returns.php">Returns & Refunds</a>
                 <span class="separator">|</span>
-                <a href="privacy.php">Privacy Policy</a>
+                <a href="<?php echo $base_url; ?>privacy.php">Privacy Policy</a>
                 <span class="separator">|</span>
-                <a href="about.php">About Us</a>
+                <a href="<?php echo $base_url; ?>about.php">About Us</a>
                 <span class="separator">|</span>
-                <a href="faq.php">FAQ</a>
+                <a href="<?php echo $base_url; ?>faq.php">FAQ</a>
             </div>
         </div>
         <div class="footer-column social">

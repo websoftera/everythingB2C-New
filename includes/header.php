@@ -2,7 +2,8 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once 'includes/functions.php';
+require_once __DIR__ . '/functions.php';
+$base_url = $base_url ?? '';
 
 // Helper: Use this snippet for authentication checks
 // if (!isLoggedIn()) {
@@ -55,7 +56,7 @@ if (isLoggedIn()) {
     <title><?php echo $pageTitle ?? 'EverythingB2C'; ?></title>
 
     <!-- Favicon -->
-    <link rel="icon" href="./sitelogo.png" type="image/webp">
+    <link rel="icon" href="<?php echo $base_url; ?>sitelogo.png" type="image/webp">
 
     <!-- Font Awesome Preload for better performance -->
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -70,13 +71,13 @@ if (isLoggedIn()) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="stylesheet" href="Header.css">
+    <link rel="stylesheet" href="<?php echo $base_url; ?>Header.css">
 
-    <link rel="stylesheet" href="asset/style/global-colors.css">
-    <link rel="stylesheet" href="asset/style/popup.css">
-    <link rel="stylesheet" href="asset/style/style.css">
-    <link rel="stylesheet" href="asset/style/product-card.css">
-    <script src="asset/js/sliders.js" defer></script>
+    <link rel="stylesheet" href="<?php echo $base_url; ?>asset/style/global-colors.css">
+    <link rel="stylesheet" href="<?php echo $base_url; ?>asset/style/popup.css">
+    <link rel="stylesheet" href="<?php echo $base_url; ?>asset/style/style.css">
+    <link rel="stylesheet" href="<?php echo $base_url; ?>asset/style/product-card.css">
+    <script src="<?php echo $base_url; ?>asset/js/sliders.js" defer></script>
     <style>
 html, body {
   overflow-x: hidden !important;
@@ -378,7 +379,7 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
     <div id="floatingCartContent"></div>
     <div id="floatingCartSummary"></div>
     <div class="floating-cart-actions">
-      <a href="cart.php" class="btn btn-outline-primary w-100 mb-2" style="padding:6px 0;font-size:0.97rem;">View Full Cart</a>
+      <a href="<?php echo $base_url; ?>cart.php" class="btn btn-outline-primary w-100 mb-2" style="padding:6px 0;font-size:0.97rem;">View Full Cart</a>
       <button type="button" class="btn btn-outline-danger w-100" id="floatingRemoveAll" style="padding:6px 0;font-size:0.97rem;">
         <i class="fas fa-trash-alt me-1"></i>Remove All
       </button>
@@ -408,8 +409,8 @@ if (!function_exists('renderCategoryDropdown')) {
 <nav class="navbar navbar-expand-lg sticky-top bg-white" style="overflow: visible;">
     <div class="container-fluid d-flex align-items-center flex-nowrap" style="gap: 8px;">
         <!-- Logo -->
-        <a class="navbar-brand m-0" href="index.php" style="flex-shrink: 0;">
-            <img src="logo.webp" alt="EverythingB2C" class="img-fluid" style="max-height: 60px;">
+        <a class="navbar-brand m-0" href="<?php echo $base_url; ?>index.php" style="flex-shrink: 0;">
+            <img src="<?php echo $base_url; ?>logo.webp" alt="EverythingB2C" class="img-fluid" style="max-height: 60px;">
         </a>
 
         <!-- Desktop: Search Bar — fills all space between logo and icons -->
@@ -449,11 +450,11 @@ if (!function_exists('renderCategoryDropdown')) {
         <!-- Nav Icons: Wishlist, Sign In, Cart (visible on all screens) -->
         <div class="d-flex align-items-center header-nav-icons flex-shrink-0">
                         <!-- Home link (desktop only) -->
-            <a href="index.php" title="Home" class="text-decoration-none me-2 me-lg-3 home-link d-none d-lg-inline-flex">
+            <a href="<?php echo $base_url; ?>index.php" title="Home" class="text-decoration-none me-2 me-lg-3 home-link d-none d-lg-inline-flex">
                 <i class="bi bi-house-door home-icon"></i>
             </a>
         <!-- Wishlist -->
-            <a href="wishlist.php" title="Wishlist" class="text-decoration-none me-2 me-lg-3 position-relative wishlist-link">
+            <a href="<?php echo $base_url; ?>wishlist.php" title="Wishlist" class="text-decoration-none me-2 me-lg-3 position-relative wishlist-link">
                 <div class="wishlist-icon-container position-relative">
                     <i class="bi <?php echo $wishlistCount > 0 ? 'bi-heart-fill' : 'bi-heart'; ?> wishlist-icon"></i>
                     <?php if ($wishlistCount > 0): ?>
@@ -474,10 +475,10 @@ if (!function_exists('renderCategoryDropdown')) {
                   <span class="d-lg-none user-signin-text" style="font-size:11px;"><?= htmlspecialchars(ucfirst($currentUser['first_name'])) ?></span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end auth-dropdown-menu">
-                  <li><a class="dropdown-item" href="myaccount.php">Customer Account</a></li>
-                  <li><a class="dropdown-item" href="logout.php">Logout</a></li>
+                  <li><a class="dropdown-item" href="<?php echo $base_url; ?>myaccount.php">Customer Account</a></li>
+                  <li><a class="dropdown-item" href="<?php echo $base_url; ?>logout.php">Logout</a></li>
                   <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" href="seller/login.php">Seller Login</a></li>
+                  <li><a class="dropdown-item" href="<?php echo $base_url; ?>seller/login.php">Seller Login</a></li>
                 </ul>
               <?php else: ?>
                 <a href="#" title="Sign In / Register" class="text-decoration-none user-signin-link d-flex align-items-center dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -485,16 +486,16 @@ if (!function_exists('renderCategoryDropdown')) {
                   <span class="user-signin-text d-none d-sm-inline">Sign In / Register</span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end auth-dropdown-menu">
-                  <li><a class="dropdown-item" href="login.php">Customer Login</a></li>
-                  <li><a class="dropdown-item" href="seller/login.php">Seller Login</a></li>
+                  <li><a class="dropdown-item" href="<?php echo $base_url; ?>login.php">Customer Login</a></li>
+                  <li><a class="dropdown-item" href="<?php echo $base_url; ?>seller/login.php">Seller Login</a></li>
                 </ul>
               <?php endif; ?>
             </div>
 
             <!-- Cart -->
             <div class="cart-section">
-                <a href="cart.php" class="text-decoration-none text-dark cart-link position-relative">
-                    <img src="./asset/images/Cart_Icon.png" alt="Cart" class="cart-icon" style="width:45px;height:35px;object-fit:contain;">
+                <a href="<?php echo $base_url; ?>cart.php" class="text-decoration-none text-dark cart-link position-relative">
+                    <img src="<?php echo $base_url; ?>asset/images/Cart_Icon.png" alt="Cart" class="cart-icon" style="width:45px;height:35px;object-fit:contain;">
                     <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill" style="display:<?php echo $cartCount > 0 ? 'inline-block' : 'none'; ?>;">
                         <?php echo $cartCount > 0 ? $cartCount : ''; ?>
                     </span>
@@ -515,8 +516,8 @@ if (!function_exists('renderCategoryDropdown')) {
                 // Check if this category is currently active
                 $activeClass = ($currentCategory === $cat['slug']) ? 'active' : '';
                 
-                echo '<a href="category.php?slug=' . $cat['slug'] . '" class="custom-category-item text-center mx-2 ' . $activeClass . '">';
-                echo '<img src="./' . $cat['image'] . '" alt="' . htmlspecialchars($cat['name']) . '" class="category-img mb-1">';
+                echo '<a href="' . $base_url . 'category.php?slug=' . $cat['slug'] . '" class="custom-category-item text-center mx-2 ' . $activeClass . '">';
+                echo '<img src="' . $base_url . $cat['image'] . '" alt="' . htmlspecialchars($cat['name']) . '" class="category-img mb-1">';
                 echo '<div class="category-label">' . htmlspecialchars($cat['name']) . '</div>';
                 echo '</a>';
                 if (!empty($cat['children'])) {
@@ -583,9 +584,13 @@ renderCategoryMenu($categoryTree);
     </nav>
 </div>
 <!-- Bootstrap Bundle removed (in footer) -->
-<script src="popup/popup.js"></script>
-<script src="popup/searchbar.js"></script>
-<script src="js/real-time-max-quantity.js"></script>
+<script>
+  // Global base URL for JavaScript
+  window.BASE_URL = '<?php echo $base_url; ?>';
+</script>
+<script src="<?php echo $base_url; ?>popup/popup.js"></script>
+<script src="<?php echo $base_url; ?>popup/searchbar.js"></script>
+<script src="<?php echo $base_url; ?>js/real-time-max-quantity.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 // Ensure all dropdown toggles (e.g., Sign In) initialize correctly

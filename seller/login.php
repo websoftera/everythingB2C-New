@@ -51,148 +51,122 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
-?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seller Login - EverythingB2C</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        body {
-            background: linear-gradient(135deg, #9fbe1b 0%, #7a9615 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .login-card {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-            width: 100%;
-            max-width: 450px;
-        }
-        .login-header {
-            background: linear-gradient(135deg, #9fbe1b 0%, #7a9615 100%);
-            color: white;
-            padding: 40px 30px;
-            text-align: center;
-        }
-        .login-header i {
-            font-size: 3rem;
-            margin-bottom: 15px;
-        }
-        .login-body {
-            padding: 40px;
-        }
-        .form-control {
-            border-radius: 10px;
-            border: 2px solid #e9ecef;
-            padding: 12px 15px;
-        }
-        .form-control:focus {
-            border-color: #9fbe1b;
-            box-shadow: 0 0 0 0.2rem rgba(159, 190, 27, 0.25);
-        }
-        .btn-login {
-            background: linear-gradient(135deg, #9fbe1b 0%, #7a9615 100%);
-            border: none;
-            border-radius: 10px;
-            padding: 12px;
-            font-weight: 600;
-            width: 100%;
-            color: white;
-        }
-        .btn-login:hover {
-            background: linear-gradient(135deg, #8ba817 0%, #6a8513 100%);
-            color: white;
-        }
-        .input-group-text {
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-right: none;
-        }
-        .input-group .form-control {
-            border-left: none;
-        }
-        .seller-badge {
-            background: #9fbe1b;
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-    </style>
-</head>
-<body>
-    <div class="login-card">
-        <div class="login-header">
-            <i class="fas fa-store"></i>
-            <h3>Seller Login</h3>
-            <p class="mb-0">EverythingB2C Seller Portal</p>
-            <span class="seller-badge mt-2 d-inline-block">Partner Dashboard</span>
-        </div>
-        <div class="login-body">
-            <?php if ($error): ?>
-                <div class="alert alert-danger">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <?php echo htmlspecialchars($error); ?>
-                </div>
-            <?php endif; ?>
-            
-            <form method="POST">
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email Address</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                        <input type="email" class="form-control" id="email" name="email" 
-                               value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>" 
-                               placeholder="seller@example.com" required>
+$pageTitle = 'Seller Login';
+$base_url = '../';
+require_once '../includes/header.php';
+
+// Breadcrumb Navigation
+$breadcrumbs = generateBreadcrumb($pageTitle);
+echo renderBreadcrumb($breadcrumbs);
+?>
+<link rel="stylesheet" href="../asset/style/login.css">
+<style>
+    .seller-info-content h4 {
+        color: #333;
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+    .seller-info-content p {
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 15px;
+    }
+    .seller-info-content ul {
+        padding-left: 20px;
+        margin-bottom: 25px;
+    }
+    .seller-info-content ul li {
+        margin-bottom: 10px;
+        color: #555;
+    }
+    .btn-admin-login {
+        display: inline-block;
+        margin-top: 20px;
+        color: #7a9615;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+    }
+    .btn-admin-login:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<div class="account-page">
+    <div class="container">
+        <div class="row">
+            <!-- Login Form -->
+            <div class="col-lg-6">
+                <div class="form-container">
+                    <div class="form-header login-header" style="background-color: #8dbd43;">
+                        LOGIN FOR EXISTING SELLER
+                    </div>
+                    <div class="form-body">
+                        <?php if ($error): ?>
+                            <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
+                        <?php endif; ?>
+                        <form method="POST">
+                            <div class="form-group">
+                                <label for="email">Email Address <span class="required">*</span></label>
+                                <input type="email" class="login-form-control" name="email" value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password <span class="required">*</span></label>
+                                <input type="password" class="login-form-control" name="password" required>
+                            </div>
+                            <div class="form-options">
+                                <div class="remember-me">
+                                    <input type="checkbox" id="remember_me">
+                                    <label for="remember_me" style="font-weight: normal; font-size: 14px; margin-bottom:0;">Remember Me</label>
+                                </div>
+                                <button type="submit" class="login-btn login-btn-login" style="background-color: #7a9615;">Log In</button>
+                            </div>
+                            <div class="forgot-password" style="margin-top: 15px;">
+                                <a href="#">Forgot Password?</a>
+                            </div>
+                        </form>
                     </div>
                 </div>
-                
-                <div class="mb-4">
-                    <label for="password" class="form-label">Password</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                        <input type="password" class="form-control" id="password" name="password" 
-                               placeholder="Enter your password" required>
-                    </div>
-                </div>
-                
-                <button type="submit" class="btn btn-primary btn-login">
-                    <i class="fas fa-sign-in-alt"></i> Login to Seller Dashboard
-                </button>
-            </form>
-            
-            <div class="text-center mt-4">
-                <p class="text-muted mb-2">
-                    <i class="fas fa-info-circle"></i> For sellers only
-                </p>
-                <a href="../index.php" class="text-muted">
-                    <i class="fas fa-arrow-left"></i> Back to Website
-                </a>
             </div>
             
-            <hr class="my-3">
-            
-            <div class="text-center">
-                <small class="text-muted">
-                    Are you an admin? 
-                    <a href="../admin/login.php" class="text-decoration-none" style="color: #9fbe1b;">
-                        <strong>Admin Login</strong>
-                    </a>
-                </small>
+            <!-- Information Column -->
+            <div class="col-lg-6 register-form">
+                <div class="form-container">
+                    <div class="form-header register-header" style="background-color: #0d8ac1;">
+                        BECOME A SELLER
+                    </div>
+                    <div class="form-body seller-info-content">
+                        <h4>Start Selling on EverythingB2C</h4>
+                        <p>Join our growing community of sellers and reach thousands of customers every day. We provide the tools you need to manage your business efficiently.</p>
+                        
+                        <ul>
+                            <li><i class="fas fa-check-circle text-success me-2"></i> Low commission rates</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i> Easy product management</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i> Advanced sales reports</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i> Secure and fast payments</li>
+                        </ul>
+                        
+                        <p><strong>How to register?</strong></p>
+                        <p>Currently, seller registration is handled by our administration team. Please contact us at <a href="mailto:info@everythingb2c.in">info@everythingb2c.in</a> or call us at <a href="tel:+918780406230">+91 878 040 6230</a> to upgrade your customer account to a seller account.</p>
+                        
+                        <div class="text-center">
+                            <a href="../index.php" class="btn btn-outline-secondary mt-3">
+                                <i class="fas fa-arrow-left me-1"></i> Back to Website
+                            </a>
+                        </div>
+                        
+                        <hr class="mt-4">
+                        <div class="text-center">
+                            <a href="../admin/login.php" class="btn-admin-login">
+                                <i class="fas fa-user-shield me-1"></i> Admin Portal Login
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+<?php include '../includes/footer.php'; ?>

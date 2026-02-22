@@ -1,6 +1,7 @@
 // Load Header HTML
 window.addEventListener('DOMContentLoaded', () => {
-  fetch('Header.html')
+  const baseUrl = window.BASE_URL || '';
+  fetch(baseUrl + 'Header.html')
     .then(res => res.text())
     .then(data => {
       document.getElementById('header-0').innerHTML = data;
@@ -22,26 +23,26 @@ function initHeaderFeatures() {
     });
   }
 
- // ========== Price Update on Quantity Change ==========
-document.querySelectorAll('.card').forEach(card => {
-  const payButton = card.querySelector('.pay');
-  const qtyInput = card.querySelector('.quantity-input');
+  // ========== Price Update on Quantity Change ==========
+  document.querySelectorAll('.card').forEach(card => {
+    const payButton = card.querySelector('.pay');
+    const qtyInput = card.querySelector('.quantity-input');
 
-  if (payButton && qtyInput) {
-    const unitPrice = parseFloat(payButton.getAttribute('data-pay')) || 0;
+    if (payButton && qtyInput) {
+      const unitPrice = parseFloat(payButton.getAttribute('data-pay')) || 0;
 
-    function updatePayText() {
-      let quantity = parseInt(qtyInput.value);
-      if (isNaN(quantity) || quantity < 1) quantity = 1;
+      function updatePayText() {
+        let quantity = parseInt(qtyInput.value);
+        if (isNaN(quantity) || quantity < 1) quantity = 1;
 
-      const total = unitPrice * quantity;
-      payButton.textContent = `PAY ₹${total.toFixed(2)}`;
+        const total = unitPrice * quantity;
+        payButton.textContent = `PAY ₹${total.toFixed(2)}`;
+      }
+
+      qtyInput.addEventListener('input', updatePayText);
+      updatePayText(); // Run once on load
     }
-
-    qtyInput.addEventListener('input', updatePayText);
-    updatePayText(); // Run once on load
-  }
-});
+  });
 
 
   // ========== Mobile Auto Scroll ==============================================================================================================
@@ -62,7 +63,8 @@ document.querySelectorAll('.card').forEach(card => {
   }
 
   // ========== Load Popup ================================================================================================================================
-  fetch('popup.html')
+  const baseUrl = window.BASE_URL || '';
+  fetch(baseUrl + 'popup.html')
     .then(response => response.text())
     .then(html => {
       document.body.insertAdjacentHTML('beforeend', html);
@@ -78,14 +80,14 @@ document.querySelectorAll('.card').forEach(card => {
     .catch(error => console.error('Error loading popup:', error));
 }
 // ========== wishlist ================================================================================================================================
- 
+
 
 function initWishlistFeature() {
   document.querySelectorAll('.heart-checkbox').forEach(checkbox => {
-    checkbox.addEventListener('change', function() {
+    checkbox.addEventListener('change', function () {
       const productId = this.getAttribute('data-product-id');
       const productName = this.closest('.card')?.querySelector('h3')?.innerText.trim() || 'Product';
-      
+
       // Wishlist functionality is now handled by individual pages via AJAX
       // This prevents conflicts with server-side wishlist management
     });
@@ -99,8 +101,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // cart js ---------------------------------------------------------------------------------------------------------------->//
 
-  
-  // Show modal with product add/update status
+
+// Show modal with product add/update status
 function showCartModal(productName, type = 'added') {
   const modal = document.getElementById('cart-modal');
   const message = document.getElementById('cart-message');
@@ -133,8 +135,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Cart functionality is now handled by individual pages
 });
 
-  // drop down menu js ---------------------->
-  // Example using JS
+// drop down menu js ---------------------->
+// Example using JS
 
 
 
@@ -200,31 +202,32 @@ function magnify(imgID, zoom) {
   glass.addEventListener("mousemove", moveMagnifier);
 }
 
-  
 
-  const mainImage = document.getElementById('mainImage');
-  const thumbnails = document.querySelectorAll('.thumbnail');
 
-  thumbnails.forEach(thumb => {
-    thumb.addEventListener('click', () => {
-      // Swap src between clicked thumbnail and main image
-      const tempSrc = mainImage.src;
-      mainImage.src = thumb.src;
-      thumb.src = tempSrc;
-    });
+const mainImage = document.getElementById('mainImage');
+const thumbnails = document.querySelectorAll('.thumbnail');
+
+thumbnails.forEach(thumb => {
+  thumb.addEventListener('click', () => {
+    // Swap src between clicked thumbnail and main image
+    const tempSrc = mainImage.src;
+    mainImage.src = thumb.src;
+    thumb.src = tempSrc;
   });
+});
 
 
 
-   window.addEventListener('DOMContentLoaded', () => {
-  fetch('Header.html')
+window.addEventListener('DOMContentLoaded', () => {
+  const baseUrl = window.BASE_URL || '';
+  fetch(baseUrl + 'Header.html')
     .then(res => res.text())
     .then(data => {
       document.getElementById('header-0').innerHTML = data;
       initHeaderFeatures();
     });
 
-  fetch('Footer.html')
+  fetch(baseUrl + 'Footer.html')
     .then(res => res.text())
     .then(data => {
       document.getElementById('footer-0').innerHTML = data;

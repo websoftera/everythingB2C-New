@@ -95,7 +95,7 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                 </div>
             </div>
             <?php if ($product['stock_quantity'] > 0): ?>
-            <div class="cart-actions d-flex align-items-center gap-2">
+            <div class="cart-action-btns cart-actions d-flex align-items-center gap-2">
                 <div class="quantity-control d-inline-flex align-items-center">
                     <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
                     <input type="number" class="quantity-input" value="1" min="1" max="99" data-product-id="<?php echo $product['id']; ?>">

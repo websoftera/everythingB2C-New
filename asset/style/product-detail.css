@@ -570,9 +570,6 @@
     }
 }
 
-.price-buttons,
-.price-buttons1,
-.modern-prices,
-.cart-actions {
+.cart-action-btns {
     margin: 15px 0px !important;
 }
