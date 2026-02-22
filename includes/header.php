@@ -413,7 +413,7 @@ if (!function_exists('renderCategoryDropdown')) {
         </a>
 
         <!-- Desktop: Search Bar — fills all space between logo and icons -->
-        <div class="search-bar-desktop d-none d-lg-flex my-2 my-lg-0" style="flex: 1 1 auto; min-width: 0; max-width: 900px;">
+        <div class="search-bar-desktop d-none d-lg-flex my-2 my-lg-0" style="flex: 1 1 auto; min-width: 0; max-width: 1400px;">
             <form class="d-flex position-relative w-100" style="padding: 0 8px;" role="search" autocomplete="off" onsubmit="return false;">
                 <div class="input-group flex-nowrap w-100">
                     <!-- DESKTOP Dropdown -->
@@ -476,7 +476,7 @@ if (!function_exists('renderCategoryDropdown')) {
                   <li><a class="dropdown-item" href="seller/login.php">Seller Login</a></li>
                 </ul>
               <?php else: ?>
-                <a href="#" title="Sign In" class="text-decoration-none user-signin-link d-flex align-items-center dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <a href="#" title="Sign In / Register" class="text-decoration-none user-signin-link d-flex align-items-center dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                   <i class="fas fa-user user-signin-icon me-1"></i>
                   <span class="user-signin-text d-none d-sm-inline">Sign In / Register</span>
                 </a>
