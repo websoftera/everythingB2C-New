@@ -443,81 +443,56 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
             </form>
         </div>
 
-        <div class="mobile-header-icons-wrapper d-lg-none ms-auto">
-            <!-- Mobile: Icons (Wishlist, User, Cart) -->
-            <div class="mobile-nav-icons d-flex flex-nowrap align-items-center">
-                <!-- Wishlist -->
-                <a href="wishlist.php" class="mobile-nav-link p-2">
-                    <i class="bi <?php echo $wishlistCount > 0 ? 'bi-heart-fill' : 'bi-heart'; ?> wishlist-icon" style="font-size: 24px;"></i>
-                    <span class="badge wishlist-badge"><?= $wishlistCount ?></span>
-                </a>
-
-                <!-- User Account / Login -->
-                <?php if (isLoggedIn()): ?>
-                    <a href="myaccount.php" class="mobile-nav-link p-2">
-                        <i class="fas fa-user user-account-icon" style="font-size: 24px;"></i>
-                        <div class="user-welcome-text d-none d-sm-block ms-1">
-                            <span class="welcome-line-2" style="font-size: 10px;"><?= htmlspecialchars(ucfirst($currentUser['first_name'])) ?></span>
-                        </div>
-                    </a>
-                <?php else: ?>
-                    <a href="login.php" class="mobile-nav-link p-2">
-                        <i class="fas fa-user user-signin-icon" style="font-size: 24px;"></i>
-                        <span class="user-signin-text d-none d-sm-block ms-1" style="font-size: 10px;">Sign In</span>
-                    </a>
-                <?php endif; ?>
-
-                <!-- Cart -->
-                <a href="cart.php" class="mobile-nav-link p-2" id="cart-icon-mobile">
-                    <img src="./asset/images/Cart_Icon.png" alt="Cart" class="cart-icon" style="width:45px;height:35px;object-fit:contain;">
-                    <span id="cart-count-mobile" class="badge cart-badge"><?= $cartCount ?></span>
-                </a>
-            </div>
-        </div>
-        
-        <!-- Desktop Right Section -->
-        <div class="d-none d-lg-flex align-items-center">
-            <!-- Topbar Navigation Items -->
-            <div class="topbar-nav-items d-flex align-items-center me-3">
-                <a href="index.php" title="Home" class="text-decoration-none me-3 home-link">
-                    <i class="bi bi-house-door home-icon"></i>
-                </a>
-                <a href="wishlist.php" title="Wishlist" class="text-decoration-none me-3 position-relative wishlist-link">
-                    <div class="wishlist-icon-container">
-                        <i class="bi <?php echo $wishlistCount > 0 ? 'bi-heart-fill' : 'bi-heart'; ?> wishlist-icon"></i>
-                    </div>
-                </a>
-                <div class="dropdown user-auth-dropdown me-3">
-                  <?php if (isLoggedIn()): ?>
-                    <a href="#" title="Account" class="text-decoration-none user-account-link d-flex align-items-center dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      <i class="fas fa-user user-account-icon me-2"></i>
-                      <div class="user-welcome-text">
-                        <div class="welcome-line-1">Welcome</div>
-                        <div class="welcome-line-2"><?= htmlspecialchars(ucfirst($currentUser['first_name'])) ?></div>
-                      </div>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end auth-dropdown-menu">
-                      <li><a class="dropdown-item" href="myaccount.php">Customer Account</a></li>
-                      <li><a class="dropdown-item" href="logout.php">Logout</a></li>
-                      <li><hr class="dropdown-divider"></li>
-                      <li><a class="dropdown-item" href="seller/login.php">Seller Login</a></li>
-                    </ul>
-                  <?php else: ?>
-                    <a href="#" title="Sign In" class="text-decoration-none user-signin-link d-flex align-items-center dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      <i class="fas fa-user user-signin-icon me-1"></i>
-                      <span class="user-signin-text">Sign In / Register</span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end auth-dropdown-menu">
-                      <li><a class="dropdown-item" href="login.php">Customer Login</a></li>
-                      <li><a class="dropdown-item" href="seller/login.php">Seller Login</a></li>
-                    </ul>
-                  <?php endif; ?>
+        <!-- Nav Icons: Wishlist, Sign In, Cart (visible on all screens) -->
+        <div class="d-flex align-items-center header-nav-icons ms-auto">
+            <!-- Wishlist -->
+            <a href="wishlist.php" title="Wishlist" class="text-decoration-none me-2 me-lg-3 position-relative wishlist-link">
+                <div class="wishlist-icon-container position-relative">
+                    <i class="bi <?php echo $wishlistCount > 0 ? 'bi-heart-fill' : 'bi-heart'; ?> wishlist-icon"></i>
+                    <?php if ($wishlistCount > 0): ?>
+                    <span class="badge wishlist-badge position-absolute"><?= $wishlistCount ?></span>
+                    <?php endif; ?>
                 </div>
+            </a>
+
+            <!-- User Account / Login -->
+            <div class="dropdown user-auth-dropdown me-2 me-lg-3">
+              <?php if (isLoggedIn()): ?>
+                <a href="#" title="Account" class="text-decoration-none user-account-link d-flex align-items-center dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="fas fa-user user-account-icon me-1 me-lg-2"></i>
+                  <div class="user-welcome-text d-none d-lg-block">
+                    <div class="welcome-line-1">Welcome</div>
+                    <div class="welcome-line-2"><?= htmlspecialchars(ucfirst($currentUser['first_name'])) ?></div>
+                  </div>
+                  <span class="d-lg-none user-signin-text" style="font-size:11px;"><?= htmlspecialchars(ucfirst($currentUser['first_name'])) ?></span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end auth-dropdown-menu">
+                  <li><a class="dropdown-item" href="myaccount.php">Customer Account</a></li>
+                  <li><a class="dropdown-item" href="logout.php">Logout</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item" href="seller/login.php">Seller Login</a></li>
+                </ul>
+              <?php else: ?>
+                <a href="#" title="Sign In" class="text-decoration-none user-signin-link d-flex align-items-center dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="fas fa-user user-signin-icon me-1"></i>
+                  <span class="user-signin-text d-none d-sm-inline">Sign In / Register</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end auth-dropdown-menu">
+                  <li><a class="dropdown-item" href="login.php">Customer Login</a></li>
+                  <li><a class="dropdown-item" href="seller/login.php">Seller Login</a></li>
+                </ul>
+              <?php endif; ?>
             </div>
-            <!-- Cart Section -->
+
+            <!-- Home link (desktop only) -->
+            <a href="index.php" title="Home" class="text-decoration-none me-2 me-lg-3 home-link d-none d-lg-inline-flex">
+                <i class="bi bi-house-door home-icon"></i>
+            </a>
+
+            <!-- Cart -->
             <div class="cart-section">
                 <a href="cart.php" class="text-decoration-none text-dark cart-link position-relative">
-                    <img src="./asset/images/Cart_Icon.png" alt="Cart" class="cart-icon" style="width:45px;height:35px;">
+                    <img src="./asset/images/Cart_Icon.png" alt="Cart" class="cart-icon" style="width:45px;height:35px;object-fit:contain;">
                     <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill" style="display:<?php echo $cartCount > 0 ? 'inline-block' : 'none'; ?>;">
                         <?php echo $cartCount > 0 ? $cartCount : ''; ?>
                     </span>
