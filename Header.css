@@ -537,6 +537,18 @@ body {
   .category-scroll-container {
     display: none !important;
   }
+
+  /* Hide mobile-only icon group on desktop */
+  .mobile-header-icons-wrapper {
+    display: none !important;
+  }
+}
+
+/* Hide desktop-only icon group on mobile */
+@media (max-width: 991.98px) {
+  .navbar .d-none.d-lg-flex {
+    display: none !important;
+  }
 }
 
 /* Tab view styles with same gap */
@@ -3990,7 +4002,7 @@ nav {
 /* Ensure desktop stickiness */
 .second-navbar.d-none.d-lg-block {
   position: sticky !important;
-  top: 72px !important;
+  top: 70px !important;
   /* Height of main desktop navbar */
   z-index: 1050 !important;
   background-color: #fff !important;

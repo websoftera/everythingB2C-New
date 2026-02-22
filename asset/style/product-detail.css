@@ -202,7 +202,7 @@
 
 .wishlist-label {
     font-size: 24px;
-    color: #ccc;
+    color: #fff;
     cursor: pointer;
     transition: all 0.3s ease;
     line-height: 1;
@@ -233,6 +233,7 @@
     margin-bottom: 18px;
     justify-content: flex-start;
     width: 100%;
+    margin-bottom: 20px;
 }
 
 .modern-cart {
@@ -303,6 +304,7 @@
     flex: 1;
     letter-spacing: 0.5px;
     text-transform: uppercase;
+    max-width: 185px;
 }
 
 .cart-actions .add-to-cart-btn:hover {
@@ -566,4 +568,11 @@
     .price-buttons1 {
         flex-wrap: wrap;
     }
+}
+
+.price-buttons,
+.price-buttons1,
+.modern-prices,
+.cart-actions {
+    margin: 15px 0px !important;
 }
