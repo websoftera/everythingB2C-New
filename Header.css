@@ -4013,7 +4013,7 @@ nav {
 .search-bar-desktop {
   flex: 1 1 auto !important;
   min-width: 0 !important;
-  max-width: 1400px !important;
+  max-width: 1100px !important;
 }
 
 .search-bar-desktop form {
@@ -4026,4 +4026,6 @@ nav {
 .search-bar-desktop .dropdown.show .dropdown-menu,
 #categoryDropdownDesktop+.dropdown-menu {
   z-index: 1100 !important;
+  max-height: 450px !important;
+  overflow-y: auto !important;
 }

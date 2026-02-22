@@ -413,7 +413,7 @@ if (!function_exists('renderCategoryDropdown')) {
         </a>
 
         <!-- Desktop: Search Bar — fills all space between logo and icons -->
-        <div class="search-bar-desktop d-none d-lg-flex my-2 my-lg-0" style="flex: 1 1 auto; min-width: 0; max-width: 1400px;">
+        <div class="search-bar-desktop d-none d-lg-flex my-2 my-lg-0" style="flex: 1 1 auto; min-width: 0; max-width: 1100px;">
             <form class="d-flex position-relative w-100" style="padding: 0 8px;" role="search" autocomplete="off" onsubmit="return false;">
                 <div class="input-group flex-nowrap w-100">
                     <!-- DESKTOP Dropdown -->
