@@ -3656,3 +3656,12 @@ html .cart-added-highlight,
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
   position: relative !important;
 }
+
+.hero-slider-section,
+.popular-categories-section,
+.discounted-products-section,
+.featured-products-section,
+.service-section,
+.process-container {
+  margin: 0 20px !important;
+}
