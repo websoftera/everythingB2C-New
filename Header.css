@@ -4004,7 +4004,7 @@ nav {
   position: sticky !important;
   top: 70px !important;
   /* Height of main desktop navbar */
-  z-index: 1050 !important;
+  z-index: 10 !important;
   background-color: #fff !important;
   box-shadow: 0 4px 6px -4px rgba(0, 0, 0, 0.1) !important;
 }
@@ -4013,6 +4013,7 @@ nav {
 .search-bar-desktop {
   flex: 1 1 auto !important;
   min-width: 0 !important;
+  max-width: 900px !important;
 }
 
 .search-bar-desktop form {
