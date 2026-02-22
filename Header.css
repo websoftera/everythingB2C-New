@@ -2507,8 +2507,8 @@ body {
 /* Desktop specific adjustments */
 @media (min-width: 992px) {
   .navbar form {
-    max-width: 50%;
-    /* Even smaller on desktop */
+    max-width: none;
+    /* Allow it to grow and take available space */
   }
 
   .navbar form .input-group {
