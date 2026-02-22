@@ -387,41 +387,43 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
 </div>
 
 
+<?php
+// Category dropdown render helper (used in search bar and elsewhere)
+if (!function_exists('renderCategoryDropdown')) {
+    function renderCategoryDropdown($tree, $level = 0) {
+        foreach ($tree as $cat) {
+            $indent = str_repeat('&nbsp;&nbsp;&nbsp;', $level);
+            if (!empty($cat['children'])) {
+                echo '<li><a class="dropdown-item category-option" href="#" data-category="' . $cat['slug'] . '">' . $indent . '<strong>' . htmlspecialchars($cat['name']) . '</strong></a></li>';
+                renderCategoryDropdown($cat['children'], $level + 1);
+            } else {
+                echo '<li><a class="dropdown-item category-option" href="#" data-category="' . $cat['slug'] . '">' . $indent . htmlspecialchars($cat['name']) . '</a></li>';
+            }
+        }
+    }
+}
+?>
+
 <!-- NAVBAR START -->
-<nav class="navbar navbar-expand-lg sticky-top bg-white">
-    <div class="container-fluid d-flex align-items-center justify-content-between flex-nowrap">
+<nav class="navbar navbar-expand-lg sticky-top bg-white" style="overflow: visible;">
+    <div class="container-fluid d-flex align-items-center flex-nowrap" style="gap: 8px;">
         <!-- Logo -->
         <a class="navbar-brand m-0" href="index.php" style="flex-shrink: 0;">
             <img src="logo.webp" alt="EverythingB2C" class="img-fluid" style="max-height: 60px;">
         </a>
 
-        <!-- Desktop: Search Bar -->
-        <div class="my-2 my-lg-0 search-bar-desktop d-none d-lg-flex flex-grow-1" style="max-width: 600px; min-width: 0;">
-            <form class="d-flex flex-grow-1 mx-4 position-relative" role="search" autocomplete="off" onsubmit="return false;">
-                <div class="input-group w-100 flex-wrap">
+        <!-- Desktop: Search Bar — fills all space between logo and icons -->
+        <div class="search-bar-desktop d-none d-lg-flex my-2 my-lg-0" style="flex: 1 1 auto; min-width: 0; max-width: 650px;">
+            <form class="d-flex position-relative w-100" style="padding: 0 8px;" role="search" autocomplete="off" onsubmit="return false;">
+                <div class="input-group flex-nowrap w-100">
                     <!-- DESKTOP Dropdown -->
                     <div class="dropdown dropdown-desktop">
                       <button id="categoryDropdownDesktop" class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-selected-category="all">
                         <span id="selectedCategoryDesktop">All Categories</span>
                       </button>
-                      <ul class="dropdown-menu">
+                      <ul class="dropdown-menu" style="z-index: 1100;">
                         <li><a class="dropdown-item category-option" href="#" data-category="all">All Categories</a></li>
-                        <?php
-                        function renderCategoryDropdown($tree, $level = 0) {
-                            foreach ($tree as $cat) {
-                                $indent = str_repeat('&nbsp;&nbsp;&nbsp;', $level);
-                                if (!empty($cat['children'])) {
-                                    // Parent category as clickable item
-                                    echo '<li><a class="dropdown-item category-option" href="#" data-category="' . $cat['slug'] . '">' . $indent . '<strong>' . htmlspecialchars($cat['name']) . '</strong></a></li>';
-                                    renderCategoryDropdown($cat['children'], $level + 1);
-                                } else {
-                                    // Selectable category
-                                    echo '<li><a class="dropdown-item category-option" href="#" data-category="' . $cat['slug'] . '">' . $indent . htmlspecialchars($cat['name']) . '</a></li>';
-                                }
-                            }
-                        }
-                        renderCategoryDropdown($categoryTree);
-                        ?>
+                        <?php renderCategoryDropdown($categoryTree); ?>
                       </ul>
                     </div>
                     <!-- MOBILE Dropdown -->
@@ -442,6 +444,7 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
                 <div id="headerSearchResultsPopup" class="position-absolute w-100" style="z-index: 9999; display: none;"></div>
             </form>
         </div>
+
 
         <!-- Nav Icons: Wishlist, Sign In, Cart (visible on all screens) -->
         <div class="d-flex align-items-center header-nav-icons flex-shrink-0">
