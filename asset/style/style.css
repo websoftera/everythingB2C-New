@@ -3673,4 +3673,8 @@ html .cart-added-highlight,
   .category-item {
     max-height: 52px !important;
   }
+
+  .popular-categories-section {
+    padding: 20px 5px !important;
+  }
 }
