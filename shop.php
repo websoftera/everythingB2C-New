@@ -150,25 +150,19 @@ echo renderBreadcrumb($breadcrumbs);
               }
             ?>
               <div class="card product-card" data-id="prod-<?php echo $product['id']; ?>">
-                <?php if ($product['is_discounted']): ?>
-                  <div class="discount-banner">SAVE ₹<?php echo $product['mrp'] - $product['selling_price']; ?> (<?php echo $product['discount_percentage']; ?>% OFF)</div>
-                <?php endif; ?>
+                  <?php if ($product['is_discounted']): ?>
+                      <div class="discount-banner">SAVE ₹<?php echo $product['mrp'] - $product['selling_price']; ?> (<?php echo $product['discount_percentage']; ?>% OFF)</div>
+                  <?php else: ?>
+                      <div class="discount-banner" style="visibility: hidden;">&nbsp;</div>
+                  <?php endif; ?>
                 <div class="product-info">
-                  <div class="wishlist">
-                    <input type="checkbox" class="heart-checkbox" id="wishlist-checkbox-shop-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>" <?php if ($inWishlist) echo 'checked'; ?>>
-                    <label for="wishlist-checkbox-shop-<?php echo $product['id']; ?>" class="wishlist-label <?php echo $inWishlist ? 'wishlist-active' : ''; ?>">
-                        <span class="heart-icon">&#10084;</span>
-                    </label>
-                  </div>
                   <div class="product-image">
                       <a href="product.php?slug=<?php echo $product['slug']; ?>">
                           <?php if (!empty($product['main_image'])): ?>
                               <img src="<?php echo $product['main_image']; ?>" alt="<?php echo cleanProductName($product['name']); ?>">
                           <?php else: ?>
-                              <div style="background: #f8f9fa; height: 155px; display: flex; align-items: center; justify-content: center; border: 1px dashed #dee2e6;">
-                                  <small style="color: #6c757d;">No image available</small>
-                              </div>
-                          <?php endif; ?>
+                            <img src="./uploads/products/blank-img.webp" alt="No image available">
+                        <?php endif; ?>
                       </a>
                       <?php if ($isOutOfStock): ?>
                           <div class="out-of-stock">OUT OF STOCK</div>
@@ -184,6 +178,12 @@ echo renderBreadcrumb($breadcrumbs);
                           <div class="price-btn pay">
                               <span class="label">PAY</span>
                               <span class="value"><?php echo formatPrice($product['selling_price']); ?></span>
+                          </div>
+                          <div class="wishlist">
+                            <input type="checkbox" class="heart-checkbox" id="wishlist-checkbox-shop-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>" <?php if ($inWishlist) echo 'checked'; ?>>
+                            <label for="wishlist-checkbox-shop-<?php echo $product['id']; ?>" class="wishlist-label <?php echo $inWishlist ? 'wishlist-active' : ''; ?>">
+                                <span class="heart-icon">&#10084;</span>
+                            </label>
                           </div>
                       </div>
                       <?php if ($isOutOfStock): ?>

@@ -39,6 +39,17 @@ echo renderBreadcrumb($breadcrumbs);
 <!-- Banner/Breadcrumb (skip homepage) -->
 <link rel="stylesheet" href="./asset/style/style.css">
 <link rel="stylesheet" href="./asset/style/responsive-cart-checkout.css">
+<style>
+/* SweetAlert overrides for close button */
+.swal2-popup .swal2-close {
+    position: absolute !important;
+    top: 5px !important;
+    right: 5px !important;
+    font-size: 24px !important;
+    display: flex !important;
+    color: #444 !important;
+}
+</style>
 <div class="container mt-4">
     <!-- <h1>Shopping Cart</h1> -->
     
@@ -60,7 +71,7 @@ echo renderBreadcrumb($breadcrumbs);
                     </div>
                     <div class="card-body">
                         <!-- Header Row for Cart Columns -->
-                        <div class="cart-header-row d-flex align-items-center flex-nowrap" style="font-weight:600; color:#444; font-size:0.98rem; background:#f7f7f7; border-radius:6px; padding:7px 0 7px 8px; margin-bottom:8px; gap:8px;">
+                        <div class="cart-header-row d-flex align-items-center flex-nowrap" style="font-weight:600; color:#444; font-size:0.98rem; background:#f7f7f7; border-radius:6px; padding:7px 0 7px 8px; margin-top:15px; margin-bottom:12px; gap:8px;">
                             <div style="flex:0 0 56px; max-width:56px; min-width:40px;"></div>
                             <div style="flex:1 1 120px; min-width:60px; max-width:220px;">Product</div>
                             <div style="flex:0 0 90px; min-width:60px; text-align:center;">MRP</div>
@@ -71,10 +82,13 @@ echo renderBreadcrumb($breadcrumbs);
                             <div style="flex:0 0 36px; min-width:28px; text-align:center; flex-shrink:0;"></div>
                         </div>
                         <?php foreach ($cartItems as $item): ?>
-                            <div class="cart-item-row d-flex align-items-center flex-nowrap" style="border: 1px solid #e0e0e0; border-radius: 7px; padding: 7px 0; margin-bottom: 10px; background: #fff; gap: 8px;">
+                            <div class="cart-item-row d-flex align-items-center flex-nowrap" style="border: 1px solid #e0e0e0; border-radius: 7px; padding: 7px 0 7px 8px; margin-bottom: 10px; background: #fff; gap: 8px;">
                                 <div style="flex:0 0 56px; max-width:56px; min-width:40px;">
                                     <a href="product.php?slug=<?php echo urlencode($item['slug']); ?>">
-                                        <img src="./<?php echo $item['main_image']; ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="img-fluid" style="width:44px;height:44px;object-fit:cover;border-radius:5px;">
+                                        <?php
+                                        $imgSrc = !empty($item['main_image']) ? './' . $item['main_image'] : './uploads/products/blank-img.webp';
+                                        ?>
+                                        <img src="<?php echo $imgSrc; ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="img-fluid" style="width:44px;height:44px;object-fit:cover;border-radius:5px;">
                                     </a>
                                 </div>
                                 <div style="flex:1 1 120px; min-width:60px; max-width:220px; font-size:0.97em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
@@ -82,13 +96,13 @@ echo renderBreadcrumb($breadcrumbs);
                                         <?php echo htmlspecialchars($item['name']); ?>
                                     </a>
                                 </div>
-                                <div style="flex:0 0 90px; min-width:60px; font-size:0.93em; color:#888; text-align:center;"> <s><?php echo formatPrice($item['mrp']); ?></s> </div>
+                                <div style="flex:0 0 90px; min-width:60px; font-size:0.93em; color:#888; text-align:center;"> <s><?php echo formatPrice($item['mrp'] * $item['quantity']); ?></s> </div>
                                 <div style="flex:0 0 90px; min-width:60px; font-size:0.97em; color:#007bff; font-weight:500; text-align:center;"> <?php echo formatPrice($item['selling_price'] * $item['quantity']); ?> </div>
                                 <div style="flex:0 0 90px; min-width:60px; font-size:0.93em; color:#23a036; text-align:center;"> <?php echo formatPrice(($item['mrp'] - $item['selling_price']) * $item['quantity']); ?> </div>
                                 <div style="flex:0 0 80px; min-width:50px; text-align:center;">
                                     <div class="quantity-control d-inline-flex align-items-center justify-content-center">
                                         <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
-                                        <input type="number" class="form-control quantity-input" value="<?php echo $item['quantity']; ?>" min="1" max="99" data-cart-id="<?php echo $item['id']; ?>" style="width:34px;display:inline-block;">
+                                        <input type="number" class="quantity-input" value="<?php echo $item['quantity']; ?>" min="1" max="99" data-cart-id="<?php echo $item['id']; ?>">
                                         <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
                                     </div>
                                 </div>
@@ -222,10 +236,15 @@ document.addEventListener('DOMContentLoaded', function() {
                                     // Find the cart row by cart id
                                     var row = document.querySelector('.cart-item-row input[data-cart-id="' + item.id + '"]').closest('.cart-item-row');
                                     if (row) {
+                                        // Update MRP (total)
+                                        var mrpCell = row.children[2];
+                                        if (mrpCell) {
+                                            mrpCell.innerHTML = '<s>' + formatPrice(item.mrp * item.quantity) + '</s>';
+                                        }
                                         // Update You Pay (total)
                                         var youPayCell = row.children[3];
                                         if (youPayCell) {
-                                            youPayCell.textContent = item.selling_price * item.quantity;
+                                            youPayCell.textContent = formatPrice(item.selling_price * item.quantity);
                                         }
                                         // Update You Save
                                         var youSaveCell = row.children[4];
@@ -289,6 +308,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 text: 'Are you sure you want to remove this item?',
                 icon: 'warning',
                 showCancelButton: true,
+                showCloseButton: true,
                 confirmButtonColor: '#d33',
                 cancelButtonColor: '#3085d6',
                 confirmButtonText: 'Yes',
@@ -395,328 +415,6 @@ function updateFloatingCartCount() {
 </script> 
 
 <style>
-/* Responsive Cart Table Styles - Keep Horizontal Layout */
-@media (max-width: 768px) {
-  .cart-header-row, .cart-item-row {
-    font-size: 0.85rem !important;
-    gap: 3px !important;
-    padding: 6px 3px !important;
-    flex-wrap: nowrap !important;
-    overflow-x: auto !important;
-  }
-  
-  .cart-header-row > div, .cart-item-row > div {
-    min-width: auto !important;
-    font-size: 0.85em !important;
-    padding: 1px !important;
-    flex-shrink: 0 !important;
-  }
-  
-  /* Product image */
-  .cart-item-row > div:first-child {
-    flex: 0 0 35px !important;
-    max-width: 35px !important;
-  }
-  
-  /* Product name */
-  .cart-item-row > div:nth-child(2) {
-    flex: 0 0 100px !important;
-    min-width: 80px !important;
-    max-width: 100px !important;
-    font-size: 0.8em !important;
-  }
-  
-  /* MRP */
-  .cart-item-row > div:nth-child(3) {
-    flex: 0 0 50px !important;
-    min-width: 45px !important;
-    font-size: 0.75em !important;
-  }
-  
-  /* You Pay */
-  .cart-item-row > div:nth-child(4) {
-    flex: 0 0 50px !important;
-    min-width: 45px !important;
-    font-size: 0.75em !important;
-  }
-  
-  /* You Save */
-  .cart-item-row > div:nth-child(5) {
-    flex: 0 0 50px !important;
-    min-width: 45px !important;
-    font-size: 0.75em !important;
-  }
-  
-  /* Quantity */
-  .cart-item-row > div:nth-child(6) {
-    flex: 0 0 65px !important;
-    min-width: 60px !important;
-  }
-  
-  /* Total */
-  .cart-item-row > div:nth-child(7) {
-    flex: 0 0 50px !important;
-    min-width: 45px !important;
-    font-size: 0.75em !important;
-  }
-  
-  /* Delete button */
-  .cart-item-row > div:last-child {
-    flex: 0 0 28px !important;
-    min-width: 25px !important;
-  }
-  
-  /* Quantity controls */
-  .quantity-control {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 1px !important;
-  }
-  
-  .quantity-control .btn-qty {
-    width: 18px !important;
-    height: 18px !important;
-    font-size: 9px !important;
-    padding: 0 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-  }
-  
-  .quantity-control .quantity-input {
-    width: 22px !important;
-    height: 18px !important;
-    font-size: 9px !important;
-    padding: 1px !important;
-    text-align: center !important;
-  }
-  
-  /* Delete button */
-  .remove-item {
-    padding: 2px 3px !important;
-    font-size: 0.7rem !important;
-    min-width: 22px !important;
-    height: 22px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-  }
-  
-  /* Hide header on mobile for better space */
-  .cart-header-row {
-    display: none !important;
-  }
-}
-
-@media (max-width: 576px) {
-  .cart-header-row, .cart-item-row {
-    font-size: 0.8rem !important;
-    gap: 2px !important;
-    padding: 5px 2px !important;
-  }
-  
-  /* Product image */
-  .cart-item-row > div:first-child {
-    flex: 0 0 30px !important;
-    max-width: 30px !important;
-  }
-  
-  /* Product name */
-  .cart-item-row > div:nth-child(2) {
-    flex: 0 0 80px !important;
-    min-width: 70px !important;
-    max-width: 80px !important;
-    font-size: 0.75em !important;
-  }
-  
-  /* MRP */
-  .cart-item-row > div:nth-child(3) {
-    flex: 0 0 45px !important;
-    min-width: 40px !important;
-    font-size: 0.7em !important;
-  }
-  
-  /* You Pay */
-  .cart-item-row > div:nth-child(4) {
-    flex: 0 0 45px !important;
-    min-width: 40px !important;
-    font-size: 0.7em !important;
-  }
-  
-  /* You Save */
-  .cart-item-row > div:nth-child(5) {
-    flex: 0 0 45px !important;
-    min-width: 40px !important;
-    font-size: 0.7em !important;
-  }
-  
-  /* Quantity */
-  .cart-item-row > div:nth-child(6) {
-    flex: 0 0 60px !important;
-    min-width: 55px !important;
-  }
-  
-  /* Total */
-  .cart-item-row > div:nth-child(7) {
-    flex: 0 0 45px !important;
-    min-width: 40px !important;
-    font-size: 0.7em !important;
-  }
-  
-  /* Delete button */
-  .cart-item-row > div:last-child {
-    flex: 0 0 25px !important;
-    min-width: 22px !important;
-  }
-  
-  .quantity-control .btn-qty {
-    width: 16px !important;
-    height: 16px !important;
-    font-size: 8px !important;
-  }
-  
-  .quantity-control .quantity-input {
-    width: 20px !important;
-    height: 16px !important;
-    font-size: 8px !important;
-  }
-  
-  .remove-item {
-    padding: 1px 2px !important;
-    font-size: 0.65rem !important;
-    min-width: 20px !important;
-    height: 20px !important;
-  }
-}
-
-@media (max-width: 480px) {
-  .cart-header-row, .cart-item-row {
-    font-size: 0.75rem !important;
-    gap: 1px !important;
-    padding: 4px 1px !important;
-  }
-  
-  /* Product image */
-  .cart-item-row > div:first-child {
-    flex: 0 0 25px !important;
-    max-width: 25px !important;
-  }
-  
-  /* Product name */
-  .cart-item-row > div:nth-child(2) {
-    flex: 0 0 70px !important;
-    min-width: 60px !important;
-    max-width: 70px !important;
-    font-size: 0.7em !important;
-  }
-  
-  /* MRP */
-  .cart-item-row > div:nth-child(3) {
-    flex: 0 0 40px !important;
-    min-width: 35px !important;
-    font-size: 0.65em !important;
-  }
-  
-  /* You Pay */
-  .cart-item-row > div:nth-child(4) {
-    flex: 0 0 40px !important;
-    min-width: 35px !important;
-    font-size: 0.65em !important;
-  }
-  
-  /* You Save */
-  .cart-item-row > div:nth-child(5) {
-    flex: 0 0 40px !important;
-    min-width: 35px !important;
-    font-size: 0.65em !important;
-  }
-  
-  /* Quantity */
-  .cart-item-row > div:nth-child(6) {
-    flex: 0 0 55px !important;
-    min-width: 50px !important;
-  }
-  
-  /* Total */
-  .cart-item-row > div:nth-child(7) {
-    flex: 0 0 40px !important;
-    min-width: 35px !important;
-    font-size: 0.65em !important;
-  }
-  
-  /* Delete button */
-  .cart-item-row > div:last-child {
-    flex: 0 0 22px !important;
-    min-width: 20px !important;
-  }
-  
-  .quantity-control .btn-qty {
-    width: 15px !important;
-    height: 15px !important;
-    font-size: 7px !important;
-  }
-  
-  .quantity-control .quantity-input {
-    width: 18px !important;
-    height: 15px !important;
-    font-size: 7px !important;
-  }
-  
-  .remove-item {
-    padding: 1px !important;
-    font-size: 0.6rem !important;
-    min-width: 18px !important;
-    height: 18px !important;
-  }
-}
-/* Additional responsive fixes for cart */
-.cart-item-row .quantity-control {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-}
-
-.cart-item-row .btn-qty {
-  width: 24px;
-  height: 24px;
-  font-size: 12px;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid #ddd;
-  background: #f8f9fa;
-  border-radius: 3px;
-  cursor: pointer;
-}
-
-.cart-item-row .btn-qty:hover {
-  background: #e9ecef;
-}
-
-.cart-item-row .quantity-input {
-  width: 30px;
-  height: 24px;
-  font-size: 12px;
-  padding: 2px;
-  text-align: center;
-  border: 1px solid #ddd;
-  border-radius: 3px;
-}
-
-.cart-item-row .remove-item {
-  padding: 4px 6px;
-  font-size: 0.9rem;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 28px;
-  height: 28px;
-}
-
 .cart-product-modal {
   position: fixed;
   z-index: 99999;
@@ -771,6 +469,7 @@ document.getElementById('removeAllItems').addEventListener('click', function() {
         text: 'Do you want to remove all items from your cart? This action cannot be undone.',
         icon: 'warning',
         showCancelButton: true,
+        showCloseButton: true,
         confirmButtonColor: '#d33',
         cancelButtonColor: '#3085d6',
         confirmButtonText: 'Yes',

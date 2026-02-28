@@ -71,12 +71,12 @@ if (isLoggedIn()) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="stylesheet" href="<?php echo $base_url; ?>Header.css">
+    <link rel="stylesheet" href="<?php echo $base_url; ?>Header.css?v=1.1">
 
-    <link rel="stylesheet" href="<?php echo $base_url; ?>asset/style/global-colors.css">
-    <link rel="stylesheet" href="<?php echo $base_url; ?>asset/style/popup.css">
-    <link rel="stylesheet" href="<?php echo $base_url; ?>asset/style/style.css">
-    <link rel="stylesheet" href="<?php echo $base_url; ?>asset/style/product-card.css">
+    <link rel="stylesheet" href="<?php echo $base_url; ?>asset/style/global-colors.css?v=1.1">
+    <link rel="stylesheet" href="<?php echo $base_url; ?>asset/style/popup.css?v=1.1">
+    <link rel="stylesheet" href="<?php echo $base_url; ?>asset/style/style.css?v=1.1">
+    <link rel="stylesheet" href="<?php echo $base_url; ?>asset/style/product-card.css?v=1.1">
     <script src="<?php echo $base_url; ?>asset/js/sliders.js" defer></script>
     <style>
 html, body {
@@ -407,7 +407,7 @@ if (!function_exists('renderCategoryDropdown')) {
 
 <!-- NAVBAR START -->
 <nav class="navbar navbar-expand-lg sticky-top bg-white" style="overflow: visible;">
-    <div class="container-fluid d-flex align-items-center flex-nowrap" style="gap: 8px;">
+    <div class="container-fluid d-flex align-items-center flex-nowrap" style="gap: 8px; z-index: 1050; position: relative;">
         <!-- Logo -->
         <a class="navbar-brand m-0" href="<?php echo $base_url; ?>index.php" style="flex-shrink: 0;">
             <img src="<?php echo $base_url; ?>logo.webp" alt="EverythingB2C" class="img-fluid" style="max-height: 60px;">
@@ -427,16 +427,7 @@ if (!function_exists('renderCategoryDropdown')) {
                         <?php renderCategoryDropdown($categoryTree); ?>
                       </ul>
                     </div>
-                    <!-- MOBILE Dropdown -->
-                    <div class="dropdown dropdown-mobile">
-                      <button id="categoryDropdownMobile" class="btn btn-light dropdown-toggle mobile-category-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-display="static" data-selected-category="all">
-                        <span id="selectedCategoryMobile">All</span>
-                      </button>
-                      <ul class="dropdown-menu">
-                        <li><a class="dropdown-item category-option" href="#" data-category="all">All Categories</a></li>
-                        <?php renderCategoryDropdown($categoryTree); ?>
-                      </ul>
-                    </div>
+                    <!-- Removed MOBILE Dropdown from here -->
                     <input class="form-control mobile-search-input" id="headerSearchInput" type="search" name="query" placeholder="Search for Products" aria-label="Search" autocomplete="off">
                     <button class="btn btn-primary mobile-search-btn" id="headerSearchBtn" type="button">
                         <i class="bi bi-search"></i>
@@ -503,31 +494,77 @@ if (!function_exists('renderCategoryDropdown')) {
             </div>
         </div>
     </div>
+    
+    <!-- NEW: Mobile Search Row (Hidden on Desktop) -->
+    <div class="container-fluid d-lg-none pb-2 mt-2 mb-2" style="position: relative; z-index: 1000; padding-left: 15px; padding-right: 15px;">
+        <form class="d-flex align-items-center m-0 w-100" role="search" autocomplete="off" onsubmit="return false;" style="gap: 15px; justify-content: space-between;">
+            <!-- Offcanvas Toggle Hamburger -->
+            <button class="btn text-white flex-shrink-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileCategoryOffcanvas" aria-controls="mobileCategoryOffcanvas" style="background-color: var(--site-blue); border-radius: 6px; width: 44px; height: 44px; padding: 0; box-shadow: none; display: flex; align-items: center; justify-content: center;">
+                <i class="bi bi-list" style="font-size: 1.8rem; line-height: 1;"></i>
+            </button>
+            <div class="input-group flex-nowrap w-100" style="height:44px;">
+                <input class="form-control" id="headerSearchInputMobile" type="search" name="query" placeholder="Search for Products" aria-label="Search" autocomplete="off" style="border-top-left-radius: 6px; border-bottom-left-radius: 6px; border: 1px solid #ced4da; border-right: none; font-size: 0.95rem; box-shadow: none;">
+                <button class="btn text-white" id="headerSearchBtnMobile" type="button" style="background-color: var(--site-blue); border-top-right-radius: 6px; border-bottom-right-radius: 6px; width: 44px; padding: 0; box-shadow: none;">
+                    <i class="bi bi-search" style="font-size: 1.2rem; line-height: 1;"></i>
+                </button>
+            </div>
+            <div id="headerSearchResultsPopupMobile" class="position-absolute w-100" style="z-index: 9999; display: none; top: 100%;"></div>
+        </form>
+    </div>
 </nav>
 
-<!-- CATEGORY SCROLL - ONLY MOBILE -->
-<div class="category-scroll-container d-block d-lg-none">
-    <div class="scroll-wrapper d-flex flex-nowrap overflow-auto">
-        <?php function renderMobileCategoryMenu($tree) {
-            // Get current category from URL parameter
-            $currentCategory = isset($_GET['slug']) ? $_GET['slug'] : '';
+<!-- Mobile Category Offcanvas Menu -->
+<?php
+if (!function_exists('renderMobileOffcanvasAccordion')) {
+    function renderMobileOffcanvasAccordion($tree, $parentId = 'mobileCategoryAccordion', $level = 0) {
+        global $base_url;
+        foreach ($tree as $index => $cat) {
+            $collapseId = 'collapseCat_' . $level . '_' . $index . '_' . substr(md5($cat['slug']), 0, 5);
+            $headingId = 'headingCat_' . $level . '_' . $index . '_' . substr(md5($cat['slug']), 0, 5);
+            $hasChildren = !empty($cat['children']);
             
-            foreach ($tree as $cat) {
-                // Check if this category is currently active
-                $activeClass = ($currentCategory === $cat['slug']) ? 'active' : '';
+            echo '<div class="accordion-item border-0 border-bottom">';
+            if ($hasChildren) {
+                echo '<h2 class="accordion-header" id="' . $headingId . '">';
+                echo '<button class="accordion-button collapsed py-3 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#' . $collapseId . '" aria-expanded="false" aria-controls="' . $collapseId . '" style="font-size: 0.95rem; font-weight: 600; box-shadow: none;">';
+                echo htmlspecialchars($cat['name']);
+                echo '</button>';
+                echo '</h2>';
                 
-                echo '<a href="' . $base_url . 'category.php?slug=' . $cat['slug'] . '" class="custom-category-item text-center mx-2 ' . $activeClass . '">';
-                echo '<img src="' . $base_url . $cat['image'] . '" alt="' . htmlspecialchars($cat['name']) . '" class="category-img mb-1">';
-                echo '<div class="category-label">' . htmlspecialchars($cat['name']) . '</div>';
-                echo '</a>';
-                if (!empty($cat['children'])) {
-                    renderMobileCategoryMenu($cat['children']);
-                }
+                echo '<div id="' . $collapseId . '" class="accordion-collapse collapse" aria-labelledby="' . $headingId . '" data-bs-parent="#' . $parentId . '">';
+                echo '<div class="accordion-body p-0 bg-light">';
+                echo '<a href="' . $base_url . 'category.php?slug=' . $cat['slug'] . '" class="d-block py-2 px-4 text-dark text-decoration-none border-bottom" style="font-size: 0.9rem; font-weight: 500;">View All ' . htmlspecialchars($cat['name']) . ' &rarr;</a>';
+                
+                // Render children
+                echo '<div class="accordion accordion-flush" id="childAccordion_' . $collapseId . '">';
+                renderMobileOffcanvasAccordion($cat['children'], 'childAccordion_' . $collapseId, $level + 1);
+                echo '</div>';
+                
+                echo '</div>';
+                echo '</div>';
+            } else {
+                echo '<a href="' . $base_url . 'category.php?slug=' . $cat['slug'] . '" class="d-block py-3 px-3 text-dark text-decoration-none" style="font-size: 0.95rem; font-weight: 600;">' . htmlspecialchars($cat['name']) . '</a>';
             }
+            echo '</div>';
         }
-        renderMobileCategoryMenu($categoryTree); ?>
+    }
+}
+?>
+<div class="offcanvas offcanvas-start" tabindex="-1" id="mobileCategoryOffcanvas" aria-labelledby="mobileCategoryOffcanvasLabel" style="width: 85vw; max-width: 320px;">
+  <div class="offcanvas-header pb-2 border-bottom">
+    <h5 class="offcanvas-title fw-bold" id="mobileCategoryOffcanvasLabel">All Categories</h5>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close" style="box-shadow: none;"></button>
+  </div>
+  <div class="offcanvas-body p-0">
+    <div class="accordion accordion-flush" id="mobileCategoryAccordion">
+      <!-- Home Link -->
+      <a href="<?php echo $base_url; ?>index.php" class="d-block py-3 px-3 text-dark text-decoration-none border-bottom" style="font-size: 0.95rem; font-weight: 600;">Home</a>
+      <?php renderMobileOffcanvasAccordion($categoryTree); ?>
     </div>
+  </div>
 </div>
+
+
 
 <!-- Desktop Category Navigation -->
 <div class="second-navbar d-none d-lg-block">
@@ -2393,7 +2430,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Desktop
                 goToTopBtn.style.setProperty('left', 'auto', 'important');
                 goToTopBtn.style.setProperty('right', '30px', 'important');
-                goToTopBtn.style.setProperty('bottom', '30px', 'important');
+                goToTopBtn.style.setProperty('bottom', '100px', 'important');
                 goToTopBtn.style.setProperty('width', '56px', 'important');
                 goToTopBtn.style.setProperty('height', '56px', 'important');
                 goToTopBtn.style.setProperty('font-size', '2rem', 'important');

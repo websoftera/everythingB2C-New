@@ -1,22 +1,22 @@
 // popup.js
 function showPopup() {
-  var overlay = document.getElementById("popupOverlay");
-  var form = document.getElementById("popupForm");
-  if (overlay) overlay.style.display = "block";
-  if (form) form.style.display = "block";
+    var overlay = document.getElementById("popupOverlay");
+    var form = document.getElementById("popupForm");
+    if (overlay) overlay.style.display = "block";
+    if (form) form.style.display = "block";
 }
 
 function closeLoginForm() {
-  document.getElementById("popupOverlay").style.display = "none";
-  document.getElementById("popupForm").style.display = "none";
+    document.getElementById("popupOverlay").style.display = "none";
+    document.getElementById("popupForm").style.display = "none";
 }
 
 function checkPincode() {
-  const pin = document.getElementById("pin").value;
-  const serviceablePins = ["400001", "500001", "560001", "380001"]; // example pins
+    const pin = document.getElementById("pin").value;
+    const serviceablePins = ["400001", "500001", "560001", "380001"]; // example pins
 
-  if (serviceablePins.includes(pin)) {
-            if (typeof Swal !== 'undefined') {
+    if (serviceablePins.includes(pin)) {
+        if (typeof Swal !== 'undefined') {
             Swal.fire({
                 icon: 'success',
                 title: 'Delivery Available',
@@ -33,30 +33,30 @@ function checkPincode() {
                 showConfirmButton: false
             });
         }
-  } else {
-          if (typeof Swal !== 'undefined') {
-          Swal.fire({
-              icon: 'error',
-              title: 'Delivery Not Available',
-              text: 'Sorry, we do not deliver in this area.',
-              timer: 4000,
-              showConfirmButton: false
-          });
-      } else {
-          Swal.fire({
-              icon: 'error',
-              title: 'Delivery Not Available',
-              text: 'Sorry, we do not deliver in this area.',
-              timer: 4000,
-              showConfirmButton: false
-          });
-      }
-  }
+    } else {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Delivery Not Available',
+                text: 'Sorry, we do not deliver in this area.',
+                timer: 4000,
+                showConfirmButton: false
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Delivery Not Available',
+                text: 'Sorry, we do not deliver in this area.',
+                timer: 4000,
+                showConfirmButton: false
+            });
+        }
+    }
 }
 
 // Show popup 5 seconds after page load
 window.addEventListener("load", () => {
-  setTimeout(showPopup, 3000);
+    setTimeout(showPopup, 3000);
 });
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
             toast.classList.remove('show');
         }, 3000); // Hide after 3 seconds
     }
-    
+
     function updateCartCount() {
         fetch('ajax/get_cart_count.php')
             .then(response => response.json())
@@ -117,8 +117,8 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.product-card, .card, .shop-page-product-card, .product-detail-card, .related-products-container .product-card').forEach(card => {
             card.querySelectorAll('.quantity-input, .shop-page-quantity-input').forEach(input => {
                 input.disabled = false;
-                input.removeEventListener('input', input._debugInputHandler || (()=>{}));
-                const handler = function() {
+                input.removeEventListener('input', input._debugInputHandler || (() => { }));
+                const handler = function () {
                     let val = parseInt(this.value, 10) || 1;
                     if (val < 1) val = 1;
                     this.value = val;
@@ -129,8 +129,8 @@ document.addEventListener('DOMContentLoaded', function () {
             });
             card.querySelectorAll('.btn-qty-minus, .btn-qty-plus').forEach(btn => {
                 btn.disabled = false;
-                btn.removeEventListener('click', btn._debugClickHandler || (()=>{}));
-                const handler = function(e) {
+                btn.removeEventListener('click', btn._debugClickHandler || (() => { }));
+                const handler = function (e) {
                     e.stopPropagation();
                     const input = btn.closest('.quantity-control')?.querySelector('input[type="number"]');
                     if (!input) return;
@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log('loadCurrentCartQuantity: Missing productId or quantityInput');
             return;
         }
-        
+
         console.log('Loading cart quantity for product:', productId);
         fetch(`ajax/check-product-in-cart.php?product_id=${productId}`)
             .then(res => res.json())
@@ -176,9 +176,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Global function to initialize quantity inputs (accessible from anywhere)
-    window.initializeQuantityInputs = function(force = false) {
+    window.initializeQuantityInputs = function (force = false) {
 
-        
+
         // Find all quantity inputs across the site with comprehensive selectors
         const quantityInputs = document.querySelectorAll(`
             .quantity-input, 
@@ -193,14 +193,14 @@ document.addEventListener('DOMContentLoaded', function () {
             .related-products-container input[type="number"]
         `);
 
-        
+
         quantityInputs.forEach((input, index) => {
             // Try multiple ways to find the product ID
             let productId = null;
-            
+
             // Method 1: Check data attributes on the input itself
             productId = input.dataset.productId || input.getAttribute('data-product-id');
-            
+
             // Method 2: Check parent containers
             if (!productId) {
                 const productCard = input.closest('.product-card, .card, .shop-page-product-card, .product-detail-card, .related-products-container .product-card, [data-product-id]');
@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     productId = productCard.dataset.productId || productCard.getAttribute('data-product-id');
                 }
             }
-            
+
             // Method 3: Check for add to cart button in same container
             if (!productId) {
                 const container = input.closest('.product-form, .cart-actions, .cart-controls, .shop-page-cart-actions');
@@ -219,7 +219,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
             }
-            
+
             // Method 4: Check siblings for add to cart button
             if (!productId) {
                 const parentContainer = input.closest('.product-card, .card, .shop-page-product-card, .product-detail-card');
@@ -230,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
             }
-            
+
             // Method 5: Check for any element with data-product-id in the same parent
             if (!productId) {
                 const anyParent = input.closest('div, section, article');
@@ -241,9 +241,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
             }
-            
 
-            
+
+
             if (productId) {
                 console.log('Found product ID:', productId, 'for input:', input);
                 // Only update if forced or if input value is 1 (default)
@@ -254,7 +254,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.log('No product ID found for input:', input);
             }
         });
-        
+
         // Also update popup quantity input if popup is open
         const popupQtyInput = document.getElementById('popupQtyInput');
         if (popupQtyInput && window.currentPopupProductId) {
@@ -262,16 +262,16 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     };
 
-    document.body.addEventListener('click', function(event) {
+    document.body.addEventListener('click', function (event) {
         const target = event.target;
-        
+
         // Add to Cart
         if (target.matches('.add-to-cart-btn, .add-to-cart, .shop-page-add-to-cart-btn')) {
             event.preventDefault();
             const productId = target.dataset.productId;
             let quantity = 1;
             let cardRoot = target.closest('.product-card, .card, .shop-page-product-card, .product-detail-card, .related-products-container .product-card');
-            
+
             // Find quantity input in the product card
             let quantityInput = null;
             if (cardRoot) {
@@ -286,13 +286,13 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
                 console.log('No card root found');
             }
-            
+
             console.log('Add to cart - Product ID:', productId, 'Quantity:', quantity);
-            
+
             const originalLabel = target.textContent;
             target.textContent = 'Adding...';
             target.disabled = true;
-            
+
             // First check if product is already in cart
             fetch(`ajax/check-product-in-cart.php?product_id=${productId}`)
                 .then(res => res.json())
@@ -319,18 +319,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(data => {
                     const statusType = data.success ? 'success' : 'error';
                     showToast(data.message, statusType);
-                    
+
                     if (data.success) {
                         // Always show "Added to Cart" and keep button enabled for updates
-                        target.textContent = 'Added to Cart';
+                        target.innerHTML = '<i class="fas fa-shopping-cart"></i> ADDED TO CART';
                         target.classList.add('cart-added-highlight');
                         target.disabled = false; // Keep enabled so user can update quantity
-                        
+
                         updateCartCount();
                         reinitQuantityControlsWithDebug();
                         // Refresh quantity inputs to show updated cart quantities
                         window.initializeQuantityInputs();
-                        
+
                         // Dispatch cart-updated event
                         window.dispatchEvent(new CustomEvent('cart-updated', {
                             detail: { action: 'updated' }
@@ -341,7 +341,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         target.disabled = false;
                         target.classList.remove('cart-added-highlight');
                     }
-                    
+
                     if (cardRoot) {
                         cardRoot.querySelectorAll('.quantity-input, .shop-page-quantity-input').forEach(el => el.disabled = false);
                         cardRoot.querySelectorAll('.btn-qty-minus, .btn-qty-plus').forEach(el => el.disabled = false);
@@ -353,7 +353,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     target.textContent = originalLabel;
                     target.disabled = false;
                     target.classList.remove('cart-added-highlight');
-                    
+
                     if (cardRoot) {
                         cardRoot.querySelectorAll('.quantity-input, .shop-page-quantity-input').forEach(el => el.disabled = false);
                         cardRoot.querySelectorAll('.btn-qty-minus, .btn-qty-plus').forEach(el => el.disabled = false);
@@ -363,11 +363,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Add/Remove from Wishlist (Toggle functionality)
         if (event.target.matches('.heart-checkbox, .shop-page-heart-checkbox')) {
-             const checkbox = event.target;
-             const productId = checkbox.dataset.productId;
-             const label = checkbox.nextElementSibling;
+            const checkbox = event.target;
+            const productId = checkbox.dataset.productId;
+            const label = checkbox.nextElementSibling;
 
-            if(!productId) return;
+            if (!productId) return;
 
             // Use single endpoint for both add and remove
             fetch('ajax/add-to-wishlist.php', {
@@ -375,55 +375,55 @@ document.addEventListener('DOMContentLoaded', function () {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ product_id: productId })
             })
-            .then(response => response.json())
-            .then(data => {
-                const statusType = data.success ? 'success' : 'error';
-                showToast(data.message, statusType);
-                
-                if(data.success) {
-                    // Update checkbox and label based on action
-                    if(data.action === 'added') {
-                        checkbox.checked = true;
-                        if(label) label.classList.add('wishlist-active');
-                    } else if(data.action === 'removed') {
-                        checkbox.checked = false;
-                        if(label) label.classList.remove('wishlist-active');
+                .then(response => response.json())
+                .then(data => {
+                    const statusType = data.success ? 'success' : 'error';
+                    showToast(data.message, statusType);
+
+                    if (data.success) {
+                        // Update checkbox and label based on action
+                        if (data.action === 'added') {
+                            checkbox.checked = true;
+                            if (label) label.classList.add('wishlist-active');
+                        } else if (data.action === 'removed') {
+                            checkbox.checked = false;
+                            if (label) label.classList.remove('wishlist-active');
+                        }
+                    } else {
+                        // Revert checkbox state on failure
+                        checkbox.checked = !checkbox.checked;
+                        if (label) {
+                            if (checkbox.checked) {
+                                label.classList.add('wishlist-active');
+                            } else {
+                                label.classList.remove('wishlist-active');
+                            }
+                        }
                     }
-                } else {
-                    // Revert checkbox state on failure
+                    updateWishlistCount(); // Update wishlist count in header
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('An error occurred.', 'error');
+                    // Revert checkbox state on error
                     checkbox.checked = !checkbox.checked;
-                    if(label) {
-                        if(checkbox.checked) {
+                    if (label) {
+                        if (checkbox.checked) {
                             label.classList.add('wishlist-active');
                         } else {
                             label.classList.remove('wishlist-active');
                         }
                     }
-                }
-                updateWishlistCount(); // Update wishlist count in header
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showToast('An error occurred.', 'error');
-                // Revert checkbox state on error
-                checkbox.checked = !checkbox.checked;
-                if(label) {
-                    if(checkbox.checked) {
-                        label.classList.add('wishlist-active');
-                    } else {
-                        label.classList.remove('wishlist-active');
-                    }
-                }
-            });
+                });
         }
     });
-    
+
     // Initialize wishlist states on page load
     function initializeWishlistStates() {
         document.querySelectorAll('.heart-checkbox, .shop-page-heart-checkbox').forEach(checkbox => {
             const productId = checkbox.dataset.productId;
             const label = checkbox.nextElementSibling;
-            
+
             if (checkbox.checked) {
                 if (label) label.classList.add('wishlist-active');
             } else {
@@ -437,7 +437,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Initial cart count update
     updateCartCount();
-    
+
     // Function to initialize add-to-cart button states
     function initializeAddToCartButtonStates() {
         document.querySelectorAll('.add-to-cart-btn, .add-to-cart, .shop-page-add-to-cart-btn').forEach(button => {
@@ -448,7 +448,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     .then(data => {
                         if (data.success && data.in_cart) {
                             // Product is in cart, update button state
-                            button.textContent = 'Added to Cart';
+                            button.innerHTML = '<i class="fas fa-shopping-cart"></i> ADDED TO CART';
                             button.classList.add('cart-added-highlight');
                             button.disabled = false;
                         }
@@ -459,22 +459,22 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-    
+
     // Initialize add-to-cart button states
     initializeAddToCartButtonStates();
-    
+
     // Function to initialize all quantity inputs with current cart quantities
     function initializeQuantityInputs() {
         // Find all quantity inputs across the site
         const quantityInputs = document.querySelectorAll('.quantity-input, .shop-page-quantity-input, input[name="quantity"], .product-quantity-input');
-        
+
         quantityInputs.forEach(input => {
             // Try multiple ways to find the product ID
             let productId = null;
-            
+
             // Method 1: Check data attributes on the input itself
             productId = input.dataset.productId || input.getAttribute('data-product-id');
-            
+
             // Method 2: Check parent containers
             if (!productId) {
                 const productCard = input.closest('.product-card, .card, .shop-page-product-card, .product-detail-card, [data-product-id]');
@@ -482,7 +482,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     productId = productCard.dataset.productId || productCard.getAttribute('data-product-id');
                 }
             }
-            
+
             // Method 3: Check for add to cart button in same container
             if (!productId) {
                 const container = input.closest('.product-form, .cart-actions, .cart-controls, .shop-page-cart-actions');
@@ -493,7 +493,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
             }
-            
+
             // Method 4: Check siblings for add to cart button
             if (!productId) {
                 const parentContainer = input.closest('.product-card, .card, .shop-page-product-card, .product-detail-card');
@@ -504,12 +504,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
             }
-            
+
             if (productId) {
                 loadCurrentCartQuantity(productId, input);
             }
         });
-        
+
         // Also update popup quantity input if popup is open
         const popupQtyInput = document.getElementById('popupQtyInput');
         if (popupQtyInput && window.currentPopupProductId) {
@@ -519,19 +519,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Initial setup
     updateWishlistCount();
-    
+
     // Multiple initialization points to ensure it runs
-    
+
     // 1. Immediate initialization
     initializeQuantityInputs();
     initializeAddToCartButtonStates();
-    
+
     // 2. After a short delay
     setTimeout(() => {
         initializeQuantityInputs();
         initializeAddToCartButtonStates();
     }, 100);
-    
+
     // 3. When DOM is ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
@@ -546,25 +546,25 @@ document.addEventListener('DOMContentLoaded', function () {
             initializeQuantityInputs();
         }, 200);
     }
-    
+
     // 4. When window is fully loaded
     window.addEventListener('load', () => {
         setTimeout(() => {
             initializeQuantityInputs(true); // Force update on window load
         }, 300);
     });
-    
+
     // 5. Force initialization after additional delay (fallback)
     setTimeout(() => {
         initializeQuantityInputs(true);
     }, 1000);
-    
+
     // Add manual refresh function for debugging
-    window.refreshQuantities = function() {
+    window.refreshQuantities = function () {
 
         initializeQuantityInputs(true);
     };
-    
+
     // Initialize quantity inputs when new content is dynamically added
     const observer = new MutationObserver((mutations) => {
         let shouldReinitialize = false;
@@ -580,14 +580,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
             }
         });
-        
+
         if (shouldReinitialize) {
             setTimeout(() => {
                 initializeQuantityInputs();
             }, 50);
         }
     });
-    
+
     // Start observing
     observer.observe(document.body, {
         childList: true,
@@ -596,7 +596,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // Listen for cart updates to refresh quantity inputs
-window.addEventListener('cart-updated', function() {
+window.addEventListener('cart-updated', function () {
     setTimeout(() => {
         if (window.initializeQuantityInputs) {
             window.initializeQuantityInputs();
@@ -604,249 +604,199 @@ window.addEventListener('cart-updated', function() {
     }, 100);
 });
 
-// Global handler for all quantity plus/minus buttons (event delegation)
-document.body.addEventListener('click', function(e) {
-  const btn = e.target;
-  if (!btn.classList.contains('btn-qty')) return;
-  const control = btn.closest('.quantity-control');
-  if (!control) return;
-  const input = control.querySelector('input[type="number"]');
-  if (!input) return;
-  let value = parseInt(input.value, 10) || 1;
-  if (btn.classList.contains('btn-qty-minus')) {
-    value = Math.max(1, value - 1);
-  } else if (btn.classList.contains('btn-qty-plus')) {
-    value = value + 1;
-  }
-  input.value = value;
-  
-  // Get product ID from the input or its parent container
-  let productId = input.dataset.productId;
-  if (!productId) {
-    const productCard = input.closest('.product-card, .card, .shop-page-product-card, .product-detail-card, [data-product-id]');
-    if (productCard) {
-      productId = productCard.dataset.productId || productCard.getAttribute('data-product-id');
-    }
-  }
-  
-  // If this input is for a cart item, update cart via AJAX
-  const cartId = input.dataset.cartId;
-  if (cartId) {
-    fetch('ajax/update-cart.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ cart_id: cartId, quantity: value })
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data.success) {
-        window.dispatchEvent(new Event('cart-updated'));
-      }
-    });
-  }
-  // For product cards, just update the input value (don't update cart yet)
-  // The cart will be updated when the user clicks "ADD TO CART" button
-  else if (productId) {
-    console.log('Quantity changed for product:', productId, 'to:', value);
-    // Don't update cart automatically - wait for add-to-cart button click
-  }
-  
-  input.dispatchEvent(new Event('input', { bubbles: true }));
-  input.dispatchEvent(new Event('change', { bubbles: true }));
-});
 
 // Global handler for direct quantity input changes
 // (for cart items and product cards, update cart via AJAX)
-document.body.addEventListener('change', async function(e) {
-  const input = e.target;
-  const value = parseInt(input.value, 10) || 1;
-  
-  // Get product ID from the input or its parent container
-  let productId = input.dataset.productId;
-  if (!productId) {
-    const productCard = input.closest('.product-card, .card, .shop-page-product-card, .product-detail-card, [data-product-id]');
-    if (productCard) {
-      productId = productCard.dataset.productId || productCard.getAttribute('data-product-id');
-    }
-  }
-  
-  if (!productId) return;
-  
-  // Check max quantity via AJAX
-  try {
-    const formData = new URLSearchParams();
-    formData.append('product_id', productId);
-    formData.append('quantity', value);
-    const response = await fetch('ajax/check_max_quantity.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: formData.toString()
-    });
-    const result = await response.json();
-    if (result.error && result.max_quantity) {
-      input.value = result.max_quantity;
-      if (typeof Swal !== 'undefined') {
-        Swal.fire({
-          icon: 'error',
-          title: 'Maximum quantity reached',
-          text: result.message,
-          timer: 4000,
-          showConfirmButton: false
-        });
-      } else {
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: result.message,
-            confirmButtonText: 'OK'
-        });
-      }
-      return;
-    }
-  } catch (err) {
-    console.error('Error checking max quantity:', err);
-  }
-  
-  // If this is a cart quantity input, update cart
-  if (input.classList.contains('cart-qty-input')) {
-    const cartId = input.dataset.cartId;
-    if (cartId) {
-      fetch('ajax/update-cart.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cart_id: cartId, quantity: value })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          window.dispatchEvent(new Event('cart-updated'));
+document.body.addEventListener('change', async function (e) {
+    const input = e.target;
+    const value = parseInt(input.value, 10) || 1;
+
+    // Get product ID from the input or its parent container
+    let productId = input.dataset.productId;
+    if (!productId) {
+        const productCard = input.closest('.product-card, .card, .shop-page-product-card, .product-detail-card, [data-product-id]');
+        if (productCard) {
+            productId = productCard.dataset.productId || productCard.getAttribute('data-product-id');
         }
-      });
     }
-  }
-  // For product card quantity inputs, just update the input value (don't update cart yet)
-  else if (input.classList.contains('quantity-input') || input.closest('.quantity-control')) {
-    console.log('Direct input change for product:', productId, 'to:', value);
-    // Don't update cart automatically - wait for add-to-cart button click
-  }
+
+    if (!productId) return;
+
+    // Check max quantity via AJAX
+    try {
+        const formData = new URLSearchParams();
+        formData.append('product_id', productId);
+        formData.append('quantity', value);
+        const response = await fetch('ajax/check_max_quantity.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: formData.toString()
+        });
+        const result = await response.json();
+        if (result.error && result.max_quantity) {
+            input.value = result.max_quantity;
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Maximum quantity reached',
+                    text: result.message,
+                    timer: 4000,
+                    showConfirmButton: false
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: result.message,
+                    confirmButtonText: 'OK'
+                });
+            }
+            return;
+        }
+    } catch (err) {
+        console.error('Error checking max quantity:', err);
+    }
+
+    // If this is a cart quantity input, update cart
+    if (input.classList.contains('cart-qty-input')) {
+        const cartId = input.dataset.cartId;
+        if (cartId) {
+            fetch('ajax/update-cart.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cart_id: cartId, quantity: value })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        window.dispatchEvent(new Event('cart-updated'));
+                    }
+                });
+        }
+    }
+    // For product card quantity inputs, just update the input value (don't update cart yet)
+    else if (input.classList.contains('quantity-input') || input.closest('.quantity-control')) {
+        console.log('Direct input change for product:', productId, 'to:', value);
+        // Don't update cart automatically - wait for add-to-cart button click
+    }
 });
 
 // Event delegation for popup controls
 // Handles popup quantity, add-to-cart, and wishlist
 
-document.body.addEventListener('click', function(e) {
-  // Quantity minus in popup
-  if (e.target.id === 'popupQtyMinus') {
-    const qtyInput = document.getElementById('popupQtyInput');
-    if (qtyInput) qtyInput.value = Math.max(1, parseInt(qtyInput.value, 10) - 1);
-  }
-  // Quantity plus in popup
-  if (e.target.id === 'popupQtyPlus') {
-    const qtyInput = document.getElementById('popupQtyInput');
-    if (qtyInput) qtyInput.value = parseInt(qtyInput.value, 10) + 1;
-  }
-  // Add to cart in popup
-  if (e.target.id === 'popupAddToCartBtn') {
-    e.preventDefault();
-    const btn = e.target;
-    const qtyInput = document.getElementById('popupQtyInput');
-    const qty = qtyInput ? parseInt(qtyInput.value, 10) || 1 : 1;
-    // Try to get productId from data attribute or fallback to global
-    const productId = btn.dataset.productId || btn.getAttribute('data-product-id') || window.currentPopupProductId;
-    if (!productId) return;
-    btn.disabled = true;
-    btn.textContent = 'UPDATING...';
-    fetch('ajax/add-to-cart.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ product_id: productId, quantity: qty })
-    })
-    .then(res => res.json())
-    .then(data => {
-      btn.disabled = false;
-      btn.innerHTML = '<i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>ADD TO CART';
-      if (data.success) {
-        btn.innerHTML = 'UPDATED!';
-        setTimeout(function(){ btn.innerHTML = '<i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>ADD TO CART'; }, 1200);
-        // Refresh quantity inputs on the page
-        initializeQuantityInputs();
-        
-        // Dispatch cart-updated event with animation info
-        window.dispatchEvent(new CustomEvent('cart-updated', {
-          detail: { action: 'added' }
-        }));
-      } else {
-        if (typeof Swal !== 'undefined') {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: data.message || 'Could not add to cart.',
-                timer: 4000,
-                showConfirmButton: false
+document.body.addEventListener('click', function (e) {
+    // Quantity minus in popup
+    if (e.target.id === 'popupQtyMinus') {
+        const qtyInput = document.getElementById('popupQtyInput');
+        if (qtyInput) qtyInput.value = Math.max(1, parseInt(qtyInput.value, 10) - 1);
+    }
+    // Quantity plus in popup
+    if (e.target.id === 'popupQtyPlus') {
+        const qtyInput = document.getElementById('popupQtyInput');
+        if (qtyInput) qtyInput.value = parseInt(qtyInput.value, 10) + 1;
+    }
+    // Add to cart in popup
+    if (e.target.id === 'popupAddToCartBtn') {
+        e.preventDefault();
+        const btn = e.target;
+        const qtyInput = document.getElementById('popupQtyInput');
+        const qty = qtyInput ? parseInt(qtyInput.value, 10) || 1 : 1;
+        // Try to get productId from data attribute or fallback to global
+        const productId = btn.dataset.productId || btn.getAttribute('data-product-id') || window.currentPopupProductId;
+        if (!productId) return;
+        btn.disabled = true;
+        btn.textContent = 'UPDATING...';
+        fetch('ajax/add-to-cart.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ product_id: productId, quantity: qty })
+        })
+            .then(res => res.json())
+            .then(data => {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>ADD TO CART';
+                if (data.success) {
+                    btn.innerHTML = 'UPDATED!';
+                    setTimeout(function () { btn.innerHTML = '<i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>ADD TO CART'; }, 1200);
+                    // Refresh quantity inputs on the page
+                    initializeQuantityInputs();
+
+                    // Dispatch cart-updated event with animation info
+                    window.dispatchEvent(new CustomEvent('cart-updated', {
+                        detail: { action: 'added' }
+                    }));
+                } else {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message || 'Could not add to cart.',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message || 'Could not add to cart.',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                }
             });
-        } else {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: data.message || 'Could not add to cart.',
-                confirmButtonText: 'OK'
-            });
-        }
-      }
-    });
-  }
-      // Wishlist in popup
+    }
+    // Wishlist in popup
     if (e.target.id === 'popupWishlistBtn' || (e.target.closest && e.target.closest('#popupWishlistBtn'))) {
-      e.preventDefault();
-      const wishlistBtn = document.getElementById('popupWishlistBtn');
-      if (!wishlistBtn) return;
-      const icon = wishlistBtn.querySelector('i');
-      wishlistBtn.disabled = true;
-      // Try to get productId from data attribute or fallback to global
-      const productId = wishlistBtn.dataset.productId || window.currentPopupProductId;
-      
-      fetch('ajax/add-to-wishlist.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ product_id: productId })
-      })
-      .then(res => res.json())
-      .then(data => {
-        wishlistBtn.disabled = false;
-        if (data.success) {
-          if (icon) {
-            if (data.action === 'added') {
-              icon.style.color = '#DE0085'; // Pink color when added
-            } else if (data.action === 'removed') {
-              icon.style.color = '#fff'; // White color when removed
-            }
-          }
-        } else {
-          if (typeof Swal !== 'undefined') {
-              Swal.fire({
-                  icon: 'error',
-                  title: 'Error',
-                  text: data.message || 'Could not update wishlist.',
-                  timer: 4000,
-                  showConfirmButton: false
-              });
-          } else {
-              Swal.fire({
-                  icon: 'error',
-                  title: 'Wishlist Error',
-                  text: data.message || 'Could not update wishlist.',
-                  confirmButtonText: 'OK'
-              });
-          }
-        }
-      });
+        e.preventDefault();
+        const wishlistBtn = document.getElementById('popupWishlistBtn');
+        if (!wishlistBtn) return;
+        const icon = wishlistBtn.querySelector('i');
+        wishlistBtn.disabled = true;
+        // Try to get productId from data attribute or fallback to global
+        const productId = wishlistBtn.dataset.productId || window.currentPopupProductId;
+
+        fetch('ajax/add-to-wishlist.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ product_id: productId })
+        })
+            .then(res => res.json())
+            .then(data => {
+                wishlistBtn.disabled = false;
+                if (data.success) {
+                    if (icon) {
+                        if (data.action === 'added') {
+                            icon.style.color = '#DE0085'; // Pink color when added
+                        } else if (data.action === 'removed') {
+                            icon.style.color = '#fff'; // White color when removed
+                        }
+                    }
+                } else {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message || 'Could not update wishlist.',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Wishlist Error',
+                            text: data.message || 'Could not update wishlist.',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                }
+            });
     }
 });
 
 // Function to initialize button states for products already in cart
 function initializeCartButtonStates() {
 
-    
+
     // Find all add-to-cart buttons with comprehensive selectors
     const buttons = document.querySelectorAll(`
         .add-to-cart-btn, 
@@ -857,30 +807,30 @@ function initializeCartButtonStates() {
         .card .add-to-cart-btn,
         button[data-product-id]
     `);
-    
 
-    
+
+
     buttons.forEach(btn => {
         const productId = btn.dataset.productId;
         if (!productId) return;
-        
 
-        
+
+
         fetch(`ajax/check-product-in-cart.php?product_id=${productId}`)
             .then(res => res.json())
             .then(data => {
                 if (data.success && data.in_cart) {
                     // Product is in cart, highlight the button but keep it enabled
-                    btn.innerHTML = '<i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>Added to Cart';
+                    btn.innerHTML = '<i class="fas fa-shopping-cart"></i> ADDED TO CART';
                     btn.disabled = false; // Keep enabled so user can add more
                     btn.classList.add('cart-added-highlight');
-                    
+
                 } else {
                     // Product not in cart, ensure button is normal
-                    btn.innerHTML = '<i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>Add to Cart';
+                    btn.innerHTML = '<i class="fas fa-shopping-cart"></i> ADD TO CART';
                     btn.disabled = false;
                     btn.classList.remove('cart-added-highlight');
-    
+
                 }
             })
             .catch(error => {
@@ -890,21 +840,21 @@ function initializeCartButtonStates() {
 }
 
 // Initialize button states when page loads
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     setTimeout(() => {
         initializeCartButtonStates();
     }, 100);
 });
 
 // Also initialize when cart is updated
-document.addEventListener('cart-updated', function() {
+document.addEventListener('cart-updated', function () {
     setTimeout(() => {
         initializeCartButtonStates();
     }, 100);
 });
 
 // Initialize when window loads (for dynamic content)
-window.addEventListener('load', function() {
+window.addEventListener('load', function () {
     setTimeout(() => {
         initializeCartButtonStates();
     }, 200);
@@ -913,7 +863,7 @@ window.addEventListener('load', function() {
 // Function to update a specific button state
 function updateButtonState(productId, inCart) {
 
-    
+
     // More comprehensive selector to find all possible add-to-cart buttons
     const selectors = [
         `[data-product-id="${productId}"].add-to-cart-btn`,
@@ -925,20 +875,20 @@ function updateButtonState(productId, inCart) {
         `button[data-product-id="${productId}"]`,
         `[data-product-id="${productId}"]`
     ];
-    
+
     let btn = null;
     for (const selector of selectors) {
         btn = document.querySelector(selector);
         if (btn) break;
     }
-    
+
     if (btn) {
         if (inCart) {
-            btn.innerHTML = '<i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>Added to Cart';
+            btn.innerHTML = '<i class="fas fa-shopping-cart"></i> ADDED TO CART';
             btn.disabled = false; // Keep enabled so user can add more
             btn.classList.add('cart-added-highlight');
         } else {
-            btn.innerHTML = '<i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>Add to Cart';
+            btn.innerHTML = '<i class="fas fa-shopping-cart"></i> ADD TO CART';
             btn.disabled = false;
             btn.classList.remove('cart-added-highlight');
         }
@@ -946,12 +896,12 @@ function updateButtonState(productId, inCart) {
 }
 
 // Handle cart item removal to update button states
-window.addEventListener('cart-item-removed', function(event) {
+window.addEventListener('cart-item-removed', function (event) {
     const productId = event.detail?.productId;
     if (productId) {
         // Update the specific button state
         updateButtonState(productId, false);
-        
+
         // Also check if the button was actually updated by re-checking cart status
         setTimeout(() => {
             fetch(`ajax/check-product-in-cart.php?product_id=${productId}`)
@@ -972,17 +922,17 @@ window.addEventListener('cart-item-removed', function(event) {
 });
 
 // Handle cart remove all to update all button states
-window.addEventListener('cart-removed-all', function(event) {
+window.addEventListener('cart-removed-all', function (event) {
     // Reinitialize all buttons to remove highlighting
     initializeCartButtonStates();
 });
 
 // Force pink color on page load for wishlist items
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Find all wishlist labels with wishlist-active class
     const activeWishlistLabels = document.querySelectorAll('.wishlist-label.wishlist-active');
-    
-    activeWishlistLabels.forEach(function(label) {
+
+    activeWishlistLabels.forEach(function (label) {
         const heartIcon = label.querySelector('.heart-icon');
         if (heartIcon) {
             heartIcon.style.color = '#DE0085';
@@ -991,10 +941,10 @@ document.addEventListener('DOMContentLoaded', function() {
             heartIcon.style.filter = 'drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3))';
         }
     });
-    
+
     // Also check for checked checkboxes
     const checkedCheckboxes = document.querySelectorAll('.heart-checkbox:checked');
-    checkedCheckboxes.forEach(function(checkbox) {
+    checkedCheckboxes.forEach(function (checkbox) {
         const label = checkbox.nextElementSibling;
         if (label && label.classList.contains('wishlist-label')) {
             const heartIcon = label.querySelector('.heart-icon');

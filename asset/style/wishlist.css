@@ -792,8 +792,7 @@ input[type="checkbox"]:checked+.heart-icon {
 
 .price-buttons .pay {
   border: 1px solid #9fbe1b;
-  color: #9FBF1C;
-  background: #28a7469a !important;
+  color: #000;
   background: none !important;
   padding: 4px 10px;
   border-radius: 5px;
