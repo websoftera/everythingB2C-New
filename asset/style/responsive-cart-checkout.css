@@ -18,16 +18,26 @@
         position: relative;
     }
 
-    /* Full width for product info container (image + name) */
-    .cart-item-row>div:nth-child(2) {
-        flex: 0 0 calc(100% - 60px) !important;
-        max-width: calc(100% - 60px) !important;
-        margin-bottom: 8px;
-    }
-
     /* Image container */
     .cart-item-row>div:nth-child(1) {
+        flex: 0 0 50px !important;
+        max-width: 50px !important;
         margin-bottom: 8px;
+        margin-right: 15px;
+        text-align: left;
+        order: 1;
+    }
+
+    /* Product name (Full width on second row) */
+    .cart-item-row>div:nth-child(2) {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+        margin-bottom: 12px;
+        white-space: normal !important;
+        overflow: visible !important;
+        text-align: left;
+        order: 4;
+        padding-top: 5px;
     }
 
     /* Price (Strike-through MRP) - move to new line or hide if redundant */
@@ -36,15 +46,17 @@
         /* Hide MRP column on mobile to save space */
     }
 
-    /* Selling Price (You Pay) */
     .cart-item-row>div:nth-child(4) {
         flex: 0 0 auto !important;
         min-width: auto !important;
         text-align: left !important;
-        font-weight: bold;
-        font-size: 1rem !important;
-        order: 3;
+        font-weight: normal;
+        font-size: 0.95rem !important;
+        order: 2;
         margin-right: 15px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
     }
 
     .cart-item-row>div:nth-child(4)::before {
@@ -52,6 +64,7 @@
         font-weight: normal;
         color: #666;
         font-size: 0.9rem;
+        margin-right: 4px;
     }
 
     /* Savings */
@@ -64,8 +77,11 @@
     .cart-item-row>div:nth-child(6) {
         flex: 0 0 auto !important;
         min-width: auto !important;
-        order: 4;
+        order: 3;
+        margin-bottom: 8px;
         margin-right: auto;
+        display: flex;
+        align-items: center;
         /* Push remove button to right */
     }
 

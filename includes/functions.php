@@ -1001,12 +1001,15 @@ function getCategoryPath($categoryId, $categories = null) {
 
 // Generate breadcrumb navigation
 function generateBreadcrumb($pageTitle, $categoryPath = null, $productName = null) {
+    global $base_url;
+    $base = isset($base_url) ? $base_url : '';
+    
     $breadcrumbs = [];
     
     // Always start with Home
     $breadcrumbs[] = [
         'title' => 'Home',
-        'url' => 'index.php',
+        'url' => $base . 'index.php',
         'active' => false
     ];
     
@@ -1015,7 +1018,7 @@ function generateBreadcrumb($pageTitle, $categoryPath = null, $productName = nul
         foreach ($categoryPath as $category) {
             $breadcrumbs[] = [
                 'title' => $category['name'],
-                'url' => 'category.php?slug=' . $category['slug'],
+                'url' => $base . 'category.php?slug=' . $category['slug'],
                 'active' => false
             ];
         }

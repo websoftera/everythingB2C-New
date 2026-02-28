@@ -36,26 +36,19 @@ echo renderBreadcrumb($breadcrumbs);
             <?php foreach ($wishlistItems as $item): ?>
                 <div class="card product-card" data-id="prod-<?php echo $item['product_id']; ?>">
                         <?php 
-                        $discount = $item['mrp'] - $item['selling_price'];
-                        $discountPercentage = calculateDiscountPercentage($item['mrp'], $item['selling_price']);
                         $isOutOfStock = ($item['stock_quantity'] <= 0);
-                        if ($discount > 0): 
-                        ?>
-                            <div class="discount-banner">SAVE ₹<?php echo $discount; ?> (<?php echo $discountPercentage; ?>% OFF)</div>
+                        if ($item['is_discounted']): ?>
+                            <div class="discount-banner">SAVE ₹<?php echo $item['mrp'] - $item['selling_price']; ?> (<?php echo $item['discount_percentage']; ?>% OFF)</div>
+                        <?php else: ?>
+                            <div class="discount-banner" style="visibility: hidden;">&nbsp;</div>
                         <?php endif; ?>
                         <div class="product-info">
-                            <div class="wishlist">
-                                <input type="checkbox" class="heart-checkbox" id="wishlist-checkbox-<?php echo $item['product_id']; ?>" data-product-id="<?php echo $item['product_id']; ?>" checked>
-                                <label for="wishlist-checkbox-<?php echo $item['product_id']; ?>" class="wishlist-label wishlist-active">
-                                    <span class="heart-icon">&#10084;</span>
-                                </label>
-                            </div>
                             <div class="product-image">
                                 <a href="product.php?slug=<?php echo $item['slug']; ?>">
                                     <?php if (!empty($item['main_image'])): ?>
                                         <img src="./<?php echo $item['main_image']; ?>" alt="<?php echo cleanProductName($item['name']); ?>" onerror="this.onerror=null; this.closest('.product-image').classList.add('no-image'); this.remove();">
                                     <?php else: ?>
-                                        <div class="no-image-placeholder">No image available</div>
+                                        <img src="./uploads/products/blank-img.webp" alt="No image available">
                                     <?php endif; ?>
                                 </a>
                                 <?php if ($isOutOfStock): ?>
@@ -72,6 +65,12 @@ echo renderBreadcrumb($breadcrumbs);
                                     <div class="price-btn pay">
                                         <span class="label">PAY</span>
                                         <span class="value"><?php echo formatPrice($item['selling_price']); ?></span>
+                                    </div>
+                                    <div class="wishlist">
+                                        <input type="checkbox" class="heart-checkbox" id="wishlist-checkbox-<?php echo $item['product_id']; ?>" data-product-id="<?php echo $item['product_id']; ?>" checked>
+                                        <label for="wishlist-checkbox-<?php echo $item['product_id']; ?>" class="wishlist-label wishlist-active">
+                                            <span class="heart-icon">&#10084;</span>
+                                        </label>
                                     </div>
                                 </div>
                                 <?php if ($isOutOfStock): ?>

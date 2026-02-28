@@ -158,6 +158,10 @@
     margin-top: 15px;
 }
 
+.seller-info-content a[href^="mailto:"] {
+    text-transform: lowercase !important;
+}
+
 /* Responsive */
 @media(max-width: 768px) {
     .account-page .register-form {

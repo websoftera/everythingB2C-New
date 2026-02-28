@@ -27,8 +27,9 @@ $categoryTree = buildCategoryTree($categories);
 
 <!-- Sidebar Filter Component -->
 <div class="sidebar-filter-container">
+
   <!-- Mobile Filter Toggle Button -->
-  <button class="filter-toggle-btn d-lg-none" id="sidebarFilterToggle">
+  <button class="filter-toggle-btn d-lg-none" id="sidebarFilterToggle" type="button">
     <span class="filter-icon-css"></span>
     <span>Filter</span>
   </button>
@@ -173,7 +174,9 @@ $categoryTree = buildCategoryTree($categories);
 }
 
 .filter-toggle-btn {
+  width: 100%;
   display: flex;
+  justify-content: center;
   align-items: center;
   gap: 8px;
   padding: 10px 16px;
@@ -553,9 +556,7 @@ $categoryTree = buildCategoryTree($categories);
 }
 
   @media (min-width: 992px) {
-    .filter-toggle-btn {
-      display: none;
-    }
+
     
     .filter-close-btn {
       display: none;
@@ -565,7 +566,6 @@ $categoryTree = buildCategoryTree($categories);
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Mobile filter toggle
   const filterToggle = document.getElementById('sidebarFilterToggle');
   const filterPanel = document.getElementById('sidebarFilterPanel');
   const filterClose = document.getElementById('sidebarFilterClose');

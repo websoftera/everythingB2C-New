@@ -383,7 +383,7 @@ padding-right: 20px;
 }
 
 .input-group .dropdown-toggle {
-  background-color: #99d052;
+  background-color: 9fbe1b;
   border: 1px solid #ced4da;
 }
 

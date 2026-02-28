@@ -154,24 +154,17 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                         <div class="card product-card" data-id="prod-<?php echo $relatedProduct['id']; ?>">
                             <?php if ($relatedProduct['is_discounted']): ?>
                                 <div class="discount-banner">SAVE ₹<?php echo $relatedProduct['mrp'] - $relatedProduct['selling_price']; ?> (<?php echo $relatedProduct['discount_percentage']; ?>% OFF)</div>
+                            <?php else: ?>
+                                <div class="discount-banner" style="visibility: hidden;">&nbsp;</div>
                             <?php endif; ?>
                             
                             <div class="product-info">
-                                <div class="wishlist">
-                                    <input type="checkbox" class="heart-checkbox" id="wishlist-checkbox-related-<?php echo $relatedProduct['id']; ?>" data-product-id="<?php echo $relatedProduct['id']; ?>" <?php if ($inWishlist) echo 'checked'; ?>>
-                                    <label for="wishlist-checkbox-related-<?php echo $relatedProduct['id']; ?>" class="wishlist-label <?php echo $inWishlist ? 'wishlist-active' : ''; ?>">
-                                        <i class="fas fa-heart"></i>
-                                    </label>
-                                </div>
-                                
                                 <div class="product-image">
                                     <a href="product.php?slug=<?php echo $relatedProduct['slug']; ?>">
                                         <?php if (!empty($relatedProduct['main_image'])): ?>
                                             <img src="<?php echo $relatedProduct['main_image']; ?>" alt="<?php echo cleanProductName($relatedProduct['name']); ?>">
                                         <?php else: ?>
-                                            <div class="no-image-placeholder">
-                                                <i class="fas fa-image fa-2x"></i>
-                                            </div>
+                                            <img src="./uploads/products/blank-img.webp" alt="No image available">
                                         <?php endif; ?>
                                     </a>
                                     <?php if ($isOutOfStock): ?>
@@ -190,6 +183,12 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                                         <div class="price-btn pay">
                                             <span class="label">PAY</span>
                                             <span class="value"><?php echo formatPrice($relatedProduct['selling_price']); ?></span>
+                                        </div>
+                                        <div class="wishlist">
+                                            <input type="checkbox" class="heart-checkbox" id="wishlist-checkbox-related-<?php echo $relatedProduct['id']; ?>" data-product-id="<?php echo $relatedProduct['id']; ?>" <?php if ($inWishlist) echo 'checked'; ?>>
+                                            <label for="wishlist-checkbox-related-<?php echo $relatedProduct['id']; ?>" class="wishlist-label <?php echo $inWishlist ? 'wishlist-active' : ''; ?>">
+                                                <i class="fas fa-heart"></i>
+                                            </label>
                                         </div>
                                     </div>
                                     

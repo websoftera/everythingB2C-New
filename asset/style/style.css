@@ -971,7 +971,7 @@ h3 {
 }
 
 .input-group .dropdown-toggle {
-  background-color: #99d052;
+  background-color: #9fbe1b;
   border: 1px solid #ced4da;
 }
 
@@ -2418,131 +2418,8 @@ button {
   font-size: 1em;
 }
 
-/* UNIFIED QUANTITY CONTROL STYLES FOR ENTIRE SITE */
-/* Override any conflicting styles from Header.css and other files */
-.quantity-control {
-  display: flex !important;
-  align-items: center !important;
-  flex: 1 1 0 !important;
-  min-width: 0 !important;
-  border: 1px solid var(--medium-gray) !important;
-  /* Light grey border */
-  border-radius: 4px !important;
-  background: var(--white) !important;
-  /* White background */
-  overflow: hidden !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
-  /* Subtle shadow */
-  height: 32px !important;
-  min-height: 32px !important;
-  max-width: 120px !important;
-  gap: 0 !important;
-}
-
-/* Override any conflicting button styles */
-.quantity-control .btn-qty,
-.btn-qty {
-  width: 33.33% !important;
-  /* Equal width for each section */
-  height: 32px !important;
-  font-size: 14px !important;
-  font-weight: bold !important;
-  border: none !important;
-  background: var(--white) !important;
-  /* White background */
-  color: var(--dark-grey) !important;
-  /* Dark grey text */
-  cursor: pointer !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  transition: background-color 0.2s ease !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  border-right: 1px solid var(--medium-gray) !important;
-  /* Light grey border between sections */
-  border-top: none !important;
-  border-bottom: none !important;
-  border-radius: 0 !important;
-  /* Ensure no rounded corners */
-  box-sizing: border-box !important;
-}
-
-.quantity-control .btn-qty:last-child {
-  border-right: none !important;
-  /* Remove border from last button */
-}
-
-.quantity-control .btn-qty:hover {
-  background: var(--light-gray) !important;
-  /* Light grey hover */
-}
-
-.quantity-control .btn-qty:disabled {
-  background: #6c757d !important;
-  cursor: not-allowed !important;
-}
-
-/* Override Header.css quantity-input styles */
-.quantity-control input[type="number"],
-.quantity-control .quantity-input,
-.quantity-input {
-  width: 33.33% !important;
-  /* Equal width for center section */
-  height: 32px !important;
-  font-size: 14px !important;
-  font-weight: bold !important;
-  text-align: center !important;
-  border: none !important;
-  background: var(--white) !important;
-  /* White background - override blue from Header.css */
-  color: var(--dark-grey) !important;
-  /* Dark grey text - override white from Header.css */
-  padding: 0 !important;
-  margin: 0 !important;
-  -webkit-appearance: none !important;
-  -moz-appearance: textfield !important;
-  appearance: textfield !important;
-  border-left: 1px solid var(--medium-gray) !important;
-  /* Light grey border on left */
-  border-right: 1px solid var(--medium-gray) !important;
-  /* Light grey border on right */
-  border-top: none !important;
-  /* Remove top border */
-  border-bottom: none !important;
-  /* Remove bottom border */
-  border-radius: 0 !important;
-  /* Override rounded corners from Header.css */
-  box-sizing: border-box !important;
-}
-
-.quantity-control input[type="number"]::-webkit-inner-spin-button,
-.quantity-control input[type="number"]::-webkit-outer-spin-button,
-.quantity-control .quantity-input::-webkit-inner-spin-button,
-.quantity-control .quantity-input::-webkit-outer-spin-button {
-  -webkit-appearance: none !important;
-  margin: 0 !important;
-}
 
 @media (max-width: 600px) {
-  .quantity-control {
-    height: 28px !important;
-    min-height: 28px !important;
-    max-width: 100px !important;
-  }
-
-  .quantity-control .btn-qty {
-    width: 33.33% !important;
-    height: 28px !important;
-    font-size: 12px !important;
-  }
-
-  .quantity-control input[type="number"],
-  .quantity-control .quantity-input {
-    width: 33.33% !important;
-    height: 28px !important;
-    font-size: 12px !important;
-  }
 
   /* Wishlist mobile responsive styles */
   .wishlist-container .row {
