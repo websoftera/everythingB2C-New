@@ -14,7 +14,7 @@
     width: 100%;
     border: 1px solid #ccc;
     text-align: center;
-    border-radius: 0 !important;
+    border-radius: 0 0 8px 8px !important;
     background: #fff;
     min-width: 240px !important;
     max-width: 240px !important;
@@ -25,7 +25,7 @@
     padding: 0 !important;
     box-sizing: border-box !important;
     background: #fff;
-    border-radius: 0 !important;
+    border-radius: 0 0 8px 8px !important;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -54,7 +54,7 @@
     align-items: center !important;
     justify-content: center !important;
     /* min-height: 48px !important; */
-    border-radius: 4px !important;
+    border-radius: 0 !important;
 }
 
 /* --- Product Image --- */

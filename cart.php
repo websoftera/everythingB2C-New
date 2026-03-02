@@ -88,7 +88,7 @@ echo renderBreadcrumb($breadcrumbs);
                                         <?php
                                         $imgSrc = !empty($item['main_image']) ? './' . $item['main_image'] : './uploads/products/blank-img.webp';
                                         ?>
-                                        <img src="<?php echo $imgSrc; ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="img-fluid" style="width:44px;height:44px;object-fit:cover;border-radius:5px;">
+                                        <img src="<?php echo $imgSrc; ?>" onerror="this.onerror=null; this.src='./uploads/products/blank-img.webp';" alt="<?php echo htmlspecialchars($item['name']); ?>" class="img-fluid" style="width:44px;height:44px;object-fit:cover;border-radius:5px;">
                                     </a>
                                 </div>
                                 <div style="flex:1 1 120px; min-width:60px; max-width:220px; font-size:0.97em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">

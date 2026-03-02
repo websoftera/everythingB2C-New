@@ -110,7 +110,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 </section>
 
 <!-- Product Categories Section -->
-<section class="popular-categories-section">
+<section class="popular-categories-section home-categories-section">
     <div class="categories-card">
         <div class="category-products-header">
             <h2 class="category-products-title">Product Categories</h2>
