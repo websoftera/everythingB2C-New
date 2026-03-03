@@ -1233,6 +1233,46 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
         });
+
+        // Handle clicks on category dropdown options in the Search Bar ("All Categories")
+        document.querySelectorAll('.category-option').forEach(function(item) {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                const slug = this.getAttribute('data-category');
+                
+                if (slug && slug !== 'all') {
+                    window.location.href = (window.BASE_URL || '') + 'category.php?slug=' + encodeURIComponent(slug);
+                } else if (slug === 'all') {
+                    window.location.href = (window.BASE_URL || '') + 'categories.php';
+                }
+            });
+        });
+
+        // Handle clicks on category dropdown options ONLY in the navigation menu (not search bar)
+        document.querySelectorAll('.category-navbar .dropdown-item, .category-navbar .dropdown-toggle').forEach(function(item) {
+            item.addEventListener('click', function(e) {
+                // Determine if this is a click we should redirect for
+                const href = this.getAttribute('href');
+                
+                // If the link has a destination and isn't just an anchor placeholder
+                if (href && href !== '#' && !href.startsWith('javascript:')) {
+                    // Prevent bootstrap from just opening the menu or preventing default
+                    e.preventDefault();
+                    e.stopPropagation();
+                    window.location.href = href;
+                }
+            });
+            
+            // Allow double-clicks to force navigate on devices where single click only opens dropdown
+            item.addEventListener('dblclick', function(e) {
+                 const href = this.getAttribute('href');
+                 if (href && href !== '#' && !href.startsWith('javascript:')) {
+                    e.preventDefault();
+                    window.location.href = href;
+                 }
+            });
+        });
+        
     }, 100); // Small delay to ensure Bootstrap is ready
 
     // Ensure sticky header works
@@ -1490,14 +1530,18 @@ function renderFloatingCart() {
                         title: 'Error',
                         text: 'Could not update cart.',
                         timer: 3000,
-                        showConfirmButton: false
+                        showConfirmButton: false,
+                        showCloseButton: true,
+                        customClass: { popup: 'custom-swal-popup' }
                     });
                 } else {
                     Swal.fire({
                         icon: 'error',
                         title: 'Cart Error',
                         text: 'Could not update cart.',
-                        confirmButtonText: 'OK'
+                        confirmButtonText: 'OK',
+                        showCloseButton: true,
+                        customClass: { popup: 'custom-swal-popup' }
                     });
                 }
               } else {
@@ -1558,16 +1602,20 @@ function renderFloatingCart() {
                   Swal.fire({
                     icon: 'error',
                     title: 'Maximum quantity reached',
-                    text: result.message,
+                    html: result.message,
                     timer: 4000,
-                    showConfirmButton: false
+                    showConfirmButton: false,
+                    showCloseButton: true,
+                    customClass: { popup: 'custom-swal-popup' }
                   });
                 } else {
                   Swal.fire({
                       icon: 'error',
                       title: 'Error',
-                      text: result.message,
-                      confirmButtonText: 'OK'
+                      html: result.message,
+                      confirmButtonText: 'OK',
+                      showCloseButton: true,
+                      customClass: { popup: 'custom-swal-popup' }
                   });
                 }
                 return; // Don't proceed with the update
@@ -1599,14 +1647,18 @@ function renderFloatingCart() {
                       title: 'Error',
                       text: 'Could not update cart.',
                       timer: 3000,
-                      showConfirmButton: false
+                      showConfirmButton: false,
+                      showCloseButton: true,
+                      customClass: { popup: 'custom-swal-popup' }
                   });
               } else {
                   Swal.fire({
                       icon: 'error',
                       title: 'Cart Error',
                       text: 'Could not update cart.',
-                      confirmButtonText: 'OK'
+                      confirmButtonText: 'OK',
+                      showCloseButton: true,
+                      customClass: { popup: 'custom-swal-popup' }
                   });
               }
             } else {
@@ -1672,14 +1724,18 @@ function renderFloatingCart() {
                       title: 'Error',
                       text: resp.message || 'Could not remove item.',
                       timer: 3000,
-                      showConfirmButton: false
+                      showConfirmButton: false,
+                      showCloseButton: true,
+                      customClass: { popup: 'custom-swal-popup' }
                   });
               } else {
                   Swal.fire({
                       icon: 'error',
                       title: 'Remove Error',
                       text: resp.message || 'Could not remove item.',
-                      confirmButtonText: 'OK'
+                      confirmButtonText: 'OK',
+                      showCloseButton: true,
+                      customClass: { popup: 'custom-swal-popup' }
                   });
               }
             }
@@ -1731,16 +1787,20 @@ function renderFloatingCart() {
                   Swal.fire({
                     icon: 'error',
                     title: 'Maximum quantity reached',
-                    text: result.message,
+                    html: result.message,
                     timer: 4000,
-                    showConfirmButton: false
+                    showConfirmButton: false,
+                    showCloseButton: true,
+                    customClass: { popup: 'custom-swal-popup' }
                   });
                 } else {
                   Swal.fire({
                       icon: 'error',
                       title: 'Error',
-                      text: result.message,
-                      confirmButtonText: 'OK'
+                      html: result.message,
+                      confirmButtonText: 'OK',
+                      showCloseButton: true,
+                      customClass: { popup: 'custom-swal-popup' }
                   });
                 }
                 // Reset to original user input and don't proceed with update

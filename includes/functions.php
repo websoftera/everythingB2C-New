@@ -1072,7 +1072,7 @@ function generateBreadcrumb($pageTitle, $categoryPath = null, $productName = nul
 
 // Render breadcrumb HTML
 function renderBreadcrumb($breadcrumbs) {
-    $html = '<nav aria-label="breadcrumb" class="breadcrumb-nav">';
+    $html = '<nav aria-label="breadcrumb" class="breadcrumb-nav" style="margin-bottom: 10px;">';
     $html .= '<ol class="breadcrumb">';
     
     foreach ($breadcrumbs as $index => $crumb) {

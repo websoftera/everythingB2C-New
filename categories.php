@@ -4,45 +4,43 @@ require_once 'includes/header.php';
 require_once 'includes/functions.php';
 
 // Get all categories with recursive product counts (including subcategories)
-$categories = getAllCategoriesWithRecursiveProductCount();
-$main_categories = array_filter($categories, function($cat) { return empty($cat['parent_id']); });
-
-// Debug: Let's verify the counting is working correctly
-// Uncomment the following lines to debug category counts
-/*
-echo "<div style='background: #f0f0f0; padding: 10px; margin: 10px; border: 1px solid #ccc;'>";
-echo "<h4>Debug: Category Product Counts</h4>";
-foreach ($main_categories as $cat) {
-    echo "<p><strong>{$cat['name']}</strong>: {$cat['product_count']} products</p>";
-}
-echo "</div>";
-*/
+$all_categories_with_products = getAllCategoriesWithRecursiveProductCount();
 
 // Get filter parameters for sidebar
 $selectedCategory = isset($_GET['category']) ? $_GET['category'] : '';
 $searchTerm = isset($_GET['q']) ? trim($_GET['q']) : '';
 
-// Filter categories based on search
-if (!empty($searchTerm)) {
-    $main_categories = array_filter($main_categories, function($cat) use ($searchTerm) {
-        return stripos($cat['name'], $searchTerm) !== false;
+// By default, only show main parent categories (not subcategories)
+if (empty($selectedCategory) && empty($searchTerm)) {
+    $display_list = array_filter($all_categories_with_products, function($cat) { 
+        return empty($cat['parent_id']); 
     });
-}
+} else {
+    // If we're filtering by name or by a specific ID, we search against ALL categories including subcategories
+    $display_list = $all_categories_with_products;
+    
+    // Filter categories based on search
+    if (!empty($searchTerm)) {
+        $display_list = array_filter($display_list, function($cat) use ($searchTerm) {
+            return stripos($cat['name'], $searchTerm) !== false;
+        });
+    }
 
-// Filter by selected category if specified
-if (!empty($selectedCategory)) {
-    $main_categories = array_filter($main_categories, function($cat) use ($selectedCategory) {
-        return $cat['id'] == $selectedCategory;
-    });
+    // Filter by selected category if specified
+    if (!empty($selectedCategory)) {
+        $display_list = array_filter($display_list, function($cat) use ($selectedCategory) {
+            return $cat['id'] == $selectedCategory;
+        });
+    }
 }
 
 // Pagination
 $itemsPerPage = 12;
 $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$totalCategories = count($main_categories);
+$totalCategories = count($display_list);
 $totalPages = ceil($totalCategories / $itemsPerPage);
 $offset = ($currentPage - 1) * $itemsPerPage;
-$displayCategories = array_slice($main_categories, $offset, $itemsPerPage);
+$displayCategories = array_slice($display_list, $offset, $itemsPerPage);
 
 // Helper function to build pagination URLs
 function buildCategoriesPaginationUrl($page, $params = []) {
@@ -61,153 +59,24 @@ function buildCategoriesPaginationUrl($page, $params = []) {
 ?>
 
 <!-- Breadcrumb Navigation -->
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.php">Home</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Categories</li>
-                </ol>
-            </nav>
-        </div>
-    </div>
-</div>
-
-<!-- Spacing after breadcrumb -->
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div style="height: 20px;"></div>
-        </div>
-    </div>
-</div>
+<?php
+$breadcrumbs = generateBreadcrumb($pageTitle);
+echo renderBreadcrumb($breadcrumbs);
+?>
 
 <div class="container-fluid">
     <div class="row">
         <!-- Sidebar Filter -->
-        <div class="col-lg-3 col-md-4 d-none d-lg-block">
-            <div class="sidebar-filter-container">
-                <!-- Sidebar Filter Panel -->
-                <div class="sidebar-filter-panel" id="sidebarFilterPanel">
-                    <div class="sidebar-filter-header">
-                        <h4>Filters</h4>
-                    </div>
-
-                    <form method="get" id="sidebarFilterForm" class="sidebar-filter-form">
-                        <!-- Search Filter -->
-                        <div class="filter-section">
-                            <h5>Search Categories</h5>
-                            <div class="form-group">
-                                <input type="text" name="q" value="<?php echo htmlspecialchars($searchTerm); ?>" 
-                                       placeholder="Search categories..." class="form-control">
-                            </div>
-                        </div>
-
-                        <!-- Category Filter -->
-                        <div class="filter-section">
-                            <h5>Filter by Category</h5>
-                            <div class="form-group">
-                                <select name="category" class="form-control">
-                                    <option value="">All Categories</option>
-                                    <?php 
-                                    $allCategories = getAllCategories();
-                                    foreach ($allCategories as $cat) {
-                                        if (empty($cat['parent_id'])) {
-                                            echo '<option value="' . $cat['id'] . '"';
-                                            if ($selectedCategory == $cat['id']) {
-                                                echo ' selected';
-                                            }
-                                            echo '>' . htmlspecialchars($cat['name']) . '</option>';
-                                        }
-                                    }
-                                    ?>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Filter Actions -->
-                        <div class="filter-actions">
-                            <button type="submit" class="btn btn-primary filter-apply-btn">
-                                Apply
-                            </button>
-                            <a href="categories.php" class="btn btn-outline-secondary filter-clear-btn">
-                                Clear All
-                            </a>
-                        </div>
-                    </form>
-                </div>
-            </div>
+        <div class="col-lg-3 col-md-4">
+            <?php include 'includes/sidebar-filter.php'; ?>
         </div>
 
         <!-- Categories Section -->
         <div class="col-lg-9 col-md-8 col-12">
-            <!-- Mobile Filter Panel -->
-            <div class="mobile-filter-panel d-lg-none" id="mobileFilterPanel">
-                <div class="mobile-filter-overlay" id="mobileFilterOverlay"></div>
-                <div class="mobile-filter-content">
-                    <div class="mobile-filter-header">
-                        <h4>Filters</h4>
-                        <button class="mobile-filter-close" id="mobileFilterClose">
-                            <i class="bi bi-x-lg"></i>
-                        </button>
-                    </div>
-
-                    <form method="get" id="mobileFilterForm" class="mobile-filter-form">
-                        <!-- Search Filter -->
-                        <div class="filter-section">
-                            <h5>Search Categories</h5>
-                            <div class="form-group">
-                                <input type="text" name="q" value="<?php echo htmlspecialchars($searchTerm); ?>" 
-                                       placeholder="Search categories..." class="form-control">
-                            </div>
-                        </div>
-
-                        <!-- Category Filter -->
-                        <div class="filter-section">
-                            <h5>Filter by Category</h5>
-                            <div class="form-group">
-                                <select name="category" class="form-control">
-                                    <option value="">All Categories</option>
-                                    <?php 
-                                    $allCategories = getAllCategories();
-                                    foreach ($allCategories as $cat) {
-                                        if (empty($cat['parent_id'])) {
-                                            echo '<option value="' . $cat['id'] . '"';
-                                            if ($selectedCategory == $cat['id']) {
-                                                echo ' selected';
-                                            }
-                                            echo '>' . htmlspecialchars($cat['name']) . '</option>';
-                                        }
-                                    }
-                                    ?>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Filter Actions -->
-                        <div class="filter-actions">
-                            <button type="submit" class="btn btn-primary filter-apply-btn">
-                                Apply
-                            </button>
-                            <a href="categories.php" class="btn btn-outline-secondary filter-clear-btn">
-                                Clear All
-                            </a>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            
             <div class="categories-container">
          <!-- Categories Header -->
                 <div class="categories-header">
-                                    <!-- Mobile Filter Button - Always Visible on Mobile -->
-<div class="mobile-filter-button-container d-lg-none">
-    <button class="mobile-filter-btn" id="mobileFilterBtn">
-        <span class="filter-icon-css"></span>
-        <span>Filter</span>
-    </button>
-</div>
+<!-- Top space preserved for card grid -->
        
                 </div>
 
@@ -404,19 +273,21 @@ function buildCategoriesPaginationUrl($page, $params = []) {
 
 .category-card {
     background: #ffffff;
-    border-radius: 8px;
+    border-radius: 12px;
     padding: 0;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
     transition: all 0.3s ease;
-    border: 2px solid #9fbe1b;
+    border: 1px solid #9fbe1b;
     height: 100%;
     overflow: hidden;
     min-width: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 .category-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
     border-color: #9fbe1b;
 }
 
@@ -429,22 +300,25 @@ function buildCategoriesPaginationUrl($page, $params = []) {
 
 .category-image {
     width: 100%;
-    height: 140px;
+    height: 180px;
     overflow: hidden;
-    border-radius: 6px 6px 0 0;
-    background-color: #f8f9fa;
+    border-radius: 12px 12px 0 0;
+    background-color: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 20px; /* Uniform boundary gap */
 }
 
 .category-image img {
-    width: 100%;
-    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
     object-fit: contain;
+    transition: transform 0.5s ease;
     display: block;
-    border-radius: 0;
-    background-color: #f8f9fa;
+    background-color: transparent; /* Remove conflicting inner background */
 }
 
 .category-placeholder {
@@ -517,7 +391,7 @@ function buildCategoriesPaginationUrl($page, $params = []) {
 
 .view-category-btn:hover {
     background: transparent;
-    color: #fff;
+    color: var(--dark-green);
     border-color: var(--light-green);
     transform: translateY(-2px);
 }
@@ -544,139 +418,7 @@ function buildCategoriesPaginationUrl($page, $params = []) {
     margin-bottom: 20px;
 }
 
-/* Sidebar Filter Styles */
-.sidebar-filter-container {
-    position: sticky;
-    top: 20px;
-    margin-top: 20px;
-}
-
-.sidebar-filter-panel {
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    border: 1px solid #e0e0e0;
-}
-
-.sidebar-filter-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #e0e0e0;
-}
-
-.sidebar-filter-header h4 {
-    margin: 0;
-    color: var(--dark-grey);
-    font-weight: 600;
-}
-
-.filter-section {
-    margin-bottom: 25px;
-}
-
-.filter-section h5 {
-    color: var(--dark-grey);
-    font-weight: 600;
-    margin-bottom: 12px;
-    font-size: 1rem;
-}
-
-.filter-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 30px;
-}
-
-.filter-apply-btn,
-.filter-clear-btn {
-    width: 100%;
-    padding: 12px;
-    border-radius: 8px;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    text-decoration: none;
-    background: var(--dark-green) !important;
-    border-radius: 4px !important;
-    color: white !important;
-}
-
-/* Mobile Filter Panel */
-.mobile-filter-panel {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 10000;
-}
-
-.mobile-filter-panel.show {
-    display: block;
-}
-
-.mobile-filter-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0,0,0,0.5);
-}
-
-.mobile-filter-content {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 80%;
-    max-width: 350px;
-    height: 100%;
-    background: white;
-    overflow-y: auto;
-    padding: 20px;
-    box-shadow: 2px 0 10px rgba(0,0,0,0.3);
-}
-
-.mobile-filter-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #e0e0e0;
-}
-
-.mobile-filter-header h4 {
-    margin: 0;
-    color: var(--dark-grey);
-    font-weight: 600;
-}
-
-.mobile-filter-close {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    color: var(--dark-gray);
-    cursor: pointer;
-    padding: 0;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mobile-filter-form {
-    padding: 0;
-}
+/* Removed Sidebar Filter Styles - Now handled by includes/sidebar-filter.php */
 
 /* Desktop: 4 cards per row */
 @media (min-width: 1200px) {
@@ -690,194 +432,57 @@ function buildCategoriesPaginationUrl($page, $params = []) {
     }
 }
 
-/* Force 2 columns on mobile */
+/* Mobile: 1 card per row */
 @media (max-width: 767px) {
     .categories-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 10px !important;
-    }
-}
-
-/* Tablets: 3 cards per row */
-@media (max-width: 1199px) and (min-width: 768px) {
-    .categories-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 12px;
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+        padding: 0 15px;
     }
     
-    /* Hide mobile filter button on tablets */
-    .mobile-filter-button-container {
-        display: none !important;
-    }
-}
-
-/* Mobile: 2 cards per row */
-@media (max-width: 767px) {
-    .categories-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 10px;
-        padding: 0 10px;
-    }
-    
-    .category-image {
-        height: 100px;
-    }
-    
-    .category-details {
-        padding: 6px;
-    }
-    
-    .category-name {
-        font-size: 0.8rem;
-        line-height: 1.2;
-    }
-    
-    .category-count {
-        font-size: 0.7rem;
-        margin-bottom: 8px;
-    }
-    
-    .view-category-btn {
-        padding: 3px 6px;
-        font-size: 0.7rem;
-        white-space: nowrap;
-    }
-    
-    /* Show mobile filter button */
-    .mobile-filter-button-container {
-        display: block !important;
-    }
-    
-    /* Add top margin to prevent overlap with filter button */
-    .categories-container {
-        margin-top: 10px;
-        padding-left: 0;
-        padding-right: 0;
-    }
-    
-    /* Ensure proper container spacing */
-    .container-fluid {
-        padding-left: 10px;
-        padding-right: 10px;
-    }
-
     .category-card {
-        max-width: 200px !important;
-    }
-}
-
-/* Small mobile: 2 cards per row with smaller sizes */
-@media (max-width: 480px) {
-    .categories-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 6px;
-        padding: 0 5px;
+        max-width: 100% !important;
+        border-radius: 12px;
     }
     
     .category-image {
-        height: 80px;
+        height: 200px; /* Taller image block for single column */
+        padding: 20px; /* Consistent inner padding */
+        background: transparent;
+    }
+    
+    .category-image img {
+        object-fit: contain;
     }
     
     .category-details {
-        padding: 4px;
+        padding: 15px;
     }
     
     .category-name {
-        font-size: 0.7rem;
-        line-height: 1.1;
+        font-size: 1.1rem;
+        line-height: 1.4;
     }
     
     .category-count {
-        font-size: 0.6rem;
-        margin-bottom: 6px;
+        font-size: 0.9rem;
+        margin-bottom: 15px;
     }
     
     .view-category-btn {
-        padding: 2px 4px;
-        font-size: 0.6rem;
-        white-space: nowrap;
+        padding: 10px 16px;
+        font-size: 1rem;
+        width: 100%; /* Make button full width on mobile */
     }
-    
-    /* Show mobile filter button */
-    .mobile-filter-button-container {
-        display: block !important;
-    }
-    
-    /* Smaller filter button on very small screens */
-    .mobile-filter-btn {
-        padding: 12px 18px;
-        font-size: 12px;
-        border-radius: 20px;
-    }
-    
-    .mobile-filter-btn span {
-        display: inline; /* Keep text visible */
-        font-size: 11px;
-    }
-    
-    .mobile-filter-btn i {
-        font-size: 14px;
-    }
-    
-    /* Add top margin to prevent overlap with filter button */
-    .categories-container {
-        margin-top: 10px;
-        padding-left: 0;
-        padding-right: 0;
-    }
-    
+
     /* Ensure proper container spacing */
     .container-fluid {
-        padding-left: 5px;
-        padding-right: 5px;
+        padding-left: 15px;
+        padding-right: 15px;
     }
 }
 </style>
 
-<script>
-// Mobile filter functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const mobileFilterBtn = document.getElementById('mobileFilterBtn');
-    const mobileFilterPanel = document.getElementById('mobileFilterPanel');
-    const mobileFilterClose = document.getElementById('mobileFilterClose');
-    const mobileFilterOverlay = document.getElementById('mobileFilterOverlay');
-
-    // Function to open mobile filter panel
-    function openMobileFilterPanel() {
-        if (mobileFilterPanel) {
-            mobileFilterPanel.classList.add('show');
-            document.body.style.overflow = 'hidden'; // Prevent background scrolling
-        }
-    }
-
-    // Function to close mobile filter panel
-    function closeMobileFilterPanel() {
-        if (mobileFilterPanel) {
-            mobileFilterPanel.classList.remove('show');
-            document.body.style.overflow = ''; // Restore scrolling
-        }
-    }
-
-    // Event listeners
-    if (mobileFilterBtn) {
-        mobileFilterBtn.addEventListener('click', openMobileFilterPanel);
-    }
-
-    if (mobileFilterClose) {
-        mobileFilterClose.addEventListener('click', closeMobileFilterPanel);
-    }
-
-    if (mobileFilterOverlay) {
-        mobileFilterOverlay.addEventListener('click', closeMobileFilterPanel);
-    }
-
-    // Close mobile filter panel on escape key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && mobileFilterPanel && mobileFilterPanel.classList.contains('show')) {
-            closeMobileFilterPanel();
-        }
-    });
-});
-</script>
+<!-- Script removed as mobile filter logic is handled externally -->
 
 <?php require_once 'includes/footer.php'; ?>
