@@ -167,7 +167,7 @@ $subcategories = getSubcategoriesByParentId($category['id']);
 ?>
 <!-- Subcategories Slider Section (Same design as Home Page) -->
 <?php if (!empty($subcategories)): ?>
-<section class="popular-categories-section">
+<section class="popular-categories-section subcategories-section">
     <div class="categories-card">
         <div class="category-products-header">
             <h2 class="category-products-title">Subcategories</h2>

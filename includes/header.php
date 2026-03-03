@@ -71,13 +71,13 @@ if (isLoggedIn()) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="stylesheet" href="<?php echo $base_url; ?>Header.css?v=1.1">
+    <link rel="stylesheet" href="<?php echo $base_url; ?>Header.css?v=<?php echo time(); ?>">
 
-    <link rel="stylesheet" href="<?php echo $base_url; ?>asset/style/global-colors.css?v=1.1">
-    <link rel="stylesheet" href="<?php echo $base_url; ?>asset/style/popup.css?v=1.1">
-    <link rel="stylesheet" href="<?php echo $base_url; ?>asset/style/style.css?v=1.1">
-    <link rel="stylesheet" href="<?php echo $base_url; ?>asset/style/product-card.css?v=1.1">
-    <script src="<?php echo $base_url; ?>asset/js/sliders.js" defer></script>
+    <link rel="stylesheet" href="<?php echo $base_url; ?>asset/style/global-colors.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?php echo $base_url; ?>asset/style/popup.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?php echo $base_url; ?>asset/style/style.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?php echo $base_url; ?>asset/style/product-card.css?v=<?php echo time(); ?>">
+    <script src="<?php echo $base_url; ?>asset/js/sliders.js?v=<?php echo time(); ?>" defer></script>
     <style>
 html, body {
   overflow-x: hidden !important;
@@ -440,12 +440,12 @@ if (!function_exists('renderCategoryDropdown')) {
 
         <!-- Nav Icons: Wishlist, Sign In, Cart (visible on all screens) -->
         <div class="d-flex align-items-center header-nav-icons flex-shrink-0">
-                        <!-- Home link (desktop only) -->
-            <a href="<?php echo $base_url; ?>index.php" title="Home" class="text-decoration-none me-2 me-lg-3 home-link d-none d-lg-inline-flex">
+            <!-- Home link (mobile + desktop) -->
+            <a href="<?php echo $base_url; ?>index.php" title="Home" class="text-decoration-none me-1 me-lg-3 home-link d-none d-sm-inline-flex">
                 <i class="bi bi-house-door home-icon"></i>
             </a>
         <!-- Wishlist -->
-            <a href="<?php echo $base_url; ?>wishlist.php" title="Wishlist" class="text-decoration-none me-2 me-lg-3 position-relative wishlist-link">
+            <a href="<?php echo $base_url; ?>wishlist.php" title="Wishlist" class="text-decoration-none me-1 me-lg-3 position-relative wishlist-link">
                 <div class="wishlist-icon-container position-relative">
                     <i class="bi <?php echo $wishlistCount > 0 ? 'bi-heart-fill' : 'bi-heart'; ?> wishlist-icon"></i>
                     <?php if ($wishlistCount > 0): ?>
@@ -455,7 +455,7 @@ if (!function_exists('renderCategoryDropdown')) {
             </a>
 
             <!-- User Account / Login -->
-            <div class="dropdown user-auth-dropdown me-2 me-lg-3">
+            <div class="dropdown user-auth-dropdown me-1 me-lg-3">
               <?php if (isLoggedIn()): ?>
                 <a href="#" title="Account" class="text-decoration-none user-account-link d-flex align-items-center dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                   <i class="fas fa-user user-account-icon me-1 me-lg-2"></i>
@@ -496,18 +496,26 @@ if (!function_exists('renderCategoryDropdown')) {
     </div>
     
     <!-- NEW: Mobile Search Row (Hidden on Desktop) -->
-    <div class="container-fluid d-lg-none pb-2 mt-2 mb-2" style="position: relative; z-index: 1000; padding-left: 15px; padding-right: 15px;">
-        <form class="d-flex align-items-center m-0 w-100" role="search" autocomplete="off" onsubmit="return false;" style="gap: 15px; justify-content: space-between;">
-            <!-- Offcanvas Toggle Hamburger -->
-            <button class="btn text-white flex-shrink-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileCategoryOffcanvas" aria-controls="mobileCategoryOffcanvas" style="background-color: var(--site-blue); border-radius: 6px; width: 44px; height: 44px; padding: 0; box-shadow: none; display: flex; align-items: center; justify-content: center;">
-                <i class="bi bi-list" style="font-size: 1.8rem; line-height: 1;"></i>
-            </button>
-            <div class="input-group flex-nowrap w-100" style="height:44px;">
-                <input class="form-control" id="headerSearchInputMobile" type="search" name="query" placeholder="Search for Products" aria-label="Search" autocomplete="off" style="border-top-left-radius: 6px; border-bottom-left-radius: 6px; border: 1px solid #ced4da; border-right: none; font-size: 0.95rem; box-shadow: none;">
-                <button class="btn text-white" id="headerSearchBtnMobile" type="button" style="background-color: var(--site-blue); border-top-right-radius: 6px; border-bottom-right-radius: 6px; width: 44px; padding: 0; box-shadow: none;">
-                    <i class="bi bi-search" style="font-size: 1.2rem; line-height: 1;"></i>
+    <style>
+        .mobile-search-row { padding: 0 15px !important; margin-top: 8px !important; margin-bottom: 8px !important; position: relative; z-index: 1000; }
+        .mobile-search-form { gap: 8px !important; justify-content: space-between !important; display: flex; width: 100%; margin: 0; align-items: center; }
+        .mobile-search-input-group { height: 38px !important; flex: 1 1 auto !important; display: flex; flex-wrap: nowrap; width: 100%; }
+        .mobile-search-input-field { height: 38px !important; border: 2px solid var(--primary-color) !important; border-right: none !important; border-radius: 4px 0 0 4px !important; padding-left: 12px !important; text-align: left !important; font-size: 14px !important; box-shadow: none !important; width: 100%; border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; }
+        .mobile-search-btn-field { height: 38px !important; width: 44px !important; max-width: 44px !important; min-width: 44px !important; background-color: var(--primary-color) !important; border-radius: 0 4px 4px 0 !important; border: none !important; padding: 0 !important; display: flex !important; align-items: center !important; justify-content: center !important; color: white !important; }
+        .mobile-search-toggle-btn { height: 38px !important; width: 42px !important; max-width: 42px !important; min-width: 42px !important; background-color: var(--primary-color) !important; border-radius: 4px !important; border: none !important; padding: 0 !important; display: flex !important; align-items: center !important; justify-content: center !important; flex-shrink: 0 !important; color: white !important; margin: 0 !important; }
+    </style>
+    <div class="container-fluid d-lg-none mobile-search-row">
+        <form class="mobile-search-form" role="search" autocomplete="off" onsubmit="return false;">
+            <div class="mobile-search-input-group">
+                <input class="form-control mobile-search-input-field" id="headerSearchInputMobile" type="search" name="query" placeholder="Search for Products" aria-label="Search" autocomplete="off">
+                <button class="btn mobile-search-btn-field" id="headerSearchBtnMobile" type="button">
+                    <i class="bi bi-search" style="font-size: 1.1rem; line-height: 1;"></i>
                 </button>
             </div>
+            <!-- Offcanvas Toggle Hamburger -->
+            <button class="btn mobile-search-toggle-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileCategoryOffcanvas" aria-controls="mobileCategoryOffcanvas">
+                <i class="bi bi-list" style="font-size: 1.5rem; line-height: 1;"></i>
+            </button>
             <div id="headerSearchResultsPopupMobile" class="position-absolute w-100" style="z-index: 9999; display: none; top: 100%;"></div>
         </form>
     </div>
@@ -1418,7 +1426,7 @@ function renderFloatingCart() {
         const cartId = item.id; // Use the cart table's primary key
         itemsHtml += `
           <div class="d-flex align-items-center gap-1 mb-2 border-bottom pb-1" style="min-width:0;">
-            <img src="./${item.main_image}" alt="${item.name}" style="width:38px;height:38px;object-fit:cover;border-radius:6px;border:1px solid #eee;flex-shrink:0;">
+            <img src="${item.main_image ? './' + item.main_image : './uploads/products/blank-img.webp'}" onerror="this.onerror=null; this.src='./uploads/products/blank-img.webp';" alt="${item.name}" style="width:38px;height:38px;object-fit:cover;border-radius:6px;border:1px solid #eee;flex-shrink:0;">
             <div class="flex-grow-1" style="min-width:0;">
               <div style="font-weight:600;font-size:0.97rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.name}</div>
               <div class="text-muted d-flex align-items-center gap-1" style="font-size:0.85rem;">
@@ -1938,6 +1946,7 @@ document.addEventListener('DOMContentLoaded', function() {
         text: 'Do you want to remove all items from your cart? This action cannot be undone.',
         icon: 'warning',
         showCancelButton: true,
+        showCloseButton: true, /* Enable X icon */
         confirmButtonColor: '#d33',
         cancelButtonColor: '#3085d6',
         confirmButtonText: 'Yes',
@@ -2043,158 +2052,51 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-// Robust floating cart drag logic with click/drag separation and debug logs
+// Simple floating cart click toggle logic (Drag disabled)
 (function() {
   const btn = document.getElementById('floatingCartBtn');
   const panel = document.getElementById('floatingCartPanel');
-  let isMouseDown = false;
-  let isDragging = false;
-  let offsetX = 0, offsetY = 0;
-  let startX = 0, startY = 0;
+  const closeBtn = document.getElementById('closeFloatingCartPanel');
 
-  // Load position from localStorage
-  function loadPosition() {
-    const pos = localStorage.getItem('floatingCartPosition');
-    if (pos) {
-      try {
-        const { left, top } = JSON.parse(pos);
-        if (btn) {
-          btn.style.left = left + 'px';
-          btn.style.top = top + 'px';
-          btn.style.right = 'auto';
-          btn.style.bottom = 'auto';
-        }
-        if (panel) {
-          panel.style.left = left + 'px';
-          panel.style.top = top + 'px';
-          panel.style.right = 'auto';
-          panel.style.bottom = 'auto';
-        }
-      } catch(e) {console.log('[FloatingCart][DEBUG] Error loading position:', e);}
-    }
-  }
+  if (!btn || !panel) return;
 
-  // Save position to localStorage
-  function savePosition(left, top) {
-    localStorage.setItem('floatingCartPosition', JSON.stringify({ left, top }));
-  }
-
-  // Move both elements
-  function moveBoth(left, top) {
-    if (btn) {
-      btn.style.left = left + 'px';
-      btn.style.top = top + 'px';
-      btn.style.right = 'auto';
-      btn.style.bottom = 'auto';
+  // Toggle panel visibility on button click
+  btn.addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Only toggle if we're not on the cart or checkout page
+    if (window.location.pathname.endsWith('checkout.php') || window.location.pathname.endsWith('cart.php')) {
+      return;
     }
-    if (panel) {
-      panel.style.left = left + 'px';
-      panel.style.top = top + 'px';
-      panel.style.right = 'auto';
-      panel.style.bottom = 'auto';
-    }
-  }
-
-  // Drag handler for both btn and panel header
-  function onMouseDown(e) {
-    isMouseDown = true;
-    isDragging = false;
-    startX = e.clientX;
-    startY = e.clientY;
-    const rect = btn.getBoundingClientRect();
-    offsetX = startX - rect.left;
-    offsetY = startY - rect.top;
-    if (btn) btn.style.transition = 'none';
-    if (panel) panel.style.transition = 'none';
-    document.body.style.userSelect = 'none';
-  }
-  function onMouseMove(e) {
-    if (!isMouseDown) return;
-    const dx = Math.abs(e.clientX - startX);
-    const dy = Math.abs(e.clientY - startY);
-    if (dx > 5 || dy > 5) {
-      isDragging = true;
-      let x = e.clientX - offsetX;
-      let y = e.clientY - offsetY;
-      x = Math.max(0, Math.min(window.innerWidth - (btn ? btn.offsetWidth : 60), x));
-      y = Math.max(0, Math.min(window.innerHeight - (btn ? btn.offsetHeight : 60), y));
-      moveBoth(x, y);
-    }
-  }
-  function onMouseUp(e) {
-    if (isMouseDown) {
-      if (isDragging) {
-        // Save position if dragged
-        const left = btn ? parseInt(btn.style.left) : 0;
-        const top = btn ? parseInt(btn.style.top) : 0;
-        savePosition(left, top);
-      }
-      isMouseDown = false;
-      isDragging = false;
-      if (btn) btn.style.transition = '';
-      if (panel) panel.style.transition = '';
-      document.body.style.userSelect = '';
-    }
-  }
-
-  // Attach drag to both btn and panel header
-  function attachDrag() {
-    if (btn) btn.addEventListener('mousedown', onMouseDown);
-    if (panel) {
-      const header = panel.querySelector('.floating-cart-header');
-      if (header) header.addEventListener('mousedown', onMouseDown);
-    }
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
-  }
-  function detachDrag() {
-    if (btn) btn.removeEventListener('mousedown', onMouseDown);
-    if (panel) {
-      const header = panel.querySelector('.floating-cart-header');
-      if (header) header.removeEventListener('mousedown', onMouseDown);
-    }
-    document.removeEventListener('mousemove', onMouseMove);
-    document.removeEventListener('mouseup', onMouseUp);
-  }
-
-  // Click handler for open/close (only if not dragging)
-  if (btn) {
-    btn.addEventListener('click', function(e) {
-      if (isDragging) {
-        // Prevent click if just dragged
-        e.preventDefault();
-        e.stopPropagation();
-        return;
-      }
-      e.stopPropagation();
-      if (panel.style.display === 'block') {
-        panel.style.display = 'none';
-        return;
-      }
-      // Force panel to a visible position and size
-      panel.style.left = 'auto';
-      panel.style.top = 'auto';
-      panel.style.right = '32px';
-      panel.style.bottom = '10px';
-      panel.style.width = '340px';
-      panel.style.height = 'auto';
-      panel.style.maxHeight = '540px';
+    
+    if (panel.style.display === 'block') {
+      panel.style.display = 'none';
+    } else {
       panel.style.display = 'block';
-      if (typeof renderFloatingCart === 'function') renderFloatingCart();
-      // Debug: log computed style and bounding rect
-      setTimeout(function() {
-        const rect = panel.getBoundingClientRect();
-        const style = window.getComputedStyle(panel);
-      }, 100);
+      if (typeof renderFloatingCart === 'function') {
+        renderFloatingCart();
+      }
+    }
+  });
+
+  // Close panel on close button click
+  if (closeBtn) {
+    closeBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      panel.style.display = 'none';
     });
   }
 
-  document.addEventListener('DOMContentLoaded', function() {
-    loadPosition();
-    attachDrag();
-    // Hide floating cart on checkout.php
-    if (window.location.pathname.endsWith('checkout.php')) {
-      if (btn) btn.style.display = 'none';
+  // Prevent clicks inside panel from closing it
+  panel.addEventListener('click', function(e) {
+    e.stopPropagation();
+  });
+
+  // Close panel when clicking outside
+  document.addEventListener('click', function(e) {
+    if (panel.style.display === 'block' && !btn.contains(e.target) && !panel.contains(e.target)) {
+      panel.style.display = 'none';
     }
   });
 })();
@@ -2385,7 +2287,7 @@ function smoothUpdatePerItemTotal(cartId, newTotal) {
 </script>
 
 <!-- Go to Top Button -->
-<button id="goToTopBtn" style="display:none; position:fixed; bottom:30px; right:30px; z-index:9999; background:#b2d235; color:white; border:none; border-radius:12px; width:56px; height:56px; box-shadow:0 2px 8px rgba(0,0,0,0.15); font-size:2rem; cursor:pointer; transition:all 0.2s;">
+<button id="goToTopBtn" style="display:none; position:fixed; bottom:120px; right:30px; z-index:9999; background:#b2d235; color:white; border:none; border-radius:12px; width:56px; height:56px; box-shadow:0 2px 8px rgba(0,0,0,0.15); font-size:2rem; cursor:pointer; transition:all 0.2s;">
     <span style="display:flex; align-items:center; justify-content:center;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg></span>
 </button>
 <script>
@@ -2411,18 +2313,18 @@ document.addEventListener('DOMContentLoaded', function() {
     if (goToTopBtn) {
         function updateButtonPosition() {
             if (window.innerWidth <= 480) {
-                // Extra small mobile
-                goToTopBtn.style.setProperty('left', '15px', 'important');
-                goToTopBtn.style.setProperty('right', 'auto', 'important');
-                goToTopBtn.style.setProperty('bottom', '15px', 'important');
+                // Extra small mobile - offset above floating cart
+                goToTopBtn.style.setProperty('left', 'auto', 'important');
+                goToTopBtn.style.setProperty('right', '15px', 'important');
+                goToTopBtn.style.setProperty('bottom', '85px', 'important');
                 goToTopBtn.style.setProperty('width', '40px', 'important');
                 goToTopBtn.style.setProperty('height', '40px', 'important');
                 goToTopBtn.style.setProperty('font-size', '1.2rem', 'important');
             } else if (window.innerWidth <= 768) {
-                // Mobile/tablet
-                goToTopBtn.style.setProperty('left', '20px', 'important');
-                goToTopBtn.style.setProperty('right', 'auto', 'important');
-                goToTopBtn.style.setProperty('bottom', '20px', 'important');
+                // Mobile/tablet - offset above floating cart
+                goToTopBtn.style.setProperty('left', 'auto', 'important');
+                goToTopBtn.style.setProperty('right', '20px', 'important');
+                goToTopBtn.style.setProperty('bottom', '90px', 'important');
                 goToTopBtn.style.setProperty('width', '45px', 'important');
                 goToTopBtn.style.setProperty('height', '45px', 'important');
                 goToTopBtn.style.setProperty('font-size', '1.5rem', 'important');
@@ -2430,7 +2332,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Desktop
                 goToTopBtn.style.setProperty('left', 'auto', 'important');
                 goToTopBtn.style.setProperty('right', '30px', 'important');
-                goToTopBtn.style.setProperty('bottom', '100px', 'important');
+                goToTopBtn.style.setProperty('bottom', '120px', 'important');
                 goToTopBtn.style.setProperty('width', '56px', 'important');
                 goToTopBtn.style.setProperty('height', '56px', 'important');
                 goToTopBtn.style.setProperty('font-size', '2rem', 'important');
