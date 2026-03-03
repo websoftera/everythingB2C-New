@@ -4015,14 +4015,21 @@ nav {
   border-color: var(--site-blue) !important;
 }
 
+/* Ensure the toggle button we explicitly set to green doesn't get overridden to blue on hover */
+.mobile-search-toggle-btn,
+.mobile-search-toggle-btn:hover,
+.mobile-search-toggle-btn:active,
+.mobile-search-toggle-btn:focus,
+.mobile-search-toggle-btn:focus-visible {
+  background-color: #9fbe1b !important;
+  border-color: #9fbe1b !important;
+  color: #fff !important;
+}
+
 #headerSearchBtnMobile:hover,
 #headerSearchBtnMobile:active,
 #headerSearchBtnMobile:focus,
-#headerSearchBtnMobile:focus-visible,
-[data-bs-target="#mobileCategoryOffcanvas"]:hover,
-[data-bs-target="#mobileCategoryOffcanvas"]:active,
-[data-bs-target="#mobileCategoryOffcanvas"]:focus,
-[data-bs-target="#mobileCategoryOffcanvas"]:focus-visible {
+#headerSearchBtnMobile:focus-visible {
   background-color: var(--site-blue) !important;
   color: #fff !important;
   border-color: var(--site-blue) !important;

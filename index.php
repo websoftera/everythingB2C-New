@@ -2881,12 +2881,20 @@ function topFunction(e) {
 
 #heroCarousel .carousel-item {
   width: 100% !important;
-  display: none !important;
-  position: relative !important;
+  position: absolute !important;
+  top: 0;
+  left: 0;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transition: opacity 0.8s ease-in-out, visibility 0.8s ease-in-out !important;
+  z-index: 1;
 }
 
 #heroCarousel .carousel-item.active {
-  display: block !important;
+  position: relative !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  z-index: 2;
 }
 
 #heroCarousel .carousel-item img {
@@ -3575,7 +3583,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Reset transition state after animation
             setTimeout(() => {
                 isTransitioning = false;
-            }, 1500);
+            }, 900);
         }
         
         function nextSlide() {
@@ -3589,6 +3597,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         function startAutoPlay() {
+            if (autoPlayInterval) clearInterval(autoPlayInterval);
             autoPlayInterval = setInterval(nextSlide, 5000);
         }
         
