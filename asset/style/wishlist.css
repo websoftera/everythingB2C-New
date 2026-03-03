@@ -481,13 +481,13 @@ input[type="checkbox"]:checked+.heart-icon {
     margin-bottom: 12px !important;
   }
 
-  .wishlist-container .card,
+  /* .wishlist-container .card,
   .wishlist-container .product-card {
     width: 100% !important;
     max-width: 100% !important;
     min-width: 100% !important;
     margin: 0 auto 8px auto !important;
-  }
+  } */
 }
 
 

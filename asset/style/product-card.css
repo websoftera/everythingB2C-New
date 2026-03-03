@@ -543,14 +543,6 @@
 
 @media (max-width: 600px) {
 
-    .card,
-    .product-card {
-        width: 100% !important;
-        max-width: 100% !important;
-        min-width: 100% !important;
-        margin: 0 auto 8px auto !important;
-    }
-
     /* Ensure proper spacing for wishlist container */
     .wishlist-container .row {
         margin: 0 !important;
@@ -564,6 +556,14 @@
         padding: 0 2px !important;
         margin-bottom: 8px !important;
     }
+
+    /* .card,
+    .product-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 100% !important;
+        margin: 0 auto 8px auto !important;
+    } */
 
     .discount-banner,
     .out-of-stock,
