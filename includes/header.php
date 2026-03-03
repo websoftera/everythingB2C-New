@@ -1507,6 +1507,9 @@ function renderFloatingCart() {
                 if (unitPrice > 0) {
                   updateItemTotal(cartId, qty - 1, unitPrice);
                 }
+                if (qty - 1 <= 1) {
+                  btn.disabled = true;
+                }
               }
             });
           }
@@ -1613,6 +1616,8 @@ function renderFloatingCart() {
               if (unitPrice > 0) {
                 updateItemTotal(cartId, newQty, unitPrice);
               }
+              const minusBtn = row.querySelector('.btn-qty-minus');
+              if (minusBtn) minusBtn.disabled = false;
             }
           });
         };
@@ -1770,6 +1775,8 @@ function renderFloatingCart() {
             if (success && updatedItem) {
               updatePerItemTotal(updatedItem.id, updatedItem.selling_price * updatedItem.quantity);
             }
+            const minusBtn = row.querySelector('.btn-qty-minus');
+            if (minusBtn) minusBtn.disabled = (qty <= 1);
           });
           // Update the per-item total directly after backend update
           setTimeout(() => {
