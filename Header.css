@@ -3186,23 +3186,6 @@ input[type="checkbox"]:checked+.heart-icon,
     padding: 10px 0 !important;
   }
 
-  /* Compact process section - keep gap and step styling */
-  .process-container {
-    gap: 15px !important;
-  }
-
-  .step img {
-    padding: 0px !important;
-  }
-
-  .process-container {
-    margin: 0 7px !important;
-  }
-
-  .step p {
-    font-size: 10px !important;
-    margin: 5px 0 0 0 !important;
-  }
 
   /* Section headers - consistent spacing */
   .category-products-header,
