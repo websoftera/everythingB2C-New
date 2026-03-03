@@ -1374,7 +1374,7 @@ h3 {
   .category-navbar {
     position: sticky;
     top: 0;
-    z-index: 900;
+    z-index: 1048;
     /* Keeps it below primary nav (z-index ~1050) */
     background-color: var(--white);
     border-top: 1px solid var(--border-color);
@@ -1389,6 +1389,8 @@ h3 {
     align-items: center;
     gap: 2px;
     /* Better spacing between items */
+    position: relative;
+    z-index: 1049;
   }
 }
 
@@ -2240,7 +2242,7 @@ input[type="checkbox"]:checked+.wishlist-label i {
 
 .second-navbar {
   position: relative;
-  z-index: 1000;
+  z-index: 1049;
 }
 
 .navbar-nav {
@@ -2274,7 +2276,7 @@ input[type="checkbox"]:checked+.wishlist-label i {
   .category-navbar {
     position: sticky;
     top: 0;
-    z-index: 900;
+    z-index: 1048;
     /* Keeps it below primary nav (z-index ~1050) */
     background-color: var(--white);
     border-top: 1px solid var(--border-color);
@@ -2289,6 +2291,8 @@ input[type="checkbox"]:checked+.wishlist-label i {
     align-items: center;
     gap: 2px;
     /* Better spacing between items */
+    position: relative;
+    z-index: 1049;
   }
 
   .category-navbar .nav-link {
@@ -2435,13 +2439,13 @@ button {
     margin-bottom: 12px !important;
   }
 
-  .wishlist-container .card,
+  /* .wishlist-container .card,
   .wishlist-container .product-card {
     width: 100% !important;
     max-width: 100% !important;
     min-width: 100% !important;
     margin: 0 auto 8px auto !important;
-  }
+  } */
 }
 
 .price-btn,
@@ -3473,7 +3477,7 @@ html .cart-added-highlight,
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 100;
+  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3661,4 +3665,72 @@ html .cart-added-highlight,
 .swal2-actions {
   margin-top: auto !important;
   padding-top: 15px !important;
+}
+
+/* --- Wishlist Specific Layout Overrides --- */
+.wishlist-container {
+  max-width: 1250px !important;
+  /* Force a boxed width instead of fluid full screen */
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: 15px !important;
+  padding-right: 15px !important;
+}
+
+.wishlist-grid {
+  display: grid !important;
+  grid-template-columns: repeat(5, 1fr) !important;
+  gap: 5px !important;
+  /* Exact 5px gap requested */
+  width: 100% !important;
+  justify-content: center !important;
+  align-items: stretch !important;
+}
+
+/* Ensure product cards flex nicely inside the new grid */
+.wishlist-grid .card.product-card {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  /* Rely entirely on grid gap */
+  float: none !important;
+  justify-self: center;
+  height: 100% !important;
+}
+
+/* Responsive breakdowns for the boxed wishlist grid */
+@media (max-width: 1200px) {
+  .wishlist-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+}
+
+@media (max-width: 991px) {
+  .wishlist-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .wishlist-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+}
+
+@media (max-width: 500px) {
+  .wishlist-container {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+
+  .wishlist-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .wishlist-grid .card.product-card {
+    max-width: 240px !important;
+    /* Make wishlist mobile cards identically boxed as regular category cards */
+  }
 }

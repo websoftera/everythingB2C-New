@@ -1048,7 +1048,7 @@ function topFunction(e) {
   cursor: pointer !important;
   pointer-events: auto !important;
   position: absolute !important;
-  z-index: 100 !important;
+  z-index: 10 !important;
   width: 22px !important;
   height: 22px !important;
   display: flex !important;
@@ -1078,7 +1078,7 @@ function topFunction(e) {
   .discounted-nav-btn,
   .featured-nav-btn {
     position: absolute !important;
-    z-index: 1000 !important;
+    z-index: 10 !important;
     background: #ffffff !important;
     border: 1px solid #e0e0e0 !important;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
@@ -1673,7 +1673,7 @@ function topFunction(e) {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 100;
+  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1743,7 +1743,7 @@ function topFunction(e) {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 100;
+  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1801,7 +1801,7 @@ function topFunction(e) {
   cursor: pointer !important;
   pointer-events: auto !important;
   position: absolute !important;
-  z-index: 100 !important;
+  z-index: 10 !important;
   /* border-radius: 50% !important; */
   width: 25px !important;
   height: 25px !important;
