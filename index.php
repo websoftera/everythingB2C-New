@@ -80,7 +80,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
     </div>
 
 <section>
-    <div class="process-container">
+    <div class="process-container" style="gap: 20px !important;">
         <div class="step">
             <img src="./asset/images/work-1.webp" alt="Online Shopping">
             <p>ONLINE SHOPPING</p>

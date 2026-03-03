@@ -62,7 +62,7 @@ $categoryTree = buildCategoryTree($categories);
       <div class="filter-section">
         <h5>Categories</h5>
         <div class="form-group">
-          <select name="category" id="sidebarCategorySelect" class="form-control">
+          <select name="category" id="sidebarCategorySelect" class="form-control" onchange="document.getElementById('sidebarFilterForm').dispatchEvent(new Event('submit'))">
             <option value="">All Categories</option>
             <?php 
             // Function to render categories with subcategories as nested options
