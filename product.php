@@ -46,12 +46,14 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
 ?>
 
 <!-- Breadcrumb Navigation -->
-<div class="product-page-container">
+<div class="container-fluid" style="padding: 0 15px;">
     <?php
-    $breadcrumbs = generateBreadcrumb($pageTitle, $categoryPath, $product['name']);
+    $breadcrumbs = generateBreadcrumb(strip_tags($pageTitle), $categoryPath, strip_tags($product['name']));
     echo renderBreadcrumb($breadcrumbs);
     ?>
+</div>
 
+<div class="product-page-container">
     <link rel="stylesheet" href="asset/style/product-detail.css">
 
     <!-- Product Detail Section -->
@@ -62,11 +64,19 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
             <?php endif; ?>
             <button class="zoom-icon-btn modern-zoom" id="zoomBtn" title="Zoom"><i class="fas fa-search-plus"></i></button>
             <div class="img-magnifier-container" id="mainImageContainer" style="position:relative;">
-                <img id="mainImage" src="<?php echo $product['main_image']; ?>" alt="<?php echo cleanProductName($product['name']); ?>" data-index="0" style="width:100%;height:100%;object-fit:contain;border-radius:8px;display:block;" />
+                <?php if (!empty($product['main_image'])): ?>
+                    <img id="mainImage" src="<?php echo $product['main_image']; ?>" alt="<?php echo cleanProductName($product['name']); ?>" data-index="0" style="width:100%;height:100%;object-fit:contain;border-radius:8px;display:block;" />
+                <?php else: ?>
+                    <img id="mainImage" src="./uploads/products/blank-img.webp" alt="No image available" data-index="0" style="width:100%;height:100%;object-fit:contain;border-radius:8px;display:block;" />
+                <?php endif; ?>
                 <div id="magnifier" class="img-magnifier-glass" style="display:none;"></div>
             </div>
             <div class="thumbnail-row">
-                <img class="thumbnail" src="<?php echo $product['main_image']; ?>" alt="<?php echo cleanProductName($product['name']); ?>">
+                <?php if (!empty($product['main_image'])): ?>
+                    <img class="thumbnail" src="<?php echo $product['main_image']; ?>" alt="<?php echo cleanProductName($product['name']); ?>">
+                <?php else: ?>
+                    <img class="thumbnail" src="./uploads/products/blank-img.webp" alt="No image available">
+                <?php endif; ?>
                 <?php foreach ($productImages as $image): ?>
                     <?php if ($image['image_path'] !== $product['main_image']): ?>
                         <img class="thumbnail" src="<?php echo $image['image_path']; ?>" alt="<?php echo cleanProductName($product['name']); ?>">
@@ -393,3 +403,5 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script> 
+
+<?php include 'includes/footer.php'; ?> 

@@ -66,7 +66,7 @@
     width: 400px;
     height: 400px;
     max-width: 100%;
-    background: #f8f9fa;
+    background: transparent;
     border-radius: 8px;
     overflow: hidden;
 }
@@ -100,7 +100,7 @@
     border: 2px solid transparent;
     cursor: pointer;
     transition: border 0.2s;
-    background: #f8f9fa;
+    background: transparent;
 }
 
 .thumbnail.active,
@@ -114,6 +114,9 @@
     object-fit: contain;
     border-radius: 8px;
     display: block;
+    padding: 30px;
+    /* Center inside container away from green banner */
+    box-sizing: border-box;
 }
 
 .modern-info h2.title {
@@ -385,6 +388,10 @@
     width: 100%;
 }
 
+.related-products-container .product-card {
+    flex: 0 0 auto;
+}
+
 .related-products-container::-webkit-scrollbar {
     display: none;
 }
@@ -567,6 +574,52 @@
 
     .price-buttons1 {
         flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 768px) {
+    .related-products-container .product-card {
+        flex: 0 0 60%;
+        max-width: 60% !important;
+        min-width: 60% !important;
+    }
+
+    .related-nav-btn {
+        width: 32px;
+        height: 32px;
+    }
+
+    .related-nav-btn.prev-btn {
+        left: -5px;
+    }
+
+    .related-nav-btn.next-btn {
+        right: -5px;
+    }
+
+    /* Target the product detail page actions specifically */
+    .product-info-section .price-buttons1 {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        flex-wrap: nowrap;
+        gap: 8px;
+        /* Force small gap */
+    }
+
+    .product-info-section .cart-actions {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        margin-top: 20px !important;
+        /* Visual space between rows */
+        gap: 15px;
+    }
+
+    /* Ensure the Add to Cart button isn't squished */
+    .product-info-section .cart-actions .add-to-cart-btn {
+        flex: 1;
+        width: auto;
     }
 }
 

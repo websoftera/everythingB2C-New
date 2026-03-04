@@ -471,7 +471,7 @@ echo renderBreadcrumb($breadcrumbs);
                         <p>Saved Addresses</p>
                     </div>
                     <div class="account-stat-card warning">
-                        <h4><?php echo count($wishlistItems); ?></h4>
+                        <h4><?php echo $totalWishlistItems; ?></h4>
                         <p>Wishlist Items</p>
                     </div>
                 </div>
