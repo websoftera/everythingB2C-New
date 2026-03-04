@@ -16,17 +16,17 @@ $base_url = $base_url ?? '';
 $wishlist_ids = [];
 $wishlistCount = 0;
 if (isLoggedIn()) {
-    $wishlistItems = getWishlistItems($_SESSION['user_id']);
-    foreach ($wishlistItems as $item) {
+    $headerWishlistItems = getWishlistItems($_SESSION['user_id']);
+    foreach ($headerWishlistItems as $item) {
         $wishlist_ids[] = $item['product_id'];
     }
-    $wishlistCount = count($wishlistItems);
+    $wishlistCount = count($headerWishlistItems);
 } else {
-    $wishlistItems = getWishlistItems();
-    foreach ($wishlistItems as $item) {
+    $headerWishlistItems = getWishlistItems();
+    foreach ($headerWishlistItems as $item) {
         $wishlist_ids[] = $item['product_id'];
     }
-    $wishlistCount = count($wishlistItems);
+    $wishlistCount = count($headerWishlistItems);
 }
 
 $categories = getAllCategoriesWithRecursiveProductCount();
@@ -36,13 +36,13 @@ $currentUser = getCurrentUser();
 // Get cart count for header
 $cartCount = 0;
 if (isLoggedIn()) {
-    $cartItems = getCartItems($_SESSION['user_id']);
-    foreach ($cartItems as $item) {
+    $headerCartItems = getCartItems($_SESSION['user_id']);
+    foreach ($headerCartItems as $item) {
         $cartCount += (int)$item['quantity'];
     }
 } else {
-    $cartItems = getCartItems();
-    foreach ($cartItems as $item) {
+    $headerCartItems = getCartItems();
+    foreach ($headerCartItems as $item) {
         $cartCount += (int)$item['quantity'];
     }
 }

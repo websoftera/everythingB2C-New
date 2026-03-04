@@ -113,7 +113,12 @@ echo renderBreadcrumb($breadcrumbs);
                             </div>
                             <div class="form-group">
                                 <label for="password">Password <span class="required">*</span></label>
-                                <input type="password" class="login-form-control" name="password" required>
+                                <div class="position-relative">
+                                    <input type="password" class="login-form-control" name="password" required style="padding-right: 40px;">
+                                    <span class="toggle-password" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer;">
+                                        <i class="far fa-eye text-primary"></i>
+                                    </span>
+                                </div>
                             </div>
                             <div class="form-options">
                                 <div class="remember-me">
@@ -168,5 +173,27 @@ echo renderBreadcrumb($breadcrumbs);
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const togglePasswordButtons = document.querySelectorAll('.toggle-password');
+    togglePasswordButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const input = this.previousElementSibling;
+            const icon = this.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+    });
+});
+</script>
 
 <?php include '../includes/footer.php'; ?>
