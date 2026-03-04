@@ -429,16 +429,32 @@ function removeFromWishlist($userId, $productId) {
 }
 
 // Function to get wishlist items
-function getWishlistItems($userId = null) {
+function getWishlistItems($userId = null, $limit = null, $offset = 0) {
+    global $pdo;
+    
+    // Support counting total items
+    if ($limit === 'count') {
+        if (isLoggedIn() && $userId) {
+            $stmt = $pdo->prepare("SELECT COUNT(*) FROM wishlist WHERE user_id = ?");
+            $stmt->execute([$userId]);
+            return $stmt->fetchColumn();
+        } else {
+            return isset($_SESSION['wishlist']) ? count($_SESSION['wishlist']) : 0;
+        }
+    }
+
     if (isLoggedIn() && $userId) {
         // DB wishlist
-        global $pdo;
-        $stmt = $pdo->prepare("SELECT w.*, p.name, p.selling_price, p.mrp, p.main_image, p.slug FROM wishlist w JOIN products p ON w.product_id = p.id WHERE w.user_id = ?");
+        $sql = "SELECT w.*, p.name, p.selling_price, p.mrp, p.main_image, p.slug, p.stock_quantity, p.is_discounted, p.discount_percentage FROM wishlist w JOIN products p ON w.product_id = p.id WHERE w.user_id = ? ORDER BY p.id DESC";
+        if ($limit !== null) {
+            $sql .= " LIMIT " . (int)$limit . " OFFSET " . (int)$offset;
+        }
+        $stmt = $pdo->prepare($sql);
         $stmt->execute([$userId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     } else {
         // Session wishlist
-        return getSessionWishlistItems();
+        return getSessionWishlistItems($limit, $offset);
     }
 }
 
@@ -514,11 +530,19 @@ function removeFromSessionWishlist($productId) {
     return false;
 }
 
-function getSessionWishlistItems() {
+function getSessionWishlistItems($limit = null, $offset = 0) {
     global $pdo;
     $items = [];
     if (!isset($_SESSION['wishlist']) || empty($_SESSION['wishlist'])) return $items;
-    foreach ($_SESSION['wishlist'] as $productId) {
+    
+    // Apply pagination to the session array
+    $wishlistArray = $_SESSION['wishlist'];
+    
+    if ($limit !== null && $limit !== 'count') {
+        $wishlistArray = array_slice($wishlistArray, $offset, $limit);
+    }
+
+    foreach ($wishlistArray as $productId) {
         $stmt = $pdo->prepare("SELECT * FROM products WHERE id = ?");
         $stmt->execute([$productId]);
         $product = $stmt->fetch(PDO::FETCH_ASSOC);

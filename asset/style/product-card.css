@@ -937,6 +937,12 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
     justify-self: center;
 }
 
+@media (min-width: 992px) {
+    .products-grid.wishlist-grid {
+        gap: 20px !important;
+    }
+}
+
 .wishlist-grid .card.product-card {
     height: 100%;
     max-width: 240px !important;

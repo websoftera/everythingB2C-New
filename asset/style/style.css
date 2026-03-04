@@ -3679,9 +3679,8 @@ html .cart-added-highlight,
 
 .wishlist-grid {
   display: grid !important;
-  grid-template-columns: repeat(5, 1fr) !important;
-  gap: 5px !important;
-  /* Exact 5px gap requested */
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 20px !important;
   width: 100% !important;
   justify-content: center !important;
   align-items: stretch !important;

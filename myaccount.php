@@ -17,16 +17,42 @@ if (!isLoggedIn()) {
 
 $userId = $_SESSION['user_id'];
 $user = getCurrentUser();
-$pageTitle = 'My Account';
-include 'includes/header.php';
+// Handle all POST requests before outputting HTML
+if (isset($_POST['change_password'])) {
+    $currentPassword = $_POST['current_password'];
+    $newPassword = $_POST['new_password'];
+    
+    // Verify current password first
+    $stmt = $pdo->prepare("SELECT password FROM users WHERE id = ?");
+    $stmt->execute([$userId]);
+    $userRecord = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if ($userRecord && password_verify($currentPassword, $userRecord['password'])) {
+        // Hash new password and update
+        $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+        $updateStmt = $pdo->prepare("UPDATE users SET password = ? WHERE id = ?");
+        if ($updateStmt->execute([$hashedPassword, $userId])) {
+            $password_message = "Password successfully updated!";
+        } else {
+            $password_message = "Error updating password. Please try again.";
+        }
+    } else {
+        $password_message = "Current password is incorrect.";
+    }
+}
 
-$userOrders = getUserOrders($userId, 5);
-$userAddresses = getUserAddresses($userId);
-$wishlistItems = getWishlistItems($userId);
-
-// Breadcrumb Navigation
-$breadcrumbs = generateBreadcrumb($pageTitle);
-echo renderBreadcrumb($breadcrumbs);
+if (isset($_POST['update_info'])) {
+    $name = sanitizeInput($_POST['name']);
+    $phone = sanitizeInput($_POST['phone']);
+    $stmt = $pdo->prepare("UPDATE users SET name = ?, phone = ? WHERE id = ?");
+    if ($stmt->execute([$name, $phone, $userId])) {
+        $_SESSION['user_name'] = $name;
+        // Update local $user array so the form shows the new data immediately
+        $user['name'] = $name;
+        $user['phone'] = $phone;
+        $profile_message = "Personal Info successfully updated!";
+    }
+}
 
 if (isset($_POST['add_address'])) {
     $data = [
@@ -68,6 +94,37 @@ if (isset($_POST['delete_address'])) {
     header('Location: myaccount.php#addresses');
     exit;
 }
+
+$userOrders = getUserOrders($userId, 5);
+$userAddresses = getUserAddresses($userId);
+
+// Wishlist Pagination setup for myaccount.php
+$wishlistPage = isset($_GET['wishlist_page']) ? (int)$_GET['wishlist_page'] : 1;
+if ($wishlistPage < 1) $wishlistPage = 1;
+$wishlistLimit = 6;
+$wishlistOffset = ($wishlistPage - 1) * $wishlistLimit;
+
+$totalWishlistItems = getWishlistItems($userId, 'count');
+$totalWishlistPages = ceil($totalWishlistItems / $wishlistLimit);
+
+// Ensure current page doesn't exceed total pages
+if ($wishlistPage > $totalWishlistPages && $totalWishlistPages > 0) {
+    $wishlistPage = $totalWishlistPages;
+    $wishlistOffset = ($wishlistPage - 1) * $wishlistLimit;
+}
+
+$wishlistItems = getWishlistItems($userId, $wishlistLimit, $wishlistOffset);
+
+// Check if we need to open wishlist tab
+$openWishlistTab = isset($_GET['wishlist_page']) || (isset($_GET['tab']) && $_GET['tab'] === 'wishlist');
+
+$pageTitle = 'My Account';
+include 'includes/header.php';
+
+// Breadcrumb Navigation
+$breadcrumbs = generateBreadcrumb($pageTitle);
+echo renderBreadcrumb($breadcrumbs);
+
 ?>
 
 <style>
@@ -268,27 +325,55 @@ if (isset($_POST['delete_address'])) {
 /* === Wishlist === */
 .account-wishlist {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 20px;
 }
 
 .account-wishlist-item {
   text-align: center;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 15px;
+  background: #fff;
+  transition: box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.account-wishlist-item:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.account-wishlist-item .btn:hover {
+  color: #fff !important;
 }
 
 .account-wishlist-item img {
   width: 100%;
-  height: 180px;
-  object-fit: cover;
-  border-radius: 4px;
+  height: 160px;
+  object-fit: contain;
+  margin-bottom: 12px;
 }
 
 .account-wishlist-item h6 {
-  margin: 10px 0 5px;
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: 40px;
 }
 
 .account-wishlist-item p {
-  margin: 0 0 10px;
+  margin: 0 0 15px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #000;
 }
 
 /* === Profile === */
@@ -386,7 +471,7 @@ if (isset($_POST['delete_address'])) {
                         <p>Saved Addresses</p>
                     </div>
                     <div class="account-stat-card warning">
-                        <h4><?php echo count($wishlistItems); ?></h4>
+                        <h4><?php echo $totalWishlistItems; ?></h4>
                         <p>Wishlist Items</p>
                     </div>
                 </div>
@@ -595,14 +680,54 @@ if (isset($_POST['delete_address'])) {
                     <div class="account-wishlist">
                         <?php foreach ($wishlistItems as $item): ?>
                             <div class="account-wishlist-item">
-                                <img src="<?php echo htmlspecialchars($item['main_image']); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>">
-                                <h6><?php echo htmlspecialchars($item['name']); ?></h6>
-                                <p>₹<?php echo number_format($item['selling_price'], 0); ?></p>
-                                <a href="product.php?slug=<?php echo $item['slug']; ?>" class="btn small">View</a>
-                                <a href="#" class="btn small danger" onclick="confirmRemoveWishlist('<?php echo $item['id']; ?>'); return false;">Remove</a>
+                                <a href="product.php?slug=<?php echo $item['slug']; ?>">
+                                    <img src="<?php echo (!empty($item['main_image']) ? htmlspecialchars($item['main_image']) : 'uploads/products/blank-img.webp'); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" onerror="this.onerror=null; this.src='./uploads/products/blank-img.webp';">
+                                </a>
+                                <div>
+                                    <h6><a href="product.php?slug=<?php echo $item['slug']; ?>" style="color:inherit; text-decoration:none;"><?php echo strtoupper(htmlspecialchars($item['name'])); ?></a></h6>
+                                    <p>₹<?php echo number_format($item['selling_price'], 0); ?></p>
+                                    <div style="display: flex; gap: 8px; justify-content: center;">
+                                        <a href="product.php?slug=<?php echo $item['slug']; ?>" class="btn small" style="flex: 1;">View</a>
+                                        <a href="#" class="btn small danger" style="flex: 1;" onclick="confirmRemoveWishlist('<?php echo $item['product_id']; ?>'); return false;">Remove</a>
+                                    </div>
+                                </div>
                             </div>
                         <?php endforeach; ?>
                     </div>
+                    
+                    <!-- Pagination for Account Wishlist -->
+                    <?php if ($totalWishlistPages > 1): ?>
+                        <nav aria-label="Wishlist pagination" class="mt-4">
+                            <ul class="pagination justify-content-center">
+                                <?php if ($wishlistPage > 1): ?>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?wishlist_page=<?php echo $wishlistPage - 1; ?>#wishlist">Previous</a>
+                                    </li>
+                                <?php else: ?>
+                                    <li class="page-item">
+                                        <a class="page-link" href="javascript:void(0)" style="cursor: default;">Previous</a>
+                                    </li>
+                                <?php endif; ?>
+
+                                <?php for ($i = 1; $i <= $totalWishlistPages; $i++): ?>
+                                    <li class="page-item <?php echo ($i === $wishlistPage) ? 'active' : ''; ?>">
+                                        <a class="page-link" href="?wishlist_page=<?php echo $i; ?>#wishlist"><?php echo $i; ?></a>
+                                    </li>
+                                <?php endfor; ?>
+
+                                <?php if ($wishlistPage < $totalWishlistPages): ?>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?wishlist_page=<?php echo $wishlistPage + 1; ?>#wishlist">Next</a>
+                                    </li>
+                                <?php else: ?>
+                                    <li class="page-item">
+                                        <a class="page-link" href="javascript:void(0)" style="cursor: default;">Next</a>
+                                    </li>
+                                <?php endif; ?>
+                            </ul>
+                        </nav>
+                    <?php endif; ?>
+                    
                 <?php else: ?>
                     <div class="account-empty">
                         <i class="fas fa-heart"></i>
@@ -621,6 +746,9 @@ if (isset($_POST['delete_address'])) {
                 <div class="account-profile">
                     <div>
                         <h5>Personal Info</h5>
+                        <?php if (isset($profile_message)): ?>
+                            <div class="alert alert-success"><?php echo htmlspecialchars($profile_message); ?></div>
+                        <?php endif; ?>
                         <form method="post" style="margin-bottom: 20px;">
                             <input type="hidden" name="update_info" value="1">
                             <div class="mb-2">
@@ -639,23 +767,38 @@ if (isset($_POST['delete_address'])) {
                     <div>
                         <h5>Change Password</h5>
                         <?php if (isset($password_message)): ?>
-                            <div class="alert alert-info"><?php echo htmlspecialchars($password_message); ?></div>
+                            <div class="alert <?php echo strpos($password_message, 'success') !== false ? 'alert-success' : 'alert-info'; ?>"><?php echo htmlspecialchars($password_message); ?></div>
                         <?php endif; ?>
                         <form method="post">
                             <input type="hidden" name="change_password" value="1">
                             <div class="mb-2">
                                 <label for="current_password" class="form-label">Current Password</label>
-                                <input type="password" class="form-control" name="current_password" id="current_password" required>
+                                <div class="input-group" style="outline: 1px solid #ced4da; border-radius: 0.25rem;">
+                                    <input type="password" class="form-control" name="current_password" id="current_password" style="border: none; box-shadow: none;" required>
+                                    <span class="input-group-text bg-transparent toggle-password" style="border: none; cursor: pointer;">
+                                        <i class="far fa-eye text-primary"></i>
+                                    </span>
+                                </div>
                             </div>
                             <div class="mb-2">
                                 <label for="new_password" class="form-label">New Password</label>
-                                <input type="password" class="form-control" name="new_password" id="new_password" required>
+                                <div class="input-group" style="outline: 1px solid #ced4da; border-radius: 0.25rem;">
+                                    <input type="password" class="form-control" name="new_password" id="new_password" style="border: none; box-shadow: none;" required>
+                                    <span class="input-group-text bg-transparent toggle-password" style="border: none; cursor: pointer;">
+                                        <i class="far fa-eye text-primary"></i>
+                                    </span>
+                                </div>
                             </div>
                             <div class="mb-2">
                                 <label for="confirm_password" class="form-label">Confirm New Password</label>
-                                <input type="password" class="form-control" name="confirm_password" id="confirm_password" required>
+                                <div class="input-group" style="outline: 1px solid #ced4da; border-radius: 0.25rem;">
+                                    <input type="password" class="form-control" name="confirm_password" id="confirm_password" style="border: none; box-shadow: none;" required>
+                                    <span class="input-group-text bg-transparent toggle-password" style="border: none; cursor: pointer;">
+                                        <i class="far fa-eye text-primary"></i>
+                                    </span>
+                                </div>
                             </div>
-                            <button type="submit" class="btn btn-warning">Change Password</button>
+                            <button type="submit" class="btn btn-warning mt-2">Change Password</button>
                         </form>
                     </div>
                 </div>
@@ -664,6 +807,28 @@ if (isset($_POST['delete_address'])) {
 
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const togglePasswordButtons = document.querySelectorAll('.toggle-password');
+    togglePasswordButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const input = this.previousElementSibling;
+            const icon = this.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+    });
+});
+</script>
 
 <!-- Edit Address Modal -->
 <div class="modal" id="editAddressModal" tabindex="-1" style="display:none;position:fixed;z-index:9999;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.4);align-items:center;justify-content:center;">
@@ -781,7 +946,25 @@ function confirmRemoveWishlist(productId) {
         cancelButtonText: 'No'
     }).then((result) => {
         if (result.isConfirmed) {
-            window.location.href = 'ajax/remove-from-wishlist.php?product_id=' + productId;
+            fetch('ajax/remove-from-wishlist.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ product_id: productId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    Swal.fire('Error', data.message || 'Failed to remove product', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire('Error', 'An unexpected error occurred', 'error');
+            });
         }
     });
 }

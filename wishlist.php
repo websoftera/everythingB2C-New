@@ -4,11 +4,28 @@ require_once 'includes/functions.php';
 
 $pageTitle = 'Wishlist';
 
-// Get wishlist items for both guests and logged-in users
+// Wishlist Pagination setup
+$wishlistPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+if ($wishlistPage < 1) $wishlistPage = 1;
+$wishlistLimit = 12;
+$wishlistOffset = ($wishlistPage - 1) * $wishlistLimit;
+
+// Get total items for pagination
+$userId = isLoggedIn() ? $_SESSION['user_id'] : null;
+$totalWishlistItems = getWishlistItems($userId, 'count');
+$totalWishlistPages = ceil($totalWishlistItems / $wishlistLimit);
+
+// Ensure current page doesn't exceed total pages
+if ($wishlistPage > $totalWishlistPages && $totalWishlistPages > 0) {
+    $wishlistPage = $totalWishlistPages;
+    $wishlistOffset = ($wishlistPage - 1) * $wishlistLimit;
+}
+
+// Get wishlist items for both guests and logged-in users with limit/offset
 if (isLoggedIn()) {
-    $wishlistItems = getWishlistItems($_SESSION['user_id']);
+    $wishlistItems = getWishlistItems($_SESSION['user_id'], $wishlistLimit, $wishlistOffset);
 } else {
-    $wishlistItems = getWishlistItems();
+    $wishlistItems = getWishlistItems(null, $wishlistLimit, $wishlistOffset);
 }
 
 require_once 'includes/header.php';
@@ -93,6 +110,40 @@ echo renderBreadcrumb($breadcrumbs);
                     </div>
             <?php endforeach; ?>
         </div>
+        
+        <!-- Pagination for Main Wishlist -->
+        <?php if ($totalWishlistPages > 1): ?>
+            <nav aria-label="Wishlist pagination" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <?php if ($wishlistPage > 1): ?>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<?php echo $wishlistPage - 1; ?>">Previous</a>
+                        </li>
+                    <?php else: ?>
+                        <li class="page-item">
+                            <a class="page-link" href="javascript:void(0)" style="cursor: default;">Previous</a>
+                        </li>
+                    <?php endif; ?>
+
+                    <?php for ($i = 1; $i <= $totalWishlistPages; $i++): ?>
+                        <li class="page-item <?php echo ($i === $wishlistPage) ? 'active' : ''; ?>">
+                            <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                        </li>
+                    <?php endfor; ?>
+
+                    <?php if ($wishlistPage < $totalWishlistPages): ?>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<?php echo $wishlistPage + 1; ?>">Next</a>
+                        </li>
+                    <?php else: ?>
+                        <li class="page-item">
+                            <a class="page-link" href="javascript:void(0)" style="cursor: default;">Next</a>
+                        </li>
+                    <?php endif; ?>
+                </ul>
+            </nav>
+        <?php endif; ?>
+        
     <?php endif; ?>
 </div>
 
