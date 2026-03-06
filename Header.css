@@ -466,6 +466,11 @@ body {
   }
 }
 
+/* Persistent active state for wishlist icon across page loads */
+.wishlist-icon.active-wishlist {
+  color: #DE0085 !important;
+}
+
 /* Hide scroll on desktop */
 @media (min-width: 992px) {
   .category-scroll-container {
@@ -1064,7 +1069,7 @@ body {
 }
 
 #floatingCartBtn .floating-cart-icon {
-  width: 26px !important;
+  width: 55px !important;
   /* Reduced by ~4px from assumed ~30px */
   height: auto !important;
 }

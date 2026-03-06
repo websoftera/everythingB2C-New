@@ -93,19 +93,36 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(error => console.error('Error updating cart count:', error));
     }
 
-    // Update wishlist count in header
+    // Update wishlist count and header icon state
     function updateWishlistCount() {
-        fetch('ajax/get_wishlist_count.php')
+        const timeStamp = new Date().getTime();
+        fetch(`ajax/get_wishlist_count.php?t=${timeStamp}`)
             .then(response => response.json())
             .then(data => {
-                const wishlistCountElement = document.querySelector('.wishlist-count');
+                const count = data.wishlist_count || 0;
+
+                // Update optional badge if it exists elsewhere
+                const wishlistCountElement = document.querySelector('.wishlist-count, .wishlist-badge');
                 if (wishlistCountElement) {
-                    const count = data.wishlist_count || 0;
                     if (count > 0) {
                         wishlistCountElement.textContent = count;
                         wishlistCountElement.style.display = 'block';
                     } else {
                         wishlistCountElement.style.display = 'none';
+                    }
+                }
+
+                // Update the main header wishlist icon
+                const wishlistIconElement = document.querySelector('.wishlist-icon');
+                if (wishlistIconElement) {
+                    if (count > 0) {
+                        wishlistIconElement.classList.add('bi-heart-fill', 'active-wishlist');
+                        wishlistIconElement.classList.remove('bi-heart');
+                        wishlistIconElement.style.setProperty('color', '#DE0085', 'important');
+                    } else {
+                        wishlistIconElement.classList.remove('bi-heart-fill', 'active-wishlist');
+                        wishlistIconElement.classList.add('bi-heart');
+                        wishlistIconElement.style.removeProperty('color');
                     }
                 }
             })

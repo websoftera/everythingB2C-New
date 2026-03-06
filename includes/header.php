@@ -162,7 +162,7 @@ html body [data-product-id].cart-added-highlight {
 #wishlist-container .card,
 .swiper-slide .card {
   padding-bottom: 0 !important;
-  border-radius: 0 !important;
+  border-radius: 8px !important;
 }
 
 #floatingCartPanel.fixed-panel {
@@ -367,7 +367,7 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
 ?>
 <div id="floatingCartBtn" class="floating-cart-btn" style="display: <?php echo $displayStyle; ?>;">
   <span style="position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:100%;">
-    <img src="./asset/images/Cart_Icon.png" alt="Cart" class="floating-cart-icon">
+    <img src="/everythingB2C-New/asset/images/Cart_Icon.png" alt="Cart" class="floating-cart-icon">
     <span id="floatingCartCount" style="position:absolute;top:0px;right:10px;background:none;color:#fff;font-weight:bold;font-size:0.95rem;padding:2px 7px;border-radius:12px;min-width:22px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,0.12);"><?php echo $cartCount; ?></span>
   </span>
   <!-- Floating Cart Panel (dropdown style) -->
@@ -447,10 +447,7 @@ if (!function_exists('renderCategoryDropdown')) {
         <!-- Wishlist -->
             <a href="<?php echo $base_url; ?>wishlist.php" title="Wishlist" class="text-decoration-none me-1 me-lg-3 position-relative wishlist-link">
                 <div class="wishlist-icon-container position-relative">
-                    <i class="bi <?php echo $wishlistCount > 0 ? 'bi-heart-fill' : 'bi-heart'; ?> wishlist-icon"></i>
-                    <?php if ($wishlistCount > 0): ?>
-                    <span class="badge wishlist-badge position-absolute"><?= $wishlistCount ?></span>
-                    <?php endif; ?>
+                    <i class="bi <?php echo $wishlistCount > 0 ? 'bi-heart-fill active-wishlist' : 'bi-heart'; ?> wishlist-icon" <?php if($wishlistCount > 0) echo 'style="color: #DE0085 !important;"'; ?>></i>
                 </div>
             </a>
 
@@ -582,6 +579,7 @@ if (!function_exists('renderMobileOffcanvasAccordion')) {
                 <ul class="navbar-nav category-list mb-2 mb-lg-0 d-flex align-items-center">
                     <?php
 function renderCategoryMenu($tree, $level = 0) {
+    global $base_url;
     foreach ($tree as $cat) {
         $hasChildren = !empty($cat['children']);
         $liClass = $hasChildren ? 'nav-item navigationtext dropdown' : 'navigationtext nav-item';
@@ -592,32 +590,33 @@ function renderCategoryMenu($tree, $level = 0) {
             echo '<a class="nav-link navigationtext dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">' . htmlspecialchars($cat['name']) . '</a>';
             echo '<ul class="dropdown-menu">';
             // Parent category as clickable item
-            echo '<li><a class="dropdown-item navigationtext parent-category" href="category.php?slug=' . $cat['slug'] . '">' . htmlspecialchars($cat['name']) . '</a></li>';
+            echo '<li><a class="dropdown-item navigationtext parent-category" href="' . $base_url . 'category.php?slug=' . $cat['slug'] . '">' . htmlspecialchars($cat['name']) . '</a></li>';
             echo '<li><hr class="dropdown-divider"></li>';
             // Render all subcategories recursively
             renderSubcategories($cat['children'], $level + 1);
             echo '</ul>';
         } else {
             // Main category link (no children)
-            echo '<a class="nav-link navigationtext" href="category.php?slug=' . $cat['slug'] . '">' . htmlspecialchars($cat['name']) . '</a>';
+            echo '<a class="nav-link navigationtext" href="' . $base_url . 'category.php?slug=' . $cat['slug'] . '">' . htmlspecialchars($cat['name']) . '</a>';
         }
         echo '</li>';
     }
 }
 
 function renderSubcategories($subcategories, $level = 1) {
+    global $base_url;
     foreach ($subcategories as $subcat) {
         $hasGrandchildren = !empty($subcat['children']);
         $indentClass = 'subcategory-level-' . $level;
         
         if ($hasGrandchildren) {
             // Subcategory with its own children
-            echo '<li><a class="dropdown-item ' . $indentClass . ' subcategory-with-children" href="category.php?slug=' . $subcat['slug'] . '">' . htmlspecialchars($subcat['name']) . '</a></li>';
+            echo '<li><a class="dropdown-item ' . $indentClass . ' subcategory-with-children" href="' . $base_url . 'category.php?slug=' . $subcat['slug'] . '">' . htmlspecialchars($subcat['name']) . '</a></li>';
             // Render grandchildren
             renderSubcategories($subcat['children'], $level + 1);
         } else {
             // Regular subcategory
-            echo '<li><a class="dropdown-item ' . $indentClass . '" href="category.php?slug=' . $subcat['slug'] . '">' . htmlspecialchars($subcat['name']) . '</a></li>';
+            echo '<li><a class="dropdown-item ' . $indentClass . '" href="' . $base_url . 'category.php?slug=' . $subcat['slug'] . '">' . htmlspecialchars($subcat['name']) . '</a></li>';
         }
     }
 }

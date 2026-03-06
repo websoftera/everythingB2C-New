@@ -148,7 +148,7 @@ if (isLoggedIn()) {
 }
 
 // Pagination
-$itemsPerPage = 12;
+$itemsPerPage = 15;
 $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $totalPages = ceil($totalProducts / $itemsPerPage);
 $offset = ($currentPage - 1) * $itemsPerPage;
@@ -203,15 +203,15 @@ $subcategories = getSubcategoriesByParentId($category['id']);
 </section>
 <?php endif; ?>
 
-<div class="container-fluid">
+<div class="container-fluid" style="padding-left: 5px !important; padding-right: 5px !important;">
   <div class="row">
-    <!-- Sidebar Filter -->
-    <div class="col-lg-3 col-md-4">
+    <!-- Top Filter (Desktop/Tablet) & Sidebar Filter (Mobile) -->
+    <div class="col-12">
       <?php include 'includes/sidebar-filter.php'; ?>
     </div>
     
     <!-- Products Section -->
-    <div class="col-lg-9 col-md-8">
+    <div class="col-12">
       <div class="products-container">
         <!-- Category Header -->
         <!-- <div class="category-header">
@@ -401,15 +401,44 @@ $subcategories = getSubcategoriesByParentId($category['id']);
 
 @media (min-width: 1200px) {
   .products-grid {
-    grid-template-columns: repeat(4, 1fr); /* Standard desktop: 4 cards per row */
+    grid-template-columns: repeat(5, 1fr); /* Standard desktop: 5 cards per row */
     gap: 20px;
+  }
+  .products-grid .card.product-card {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
   }
 }
 
 @media (min-width: 1400px) {
   .products-grid {
-    grid-template-columns: repeat(4, 1fr); /* Wide screens: 4 cards per row */
+    grid-template-columns: repeat(5, 1fr); /* Wide screens: 5 cards per row */
+    gap: 20px;
   }
+}
+
+/* Match explicitly the colors and padding from index.php featured/discounted slider cards */
+.products-grid .card.product-card .discount-banner {
+  background: var(--site-blue) !important;
+  color: #fff !important;
+  border-radius: 4px 4px 0 0 !important;
+  padding: 8px 0 !important;
+  font-size: 11px !important;
+  text-align: center !important;
+  height: auto !important;
+  min-height: unset !important;
+  display: block !important; /* overrides flex if any */
+}
+
+.products-grid .card.product-card .price-btn.mrp {
+  background: var(--mrp-light-blue) !important;
+  color: var(--dark-blue) !important;
+}
+
+.products-grid .card.product-card .price-btn.pay {
+  background: var(--pay-light-green) !important;
+  color: var(--dark-grey, #333) !important;
 }
 
 /* Mobile-specific fixes - Ensure cards fit properly */
@@ -433,7 +462,7 @@ $subcategories = getSubcategoriesByParentId($category['id']);
   margin-right: 0;
 }
 
-.col-lg-9 {
+.col-12 {
   padding-left: 15px;
   padding-right: 15px;
   max-width: 100%;
@@ -447,7 +476,7 @@ $subcategories = getSubcategoriesByParentId($category['id']);
     padding-right: 10px;
   }
   
-  .col-lg-9 {
+  .col-12 {
     padding-left: 0;
     padding-right: 0;
   }

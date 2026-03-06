@@ -156,11 +156,11 @@ $categoryTree = buildCategoryTree($categories);
 
       <!-- Filter Actions -->
       <div class="filter-actions">
-        <button type="submit" class="filter-btn filter-btn-primary">
-          Apply
+        <button type="submit" class="filter-btn filter-btn-primary" title="Apply Filters">
+          <i class="fas fa-check"></i> Apply
         </button>
-        <button type="button" class="filter-btn filter-btn-secondary" id="clearAllFilters">
-          Clear All
+        <button type="button" class="filter-btn filter-btn-secondary" id="clearAllFilters" title="Clear All Filters">
+          <i class="fas fa-times"></i> Clear All
         </button>
       </div>
     </form>
@@ -214,7 +214,7 @@ $categoryTree = buildCategoryTree($categories);
   border: 1px solid #e9ecef;
   border-radius: 8px;
   padding: 20px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: none; /* Removed highlighting shadow per user request */
   margin-bottom: 20px;
 }
 
@@ -507,8 +507,9 @@ $categoryTree = buildCategoryTree($categories);
 }
 
 .filter-btn-secondary:hover {
-  background: #6c757d;
+  background: #007bff;
   color: white;
+  border-color: #007bff;
 }
 
 .filter-clear-btn {
@@ -555,13 +556,83 @@ $categoryTree = buildCategoryTree($categories);
   }
 }
 
-  @media (min-width: 992px) {
-
-    
-    .filter-close-btn {
-      display: none;
-    }
+@media (min-width: 992px) {
+  /* Hide Mobile Close Button */
+  .filter-close-btn {
+    display: none;
   }
+
+  /* Horizontal Filter Layout container */
+  .sidebar-filter-panel {
+    margin: 0 auto 25px auto;
+    padding: 15px 20px;
+    max-width: 800px; /* narrowed max-width for compact view */
+    display: flex;
+    justify-content: center; /* Center the form contents */
+  }
+
+  /* Hide Header label on desktop (Filters) */
+  .sidebar-filter-header {
+    display: none;
+  }
+
+  /* Transform the form into a horizontally aligned flex row */
+  .sidebar-filter-form {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: nowrap; /* Prevent wrapping if possible */
+  }
+
+  /* Remove margins and titles from internal filter sections */
+  .filter-section {
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .filter-section h5 {
+    margin-bottom: 0;
+    white-space: nowrap;
+    font-size: 13px; /* Slightly smaller text for compact layout */
+  }
+
+  .form-group {
+    margin-bottom: 0;
+    width: auto;
+    min-width: 180px; /* Compact inputs slightly */
+  }
+  
+  .form-control {
+    height: 38px; /* Standardize height */
+    padding: 6px 12px;
+  }
+
+  .filter-actions {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    margin-left: 5px; 
+    height: 38px;
+  }
+  
+  .filter-actions .filter-btn {
+    height: 38px;
+    padding: 0 16px;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center; /* keep icon and text vertically centered */
+    justify-content: center;
+    flex: none; /* Prevent buttons from stretching vertically or horizontally weirdly */
+  }
+}
 </style>
 
 <script>
