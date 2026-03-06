@@ -90,7 +90,7 @@ $countStmt->execute($params);
 $totalProducts = $countStmt->fetchColumn();
 
 // Pagination
-$productsPerPage = 12;
+$productsPerPage = 15;
 $currentPage = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
 $totalPages = ceil($totalProducts / $productsPerPage);
 $offset = ($currentPage - 1) * $productsPerPage;
@@ -149,15 +149,15 @@ $breadcrumbs = generateBreadcrumb($pageTitle);
 echo renderBreadcrumb($breadcrumbs);
 ?>
 <link rel="stylesheet" href="./asset/style/style.css">
-<div class="container mt-4">
+<div class="container-fluid mt-4" style="padding-left: 5px !important; padding-right: 5px !important;">
   <div class="row">
-    <!-- Sidebar Filter -->
-    <div class="col-lg-3 col-md-4">
+    <!-- Top Filter (Desktop/Tablet) & Sidebar Filter (Mobile) -->
+    <div class="col-12">
       <?php include 'includes/sidebar-filter.php'; ?>
     </div>
     
     <!-- Products Section -->
-    <div class="col-lg-9 col-md-8">
+    <div class="col-12">
       <div class="products-container">
         <!-- Products Header -->
         <div class="products-header">
@@ -353,9 +353,37 @@ echo renderBreadcrumb($breadcrumbs);
 
 @media (min-width: 1200px) {
   .products-grid {
-    grid-template-columns: repeat(4, 1fr); /* Desktop: 4 cards per row */
+    grid-template-columns: repeat(5, 1fr); /* Desktop: 5 cards per row */
     gap: 20px;
   }
+  .products-grid .card.product-card {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+}
+
+/* Match explicitly the colors and padding from index.php featured/discounted slider cards */
+.products-grid .card.product-card .discount-banner {
+  background: var(--site-blue) !important;
+  color: #fff !important;
+  border-radius: 4px 4px 0 0 !important;
+  padding: 8px 0 !important;
+  font-size: 11px !important;
+  text-align: center !important;
+  height: auto !important;
+  min-height: unset !important;
+  display: block !important;
+}
+
+.products-grid .card.product-card .price-btn.mrp {
+  background: var(--mrp-light-blue) !important;
+  color: var(--dark-blue) !important;
+}
+
+.products-grid .card.product-card .price-btn.pay {
+  background: var(--pay-light-green) !important;
+  color: var(--dark-grey, #333) !important;
 }
 
 /* Mobile-specific fixes - Ensure cards fit properly */
@@ -383,7 +411,7 @@ echo renderBreadcrumb($breadcrumbs);
   margin-right: 0;
 }
 
-.col-lg-9 {
+.col-12 {
   padding-left: 15px;
   padding-right: 15px;
   max-width: 100%;
@@ -397,7 +425,7 @@ echo renderBreadcrumb($breadcrumbs);
     padding-right: 8px;
   }
   
-  .col-lg-9 {
+  .col-12 {
     padding-left: 0;
     padding-right: 0;
   }

@@ -289,8 +289,8 @@
   display: flex;
   align-items: center !important;
   justify-content: center !important;
-  width: 75px !important;
-  height: 75px !important;
+  width: 90px !important;
+  height: 90px !important;
   background: white !important;
   border: 3px solid var(--dark-green) !important;
   border-radius: 50% !important;
@@ -300,8 +300,8 @@
 }
 
 .floating-cart-icon {
-  width: 50px !important;
-  height: 40px !important;
+  width: 75px !important;
+  height: 75px !important;
   transition: transform 0.3s ease !important;
 }
 
@@ -469,15 +469,15 @@
   }
 
   .floating-cart-btn {
-    width: 65px !important;
-    height: 65px !important;
+    width: 67px !important;
+    height: 67px !important;
     bottom: 80px !important;
     right: 20px !important;
   }
 
   .floating-cart-icon {
-    width: 36px !important;
-    height: 28px !important;
+    width: 60px !important;
+    height: 50px !important;
   }
 
   .user-signin-link:hover .user-signin-icon,
@@ -1546,7 +1546,7 @@ h3 {
 /* Individual card styling */
 .card {
   border: 1px solid var(--border-color);
-  border-radius: 0 0 8px 8px !important;
+  border-radius: 8px !important;
   overflow: hidden;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s;
