@@ -1069,7 +1069,7 @@ body {
 }
 
 #floatingCartBtn .floating-cart-icon {
-  width: 55px !important;
+  width: 56px !important;
   /* Reduced by ~4px from assumed ~30px */
   height: auto !important;
 }
