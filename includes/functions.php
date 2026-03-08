@@ -1591,6 +1591,27 @@ function hasAllPermissions($permissionCodes, $adminId = null) {
 }
 
 /**
+ * Check if current admin can access a feature (wrapper for hasPermission)
+ * For use in templates - uses current session admin
+ * Checks session permissions first, then database
+ * @param string $permissionCode - Permission code to check
+ * @return bool
+ */
+function canAccess($permissionCode) {
+    if (!isset($_SESSION['admin_id'])) {
+        return false;
+    }
+    
+    // First check if permissions are cached in session
+    if (isset($_SESSION['admin_permissions']) && is_array($_SESSION['admin_permissions'])) {
+        return in_array($permissionCode, $_SESSION['admin_permissions']);
+    }
+    
+    // Fallback to database check
+    return hasPermission($permissionCode, $_SESSION['admin_id']);
+}
+
+/**
  * Get all permissions for a role
  * @param int $roleId - Role ID
  * @return array
