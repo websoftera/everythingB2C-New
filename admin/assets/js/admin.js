@@ -6,46 +6,56 @@ document.addEventListener('DOMContentLoaded', function() {
     const sidebar = document.querySelector('.everythingb2c-sidebar');
     const mainContent = document.querySelector('.everythingb2c-main-content');
     
-    if (sidebarToggle && sidebar) {
-        // Check localStorage for saved state (desktop only)
-        if (window.innerWidth > 768 && localStorage.getItem('sidebarHidden') === 'true') {
+    if (sidebarToggle && sidebar && mainContent) {
+        // Initialize sidebar state
+        const isMobile = window.innerWidth <= 768;
+        
+        if (isMobile) {
+            // On mobile, sidebar should start hidden
             sidebar.classList.add('hidden');
-            mainContent.classList.add('sidebar-hidden');
+        } else {
+            // On desktop, check if user had hidden it before
+            if (localStorage.getItem('sidebarHidden') === 'true') {
+                sidebar.classList.add('hidden');
+                mainContent.classList.add('sidebar-hidden');
+            }
         }
         
-        sidebarToggle.addEventListener('click', function() {
-            const isHidden = sidebar.classList.toggle('hidden');
+        sidebarToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
             
-            // Toggle main content margin
-            if (isHidden) {
-                mainContent.classList.add('sidebar-hidden');
-            } else {
-                mainContent.classList.remove('sidebar-hidden');
-            }
+            const isMobileView = window.innerWidth <= 768;
             
-            // Add overlay for mobile
-            if (window.innerWidth <= 768) {
+            if (isMobileView) {
+                // Mobile: toggle sidebar visibility
+                sidebar.classList.toggle('hidden');
+                
+                // Manage overlay
                 let overlay = document.querySelector('.everythingb2c-sidebar-overlay');
                 if (!overlay) {
                     overlay = document.createElement('div');
                     overlay.className = 'everythingb2c-sidebar-overlay';
                     document.body.appendChild(overlay);
+                    
+                    // Close sidebar when clicking overlay
+                    overlay.addEventListener('click', function() {
+                        sidebar.classList.add('hidden');
+                        overlay.classList.remove('show');
+                    });
                 }
                 
-                if (!sidebar.classList.contains('hidden')) {
-                    overlay.classList.add('show');
+                // Show/hide overlay based on sidebar state
+                if (sidebar.classList.contains('hidden')) {
+                    overlay.classList.remove('show');
                 } else {
-                    overlay.classList.remove('show');
+                    overlay.classList.add('show');
                 }
-                
-                // Close sidebar when clicking overlay
-                overlay.addEventListener('click', function() {
-                    sidebar.classList.add('hidden');
-                    overlay.classList.remove('show');
-                });
             } else {
-                // Save desktop state to localStorage
-                localStorage.setItem('sidebarHidden', isHidden);
+                // Desktop: toggle sidebar collapse
+                const isNowHidden = sidebar.classList.toggle('hidden');
+                mainContent.classList.toggle('sidebar-hidden', isNowHidden);
+                localStorage.setItem('sidebarHidden', isNowHidden);
             }
         });
     }
@@ -72,10 +82,24 @@ document.addEventListener('DOMContentLoaded', function() {
     function handleResize() {
         const sidebar = document.querySelector('.everythingb2c-sidebar');
         const mainContent = document.querySelector('.everythingb2c-main-content');
+        const overlay = document.querySelector('.everythingb2c-sidebar-overlay');
+        
         if (window.innerWidth > 768) {
-            sidebar.classList.remove('hidden');
-            mainContent.classList.remove('sidebar-hidden');
-            const overlay = document.querySelector('.everythingb2c-sidebar-overlay');
+            // Desktop: restore saved state
+            if (localStorage.getItem('sidebarHidden') === 'true') {
+                sidebar.classList.add('hidden');
+                mainContent.classList.add('sidebar-hidden');
+            } else {
+                sidebar.classList.remove('hidden');
+                mainContent.classList.remove('sidebar-hidden');
+            }
+            // Hide overlay
+            if (overlay) {
+                overlay.classList.remove('show');
+            }
+        } else {
+            // Mobile: always hide sidebar by default
+            sidebar.classList.add('hidden');
             if (overlay) {
                 overlay.classList.remove('show');
             }

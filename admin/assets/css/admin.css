@@ -483,10 +483,7 @@
 @media (max-width: 768px) {
     .everythingb2c-sidebar {
         transform: translateX(-100%);
-    }
-    
-    .everythingb2c-sidebar.hidden {
-        transform: translateX(-100%);
+        transition: transform 0.3s ease;
     }
     
     .everythingb2c-sidebar:not(.hidden) {
@@ -494,7 +491,7 @@
     }
     
     .everythingb2c-main-content {
-        margin-left: 0;
+        margin-left: 0 !important;
     }
     
     .everythingb2c-header-content {
