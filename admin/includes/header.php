@@ -1,8 +1,8 @@
 <header class="everythingb2c-admin-header">
     <div class="everythingb2c-header-content">
         <div class="everythingb2c-header-left">
-            <button class="everythingb2c-sidebar-toggle" id="sidebarToggle">
-                <i class="fas fa-bars"></i>
+            <button class="everythingb2c-sidebar-toggle" id="sidebarToggle" title="Toggle Sidebar">
+                <i class="fas fa-chevron-left"></i>
             </button>
             <h4 class="everythingb2c-header-title everythingb2c-mb-0"><?php echo $pageTitle ?? 'EverythingB2C'; ?></h4>
         </div>

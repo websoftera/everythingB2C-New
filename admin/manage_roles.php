@@ -97,32 +97,6 @@ if (isset($_GET['edit'])) {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="assets/css/admin.css" rel="stylesheet">
     <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .everythingb2c-admin-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px 30px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        .everythingb2c-header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        .everythingb2c-header-title {
-            margin: 0;
-            font-size: 24px;
-            font-weight: 600;
-        }
-        .container-main {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 30px 15px;
-        }
         .role-card {
             background: white;
             border-radius: 10px;
@@ -137,10 +111,6 @@ if (isset($_GET['edit'])) {
         .badge-system {
             background-color: #28a745;
         }
-        .btn-sm {
-            padding: 5px 10px;
-            font-size: 12px;
-        }
         .permission-group {
             margin-bottom: 20px;
             padding: 15px;
@@ -154,10 +124,6 @@ if (isset($_GET['edit'])) {
         }
         .form-check {
             margin-bottom: 8px;
-        }
-        .alert {
-            border-radius: 8px;
-            margin-bottom: 20px;
         }
     </style>
 </head>

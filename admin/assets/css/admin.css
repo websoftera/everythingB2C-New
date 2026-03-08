@@ -47,6 +47,10 @@
     transition: margin-left 0.3s ease;
 }
 
+.everythingb2c-main-content.sidebar-hidden {
+    margin-left: 0;
+}
+
 .everythingb2c-dashboard-content {
     padding: 1.5rem;
 }
@@ -167,6 +171,10 @@
     top: 0;
     z-index: 1001;
     transition: transform 0.3s ease;
+}
+
+.everythingb2c-sidebar.hidden {
+    transform: translateX(-100%);
 }
 
 .everythingb2c-sidebar-header {
@@ -477,7 +485,11 @@
         transform: translateX(-100%);
     }
     
-    .everythingb2c-sidebar.show {
+    .everythingb2c-sidebar.hidden {
+        transform: translateX(-100%);
+    }
+    
+    .everythingb2c-sidebar:not(.hidden) {
         transform: translateX(0);
     }
     

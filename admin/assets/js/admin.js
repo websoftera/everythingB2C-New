@@ -7,8 +7,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const mainContent = document.querySelector('.everythingb2c-main-content');
     
     if (sidebarToggle && sidebar) {
+        // Check localStorage for saved state (desktop only)
+        if (window.innerWidth > 768 && localStorage.getItem('sidebarHidden') === 'true') {
+            sidebar.classList.add('hidden');
+            mainContent.classList.add('sidebar-hidden');
+        }
+        
         sidebarToggle.addEventListener('click', function() {
-            sidebar.classList.toggle('show');
+            const isHidden = sidebar.classList.toggle('hidden');
+            
+            // Toggle main content margin
+            if (isHidden) {
+                mainContent.classList.add('sidebar-hidden');
+            } else {
+                mainContent.classList.remove('sidebar-hidden');
+            }
             
             // Add overlay for mobile
             if (window.innerWidth <= 768) {
@@ -19,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.body.appendChild(overlay);
                 }
                 
-                if (sidebar.classList.contains('show')) {
+                if (!sidebar.classList.contains('hidden')) {
                     overlay.classList.add('show');
                 } else {
                     overlay.classList.remove('show');
@@ -27,9 +40,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Close sidebar when clicking overlay
                 overlay.addEventListener('click', function() {
-                    sidebar.classList.remove('show');
+                    sidebar.classList.add('hidden');
                     overlay.classList.remove('show');
                 });
+            } else {
+                // Save desktop state to localStorage
+                localStorage.setItem('sidebarHidden', isHidden);
             }
         });
     }
@@ -54,8 +70,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Responsive sidebar behavior
     function handleResize() {
+        const sidebar = document.querySelector('.everythingb2c-sidebar');
+        const mainContent = document.querySelector('.everythingb2c-main-content');
         if (window.innerWidth > 768) {
-            sidebar.classList.remove('show');
+            sidebar.classList.remove('hidden');
+            mainContent.classList.remove('sidebar-hidden');
             const overlay = document.querySelector('.everythingb2c-sidebar-overlay');
             if (overlay) {
                 overlay.classList.remove('show');
