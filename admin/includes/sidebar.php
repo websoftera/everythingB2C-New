@@ -3,6 +3,7 @@
 if (file_exists(__DIR__ . '/../../includes/seller_functions.php')) {
     require_once __DIR__ . '/../../includes/seller_functions.php';
 }
+require_once __DIR__ . '/../../includes/functions.php';
 ?>
 <div class="everythingb2c-sidebar">
     <div class="everythingb2c-sidebar-header">
@@ -11,55 +12,78 @@ if (file_exists(__DIR__ . '/../../includes/seller_functions.php')) {
     
     <nav class="everythingb2c-sidebar-nav">
         <ul class="everythingb2c-nav-list">
+            <!-- Dashboard -->
             <li class="everythingb2c-nav-item">
                 <a class="everythingb2c-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'index.php' ? 'active' : ''; ?>" href="index.php">
                     <i class="fas fa-home everythingb2c-nav-icon"></i> Dashboard
                 </a>
             </li>
             
+            <!-- Products -->
+            <?php if (canAccess('view_products')): ?>
             <li class="everythingb2c-nav-item">
                 <a class="everythingb2c-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'products.php' ? 'active' : ''; ?>" href="products.php">
                     <i class="fas fa-box everythingb2c-nav-icon"></i> Products
                 </a>
             </li>
+            <?php endif; ?>
             
+            <!-- Categories -->
+            <?php if (canAccess('view_categories')): ?>
             <li class="everythingb2c-nav-item">
                 <a class="everythingb2c-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'categories.php' ? 'active' : ''; ?>" href="categories.php">
                     <i class="fas fa-tags everythingb2c-nav-icon"></i> Categories
                 </a>
             </li>
+            <?php endif; ?>
             
+            <!-- Shipping -->
+            <?php if (canAccess('view_shipping')): ?>
             <li class="everythingb2c-nav-item">
                 <a class="everythingb2c-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'shipping.php' ? 'active' : ''; ?>" href="shipping.php">
                     <i class="fas fa-shipping-fast everythingb2c-nav-icon"></i> Shipping
                 </a>
             </li>
+            <?php endif; ?>
             
+            <!-- Manage Pincodes -->
+            <?php if (canAccess('manage_pincodes')): ?>
             <li class="everythingb2c-nav-item">
                 <a class="everythingb2c-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'manage_pincodes.php' ? 'active' : ''; ?>" href="manage_pincodes.php">
                     <i class="fas fa-map-marker-alt everythingb2c-nav-icon"></i> Manage Pincodes
                 </a>
             </li>
+            <?php endif; ?>
             
+            <!-- Orders -->
+            <?php if (canAccess('view_orders')): ?>
             <li class="everythingb2c-nav-item">
                 <a class="everythingb2c-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'orders.php' ? 'active' : ''; ?>" href="orders.php">
                     <i class="fas fa-shopping-cart everythingb2c-nav-icon"></i> Orders
                 </a>
             </li>
+            <?php endif; ?>
             
+            <!-- Users -->
+            <?php if (canAccess('view_users')): ?>
             <li class="everythingb2c-nav-item">
                 <a class="everythingb2c-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'users.php' ? 'active' : ''; ?>" href="users.php">
                     <i class="fas fa-users everythingb2c-nav-icon"></i> Users
                 </a>
             </li>
+            <?php endif; ?>
             
             <!-- Seller Management Section -->
+            <?php if (canAccess('view_sellers')): ?>
             <li class="everythingb2c-nav-item">
                 <a class="everythingb2c-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'manage_sellers.php' ? 'active' : ''; ?>" href="manage_sellers.php">
                     <i class="fas fa-store everythingb2c-nav-icon"></i> Manage Sellers
                 </a>
             </li>
+            <?php endif; ?>
             
+            <!-- Approve Products -->
+            <?php if (canAccess('manage_product_approval')): ?>
             <li class="everythingb2c-nav-item">
                 <a class="everythingb2c-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'approve_products.php' ? 'active' : ''; ?>" href="approve_products.php">
                     <i class="fas fa-check-circle everythingb2c-nav-icon"></i> Approve Products
@@ -79,32 +103,67 @@ if (file_exists(__DIR__ . '/../../includes/seller_functions.php')) {
                     ?>
                 </a>
             </li>
+            <?php endif; ?>
             
+            <!-- All Seller Products -->
+            <?php if (canAccess('manage_seller_products')): ?>
             <li class="everythingb2c-nav-item">
                 <a class="everythingb2c-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'seller_products.php' ? 'active' : ''; ?>" href="seller_products.php">
                     <i class="fas fa-boxes everythingb2c-nav-icon"></i> All Seller Products
                 </a>
             </li>
+            <?php endif; ?>
             
+            <!-- Seller Orders -->
+            <?php if (canAccess('view_sellers')): ?>
             <li class="everythingb2c-nav-item">
                 <a class="everythingb2c-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'seller_orders.php' ? 'active' : ''; ?>" href="seller_orders.php">
                     <i class="fas fa-truck everythingb2c-nav-icon"></i> Seller Orders
                 </a>
             </li>
+            <?php endif; ?>
             
             <!-- End Seller Management Section -->
             
+            <!-- Reports -->
+            <?php if (canAccess('view_reports')): ?>
             <li class="everythingb2c-nav-item">
                 <a class="everythingb2c-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'reports.php' ? 'active' : ''; ?>" href="reports.php">
                     <i class="fas fa-chart-bar everythingb2c-nav-icon"></i> Reports
                 </a>
             </li>
+            <?php endif; ?>
             
+            <!-- Settings -->
+            <?php if (canAccess('view_settings')): ?>
             <li class="everythingb2c-nav-item">
                 <a class="everythingb2c-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'settings.php' ? 'active' : ''; ?>" href="settings.php">
                     <i class="fas fa-cog everythingb2c-nav-icon"></i> Settings
                 </a>
             </li>
+            <?php endif; ?>
+            
+            <!-- Admin Management Section -->
+            <?php if (canAccess('manage_admins') || canAccess('manage_roles')): ?>
+            <li class="everythingb2c-nav-divider"></li>
+            
+            <?php if (canAccess('manage_roles')): ?>
+            <li class="everythingb2c-nav-item">
+                <a class="everythingb2c-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'manage_roles.php' ? 'active' : ''; ?>" href="manage_roles.php">
+                    <i class="fas fa-shield-alt everythingb2c-nav-icon"></i> Manage Roles
+                </a>
+            </li>
+            <?php endif; ?>
+            
+            <?php if (canAccess('manage_admins')): ?>
+            <li class="everythingb2c-nav-item">
+                <a class="everythingb2c-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'manage_admins.php' ? 'active' : ''; ?>" href="manage_admins.php">
+                    <i class="fas fa-users-cog everythingb2c-nav-icon"></i> Admin Users
+                </a>
+            </li>
+            <?php endif; ?>
+            <!-- End Admin Management Section -->
+            <?php endif; ?>
         </ul>
     </nav>
     

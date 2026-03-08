@@ -1,12 +1,13 @@
 <?php
+$pageTitle = 'Manage Pincodes';
 session_start();
+require_once '../config/database.php';
+require_once '../includes/functions.php';
+require_once 'includes/auth-check.php';
 require_once '../includes/delivery_popup_functions.php';
 
-// Check if admin is logged in
-if (!isset($_SESSION['admin_id'])) {
-    header('Location: login.php');
-    exit;
-}
+// Check permission
+checkAdminPermission('manage_pincodes');
 
 $message = '';
 $error = '';
@@ -69,105 +70,107 @@ $settings = getPopupSettings();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Serviceable Pincodes - Admin</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title><?php echo $pageTitle; ?> - EverythingB2C Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/admin-styles.css">
     <style>
-        .sidebar {
-            min-height: 100vh;
-            background-color: #343a40;
+        body {
+            background-color: #f8f9fa;
         }
-        .sidebar .nav-link {
-            color: #fff;
-        }
-        .sidebar .nav-link:hover {
-            background-color: #495057;
-        }
-        .main-content {
-            padding: 20px;
+        .container-main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 15px;
         }
         .pincode-card {
+            background: white;
             border: 1px solid #dee2e6;
             border-radius: 8px;
             padding: 15px;
             margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
         .status-active {
-            color: #9fbe1b;
+            color: #28a745;
+            font-weight: 600;
         }
         .status-inactive {
             color: #dc3545;
+            font-weight: 600;
+        }
+        .alert {
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .card {
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            border-radius: 8px 8px 0 0 !important;
+        }
+        .card-header h5 {
+            margin: 0;
+            color: #333;
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
-    <div class="container-fluid">
+    <?php require_once 'includes/header.php'; ?>
+    
+    <div class="container-main">
         <div class="row">
-            <!-- Sidebar -->
-            <div class="col-md-2 sidebar p-0">
-                <div class="p-3">
-                    <h4 class="text-white">Admin Panel</h4>
-                </div>
-                <nav class="nav flex-column">
-                    <a class="nav-link" href="dashboard.php">
-                        <i class="fas fa-tachometer-alt"></i> Dashboard
-                    </a>
-                    <a class="nav-link active" href="manage_pincodes.php">
-                        <i class="fas fa-map-marker-alt"></i> Manage Pincodes
-                    </a>
-                    <a class="nav-link" href="products.php">
-                        <i class="fas fa-box"></i> Products
-                    </a>
-                    <a class="nav-link" href="orders.php">
-                        <i class="fas fa-shopping-cart"></i> Orders
-                    </a>
-                    <a class="nav-link" href="logout.php">
-                        <i class="fas fa-sign-out-alt"></i> Logout
-                    </a>
-                </nav>
-            </div>
-
-            <!-- Main Content -->
-            <div class="col-md-10 main-content">
-                <h2 class="mb-4">Manage Serviceable Pincodes</h2>
-
+            <div class="col-md-12">
+                <h2 class="mb-4"><i class="fas fa-map-marker-alt"></i> Manage Serviceable Pincodes</h2>
+                
                 <?php if ($message): ?>
-                    <div class="alert alert-success"><?php echo $message; ?></div>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle"></i> <?php echo htmlspecialchars($message); ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
                 <?php endif; ?>
-
+                
                 <?php if ($error): ?>
-                    <div class="alert alert-danger"><?php echo $error; ?></div>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-circle"></i> <?php echo htmlspecialchars($error); ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
                 <?php endif; ?>
-
+                
                 <div class="row">
-                    <!-- Add Pincodes -->
-                    <div class="col-md-6">
+                    <!-- Add Pincodes Section -->
+                    <div class="col-md-6 mb-4">
                         <div class="card">
                             <div class="card-header">
-                                <h5>Add Serviceable Pincodes</h5>
+                                <h5><i class="fas fa-plus"></i> Add Serviceable Pincodes</h5>
                             </div>
                             <div class="card-body">
                                 <form method="POST">
                                     <input type="hidden" name="action" value="add_pincodes">
                                     <div class="mb-3">
-                                        <label for="pincodes" class="form-label">Pincodes (comma-separated)</label>
+                                        <label for="pincodes" class="form-label">Pincodes (comma-separated) *</label>
                                         <textarea class="form-control" id="pincodes" name="pincodes" rows="4" 
                                                   placeholder="Enter pincodes separated by commas (e.g., 411001, 411002, 411003)" required></textarea>
                                         <div class="form-text">Enter 6-digit pincodes separated by commas</div>
                                     </div>
-                                    <button type="submit" class="btn btn-primary">
+                                    <button type="submit" class="btn btn-primary w-100">
                                         <i class="fas fa-plus"></i> Add Pincodes
                                     </button>
                                 </form>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Popup Settings -->
-                    <div class="col-md-6">
+                    
+                    <!-- Popup Settings Section -->
+                    <div class="col-md-6 mb-4">
                         <div class="card">
                             <div class="card-header">
-                                <h5>Popup Settings</h5>
+                                <h5><i class="fas fa-cog"></i> Popup Settings</h5>
                             </div>
                             <div class="card-body">
                                 <form method="POST">
@@ -201,7 +204,7 @@ $settings = getPopupSettings();
                                         <input type="text" class="form-control" id="service_unavailable_message" name="service_unavailable_message" 
                                                value="<?php echo htmlspecialchars($settings['service_unavailable_message'] ?? ''); ?>" required>
                                     </div>
-                                    <button type="submit" class="btn btn-success">
+                                    <button type="submit" class="btn btn-success w-100">
                                         <i class="fas fa-save"></i> Save Settings
                                     </button>
                                 </form>
@@ -209,49 +212,52 @@ $settings = getPopupSettings();
                         </div>
                     </div>
                 </div>
-
+                
                 <!-- Pincodes List -->
-                <div class="card mt-4">
+                <div class="card">
                     <div class="card-header">
-                        <h5>Serviceable Pincodes (<?php echo count($pincodes); ?>)</h5>
+                        <h5><i class="fas fa-list"></i> Serviceable Pincodes (<?php echo count($pincodes); ?>)</h5>
                     </div>
                     <div class="card-body">
                         <?php if (empty($pincodes)): ?>
-                            <p class="text-muted">No serviceable pincodes added yet.</p>
+                            <div class="alert alert-info mb-0">
+                                <i class="fas fa-info-circle"></i> No serviceable pincodes added yet.
+                            </div>
                         <?php else: ?>
                             <div class="row">
                                 <?php foreach ($pincodes as $pincode): ?>
-                                    <div class="col-md-3 mb-3">
+                                    <div class="col-md-6 col-lg-4 mb-3">
                                         <div class="pincode-card">
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <div>
-                                                    <h6 class="mb-1"><?php echo htmlspecialchars($pincode['pincode']); ?></h6>
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <div class="flex-grow-1">
+                                                    <h6 class="mb-1"><strong><?php echo htmlspecialchars($pincode['pincode']); ?></strong></h6>
                                                     <small class="text-muted">
                                                         <?php echo htmlspecialchars($pincode['city'] ?? 'N/A'); ?>, 
                                                         <?php echo htmlspecialchars($pincode['state'] ?? 'N/A'); ?>
                                                     </small>
                                                 </div>
-                                                <div class="d-flex gap-2">
-                                                    <form method="POST" style="display: inline;">
-                                                        <input type="hidden" name="action" value="toggle_status">
-                                                        <input type="hidden" name="pincode_id" value="<?php echo $pincode['id']; ?>">
-                                                        <button type="submit" class="btn btn-sm <?php echo $pincode['is_active'] ? 'btn-success' : 'btn-secondary'; ?>">
-                                                            <i class="fas <?php echo $pincode['is_active'] ? 'fa-check' : 'fa-times'; ?>"></i>
-                                                        </button>
-                                                    </form>
-                                                    <form method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this pincode?');">
-                                                        <input type="hidden" name="action" value="delete_pincode">
-                                                        <input type="hidden" name="pincode_id" value="<?php echo $pincode['id']; ?>">
-                                                        <button type="submit" class="btn btn-sm btn-danger">
-                                                            <i class="fas fa-trash"></i>
-                                                        </button>
-                                                    </form>
+                                                <div class="ms-2">
+                                                    <span class="badge <?php echo $pincode['is_active'] ? 'bg-success' : 'bg-secondary'; ?>">
+                                                        <?php echo $pincode['is_active'] ? 'Active' : 'Inactive'; ?>
+                                                    </span>
                                                 </div>
                                             </div>
-                                            <div class="mt-2">
-                                                <span class="badge <?php echo $pincode['is_active'] ? 'bg-success' : 'bg-secondary'; ?>">
-                                                    <?php echo $pincode['is_active'] ? 'Active' : 'Inactive'; ?>
-                                                </span>
+                                            <div class="d-flex gap-2 mt-3">
+                                                <form method="POST" style="display: inline; flex: 1;" class="d-grid">
+                                                    <input type="hidden" name="action" value="toggle_status">
+                                                    <input type="hidden" name="pincode_id" value="<?php echo $pincode['id']; ?>">
+                                                    <button type="submit" class="btn btn-sm <?php echo $pincode['is_active'] ? 'btn-success' : 'btn-secondary'; ?>">
+                                                        <i class="fas <?php echo $pincode['is_active'] ? 'fa-check' : 'fa-times'; ?>"></i>
+                                                        <?php echo $pincode['is_active'] ? 'Active' : 'Inactive'; ?>
+                                                    </button>
+                                                </form>
+                                                <form method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this pincode?');">
+                                                    <input type="hidden" name="action" value="delete_pincode">
+                                                    <input type="hidden" name="pincode_id" value="<?php echo $pincode['id']; ?>">
+                                                    <button type="submit" class="btn btn-sm btn-danger">
+                                                        <i class="fas fa-trash"></i> Delete
+                                                    </button>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>
@@ -263,7 +269,7 @@ $settings = getPopupSettings();
             </div>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

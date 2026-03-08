@@ -1522,4 +1522,425 @@ function setDTDCCache($trackingId, $data) {
     
     return file_put_contents($cacheFile, json_encode($cacheData)) !== false;
 }
+
+// =====================================================
+// RBAC (Role-Based Access Control) Functions
+// =====================================================
+
+/**
+ * Check if admin has a specific permission
+ * @param string $permissionCode - Permission code to check
+ * @param int $adminId - Admin user ID (optional, uses session if not provided)
+ * @return bool
+ */
+function hasPermission($permissionCode, $adminId = null) {
+    global $pdo;
+    
+    if (!$adminId && isset($_SESSION['admin_id'])) {
+        $adminId = $_SESSION['admin_id'];
+    }
+    
+    if (!$adminId) {
+        return false;
+    }
+    
+    try {
+        $stmt = $pdo->prepare("
+            SELECT COUNT(*) as count 
+            FROM admins a
+            INNER JOIN roles r ON a.role_id = r.id
+            INNER JOIN role_permissions rp ON r.id = rp.role_id
+            INNER JOIN permissions p ON rp.permission_id = p.id
+            WHERE a.id = ? AND p.code = ? AND a.is_active = 1 AND r.is_active = 1 AND p.is_active = 1
+        ");
+        $stmt->execute([$adminId, $permissionCode]);
+        return $stmt->fetch(PDO::FETCH_ASSOC)['count'] > 0;
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+/**
+ * Check if admin has multiple permissions (logical OR)
+ * @param array $permissionCodes - Array of permission codes
+ * @param int $adminId - Admin user ID (optional)
+ * @return bool
+ */
+function hasAnyPermission($permissionCodes, $adminId = null) {
+    foreach ($permissionCodes as $code) {
+        if (hasPermission($code, $adminId)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * Check if admin has all specified permissions (logical AND)
+ * @param array $permissionCodes - Array of permission codes
+ * @param int $adminId - Admin user ID (optional)
+ * @return bool
+ */
+function hasAllPermissions($permissionCodes, $adminId = null) {
+    foreach ($permissionCodes as $code) {
+        if (!hasPermission($code, $adminId)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+/**
+ * Get all permissions for a role
+ * @param int $roleId - Role ID
+ * @return array
+ */
+function getRolePermissions($roleId) {
+    global $pdo;
+    
+    try {
+        $stmt = $pdo->prepare("
+            SELECT p.* 
+            FROM permissions p
+            INNER JOIN role_permissions rp ON p.id = rp.permission_id
+            WHERE rp.role_id = ? AND p.is_active = 1
+            ORDER BY p.category, p.name
+        ");
+        $stmt->execute([$roleId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (Exception $e) {
+        return [];
+    }
+}
+
+/**
+ * Get admin's role details
+ * @param int $adminId - Admin user ID
+ * @return array
+ */
+function getAdminRole($adminId) {
+    global $pdo;
+    
+    try {
+        $stmt = $pdo->prepare("
+            SELECT r.* 
+            FROM roles r
+            INNER JOIN admins a ON a.role_id = r.id
+            WHERE a.id = ? AND a.is_active = 1
+        ");
+        $stmt->execute([$adminId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (Exception $e) {
+        return null;
+    }
+}
+
+/**
+ * Get all roles
+ * @return array
+ */
+function getAllRoles() {
+    global $pdo;
+    
+    try {
+        $stmt = $pdo->query("
+            SELECT r.*, COUNT(a.id) as admin_count 
+            FROM roles r
+            LEFT JOIN admins a ON r.id = a.role_id
+            WHERE r.is_active = 1
+            GROUP BY r.id
+            ORDER BY r.is_system_role DESC, r.name
+        ");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (Exception $e) {
+        return [];
+    }
+}
+
+/**
+ * Get all permissions grouped by category
+ * @return array
+ */
+function getAllPermissionsGrouped() {
+    global $pdo;
+    
+    try {
+        $stmt = $pdo->query("
+            SELECT * FROM permissions 
+            WHERE is_active = 1 
+            ORDER BY category, name
+        ");
+        $permissions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        $grouped = [];
+        foreach ($permissions as $permission) {
+            $category = $permission['category'] ?? 'Other';
+            if (!isset($grouped[$category])) {
+                $grouped[$category] = [];
+            }
+            $grouped[$category][] = $permission;
+        }
+        return $grouped;
+    } catch (Exception $e) {
+        return [];
+    }
+}
+
+/**
+ * Get all admin users
+ * @return array
+ */
+function getAllAdmins() {
+    global $pdo;
+    
+    try {
+        $stmt = $pdo->query("
+            SELECT a.*, r.name as role_name 
+            FROM admins a
+            LEFT JOIN roles r ON a.role_id = r.id
+            ORDER BY a.created_at DESC
+        ");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (Exception $e) {
+        return [];
+    }
+}
+
+/**
+ * Add a new role
+ * @param string $name - Role name
+ * @param string $description - Role description
+ * @return int|false - Role ID or false on failure
+ */
+function addRole($name, $description = '') {
+    global $pdo;
+    
+    try {
+        $stmt = $pdo->prepare("
+            INSERT INTO roles (name, description) 
+            VALUES (?, ?)
+        ");
+        $stmt->execute([$name, $description]);
+        return $pdo->lastInsertId();
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+/**
+ * Update a role
+ * @param int $roleId - Role ID
+ * @param string $name - Role name
+ * @param string $description - Role description
+ * @return bool
+ */
+function updateRole($roleId, $name, $description = '') {
+    global $pdo;
+    
+    try {
+        $stmt = $pdo->prepare("
+            UPDATE roles 
+            SET name = ?, description = ?, updated_at = NOW()
+            WHERE id = ? AND is_system_role = 0
+        ");
+        return $stmt->execute([$name, $description, $roleId]);
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+/**
+ * Delete a role
+ * @param int $roleId - Role ID
+ * @return bool
+ */
+function deleteRole($roleId) {
+    global $pdo;
+    
+    try {
+        // Check if role is system role
+        $stmt = $pdo->prepare("SELECT is_system_role FROM roles WHERE id = ?");
+        $stmt->execute([$roleId]);
+        $role = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($role && $role['is_system_role']) {
+            return false; // Cannot delete system roles
+        }
+        
+        // Check if any admin is using this role
+        $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM admins WHERE role_id = ?");
+        $stmt->execute([$roleId]);
+        $count = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
+        
+        if ($count > 0) {
+            return false; // Cannot delete role if admins are assigned to it
+        }
+        
+        $stmt = $pdo->prepare("DELETE FROM roles WHERE id = ?");
+        return $stmt->execute([$roleId]);
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+/**
+ * Add permission to a role
+ * @param int $roleId - Role ID
+ * @param int $permissionId - Permission ID
+ * @return bool
+ */
+function addPermissionToRole($roleId, $permissionId) {
+    global $pdo;
+    
+    try {
+        $stmt = $pdo->prepare("
+            INSERT INTO role_permissions (role_id, permission_id) 
+            VALUES (?, ?)
+            ON DUPLICATE KEY UPDATE created_at = created_at
+        ");
+        return $stmt->execute([$roleId, $permissionId]);
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+/**
+ * Remove permission from a role
+ * @param int $roleId - Role ID
+ * @param int $permissionId - Permission ID
+ * @return bool
+ */
+function removePermissionFromRole($roleId, $permissionId) {
+    global $pdo;
+    
+    try {
+        $stmt = $pdo->prepare("
+            DELETE FROM role_permissions 
+            WHERE role_id = ? AND permission_id = ?
+        ");
+        return $stmt->execute([$roleId, $permissionId]);
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+/**
+ * Add a new admin user
+ * @param string $name - Admin name
+ * @param string $email - Admin email
+ * @param string $password - Plain password (will be hashed)
+ * @param int $roleId - Role ID
+ * @return int|false - Admin ID or false on failure
+ */
+function addAdmin($name, $email, $password, $roleId) {
+    global $pdo;
+    
+    try {
+        $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+        $stmt = $pdo->prepare("
+            INSERT INTO admins (name, email, password, role_id) 
+            VALUES (?, ?, ?, ?)
+        ");
+        $stmt->execute([$name, $email, $hashed_password, $roleId]);
+        return $pdo->lastInsertId();
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+/**
+ * Update an admin user
+ * @param int $adminId - Admin ID
+ * @param string $name - Admin name
+ * @param string $email - Admin email
+ * @param int $roleId - Role ID
+ * @param string|null $password - New password (optional)
+ * @return bool
+ */
+function updateAdmin($adminId, $name, $email, $roleId, $password = null) {
+    global $pdo;
+    
+    try {
+        if ($password) {
+            $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+            $stmt = $pdo->prepare("
+                UPDATE admins 
+                SET name = ?, email = ?, password = ?, role_id = ?, updated_at = NOW()
+                WHERE id = ?
+            ");
+            return $stmt->execute([$name, $email, $hashed_password, $roleId, $adminId]);
+        } else {
+            $stmt = $pdo->prepare("
+                UPDATE admins 
+                SET name = ?, email = ?, role_id = ?, updated_at = NOW()
+                WHERE id = ?
+            ");
+            return $stmt->execute([$name, $email, $roleId, $adminId]);
+        }
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+/**
+ * Deactivate an admin user
+ * @param int $adminId - Admin ID
+ * @return bool
+ */
+function deactivateAdmin($adminId) {
+    global $pdo;
+    
+    try {
+        $stmt = $pdo->prepare("
+            UPDATE admins 
+            SET is_active = 0, updated_at = NOW()
+            WHERE id = ?
+        ");
+        return $stmt->execute([$adminId]);
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+/**
+ * Activate an admin user
+ * @param int $adminId - Admin ID
+ * @return bool
+ */
+function activateAdmin($adminId) {
+    global $pdo;
+    
+    try {
+        $stmt = $pdo->prepare("
+            UPDATE admins 
+            SET is_active = 1, updated_at = NOW()
+            WHERE id = ?
+        ");
+        return $stmt->execute([$adminId]);
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+/**
+ * Get an admin user by ID
+ * @param int $adminId - Admin ID
+ * @return array|null
+ */
+function getAdminById($adminId) {
+    global $pdo;
+    
+    try {
+        $stmt = $pdo->prepare("
+            SELECT a.*, r.name as role_name 
+            FROM admins a
+            LEFT JOIN roles r ON a.role_id = r.id
+            WHERE a.id = ?
+        ");
+        $stmt->execute([$adminId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (Exception $e) {
+        return null;
+    }
+}
 ?> 

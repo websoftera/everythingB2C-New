@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../config/database.php';
+require_once '../includes/functions.php';
 
 // Redirect if already logged in
 if (isset($_SESSION['admin_id'])) {
@@ -18,7 +19,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Please fill in all fields';
     } else {
         try {
-            $stmt = $pdo->prepare("SELECT * FROM admins WHERE email = ? AND is_active = 1");
+            $stmt = $pdo->prepare("
+                SELECT a.*, r.id as role_id, r.name as role_name 
+                FROM admins a
+                LEFT JOIN roles r ON a.role_id = r.id
+                WHERE a.email = ? AND a.is_active = 1
+            ");
             $stmt->execute([$email]);
             $admin = $stmt->fetch(PDO::FETCH_ASSOC);
             
@@ -26,6 +32,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['admin_id'] = $admin['id'];
                 $_SESSION['admin_name'] = $admin['name'];
                 $_SESSION['admin_email'] = $admin['email'];
+                $_SESSION['admin_role_id'] = $admin['role_id'];
+                $_SESSION['admin_role_name'] = $admin['role_name'];
+                
+                // Store permissions in session
+                if ($admin['role_id']) {
+                    $permissions = getRolePermissions($admin['role_id']);
+                    $permissionCodes = array_column($permissions, 'code');
+                    $_SESSION['admin_permissions'] = $permissionCodes;
+                }
                 
                 // Update last login
                 $stmt = $pdo->prepare("UPDATE admins SET last_login = NOW() WHERE id = ?");

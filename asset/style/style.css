@@ -3682,6 +3682,7 @@ html .cart-added-highlight,
   grid-template-columns: repeat(4, 1fr) !important;
   gap: 20px !important;
   width: 100% !important;
+  max-width: 100% !important;
   justify-content: center !important;
   align-items: stretch !important;
 }
@@ -3690,6 +3691,7 @@ html .cart-added-highlight,
 .wishlist-grid .card.product-card {
   width: 100% !important;
   max-width: 100% !important;
+  min-width: 0 !important;
   margin: 0 !important;
   /* Rely entirely on grid gap */
   float: none !important;
@@ -3697,39 +3699,37 @@ html .cart-added-highlight,
   height: 100% !important;
 }
 
-/* Responsive breakdowns for the boxed wishlist grid */
-@media (max-width: 1200px) {
-  .wishlist-grid {
-    grid-template-columns: repeat(4, 1fr) !important;
-  }
-}
-
-@media (max-width: 991px) {
-  .wishlist-grid {
-    grid-template-columns: repeat(3, 1fr) !important;
-  }
-}
-
-@media (max-width: 768px) {
-  .wishlist-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 10px !important;
-  }
-}
-
-@media (max-width: 500px) {
-  .wishlist-container {
-    padding-left: 10px !important;
-    padding-right: 10px !important;
-  }
-
+/* Responsive breakdowns for the boxed wishlist grid - STANDARDIZED */
+@media (max-width: 767px) {
   .wishlist-grid {
     grid-template-columns: 1fr !important;
-    gap: 12px !important;
+    gap: 15px !important;
   }
+}
 
+@media (min-width: 768px) and (max-width: 1199px) {
+  .wishlist-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 18px !important;
+  }
+}
+
+@media (min-width: 1200px) {
+  .wishlist-grid {
+    grid-template-columns: repeat(5, 1fr) !important;
+    gap: 20px !important;
+  }
+  
   .wishlist-grid .card.product-card {
-    max-width: 240px !important;
-    /* Make wishlist mobile cards identically boxed as regular category cards */
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+}
+
+@media (min-width: 1400px) {
+  .wishlist-grid {
+    grid-template-columns: repeat(5, 1fr) !important;
+    gap: 20px !important;
   }
 }
