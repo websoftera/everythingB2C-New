@@ -120,27 +120,29 @@ $breadcrumbs = generateBreadcrumb($pageTitle);
 echo renderBreadcrumb($breadcrumbs);
 ?>
 <link rel="stylesheet" href="./asset/style/style.css">
-<div class="container-fluid">
+<link rel="stylesheet" href="./asset/style/product-card.css">
+<div class="container-fluid" style="padding-left: 5px !important; padding-right: 5px !important;">
+  <!-- Search Header -->
+  <div class="search-header">
+    <h2><?php echo !empty($searchTerm) ? 'Search Results For "' . htmlspecialchars($searchTerm) . '"' : 'Search Results'; ?></h2>
+    <?php if (!empty($searchTerm)): ?>
+      <p class="search-term">Found <?php echo isset($products) ? count($products) : 0; ?> Products Matching Your Query</p>
+    <?php else: ?>
+      <p class="results-count">Showing <?php echo isset($products) ? count($products) : 0; ?> products</p>
+    <?php endif; ?>
+  </div>
+
+  <!-- Filters -->
   <div class="row">
-    <!-- Sidebar Filter -->
-    <div class="col-lg-3 col-md-4">
+    <div class="col-12">
       <?php include 'includes/sidebar-filter.php'; ?>
     </div>
-    
-    <!-- Products Section -->
-    <div class="col-lg-9 col-md-8">
+  </div>
+
+  <!-- Products Section -->
+  <div class="row">
+    <div class="col-12">
       <div class="products-container">
-        <!-- Search Header -->
-        <div class="search-header">
-          <h2><?php echo !empty($searchTerm) ? 'Search Results for "' . htmlspecialchars($searchTerm) . '"' : 'Search Results'; ?></h2>
-          <?php if (!empty($searchTerm)): ?>
-            <p class="search-term">Found <?php echo isset($products) ? count($products) : 0; ?> products matching your query</p>
-          <?php else: ?>
-            <p class="results-count">Showing <?php echo isset($products) ? count($products) : 0; ?> products</p>
-          <?php endif; ?>
-        </div>
-        
-        <!-- Products Grid -->
         <div class="products-grid">
           <?php if (empty($products)): ?>
             <div class="no-products">
@@ -259,7 +261,7 @@ echo renderBreadcrumb($breadcrumbs);
   color: #666;
 }
 
-/* Product Grid - Truly Responsive (matching category.php) */
+/* Product Grid - Full width layout (matching category.php) */
 .products-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -267,6 +269,13 @@ echo renderBreadcrumb($breadcrumbs);
   margin-bottom: 40px;
   width: 100%;
   max-width: 100%;
+}
+
+.products-grid .card.product-card {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  margin: 0 !important;
 }
 
 .no-products {
@@ -292,7 +301,7 @@ echo renderBreadcrumb($breadcrumbs);
   margin-bottom: 20px;
 }
 
-/* Responsive Design - Progressive Enhancement */
+/* Responsive Design */
 @media (max-width: 767px) {
   .products-grid {
     grid-template-columns: 1fr !important;
@@ -311,11 +320,6 @@ echo renderBreadcrumb($breadcrumbs);
   .products-grid {
     grid-template-columns: repeat(5, 1fr);
     gap: 20px;
-  }
-  .products-grid .card.product-card {
-    min-width: 0 !important;
-    max-width: 100% !important;
-    margin: 0 !important;
   }
 }
 
