@@ -1,4 +1,7 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 $pageTitle = 'Manage Pincodes';
 session_start();
 require_once '../config/database.php';
@@ -60,9 +63,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Get data
-$pincodes = getAllServiceablePincodes();
-$settings = getPopupSettings();
+// Get data - with error handling
+$pincodes = [];
+$settings = [];
+
+try {
+    $pincodes = getAllServiceablePincodes();
+} catch (Exception $e) {
+    $error = "Error loading pincodes: " . $e->getMessage();
+    $pincodes = [];
+}
+
+try {
+    $settings = getPopupSettings();
+} catch (Exception $e) {
+    $error = "Error loading settings: " . $e->getMessage();
+    $settings = [];
+}
 ?>
 
 <!DOCTYPE html>

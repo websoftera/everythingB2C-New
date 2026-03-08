@@ -188,6 +188,29 @@
 
 .everythingb2c-sidebar-nav {
     padding: 1rem 0;
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
+}
+
+/* Webkit Scrollbar (Chrome, Safari, Edge) */
+.everythingb2c-sidebar-nav::-webkit-scrollbar {
+    width: 6px;
+}
+
+.everythingb2c-sidebar-nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.everythingb2c-sidebar-nav::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 3px;
+}
+
+.everythingb2c-sidebar-nav::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.6);
 }
 
 .everythingb2c-nav-list {
