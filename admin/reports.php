@@ -1,4 +1,7 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 session_start();
 require_once '../config/database.php';
 require_once '../includes/functions.php';
@@ -75,8 +78,8 @@ $chart_orders = [];
 
 foreach ($daily_sales as $day) {
     $chart_labels[] = date('M d', strtotime($day['date']));
-    $chart_sales[] = $day['sales'];
-    $chart_orders[] = $day['orders'];
+    $chart_sales[] = (float)($day['sales'] ?? 0);
+    $chart_orders[] = (int)($day['orders'] ?? 0);
 }
 ?>
 
@@ -405,4 +408,44 @@ foreach ($daily_sales as $day) {
         function exportReport() {
             const dateFrom = document.querySelector('input[name="date_from"]').value;
             const dateTo = document.querySelector('input[name="date_to"]').value;
-            window.open(`
+            
+            // Create CSV data
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "EverythingB2C - Sales Report\n";
+            csvContent += "Date Range: " + dateFrom + " to " + dateTo + "\n\n";
+            
+            // Add statistics
+            csvContent += "Sales Statistics\n";
+            csvContent += "Total Orders,Total Sales,Average Order Value,Unique Customers\n";
+            csvContent += document.querySelector('[class*="Total Orders"]).parentElement.parentElement.textContent.match(/\d+/)[0] + ",";
+            csvContent += document.querySelector('[class*="Total Sales"]').parentElement.parentElement.textContent.replaceAll(/₹|,/g, '') + ",";
+            csvContent += document.querySelector('[class*="Average Order"]').parentElement.parentElement.textContent.replaceAll(/₹|,/g, '') + ",";
+            csvContent += document.querySelector('[class*="Unique Customers"]').parentElement.parentElement.textContent.match(/\d+/)[0] + "\n\n";
+            
+            // Add table data from Top Products
+            csvContent += "Top Selling Products\n";
+            const table = document.querySelector('table');
+            if (table) {
+                table.querySelectorAll('tr').forEach(row => {
+                    const cells = row.querySelectorAll('th, td');
+                    if (cells.length > 0 && cells[0].textContent.trim() !== 'Product') {
+                        csvContent += Array.from(cells).map(cell => {
+                            let text = cell.textContent.trim().replaceAll(/₹|,/g, '');
+                            return '"' + text + '"';
+                        }).join(',') + "\n";
+                    }
+                });
+            }
+            
+            // Download CSV
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Report_${dateFrom}_to_${dateTo}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>

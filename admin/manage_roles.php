@@ -95,6 +95,7 @@ if (isset($_GET['edit'])) {
     <title><?php echo $pageTitle; ?> - EverythingB2C Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="assets/css/admin.css" rel="stylesheet">
     <style>
         body {
             background-color: #f8f9fa;
@@ -161,11 +162,20 @@ if (isset($_GET['edit'])) {
     </style>
 </head>
 <body>
-    <?php require_once 'includes/header.php'; ?>
-    
-    <div class="container-main">
-        <div class="row">
-            <div class="col-md-12">
+    <div class="everythingb2c-admin-container">
+        <!-- Sidebar -->
+        <?php require_once 'includes/sidebar.php'; ?>
+
+        <!-- Main Content -->
+        <div class="everythingb2c-main-content">
+            <!-- Header -->
+            <?php require_once 'includes/header.php'; ?>
+
+            <!-- Page Content -->
+            <div class="everythingb2c-dashboard-content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-12">
                 <h2 class="mb-4"><i class="fas fa-shield-alt"></i> Manage Roles & Permissions</h2>
                 
                 <?php if ($message): ?>
@@ -316,13 +326,14 @@ if (isset($_GET['edit'])) {
                                 </div>
                             </div>
                         </form>
+                        </div>
+                    <?php endif; ?>
+                        </div>
                     </div>
-                <?php endif; ?>
+                </div>
             </div>
         </div>
     </div>
-    
-    <?php require_once 'includes/footer.php'; ?>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
