@@ -100,26 +100,3 @@ function getCurrentAdmin() {
     
     return getAdminById($_SESSION['admin_id']);
 }
-
-/**
- * Check if current admin has a specific permission
- * @param string $permissionCode
- * @return bool
- */
-function canAccess($permissionCode) {
-    if (!isset($_SESSION['admin_id'])) {
-        return false;
-    }
-    
-    $permissions = $_SESSION['admin_permissions'] ?? [];
-    if (empty($permissions)) {
-        $adminId = $_SESSION['admin_id'];
-        $role = getAdminRole($adminId);
-        if ($role) {
-            $rolePermissions = getRolePermissions($role['id']);
-            $permissions = array_column($rolePermissions, 'code');
-        }
-    }
-    
-    return in_array($permissionCode, $permissions);
-}
