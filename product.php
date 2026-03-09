@@ -17,7 +17,7 @@ if (!$product) {
     exit;
 }
 
-$pageTitle = $product['name'];
+$pageTitle = strip_tags($product['name']);
 require_once 'includes/header.php';
 
 // Get product images

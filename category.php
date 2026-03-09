@@ -203,7 +203,7 @@ $subcategories = getSubcategoriesByParentId($category['id']);
 </section>
 <?php endif; ?>
 
-<div class="container-fluid" style="padding-left: 5px !important; padding-right: 5px !important;">
+<div class="container-fluid mt-4 category-container">
   <div class="row">
     <!-- Top Filter (Desktop/Tablet) & Sidebar Filter (Mobile) -->
     <div class="col-12">
@@ -349,17 +349,30 @@ $subcategories = getSubcategoriesByParentId($category['id']);
   color: #666;
 }
 
-/* Product Grid - Truly Responsive */
+/* Product Grid - Standardized layout */
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* Default desktop: 4 cards per row */
+  grid-template-columns: repeat(4, 1fr) !important; /* Default: 4 cards */
   gap: 20px;
   margin-bottom: 40px;
   width: 100%;
-  max-width: 100%;
 }
 
-/* Product Card - Styles handled by asset/style/product-card.css */
+/* Product Card - Enhanced Hover & Radius Preservation */
+.category-container .products-grid .card.product-card {
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+  border: 1px solid #eee !important;
+  isolation: isolate !important; /* Forces stacking context for clean clipping */
+}
+
+.category-container .products-grid .card.product-card:hover {
+  transform: translateY(-5px) !important;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12) !important;
+  border-radius: 8px !important; /* Force preservation */
+  overflow: hidden !important;
+}
 
 .no-products {
   text-align: center;
@@ -384,25 +397,25 @@ $subcategories = getSubcategoriesByParentId($category['id']);
   margin-bottom: 20px;
 }
 
-/* Responsive Design - Progressive Enhancement */
+/* Standardized responsive break points */
 @media (max-width: 767px) {
   .products-grid {
-    grid-template-columns: 1fr; /* Mobile: 1 card per row */
+    grid-template-columns: 1fr !important; /* Mobile: 1 card per row */
     gap: 15px;
   }
 }
 
 @media (min-width: 768px) and (max-width: 1199px) {
   .products-grid {
-    grid-template-columns: repeat(3, 1fr); /* Tablet: 3 cards per row */
+    grid-template-columns: repeat(3, 1fr) !important; /* Tablet: 3 cards per row */
     gap: 18px;
   }
 }
 
 @media (min-width: 1200px) {
   .products-grid {
-    grid-template-columns: repeat(5, 1fr); /* Standard desktop: 5 cards per row */
-    gap: 20px;
+    grid-template-columns: repeat(5, 1fr) !important; /* Desktop: 5 cards per row */
+    gap: 20px !important;
   }
   .products-grid .card.product-card {
     min-width: 0 !important;
@@ -413,85 +426,40 @@ $subcategories = getSubcategoriesByParentId($category['id']);
 
 @media (min-width: 1400px) {
   .products-grid {
-    grid-template-columns: repeat(5, 1fr); /* Wide screens: 5 cards per row */
-    gap: 20px;
+    grid-template-columns: repeat(5, 1fr) !important; /* Wide screens: 5 cards per row */
+    gap: 20px !important;
   }
 }
 
-/* Match explicitly the colors and padding from index.php featured/discounted slider cards */
-.products-grid .card.product-card .discount-banner {
-  background: var(--site-blue) !important;
-  color: #fff !important;
-  border-radius: 4px 4px 0 0 !important;
-  padding: 8px 0 !important;
-  font-size: 11px !important;
-  text-align: center !important;
-  height: auto !important;
-  min-height: unset !important;
-  display: block !important; /* overrides flex if any */
-}
-
-.products-grid .card.product-card .price-btn.mrp {
-  background: var(--mrp-light-blue) !important;
-  color: var(--dark-blue) !important;
-}
-
-.products-grid .card.product-card .price-btn.pay {
-  background: var(--pay-light-green) !important;
-  color: var(--dark-grey, #333) !important;
-}
-
-/* Mobile-specific fixes - Ensure cards fit properly */
-@media (max-width: 767px) {
-  .products-grid {
-    gap: 12px;
-    padding: 0 10px;
-  }
-}
-
-/* Container and Layout Fixes */
+/* Container width standardization - Harmonized with category.php */
 .container-fluid {
-  max-width: 100%;
-  overflow-x: hidden;
-  padding-left: 15px;
-  padding-right: 15px;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+  padding-left: 15px !important;
+  padding-right: 15px !important;
 }
 
 .row {
-  margin-left: 0;
-  margin-right: 0;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
 }
 
 .col-12 {
-  padding-left: 15px;
-  padding-right: 15px;
-  max-width: 100%;
-  overflow-x: hidden;
+  padding-left: 15px !important;
+  padding-right: 15px !important;
 }
 
-/* Additional mobile fixes */
-@media (max-width: 767px) {
-  .container-fluid {
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-  
-  .col-12 {
-    padding-left: 0;
-    padding-right: 0;
-  }
-  
-  /* Ensure no horizontal scroll */
-  body {
-    overflow-x: hidden;
-  }
-  
-  /* Force 2 column layout on mobile */
-  .products-grid {
-    grid-template-columns: 1fr !important;
-    gap: 12px;
-    width: 100%;
-  }
+/* Discount banner consistency */
+.category-container .products-grid .card.product-card .discount-banner {
+    background: var(--site-blue) !important;
+    color: #fff !important;
+    border-radius: 8px 8px 0 0 !important; /* Match card radius for clean corners */
+    padding: 8px 0 !important;
+    font-size: 11px !important;
+    text-align: center !important;
+    height: auto !important;
+    min-height: unset !important;
+    display: block !important;
 }
 </style>
 

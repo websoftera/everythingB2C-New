@@ -402,7 +402,11 @@ function getCartItems($userId = null) {
         global $pdo;
         $stmt = $pdo->prepare("SELECT c.*, p.name, p.selling_price, p.mrp, p.main_image, p.slug, p.stock_quantity, p.gst_type, p.gst_rate, p.shipping_charge, p.hsn FROM cart c JOIN products p ON c.product_id = p.id WHERE c.user_id = ?");
         $stmt->execute([$userId]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($items as &$item) {
+            $item['name'] = cleanProductName($item['name']);
+        }
+        return $items;
     } else {
         // Session cart
         return getSessionCartItems();
@@ -451,7 +455,11 @@ function getWishlistItems($userId = null, $limit = null, $offset = 0) {
         }
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$userId]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($items as &$item) {
+            $item['name'] = cleanProductName($item['name']);
+        }
+        return $items;
     } else {
         // Session wishlist
         return getSessionWishlistItems($limit, $offset);
@@ -501,6 +509,7 @@ function getSessionCartItems() {
         $stmt->execute([$productId]);
         $product = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($product) {
+            $product['name'] = cleanProductName($product['name']);
             $product['quantity'] = $qty;
             $product['product_id'] = $product['id'];
             $items[] = $product;
@@ -547,6 +556,7 @@ function getSessionWishlistItems($limit = null, $offset = 0) {
         $stmt->execute([$productId]);
         $product = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($product) {
+            $product['name'] = cleanProductName($product['name']);
             $product['product_id'] = $product['id'];
             $items[] = $product;
         }

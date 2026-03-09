@@ -285,6 +285,16 @@ $categoryTree = buildCategoryTree($categories);
   box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
 }
 
+select.form-control {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23666' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: calc(100% - 12px) center;
+  padding-right: 30px;
+}
+
 .price-range-container {
   padding: 10px 0;
 }
@@ -582,8 +592,9 @@ $categoryTree = buildCategoryTree($categories);
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    gap: 15px;
-    flex-wrap: nowrap; /* Prevent wrapping if possible */
+    gap: 20px; /* Increased gap for better separation */
+    flex-wrap: nowrap;
+    width: 100%;
   }
 
   /* Remove margins and titles from internal filter sections */
@@ -619,7 +630,6 @@ $categoryTree = buildCategoryTree($categories);
     flex-direction: row;
     align-items: center;
     gap: 10px;
-    margin-left: 5px; 
     height: 38px;
   }
   
