@@ -367,7 +367,7 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
 ?>
 <div id="floatingCartBtn" class="floating-cart-btn" style="display: <?php echo $displayStyle; ?>;">
   <span style="position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:100%;">
-    <img src="/everythingB2C-New/asset/images/Cart_Icon.png" alt="Cart" class="floating-cart-icon">
+    <img src="asset/images/Cart_Icon.png" alt="Cart" class="floating-cart-icon">
     <span id="floatingCartCount" style="position:absolute;top:0px;right:10px;background:none;color:#fff;font-weight:bold;font-size:0.95rem;padding:2px 7px;border-radius:12px;min-width:22px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,0.12);"><?php echo $cartCount; ?></span>
   </span>
   <!-- Floating Cart Panel (dropdown style) -->
@@ -765,401 +765,224 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 <script>
-// Store the original SweetAlert before overriding
-const OriginalSwal = window.Swal;
 
-// Global SweetAlert configuration with logo
-const SwalWithLogo = {
-    fire: function(options) {
-        // Add logo to all SweetAlert dialogs
-        const defaultOptions = {
-            customClass: {
-                popup: 'swal-with-logo',
-                icon: 'swal-logo-icon'
-            },
-            showClass: {
-                popup: 'swal2-show swal2-noanimation'
-            },
-            didOpen: function(popup) {
-                // Replace the default SweetAlert icon with our logo
-                
-                // Try different selectors to find the popup element
-                let popupElement = popup.querySelector('.swal2-popup');
-                if (!popupElement) {
-                    popupElement = popup;
-                }
-                
-                const iconElement = popupElement.querySelector('.swal2-icon');
-                
-                if (popupElement) {
-                    // Hide the default icon if it exists
-                    if (iconElement) {
-                        iconElement.style.display = 'none';
-                    }
-                    
-                    // Create logo container
-                    const logoContainer = document.createElement('div');
-                    logoContainer.className = 'swal-logo-container';
-                    logoContainer.style.cssText = `
-                        position: absolute;
-                        top: 5px;
-                        left: 0;
-                        right: 0;
-                        width: 100%;
-                        height: 35px;
-                        background: transparent;
-                        padding: 0;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        z-index: 10002;
-                    `;
-                    
-                    // Create logo image
-                    const logoImg = document.createElement('img');
-                    logoImg.src = (window.BASE_URL || '') + 'logo.webp';
-                    logoImg.alt = 'EverythingB2C';
-                    logoImg.style.cssText = `
-                        max-width: 200px;
-                        height: auto;
-                        object-fit: contain;
-                        border-radius: 0;
-                        display: block;
-                    `;
-                    
-                    // Error handling
-                    logoImg.onerror = function() {
-                        console.log('Logo image failed to load, showing text fallback');
-                        logoContainer.innerHTML = '<span style="color: #007bff; font-size: 18px; font-weight: bold; text-align: center;">EverythingB2C</span>';
-                    };
-                    
-                    logoImg.onload = function() {
-                        console.log('Logo image loaded successfully');
-                    };
-                    
-                    logoContainer.appendChild(logoImg);
-                    popupElement.appendChild(logoContainer);
-                    
-                    // Adjust title position
-                    const titleElement = popupElement.querySelector('.swal2-title');
-                    if (titleElement) {
-                        titleElement.style.marginTop = '50px';
-                        titleElement.style.marginBottom = '0';
-                        titleElement.style.paddingTop = '0';
-                    }
-                    
-                    // Remove default SweetAlert spacing
-                    const headerElement = popupElement.querySelector('.swal2-header');
-                    if (headerElement) {
-                        headerElement.style.marginBottom = '0';
-                        headerElement.style.paddingBottom = '0';
-                    }
-                    
-                    const contentElement = popupElement.querySelector('.swal2-content');
-                    if (contentElement) {
-                        contentElement.style.marginTop = '0';
-                        contentElement.style.paddingTop = '0';
-                    }
-                    
-                    // Adjust actions container to remove extra space
-                    const actionsElement = popupElement.querySelector('.swal2-actions');
-                    if (actionsElement) {
-                        actionsElement.style.marginBottom = '0';
-                        actionsElement.style.paddingBottom = '0';
-                    }
-                    
-                    // Adjust HTML container
-                    const htmlContainer = popupElement.querySelector('.swal2-html-container');
-                    if (htmlContainer) {
-                        htmlContainer.style.margin = '0';
-                        htmlContainer.style.padding = '0';
-                        htmlContainer.style.lineHeight = '1.3';
-                    }
-                    
-                    // Force remove any remaining spacing
-                    const allElements = popupElement.querySelectorAll('*');
-                    allElements.forEach(el => {
-                        if (el.classList.contains('swal2-title') || el.classList.contains('swal2-html-container')) {
-                            el.style.marginBottom = '0';
-                            el.style.paddingBottom = '0';
-                        }
-                    });
-                }
-            }
-        };
+// Clean up and synchronize SweetAlert2 with total parity and flow-based logo header
+(function() {
+    const style = document.createElement('style');
+    style.textContent = `
+        .swal2-header-custom {
+            text-align: center !important;
+            margin-bottom: 20px !important;
+            position: relative !important;
+            width: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+        }
         
-        // Merge options
-        const mergedOptions = { ...defaultOptions, ...options };
-        return OriginalSwal.fire(mergedOptions);
-    }
-};
-
-// Copy all other SweetAlert methods to our wrapper
-Object.keys(OriginalSwal).forEach(key => {
-    if (key !== 'fire') {
-        SwalWithLogo[key] = OriginalSwal[key];
-    }
-});
-
-// Override the global Swal.fire to use our custom version
-window.Swal = SwalWithLogo;
-
-// Ensure SweetAlert wrapper is always available
-if (typeof window.Swal === 'undefined') {
-    window.Swal = SwalWithLogo;
-}
-
-// Add CSS for SweetAlert logo styling
-const style = document.createElement('style');
-style.textContent = `
-    .swal-with-logo {
-        padding-top: 50px !important;
-        padding-bottom: 20px !important;
-        min-height: auto !important;
-    }
-    
-    .swal-logo-container {
-        position: absolute !important;
-        top: 30px !important;
-        left: 0 !important;
-        right: 0 !important;
-        width: 100% !important;
-        height: 35px !important;
-        background: transparent !important;
-        padding: 0 !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        z-index: 10002 !important;
-    }
-    
-    .swal-logo-container img {
-        max-width: 200px !important;
-        height: auto !important;
-        object-fit: contain !important;
-        border-radius: 0 !important;
-        display: block !important;
-    }
-    
-    .swal2-title {
-        margin-top: 50px !important;
-        margin-bottom: 0 !important;
-        padding-top: 0 !important;
-        line-height: 1.2 !important;
-    }
-    
-    .swal2-html-container {
-        margin: 5px 0 !important;
-        padding: 0 !important;
-    }
-    
-    /* Remove default SweetAlert spacing */
-    .swal2-popup .swal2-header {
-        margin-bottom: 0 !important;
-        padding-bottom: 0 !important;
-    }
-    
-    .swal2-popup .swal2-content {
-        margin-top: 0 !important;
-        padding-top: 0 !important;
-    }
-    
-    .swal2-actions {
-        margin-top: 20px !important;
-        margin-bottom: 0 !important;
-        padding-bottom: 0 !important;
-    }
-    
-    .swal-logo-icon {
-        display: none !important;
-    }
-    
-    /* Remove extra space from SweetAlert popup */
-    .swal2-popup {
-        padding-bottom: 20px !important;
-        min-height: auto !important;
-        max-height: none !important;
-    }
-    
-    /* Ensure content doesn't have extra margins */
-    .swal2-content {
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-    
-    /* Override all default SweetAlert spacing */
-    .swal2-popup * {
-        box-sizing: border-box !important;
-    }
-    
-    .swal2-popup .swal2-header {
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-    
-    .swal2-popup .swal2-title {
-        margin: 50px 0 0 0 !important;
-        padding: 0 !important;
-        line-height: 1.2 !important;
-    }
-    
-    .swal2-popup .swal2-html-container {
-        margin: 0 !important;
-        padding: 0 !important;
-        line-height: 1.3 !important;
-    }
-    
-    /* Target the specific SweetAlert structure */
-    .swal2-popup .swal2-header {
-        margin: 0 !important;
-        padding: 0 !important;
-        min-height: 0 !important;
-    }
-    
-    .swal2-popup .swal2-content {
-        margin: 0 !important;
-        padding: 0 !important;
-        min-height: 0 !important;
-    }
-    
-    /* Remove any icon space */
-    .swal2-popup .swal2-icon {
-        display: none !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        height: 0 !important;
-    }
-    
-    .swal2-popup .swal2-actions {
-        margin: 20px 0 0 0 !important;
-        padding: 0 !important;
-    }
-    
-    /* Force remove any extra space */
-    .swal2-popup .swal2-icon {
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-`;
-document.head.appendChild(style);
-
-// Function to add logo to any existing SweetAlert popups
-function addLogoToExistingPopups() {
-    const existingPopups = document.querySelectorAll('.swal2-popup');
-    existingPopups.forEach(popup => {
-        if (!popup.querySelector('.swal-logo-container')) {
-            const iconElement = popup.querySelector('.swal2-icon');
-            if (iconElement) {
-                iconElement.style.display = 'none';
-            }
-            
-            const logoContainer = document.createElement('div');
-            logoContainer.className = 'swal-logo-container';
-            logoContainer.style.cssText = `
-                position: absolute;
-                top: 5px;
-                left: 0;
-                right: 0;
-                width: 100%;
-                height: 35px;
-                background: transparent;
-                padding: 0;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 10002;
-            `;
-            
-            const logoImg = document.createElement('img');
-            logoImg.src = './sitelogo.png';
-            logoImg.alt = 'EverythingB2C';
-            logoImg.style.cssText = `
-                max-width: 200px;
-                height: auto;
-                object-fit: contain;
-                border-radius: 0;
-                display: block;
-            `;
-            
-            logoImg.onerror = function() {
-                logoContainer.innerHTML = '<span style="color: #007bff; font-size: 18px; font-weight: bold; text-align: center;">EverythingB2C</span>';
-            };
-            
-            logoContainer.appendChild(logoImg);
-            popup.appendChild(logoContainer);
-            
-            const titleElement = popup.querySelector('.swal2-title');
-            if (titleElement) {
-                titleElement.style.marginTop = '50px';
-                titleElement.style.marginBottom = '0';
-                titleElement.style.paddingTop = '0';
-            }
-            
-            // Remove default SweetAlert spacing
-            const headerElement = popup.querySelector('.swal2-header');
-            if (headerElement) {
-                headerElement.style.marginBottom = '0';
-                headerElement.style.paddingBottom = '0';
-            }
-            
-            const contentElement = popup.querySelector('.swal2-content');
-            if (contentElement) {
-                contentElement.style.marginTop = '0';
-                contentElement.style.paddingTop = '0';
-            }
-            
-            // Adjust actions container to remove extra space
-            const actionsElement = popup.querySelector('.swal2-actions');
-            if (actionsElement) {
-                actionsElement.style.marginBottom = '0';
-                actionsElement.style.paddingBottom = '0';
-            }
-            
-            // Adjust HTML container
-            const htmlContainer = popup.querySelector('.swal2-html-container');
-            if (htmlContainer) {
-                htmlContainer.style.margin = '0';
-                htmlContainer.style.padding = '0';
-                htmlContainer.style.lineHeight = '1.3';
-            }
-            
-            // Force remove any remaining spacing
-            const allElements = popup.querySelectorAll('*');
-            allElements.forEach(el => {
-                if (el.classList.contains('swal2-title') || el.classList.contains('swal2-html-container')) {
-                    el.style.marginBottom = '0';
-                    el.style.paddingBottom = '0';
-                }
-            });
+        .swal2-logo-custom {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin-bottom: 8px !important;
         }
-    });
-}
-
-// Run the function periodically to catch any popups that might have been missed
-setInterval(addLogoToExistingPopups, 100);
-
-// Also run when DOM changes to catch dynamically created popups
-const observer = new MutationObserver(function(mutations) {
-    mutations.forEach(function(mutation) {
-        if (mutation.type === 'childList') {
-            mutation.addedNodes.forEach(function(node) {
-                if (node.nodeType === Node.ELEMENT_NODE) {
-                    if (node.classList && node.classList.contains('swal2-popup')) {
-                        setTimeout(addLogoToExistingPopups, 10);
-                    }
-                    if (node.querySelector && node.querySelector('.swal2-popup')) {
-                        setTimeout(addLogoToExistingPopups, 10);
-                    }
-                }
-            });
+        
+        .swal2-logo-custom img {
+            height: 50px !important;
+            width: auto !important;
+            max-width: 250px !important;
+            object-fit: contain !important;
+            border-radius: 0 !important;
         }
-    });
-});
+        
+        .swal2-tagline-custom {
+            font-size: 11px !important;
+            color: #9fbe1b !important;
+            margin-top: 3px !important;
+            font-weight: 500 !important;
+            font-family: 'Mulish', sans-serif !important;
+        }
+        
+        .swal2-title {
+            margin-top: 5px !important;
+            margin-bottom: 10px !important;
+            padding-top: 0 !important;
+            line-height: 1.2 !important;
+            font-family: 'Mulish', sans-serif !important;
+            font-size: 22px !important;
+            color: #333 !important;
+            font-weight: 700 !important;
+        }
+        
+        .swal2-html-container {
+            margin: 5px 0 !important;
+            padding: 0 !important;
+            font-family: 'Mulish', sans-serif !important;
+            font-size: 15px !important;
+            color: #666 !important;
+            width: 100% !important;
+            line-height: 1.4 !important;
+        }
+        
+        .swal2-popup .swal2-header {
+            margin: 0 !important;
+            padding: 0 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            min-height: 0 !important;
+        }
+        
+        .swal2-popup .swal2-content {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+            min-height: 0 !important;
+        }
+        
+        .swal2-actions {
+            margin-top: 20px !important;
+            margin-bottom: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+            justify-content: center !important;
+        }
+        
+        .swal2-close {
+            position: absolute !important;
+            top: 10px !important;
+            right: 15px !important;
+            background: transparent !important;
+            border: none !important;
+            font-size: 22px !important;
+            color: #999 !important;
+            cursor: pointer !important;
+            width: 32px !important;
+            height: 32px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            z-index: 1000 !important;
+            pointer-events: auto !important;
+            transition: all 0.2s ease !important;
+        }
+        
+        .swal2-close:hover {
+            color: #333 !important;
+            background-color: transparent !important;
+        }
+        
+        .swal2-popup {
+            padding: 20px !important;
+            padding-top: 40px !important;
+            border-radius: 8px !important;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2) !important;
+            min-height: auto !important;
+            max-height: 90vh !important;
+            overflow-y: auto !important;
+            width: 90% !important;
+            max-width: 380px !important;
+            background: white !important;
+            position: relative !important;
+            display: flex !important;
+            flex-direction: column !important;
+            box-sizing: border-box !important;
+            font-family: 'Mulish', sans-serif !important;
+        }
+        
+        .swal2-popup * {
+            box-sizing: border-box !important;
+            font-family: 'Mulish', sans-serif !important;
+        }
+        
+        .swal2-popup .swal2-icon {
+            display: none !important;
+        }
+        
+        .swal2-confirm.swal2-styled {
+            background-color: #9FBF1C !important;
+            border-radius: 6px !important;
+            font-size: 14px !important;
+            font-weight: 600 !important;
+            padding: 12px 30px !important;
+        }
+        
+        .swal2-cancel.swal2-styled {
+            background-color: #6c757d !important;
+            border-radius: 6px !important;
+            font-size: 14px !important;
+            font-weight: 600 !important;
+            padding: 12px 30px !important;
+        }
 
-observer.observe(document.body, {
-    childList: true,
-    subtree: true
-});
+        @media (max-width: 768px) {
+            .swal2-popup {
+                padding: 15px !important;
+                padding-top: 35px !important;
+                max-width: 350px !important;
+            }
+            .swal2-logo-custom img {
+                height: 45px !important;
+            }
+            .swal2-title {
+                font-size: 20px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .swal2-popup {
+                padding: 12px !important;
+                padding-top: 30px !important;
+                max-width: 320px !important;
+            }
+            .swal2-logo-custom img {
+                height: 40px !important;
+            }
+            .swal2-title {
+                font-size: 18px !important;
+            }
+            .swal2-html-container {
+                font-size: 14px !important;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+
+    function syncSwalWithParity() {
+        const popups = document.querySelectorAll('.swal2-popup');
+        popups.forEach(popup => {
+            if (!popup.querySelector('.swal2-header-custom')) {
+                const headerContainer = document.createElement('div');
+                headerContainer.className = 'swal2-header-custom';
+                
+                const logoDiv = document.createElement('div');
+                logoDiv.className = 'swal2-logo-custom';
+                const logoImg = document.createElement('img');
+                logoImg.src = './logo.webp';
+                logoImg.alt = 'EverythingB2C';
+                logoDiv.appendChild(logoImg);
+                
+                headerContainer.appendChild(logoDiv);
+                
+                popup.insertBefore(headerContainer, popup.firstChild);
+                
+                const closeBtn = popup.querySelector('.swal2-close');
+                if (closeBtn) {
+                    closeBtn.innerHTML = '×';
+                }
+                
+                // Remove existing absolute containers if any (cleanup)
+                const oldContainer = popup.querySelector('.swal-logo-container');
+                if (oldContainer) oldContainer.remove();
+            }
+        });
+    }
+
+    setInterval(syncSwalWithParity, 100);
+    const observer = new MutationObserver(() => syncSwalWithParity());
+    observer.observe(document.body, { childList: true, subtree: true });
+})();
+
 </script>
 <script>
 // Initialize Bootstrap dropdowns

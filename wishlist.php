@@ -7,7 +7,7 @@ $pageTitle = 'Wishlist';
 // Wishlist Pagination setup
 $wishlistPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 if ($wishlistPage < 1) $wishlistPage = 1;
-$wishlistLimit = 12;
+$wishlistLimit = 15;
 $wishlistOffset = ($wishlistPage - 1) * $wishlistLimit;
 
 // Get total items for pagination
@@ -39,7 +39,7 @@ echo renderBreadcrumb($breadcrumbs);
 <?php
 ?>
 <link rel="stylesheet" href="./asset/style/style.css">
-<div class="container mt-4 wishlist-container">
+<div class="container-fluid mt-4 wishlist-container">
     <!-- <h1>My Wishlist</h1> -->
     
     <?php if (empty($wishlistItems)): ?>
@@ -63,7 +63,7 @@ echo renderBreadcrumb($breadcrumbs);
                             <div class="product-image">
                                 <a href="product.php?slug=<?php echo $item['slug']; ?>">
                                     <?php if (!empty($item['main_image'])): ?>
-                                        <img src="./<?php echo $item['main_image']; ?>" alt="<?php echo cleanProductName($item['name']); ?>" onerror="this.onerror=null; this.closest('.product-image').classList.add('no-image'); this.remove();">
+                                        <img src="<?php echo $item['main_image']; ?>" alt="<?php echo cleanProductName($item['name']); ?>">
                                     <?php else: ?>
                                         <img src="./uploads/products/blank-img.webp" alt="No image available">
                                     <?php endif; ?>
@@ -145,6 +145,97 @@ echo renderBreadcrumb($breadcrumbs);
         <?php endif; ?>
         
     <?php endif; ?>
-</div>
+<style>
+/* Wishlist Page Layout Styles */
+.products-container {
+  padding: 20px 0;
+}
 
-<?php include 'includes/footer.php'; ?> 
+/* Product Grid - Standardized to match category layout */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* Default: 4 cards */
+  gap: 20px;
+  margin-bottom: 40px;
+  margin-top:20px;
+  width: 100%;
+}
+
+/* Product Card - Enhanced Hover & Radius Preservation */
+.wishlist-container .products-grid .card.product-card {
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+  border: 1px solid #eee !important;
+  isolation: isolate !important; /* Forces stacking context for clean clipping */
+}
+
+.wishlist-container .products-grid .card.product-card:hover {
+  transform: translateY(-5px) !important;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12) !important;
+  border-radius: 8px !important; /* Absolute preservation */
+  overflow: hidden !important;
+}
+
+/* Response Design - Standardized break points */
+@media (max-width: 767px) {
+  .products-grid {
+    grid-template-columns: 1fr !important; /* Mobile: 1 card per row */
+    gap: 15px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+  .products-grid {
+    grid-template-columns: repeat(3, 1fr) !important; /* Tablet: 3 cards per row */
+    gap: 18px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .products-grid {
+    grid-template-columns: repeat(5, 1fr) !important; /* Desktop: 5 cards per row */
+    gap: 20px !important;
+  }
+  .products-grid .card.product-card {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+}
+
+@media (min-width: 1400px) {
+  .products-grid {
+    grid-template-columns: repeat(5, 1fr) !important; /* Wide screens: 5 cards per row */
+    gap: 20px !important;
+  }
+}
+
+/* Container width standardization - Harmonized with category.php */
+.container-fluid {
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+  padding-left: 15px !important;
+  padding-right: 15px !important;
+}
+
+.row {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* Discount banner consistency */
+.wishlist-container .products-grid .card.product-card .discount-banner {
+    background: var(--site-blue) !important;
+    color: #fff !important;
+    border-radius: 8px 8px 0 0 !important; /* Match card radius for clean corners */
+    padding: 8px 0 !important;
+    font-size: 11px !important;
+    text-align: center !important;
+    height: auto !important;
+    min-height: unset !important;
+    display: block !important;
+}
+</style>
+
+<?php include 'includes/footer.php'; ?>

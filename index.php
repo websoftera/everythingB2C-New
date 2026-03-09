@@ -3554,6 +3554,11 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
 <style>
+/* Global Popup Font */
+* {
+    font-family: 'Mulish', sans-serif !important;
+}
+
 /* Delivery Popup Styles */
 .delivery-popup-overlay {
     position: fixed;
@@ -3573,13 +3578,13 @@ document.addEventListener('DOMContentLoaded', function() {
     background: white;
     border-radius: 8px;
     padding: 20px;
+    padding-top: 40px;
     max-width: 380px;
     width: 90%;
     max-height: 80vh;
     overflow-y: auto;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
     position: relative;
-    padding-top: 40px;
 }
 
 .delivery-popup-header {

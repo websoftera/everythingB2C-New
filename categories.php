@@ -64,15 +64,15 @@ $breadcrumbs = generateBreadcrumb($pageTitle);
 echo renderBreadcrumb($breadcrumbs);
 ?>
 
-<div class="container-fluid">
+<div class="container-fluid" style="padding-left: 5px !important; padding-right: 5px !important;">
     <div class="row">
-        <!-- Sidebar Filter -->
-        <div class="col-lg-3 col-md-4">
+        <!-- Top Filter (Desktop/Tablet) & Sidebar Filter (Mobile) -->
+        <div class="col-12">
             <?php include 'includes/sidebar-filter.php'; ?>
         </div>
 
         <!-- Categories Section -->
-        <div class="col-lg-9 col-md-8 col-12">
+        <div class="col-12">
             <div class="categories-container">
          <!-- Categories Header -->
                 <div class="categories-header">
@@ -311,10 +311,10 @@ echo renderBreadcrumb($breadcrumbs);
 }
 
 .category-image img {
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
+    /*max-width: 100%;
+    max-height: 100%;*/
+    width: 200px;
+    height: 160px;
     object-fit: contain;
     transition: transform 0.5s ease;
     display: block;
@@ -423,7 +423,7 @@ echo renderBreadcrumb($breadcrumbs);
 /* Desktop: 4 cards per row */
 @media (min-width: 1200px) {
     .categories-grid {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(5, 1fr);
     }
     
     /* Hide mobile filter button on desktop */
@@ -452,7 +452,7 @@ echo renderBreadcrumb($breadcrumbs);
     }
     
     .category-image img {
-        object-fit: contain;
+        object-fit: cover;
     }
     
     .category-details {

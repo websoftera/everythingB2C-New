@@ -120,27 +120,14 @@ $breadcrumbs = generateBreadcrumb($pageTitle);
 echo renderBreadcrumb($breadcrumbs);
 ?>
 <link rel="stylesheet" href="./asset/style/style.css">
-<link rel="stylesheet" href="./asset/style/product-card.css">
-<div class="container-fluid" style="padding-left: 5px !important; padding-right: 5px !important;">
-  <!-- Search Header -->
-  <div class="search-header">
-    <h2><?php echo !empty($searchTerm) ? 'Search Results For "' . htmlspecialchars($searchTerm) . '"' : 'Search Results'; ?></h2>
-    <?php if (!empty($searchTerm)): ?>
-      <p class="search-term">Found <?php echo isset($products) ? count($products) : 0; ?> Products Matching Your Query</p>
-    <?php else: ?>
-      <p class="results-count">Showing <?php echo isset($products) ? count($products) : 0; ?> products</p>
-    <?php endif; ?>
-  </div>
-
-  <!-- Filters -->
+<div class="container-fluid mt-4 search-page-container">
   <div class="row">
+    <!-- Top Filter (Desktop/Tablet) & Sidebar Filter (Mobile) -->
     <div class="col-12">
       <?php include 'includes/sidebar-filter.php'; ?>
     </div>
-  </div>
-
-  <!-- Products Section -->
-  <div class="row">
+    
+    <!-- Products Section -->
     <div class="col-12">
       <div class="products-container">
         <div class="products-grid">
@@ -261,21 +248,29 @@ echo renderBreadcrumb($breadcrumbs);
   color: #666;
 }
 
-/* Product Grid - Full width layout (matching category.php) */
+/* Standard Grid - 5 columns on desktop */
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, 1fr) !important; /* Default: 4 cards */
   gap: 20px;
   margin-bottom: 40px;
   width: 100%;
-  max-width: 100%;
 }
 
-.products-grid .card.product-card {
-  min-width: 0 !important;
-  max-width: 100% !important;
-  width: 100% !important;
-  margin: 0 !important;
+/* Product Card - Enhanced Hover & Radius Preservation */
+.search-page-container .products-grid .card.product-card {
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+  border: 1px solid #eee !important;
+  isolation: isolate !important; /* Forces stacking context for clean clipping */
+}
+
+.search-page-container .products-grid .card.product-card:hover {
+  transform: translateY(-5px) !important;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12) !important;
+  border-radius: 8px !important; /* Force preservation */
+  overflow: hidden !important;
 }
 
 .no-products {
@@ -301,33 +296,64 @@ echo renderBreadcrumb($breadcrumbs);
   margin-bottom: 20px;
 }
 
-/* Responsive Design */
+/* Standardized responsive break points */
 @media (max-width: 767px) {
   .products-grid {
-    grid-template-columns: 1fr !important;
+    grid-template-columns: 1fr !important; /* Mobile: 1 card per row */
     gap: 15px;
   }
 }
 
 @media (min-width: 768px) and (max-width: 1199px) {
   .products-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, 1fr) !important; /* Tablet: 3 cards per row */
     gap: 18px;
   }
 }
 
 @media (min-width: 1200px) {
   .products-grid {
-    grid-template-columns: repeat(5, 1fr);
-    gap: 20px;
+    grid-template-columns: repeat(5, 1fr) !important; /* Desktop: 5 cards per row */
+    gap: 20px !important;
+  }
+  .products-grid .card.product-card {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
   }
 }
 
 @media (min-width: 1400px) {
   .products-grid {
-    grid-template-columns: repeat(5, 1fr);
-    gap: 20px;
+    grid-template-columns: repeat(5, 1fr) !important; /* Wide screens: 5 cards per row */
+    gap: 20px !important;
   }
+}
+
+/* Container width standardization - Harmonized with category.php */
+.container-fluid {
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+  padding-left: 15px !important;
+  padding-right: 15px !important;
+}
+
+.row {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* Discount banner consistency */
+.search-page-container .products-grid .card.product-card .discount-banner {
+    background: var(--site-blue) !important;
+    color: #fff !important;
+    border-radius: 8px 8px 0 0 !important; /* Match card radius for clean corners */
+    padding: 8px 0 !important;
+    font-size: 11px !important;
+    text-align: center !important;
+    height: auto !important;
+    min-height: unset !important;
+    display: block !important;
 }
 </style>
 

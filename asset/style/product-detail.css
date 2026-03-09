@@ -578,23 +578,25 @@
 }
 
 @media (max-width: 768px) {
+    .related-products-slider-wrapper {
+        overflow: visible;
+    }
+
+    .related-products-container {
+        padding: 10px 0;
+        gap: 12px;
+        scroll-snap-type: x mandatory;
+    }
+
     .related-products-container .product-card {
-        flex: 0 0 60%;
-        max-width: 60% !important;
-        min-width: 60% !important;
+        flex: 0 0 80%;
+        max-width: 80% !important;
+        min-width: 80% !important;
+        scroll-snap-align: start;
     }
 
     .related-nav-btn {
-        width: 32px;
-        height: 32px;
-    }
-
-    .related-nav-btn.prev-btn {
-        left: -5px;
-    }
-
-    .related-nav-btn.next-btn {
-        right: -5px;
+        display: none;
     }
 
     /* Target the product detail page actions specifically */
