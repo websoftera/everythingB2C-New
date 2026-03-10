@@ -1835,12 +1835,12 @@ index 0000000..c1d23b8
 +}
 +
 +.filter-btn-primary {
-+  background: #99d052;
++  background: #9fbe1b;;
 +  color: white;
 +}
 +
 +.filter-btn-primary:hover {
-+  background: #28a745;
++  background: #9fbe1b;;
 +}
 +
 +.filter-btn-secondary {

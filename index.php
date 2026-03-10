@@ -3918,6 +3918,14 @@ function markPopupAsShownFallback() {
 
 // Handle Enter key in pincode input
 document.addEventListener('DOMContentLoaded', function() {
+    // Auto-open delivery popup when redirected from header pincode icon
+    if (new URLSearchParams(window.location.search).get('open_pincode') === '1') {
+        const popup = document.getElementById('deliveryPopup');
+        if (popup) popup.style.display = 'flex';
+        // Clean URL without reload
+        history.replaceState(null, '', window.location.pathname);
+    }
+
     const pincodeInput = document.getElementById('pincodeInput');
     if (pincodeInput) {
         pincodeInput.addEventListener('keypress', function(e) {

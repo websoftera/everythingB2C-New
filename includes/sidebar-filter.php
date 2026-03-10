@@ -502,7 +502,7 @@ select.form-control {
 }
 
 .filter-btn-primary {
-  background: #99d052;
+  background: #9fbe1b;;
   color: white;
 }
 

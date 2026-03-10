@@ -65,6 +65,10 @@
 <style>
 /* Desktop Footer Inline Layout */
 @media (min-width: 1025px) {
+  /* Prevent capitalization of email specifically */
+  .footer-email + a {
+    text-transform: none !important;
+  }
   .footer-links-inline {
     display: flex;
     align-items: center;
@@ -133,6 +137,10 @@
 
 /* Mobile Layout - Keep original stacked layout */
 @media (max-width: 1024px) {
+  /* Prevent capitalization of email specifically */
+  .footer-email + a {
+    text-transform: none !important;
+  }
   .footer-links-inline {
     display: block;
   }
