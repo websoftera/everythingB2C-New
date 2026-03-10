@@ -367,7 +367,7 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
 ?>
 <div id="floatingCartBtn" class="floating-cart-btn" style="display: <?php echo $displayStyle; ?>;">
   <span style="position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:100%;">
-    <img src="asset/images/Cart_Icon.png" alt="Cart" class="floating-cart-icon">
+    <img src="<?php echo $base_url; ?>asset/images/Cart_Icon.png" alt="Cart" class="floating-cart-icon">
     <span id="floatingCartCount" style="position:absolute;top:0px;right:10px;background:none;color:#fff;font-weight:bold;font-size:0.95rem;padding:2px 7px;border-radius:12px;min-width:22px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,0.12);"><?php echo $cartCount; ?></span>
   </span>
   <!-- Floating Cart Panel (dropdown style) -->
@@ -449,6 +449,11 @@ if (!function_exists('renderCategoryDropdown')) {
                 <div class="wishlist-icon-container position-relative">
                     <i class="bi <?php echo $wishlistCount > 0 ? 'bi-heart-fill active-wishlist' : 'bi-heart'; ?> wishlist-icon" <?php if($wishlistCount > 0) echo 'style="color: #DE0085 !important;"'; ?>></i>
                 </div>
+            </a>
+
+            <!-- Pincode Check Icon -->
+            <a href="#" title="Check Pincode Serviceability" class="text-decoration-none me-1 me-lg-3 pincode-check-link" onclick="openPincodePopup(event)" style="display:inline-flex;align-items:center;justify-content:center;">
+                <img src="<?php echo $base_url; ?>asset/images/Pincode_green.png" alt="Check Pincode" class="pincode-check-icon" style="height:28px;width:auto;object-fit:contain;cursor:pointer;">
             </a>
 
             <!-- User Account / Login -->
@@ -764,6 +769,29 @@ document.addEventListener('DOMContentLoaded', function () {
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeCat(null); });
 });
 </script>
+<script>
+// Pincode icon handler - opens delivery popup if available, else redirects to home
+function openPincodePopup(e) {
+    e.preventDefault();
+    const popup = document.getElementById('deliveryPopup');
+    if (popup) {
+        popup.style.display = 'flex';
+        // Clear any previous result when manually opening
+        const result = document.getElementById('pincodeResult');
+        if (result) result.innerHTML = '';
+    } else {
+        // Redirect to home page and auto-open pincode popup
+        location.href = '<?php echo $base_url; ?>index.php?open_pincode=1';
+    }
+}
+</script>
+<style>
+@media (max-width: 576px) {
+    .pincode-check-icon {
+        height: 22px !important;
+    }
+}
+</style>
 <script>
 
 // Clean up and synchronize SweetAlert2 with total parity and flow-based logo header

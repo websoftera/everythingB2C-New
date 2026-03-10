@@ -3719,7 +3719,7 @@ html .cart-added-highlight,
     grid-template-columns: repeat(5, 1fr) !important;
     gap: 20px !important;
   }
-  
+
   .wishlist-grid .card.product-card {
     min-width: 0 !important;
     max-width: 100% !important;
