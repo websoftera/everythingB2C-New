@@ -58,7 +58,7 @@
         </div>
     </div>
     <div class="footer-bottom">
-        <p>© 2025 EverythingB2C - All Rights Reserved. <a href="https://www.websoftera.com" target="_blank">Websoftera</a></p>
+        <p>© 2026 EverythingB2C - All Rights Reserved. <a href="https://www.websoftera.com" target="_blank">Websoftera</a></p>
     </div>
 </footer>
 

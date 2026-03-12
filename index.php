@@ -185,7 +185,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                     <?php endif; ?>
                 </div>
                 <div class="product-details">
-                    <h3><?php echo strtoupper(cleanProductName($product['name'])); ?></h3>
+                    <h3><?php echo cleanProductName($product['name']); ?></h3>
                     <div class="price-buttons">
                         <div class="price-btn mrp">
                             <span class="label">MRP</span>
@@ -198,14 +198,14 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                         <div class="wishlist">
                           <input type="checkbox" class="heart-checkbox" id="wishlist-checkbox-discounted-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>" <?php if ($inWishlist) echo 'checked'; ?>>
                           <label for="wishlist-checkbox-discounted-<?php echo $product['id']; ?>" class="wishlist-label <?php echo $inWishlist ? 'wishlist-active' : ''; ?>">
-                              <span class="heart-icon">&#10084;</span>
+                              <i class="fas fa-heart"></i>
                           </label>
                         </div>
                     </div>
                     <?php if ($isOutOfStock): ?>
                         <a href="product.php?slug=<?php echo $product['slug']; ?>" class="read-more">READ MORE</a>
                     <?php else: ?>
-                        <div class="cart-actions d-flex align-items-center gap-2">
+                        <div class="cart-actions d-flex align-items-center">
                             <div class="quantity-control d-inline-flex align-items-center">
                                 <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
                                 <input type="number" class="quantity-input" value="1" min="1" max="99" data-product-id="<?php echo $product['id']; ?>">
@@ -266,7 +266,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                     <?php endif; ?>
                 </div>
                 <div class="product-details">
-                    <h3><?php echo strtoupper(cleanProductName($product['name'])); ?></h3>
+                    <h3><?php echo cleanProductName($product['name']); ?></h3>
                     <div class="price-buttons">
                         <div class="price-btn mrp">
                             <span class="label">MRP</span>
@@ -279,14 +279,14 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                         <div class="wishlist">
                           <input type="checkbox" class="heart-checkbox" id="wishlist-checkbox-featured-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>" <?php if ($inWishlist) echo 'checked'; ?>>
                           <label for="wishlist-checkbox-featured-<?php echo $product['id']; ?>" class="wishlist-label <?php echo $inWishlist ? 'wishlist-active' : ''; ?>">
-                              <span class="heart-icon">&#10084;</span>
+                              <i class="fas fa-heart"></i>
                           </label>
                         </div>
                     </div>
                     <?php if ($isOutOfStock): ?>
                         <a href="product.php?slug=<?php echo $product['slug']; ?>" class="read-more">READ MORE</a>
                     <?php else: ?>
-                        <div class="cart-actions d-flex align-items-center gap-2">
+                        <div class="cart-actions d-flex align-items-center">
                             <div class="quantity-control d-inline-flex align-items-center">
                                 <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
                                 <input type="number" class="quantity-input" value="1" min="1" max="99" data-product-id="<?php echo $product['id']; ?>">
@@ -1278,15 +1278,17 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 
 /* Mobile: Show 1.3 cards */
 @media (max-width: 575px) {
-  .discounted-products-container {
-    width: calc(1.3 * 180px + 0.3 * 16px) !important;
-    max-width: calc(1.3 * 180px + 0.3 * 16px) !important;
+  .discounted-products-container,
+  .featured-products-container {
+    width: calc(1.15 * 290px) !important;
+    max-width: calc(1.15 * 290px) !important;
   }
-  .discounted-products-container .card.product-card {
-    flex: 0 0 180px !important;
-    width: 180px !important;
-    /* min-width: 180px !important; */
-    max-width: 180px !important;
+  .discounted-products-container .card.product-card,
+  .featured-products-container .card.product-card {
+    flex: 0 0 290px !important;
+    width: 290px !important;
+    min-width: 290px !important;
+    max-width: 290px !important;
   }
 }
 
@@ -1855,6 +1857,33 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   .discounted-nav-btn.next-btn {
     right: 5px;
   }
+
+  /* Align titles to the left and add padding to headers */
+  .discounted-products-header,
+  .featured-products-header {
+    padding: 0 15px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 5px !important;
+  }
+
+  .discounted-products-title,
+  .featured-products-title {
+    text-align: left !important;
+    padding-left: 0 !important;
+    line-height: 1.2 !important;
+    font-size: 14px !important;
+  }
+
+  .discounted-products-header .view-all-link,
+  .featured-products-header .view-all-link {
+    color: var(--dark-grey) !important;
+    font-size: 11px !important;
+    text-decoration: underline !important;
+    white-space: nowrap !important;
+    margin-left: 10px !important;
+  }
 }
 
 /* Tablet Responsive (768px - 1024px) */
@@ -1996,10 +2025,10 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
     max-width: calc(2.5 * 220px + 2 * 16px) !important;
   }
   .featured-products-container .card.product-card {
-    flex: 0 0 240px !important;
-    width: 240px !important;
-    min-width: 240px !important;
-    max-width: 240px !important;
+    flex: 0 0 280px !important;
+    width: 280px !important;
+    min-width: 280px !important;
+    max-width: 280px !important;
   }
   .featured-products-container {
     width: calc(2.5 * 240px + 2 * 16px) !important;
@@ -2054,10 +2083,10 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   }
   
   .featured-products-container .card.product-card {
-    flex: 0 0 180px !important;
-    width: 180px !important;
-    min-width: 180px !important;
-    max-width: 180px !important;
+    flex: 0 0 290px !important;
+    width: 290px !important;
+    min-width: 290px !important;
+    max-width: 290px !important;
     margin-right: 10px !important;
     flex-shrink: 0 !important;
   }

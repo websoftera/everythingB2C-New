@@ -1,4 +1,4 @@
-﻿/* Google Font Import - Mulish */
+/* Google Font Import - Mulish */
 @import url('https://fonts.googleapis.com/css2?family=Mulish:wght@200;300;400;500;600;700;800;900&display=swap');
 
 /* Global font family for entire website - EXCEPT Font Awesome icons */
@@ -1074,9 +1074,26 @@ body {
   height: auto !important;
 }
 
+/* Mobile View */
+@media (max-width: 480px) {
+  #floatingCartBtn .floating-cart-icon {
+    width: 32px !important;
+    height: auto !important;
+  }
+}
+
 /* Floating cart count color */
 #floatingCartCount {
   color: #038CC3 !important;
+}
+
+/* Pincode icon hover: black → green */
+.pincode-check-link:hover .pincode-icon-black {
+  opacity: 0 !important;
+}
+
+.pincode-check-link:hover .pincode-icon-green {
+  opacity: 1 !important;
 }
 
 #floatingCartPanel.fixed-panel {
@@ -1219,7 +1236,7 @@ body {
     min-width: 45px;
     justify-content: center;
     align-items: center;
-    border: 1px solid #eee;
+    /*border: 1px solid #eee;*/
     visibility: visible !important;
     opacity: 1 !important;
     flex-shrink: 0;
@@ -2178,7 +2195,7 @@ body {
   }
 
   .navbar .container-fluid>.d-flex.align-items-center {
-    flex: 1 0 auto !important;
+    /*flex: 1 0 auto !important;*/
     min-width: 0 !important;
   }
 
@@ -3400,7 +3417,7 @@ input[type="checkbox"]:checked+.heart-icon,
 
   /* Compact navbar */
   .navbar {
-    padding: 8px 0 !important;
+    padding: 2px 0 !important;
   }
 
   .navbar-nav .nav-link {
@@ -4092,4 +4109,80 @@ nav {
   /* Soft light green */
   color: var(--dark-green) !important;
   text-decoration: none;
+}
+
+/* ========================================================
+   MOBILE HEADER — Logo size & icon spacing fix
+   Applies only on screens ≤768px, does NOT touch desktop
+   ======================================================== */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 2px 0 !important;
+  }
+
+  /* Navbar row: allow items to compress, no overflow */
+  .navbar>.container-fluid {
+    gap: 4px !important;
+    flex-wrap: nowrap !important;
+    overflow: hidden !important;
+  }
+
+  /* Logo: allow full size, constrained by max-height */
+  .navbar-brand {
+    flex-shrink: 1 !important;
+    max-width: 200px !important;
+  }
+
+  .navbar-brand img.img-fluid {
+    max-width: 190px !important;
+    max-height: 48px !important;
+    height: auto !important;
+    width: auto !important;
+    object-fit: contain !important;
+  }
+
+  /* Icons wrapper: consistent 12px gap between ALL icons */
+  .header-nav-icons {
+    gap: 12px !important;
+    flex-shrink: 0 !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+  }
+
+  /* Zero Bootstrap me- margins so only gap controls spacing */
+  .header-nav-icons>*,
+  .header-nav-icons .me-1,
+  .header-nav-icons .me-lg-3 {
+    margin-right: 0 !important;
+  }
+
+  /* Scale down cart icon slightly */
+  .cart-section .cart-icon {
+    width: 34px !important;
+    height: 26px !important;
+  }
+
+  /* Scale down pincode icon slightly */
+  .pincode-check-icon {
+    height: 22px !important;
+  }
+
+  /* Cart count badge — centered over cart icon, number fully visible */
+  #cart-count {
+    position: absolute !important;
+    top: -4px !important;
+    left: 50% !important;
+    /* center horizontally over icon */
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    font-size: 9px !important;
+    min-width: 16px !important;
+    height: 16px !important;
+    line-height: 16px !important;
+    padding: 0 3px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50px !important;
+  }
 }

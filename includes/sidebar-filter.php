@@ -174,12 +174,14 @@ $categoryTree = buildCategoryTree($categories);
 }
 
 .filter-toggle-btn {
-  width: 100%;
+  width: auto !important; /* Allow button to shrink to content */
+  align-self: flex-end !important; /* Push to right if in flex container */
+  margin-left: auto !important; /* Push to right in block flow */
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 8px;
-  padding: 10px 16px;
+  padding: 10px 20px;
   background: white;
   color: #99d052;
   border: 1px solid #99d052;

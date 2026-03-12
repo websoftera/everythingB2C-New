@@ -306,7 +306,13 @@ $subcategories = getSubcategoriesByParentId($category['id']);
                 </li>
               <?php endif; ?>
               
-              <?php for ($i = max(1, $currentPage - 2); $i <= min($totalPages, $currentPage + 2); $i++): ?>
+              <?php
+                // Show a window of up to 5 pages, anchored to start from 1 for early pages
+                $windowSize = 5;
+                $startPage = max(1, min($currentPage - 2, $totalPages - $windowSize + 1));
+                $endPage   = min($totalPages, $startPage + $windowSize - 1);
+                for ($i = $startPage; $i <= $endPage; $i++):
+              ?>
                 <li class="page-item <?php echo $i == $currentPage ? 'active' : ''; ?>">
                   <a class="page-link" href="<?php echo buildPaginationUrl('category', $i, $_GET); ?>"><?php echo $i; ?></a>
                 </li>
@@ -352,7 +358,7 @@ $subcategories = getSubcategoriesByParentId($category['id']);
 /* Product Grid - Standardized layout */
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr) !important; /* Default: 4 cards */
+  grid-template-columns: repeat(4, 1fr); /* Default: 4 cards */
   gap: 20px;
   margin-bottom: 40px;
   width: 100%;
@@ -398,11 +404,7 @@ $subcategories = getSubcategoriesByParentId($category['id']);
 }
 
 /* Standardized responsive break points */
-@media (max-width: 767px) {
-  .products-grid {
-    grid-template-columns: 1fr !important; /* Mobile: 1 card per row */
-    gap: 15px;
-  }
+  /* Removed conflicting mobile overrides to use unified styles in product-card.css */
 }
 
 @media (min-width: 768px) and (max-width: 1199px) {
@@ -460,6 +462,31 @@ $subcategories = getSubcategoriesByParentId($category['id']);
     height: auto !important;
     min-height: unset !important;
     display: block !important;
+}
+
+/* ===== MOBILE OVERRIDES — must appear LAST to win !important cascade ===== */
+@media (max-width: 767px) {
+  /* Reduce side padding so 2-col cards have maximum width */
+  .container-fluid {
+    padding-left: 1px !important;
+    padding-right: 1px !important;
+  }
+  .col-12 {
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+  }
+
+  /* Reduce MRP & PAY font by 2px so full text fits in narrow columns */
+  .price-btn.mrp,
+  .price-btn.pay,
+  .mrp,
+  .pay {
+    font-size: 9px !important;
+    padding-left: 2px !important;
+    padding-right: 2px !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
 }
 </style>
 

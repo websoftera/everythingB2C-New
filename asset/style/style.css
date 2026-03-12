@@ -815,6 +815,14 @@ h3 {
     padding: 0 10px;
   }
 
+  /* Mobile View */
+  @media (max-width: 767px) {
+    .footer-bottom {
+      margin-top: -10px;
+    }
+  }
+
+
   .footer-bottom a {
     color: #fff;
     font-weight: 600;
@@ -1027,7 +1035,10 @@ h3 {
   font-weight: bold;
   text-align: center;
   text-decoration: none;
-  margin: 10px auto;
+  margin-top: 10px;
+  margin-bottom: 4px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .hero-button {
@@ -1065,6 +1076,7 @@ h3 {
 
 .step p {
   margin-top: 10px;
+  margin-bottom: 4px;
   font-weight: bold;
   background-color: #eee;
   padding: 8px 30px;
@@ -2865,7 +2877,7 @@ html .cart-added-highlight,
 
   /* Compact breadcrumbs */
   .breadcrumb {
-    padding: 8px 0 !important;
+    padding: 8px 15px !important;
     margin-bottom: 10px !important;
   }
 
@@ -2906,7 +2918,7 @@ html .cart-added-highlight,
 
   /* Compact navbar */
   .navbar {
-    padding: 8px 0 !important;
+    padding: 2px 0 !important;
   }
 
   .navbar-nav .nav-link {
@@ -3724,6 +3736,35 @@ html .cart-added-highlight,
     min-width: 0 !important;
     max-width: 100% !important;
     margin: 0 !important;
+  }
+}
+
+/* --- How We Work Section Mobile Adjustments --- */
+@media (max-width: 767px) {
+  .hero-container {
+    margin-top: 7px !important;
+    margin-bottom: 7px !important;
+    padding: 0 !important;
+  }
+
+  .hero-button {
+    margin: 0 auto !important;
+    display: table !important; /* Center block with auto margin */
+  }
+
+  .process-container {
+    gap: 5px !important; /* Final ultra-tight gap between cards */
+    margin-bottom: 5px !important; /* Final ultra-tight bottom gap */
+    padding: 0 15px !important;
+  }
+
+  .step {
+    flex: 0 1 100% !important;
+    max-width: 100% !important;
+  }
+  
+  .step img {
+    max-height: 180px !important;
   }
 }
 
