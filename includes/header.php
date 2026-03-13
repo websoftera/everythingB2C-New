@@ -132,9 +132,13 @@ html body [data-product-id].cart-added-highlight {
 .breadcrumb-item::after {
   content: none !important;
 }
+.breadcrumb-item {
+  padding-left: 0 !important;
+}
 .breadcrumb-item:not(:last-child)::after {
   content: ">" !important;
-  margin-left: 4px !important;
+  margin-left: 8px !important;
+  margin-right: 8px !important;
   color: #adb5bd !important;
   font-weight: bold !important;
 }
@@ -354,6 +358,14 @@ html body [data-product-id].cart-added-highlight {
       display: none !important;
       content: none !important;
     }
+
+    /* Force mobile offcanvas to be on top of slider arrows */
+    .offcanvas {
+        z-index: 99999 !important;
+    }
+    .offcanvas-backdrop {
+        z-index: 99998 !important;
+    }
 </style>
 </head>
 <body>
@@ -452,8 +464,11 @@ if (!function_exists('renderCategoryDropdown')) {
             </a>
 
             <!-- Pincode Check Icon -->
-            <a href="#" title="Check Pincode Serviceability" class="text-decoration-none me-1 me-lg-3 pincode-check-link" onclick="openPincodePopup(event)" style="display:inline-flex;align-items:center;justify-content:center;">
-                <img src="<?php echo $base_url; ?>asset/images/Pincode_green.png" alt="Check Pincode" class="pincode-check-icon" style="height:28px;width:auto;object-fit:contain;cursor:pointer;">
+            <a href="#" title="Check Pincode Serviceability" class="text-decoration-none me-1 me-lg-3 pincode-check-link" onclick="openPincodePopup(event)" style="display:inline-flex;align-items:center;justify-content:center;position:relative;">
+                <!-- Black icon: shown by default -->
+                <img src="<?php echo $base_url; ?>asset/images/Pincode_black.png" alt="Check Pincode" class="pincode-check-icon pincode-icon-black" style="height:28px;width:auto;object-fit:contain;cursor:pointer;transition:opacity 0.25s ease;">
+                <!-- Green icon: shown on hover via CSS -->
+                <img src="<?php echo $base_url; ?>asset/images/Pincode_green.png" alt="Check Pincode" class="pincode-check-icon pincode-icon-green" style="height:28px;width:auto;object-fit:contain;cursor:pointer;position:absolute;top:0;left:0;opacity:0;transition:opacity 0.25s ease;">
             </a>
 
             <!-- User Account / Login -->
@@ -499,7 +514,7 @@ if (!function_exists('renderCategoryDropdown')) {
     
     <!-- NEW: Mobile Search Row (Hidden on Desktop) -->
     <style>
-        .mobile-search-row { padding: 0 15px !important; margin-top: 8px !important; margin-bottom: 8px !important; position: relative; z-index: 1000; }
+        div.mobile-search-row { padding: 0 15px !important; margin-top: 3px !important; margin-bottom: 3px !important; position: relative; z-index: 1000; }
         .mobile-search-form { gap: 8px !important; justify-content: space-between !important; display: flex; width: 100%; margin: 0; align-items: center; }
         .mobile-search-input-group { height: 38px !important; flex: 1 1 auto !important; display: flex; flex-wrap: nowrap; width: 100%; }
         .mobile-search-input-field { height: 38px !important; border: 2px solid var(--primary-color) !important; border-right: none !important; border-radius: 4px 0 0 4px !important; padding-left: 12px !important; text-align: left !important; font-size: 14px !important; box-shadow: none !important; width: 100%; border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; }

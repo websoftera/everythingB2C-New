@@ -49,8 +49,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (container && prevBtn && nextBtn) {
             const getScrollAmount = () => {
                 const width = window.innerWidth;
-                if (width <= 575) return 196;
-                if (width <= 767) return 216;
+                if (width <= 575) return 308; // 300px card + 8px gap
+                if (width <= 767) return 308;
                 return 236;
             };
 

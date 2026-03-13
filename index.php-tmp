@@ -151,12 +151,19 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
     <div class="discounted-products-card">
         <div class="discounted-products-header">
             <h2 class="discounted-products-title">Products Offering Discount</h2>
-            <a href="products.php?discounted=1" class="view-all-link">View All</a>
+            <div class="header-actions">
+                <a href="products.php?discounted=1" class="view-all-link">View All</a>
+                <div class="nav-arrows-mobile">
+                    <button class="discounted-nav-btn prev-btn" aria-label="Scroll Left">
+                        <img src="asset/icons/blue_arrow.png" alt="Previous">
+                    </button>
+                    <button class="discounted-nav-btn next-btn" aria-label="Scroll Right">
+                        <img src="asset/icons/blue_arrow.png" alt="Next">
+                    </button>
+                </div>
+            </div>
         </div>
         <div class="discounted-products-slider-wrapper">
-            <button class="discounted-nav-btn prev-btn" aria-label="Scroll Left">
-          <img src="asset/icons/blue_arrow.png" alt="Previous">
-        </button>
             <div class="discounted-products-container" id="discounted-slider">
         <?php 
 
@@ -222,9 +229,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
             </div>
         <?php endforeach; ?>
 </div>
-            <button class="discounted-nav-btn next-btn" aria-label="Scroll Right">
-          <img src="asset/icons/blue_arrow.png" alt="Next" style="transform: rotate(180deg);">
-        </button>
+</div>
 </div>
     </div>
 </section>
@@ -234,12 +239,19 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
     <div class="featured-products-card">
         <div class="featured-products-header">
             <h2 class="featured-products-title">Top 100 Products with Higher Discounts</h2>
-            <a href="products.php?featured=1" class="view-all-link">View All</a>
+            <div class="header-actions">
+                <a href="products.php?featured=1" class="view-all-link">View All</a>
+                <div class="nav-arrows-mobile">
+                    <button class="featured-nav-btn prev-btn" aria-label="Scroll Left">
+                        <img src="asset/icons/green_arrow.png" alt="Previous">
+                    </button>
+                    <button class="featured-nav-btn next-btn" aria-label="Scroll Right">
+                        <img src="asset/icons/green_arrow.png" alt="Next" style="transform: rotate(180deg);">
+                    </button>
+                </div>
+            </div>
         </div>
         <div class="featured-products-slider-wrapper">
-            <button class="featured-nav-btn prev-btn" aria-label="Scroll Left">
-          <img src="asset/icons/green_arrow.png" alt="Previous">
-        </button>
             <div class="featured-products-container" id="featured-slider">
         <?php 
 
@@ -303,9 +315,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
             </div>
         <?php endforeach; ?>
 </div>
-            <button class="featured-nav-btn next-btn" aria-label="Scroll Right">
-          <img src="asset/icons/green_arrow.png" alt="Next" style="transform: rotate(180deg);">
-        </button>
+</div>
 </div>
     </div>
 </section>
@@ -1312,7 +1322,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   /* Remove any text formatting */
   white-space: normal !important;
   /* Box model */
-  box-sizing: border-box !important;
+  box-sizing: border-box !important; scroll-snap-type: x mandatory !important;
   /* Ensure container takes full width when not constrained by breakpoints */
   min-width: 100% !important;
 }
@@ -1336,7 +1346,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   /* Remove any text formatting */
   white-space: normal !important;
   /* Box model */
-  box-sizing: border-box !important;
+  box-sizing: border-box !important; scroll-snap-type: x mandatory !important;
   /* Ensure container takes full width when not constrained by breakpoints */
   min-width: 100% !important;
 }
@@ -1355,7 +1365,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   flex-shrink: 0 !important;
   flex-grow: 0 !important;
   margin: 0 !important;
-  box-sizing: border-box !important;
+  box-sizing: border-box !important; scroll-snap-type: x mandatory !important;
   /* background: var(--light-blue) !important; */
   background: #fff !important; /* Light blue background as per image */
   border-radius: 8px !important;
@@ -1380,7 +1390,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   flex-shrink: 0 !important;
   flex-grow: 0 !important;
   margin: 0 !important;
-  box-sizing: border-box !important;
+  box-sizing: border-box !important; scroll-snap-type: x mandatory !important;
   background: #fff !important; /* White background */
   border-radius: 8px !important;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
@@ -1400,7 +1410,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   max-width: 100% !important;
   margin: 0 auto !important;
   padding: 0 !important;
-  box-sizing: border-box !important;
+  box-sizing: border-box !important; scroll-snap-type: x mandatory !important;
 }
 
 .featured-products-slider-wrapper {
@@ -1411,7 +1421,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   max-width: 100% !important;
   margin: 0 auto !important;
   padding: 0 !important;
-  box-sizing: border-box !important;
+  box-sizing: border-box !important; scroll-snap-type: x mandatory !important;
 }
 
 .discounted-products-container .card.product-card .discount-banner {
@@ -1444,11 +1454,12 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 /* Cart Added Highlight for Discounted Products Section */
 .discounted-products-container .card.product-card .add-to-cart-btn.cart-added-highlight,
 .discounted-products-container .card.product-card .add-to-cart.cart-added-highlight {
-  border: 2.5px solid #ffd600 !important; /* Yellow border */
+  outline: 2.5px solid #ffd600 !important; /* USE OUTLINE to prevent shrinking inner space */
+  border: none !important;
   background: #9fbe1b !important; /* Green background */
   color: #fff !important;
   box-shadow: 0 0 0 6px rgba(255,214,0,0.18), 0 2px 12px rgba(40,167,69,0.22) !important;
-  transition: box-shadow 0.2s, border 0.2s, background 0.2s, color 0.2s !important;
+  transition: box-shadow 0.2s, outline 0.2s, background 0.2s, color 0.2s !important;
   transform: scale(1.02) !important;
   position: relative !important;
   z-index: 999 !important;
@@ -1475,53 +1486,47 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   background: #ffffff !important;
 }
 
-.discounted-nav-btn {
-  background: #ffffff;
-  border: none;
-  color: var(--light-blue); /* Light blue color as per image */
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-  width: 20px;
-  height: 20px;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
-  opacity: 1;
-  pointer-events: auto;
-  text-decoration: none;
-  line-height: 1;
-  user-select: none;
-}
+/* Mobile specific nav layout */
+@media (max-width: 768px) {
+  .discounted-products-header,
+  .featured-products-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+  }
 
-.discounted-nav-btn:hover {
-  background: #ffffff;
-  color: var(--dark-blue); /* Darker blue on hover */
-  border-color: var(--light-blue);
-  box-shadow: 0 4px 12px rgba(206, 229, 239, 0.3);
-  transform: translateY(-50%) scale(1.05);
-}
+  .header-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
 
-.discounted-nav-btn:active {
-  transform: translateY(-50%) scale(0.95);
+  .nav-arrows-mobile {
+    display: flex !important;
+    gap: 5px !important;
+  }
+
+  .discounted-nav-btn,
+  .featured-nav-btn {
+    position: static !important;
+    transform: none !important;
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 4px !important;
+  }
 }
 
 /* Desktop styles for discounted navigation */
 @media (min-width: 769px) {
-.discounted-nav-btn.prev-btn {
-  left: -35px;
-  z-index: 10;
-}
-
-.discounted-nav-btn.next-btn {
-  right: -35px;
-  z-index: 10;
+  .nav-arrows-mobile { display: none !important; }
+  .discounted-nav-btn.prev-btn {
+    left: -35px;
+    z-index: 10;
+  }
+  
+  .discounted-nav-btn.next-btn {
+    right: -35px;
+    z-index: 10;
   }
 }
 
@@ -1835,8 +1840,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   } */
   
   .discounted-products-title {
-    font-size: 16px;
-    font-weight:bold;
+    font-size: 14px;
     padding-left: 8px;
   }
   
@@ -1885,8 +1889,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
     text-align: left !important;
     padding-left: 0 !important;
     line-height: 1.2 !important;
-    font-size: 16px !important;
-    font-weight: bold;
+    font-size: 14px !important;
   }
 
   .discounted-products-header .view-all-link,
@@ -2127,7 +2130,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
   flex-shrink: 0 !important;
   flex-grow: 0 !important;
   margin: 0 !important;
-  box-sizing: border-box !important;
+  box-sizing: border-box !important; scroll-snap-type: x mandatory !important;
   background: #fff !important; /* Light green background as per image */
   border-radius: 8px !important;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
@@ -2651,7 +2654,7 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
     padding: 15px !important;
     max-width: 100% !important;
     margin: 0 !important;
-    box-sizing: border-box !important;
+    box-sizing: border-box !important; scroll-snap-type: x mandatory !important;
     border-radius: 6px !important;
   }
   

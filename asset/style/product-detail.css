@@ -14,26 +14,42 @@
 
 /* Product Card */
 .modern-card {
-    padding: 32px 24px;
+    padding: 0;
     margin: 20px 0;
     max-width: 100%;
     background: #fff;
     display: flex;
     flex-wrap: wrap;
-    gap: 32px;
+    gap: 0;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     border: 1px solid #e0e0e0;
+    overflow: hidden;
 }
 
 .product-image-section {
     flex: 1 1 350px;
     min-width: 320px;
+    padding: 32px 24px;
 }
 
 .product-info-section {
     flex: 2 1 400px;
     min-width: 320px;
+    padding: 32px 24px;
+}
+
+.product-page-container .discount-banner-detail {
+    width: 100%;
+    background: #0c79e7 !important;
+    color: #fff !important;
+    font-weight: 700 !important;
+    font-size: 14px !important;
+    text-align: center !important;
+    padding: 12px 20px !important;
+    letter-spacing: 0.5px !important;
+    text-transform: uppercase !important;
+    display: block !important;
 }
 
 .modern-zoom {
@@ -139,10 +155,18 @@
     margin-top: 18px;
 }
 
-.product-hsn {
-    margin-bottom: 15px;
-    font-size: 14px;
-    color: #666;
+.product-page-container .sku-row,
+.product-page-container .product-hsn {
+    margin-bottom: 8px !important;
+    font-size: 14px !important;
+    color: #333 !important;
+    font-weight: 400 !important;
+}
+
+.product-page-container .sku-row strong,
+.product-page-container .product-hsn strong {
+    font-weight: 700 !important;
+    color: #333 !important;
 }
 
 /* Product Detail Price Buttons */
@@ -321,11 +345,12 @@
 }
 
 /* Product Description */
-.product-description h4 {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 10px;
-    color: #333;
+.product-page-container .product-description h4 {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    margin-bottom: 12px !important;
+    color: #333 !important;
+    text-align: left !important;
 }
 
 .product-description p {
@@ -583,16 +608,16 @@
     }
 
     .related-products-container {
-        padding: 10px 0;
+        padding: 10px 10px 20px 10px !important; /* Extra bottom padding for shadows */
         gap: 12px;
         scroll-snap-type: x mandatory;
     }
 
     .related-products-container .product-card {
-        flex: 0 0 80%;
-        max-width: 80% !important;
-        min-width: 80% !important;
-        scroll-snap-align: start;
+        flex: 0 0 95%; /* Increased from 92% to give more room */
+        max-width: 95% !important;
+        min-width: 95% !important;
+        scroll-snap-align: center;
     }
 
     .related-nav-btn {

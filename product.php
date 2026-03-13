@@ -55,12 +55,78 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
 
 <div class="product-page-container">
     <link rel="stylesheet" href="asset/style/product-detail.css">
+    <style>
+        /* Modern Card base fixes */
+        .product-page-container .modern-card {
+            padding: 0 !important;
+            overflow: hidden !important;
+        }
+
+        /* Responsive Discount Banner Styling */
+        .product-page-container .discount-banner-detail {
+            background: #0c79e7 !important;
+            color: #fff !important;
+            padding: 12px 20px !important;
+            font-weight: 700 !important;
+            font-size: 14px !important;
+            display: block !important;
+            text-align: center !important;
+            text-transform: uppercase !important;
+            margin-left: -24px !important;
+            margin-right: -24px !important;
+            margin-bottom: 20px !important;
+            width: calc(100% + 48px) !important;
+            border-radius: 0 !important;
+            position: relative;
+            z-index: 5;
+        }
+        
+        /* Ensure top of banner touches the top of the card */
+        .product-page-container .product-image-section {
+            padding-top: 0 !important;
+            padding-left: 24px !important;
+            padding-right: 24px !important;
+            padding-bottom: 32px !important;
+        }
+
+        /* Move zoom icon down to avoid collision with banner */
+        .product-page-container .modern-zoom {
+            top: 65px !important;
+        }
+
+        /* Mobile specific adjustments */
+        @media (max-width: 900px) {
+            .product-page-container .product-info-section {
+                padding-top: 10px !important; /* Tighter on mobile below image */
+            }
+        }
+
+        /* Typography Standardisation */
+        .product-page-container .sku-row, 
+        .product-page-container .product-hsn {
+            font-size: 14px !important;
+            color: #333 !important;
+            margin-bottom: 8px !important;
+        }
+        .product-page-container .sku-row strong, 
+        .product-page-container .product-hsn strong {
+            font-weight: 700 !important;
+            color: #333 !important;
+        }
+        .product-page-container .product-description h4 {
+            font-size: 18px !important;
+            font-weight: 700 !important;
+            color: #333 !important;
+            margin-bottom: 12px !important;
+            text-align: left !important;
+        }
+    </style>
 
     <!-- Product Detail Section -->
     <div class="product-detail-card modern-card" data-id="prod-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>">
         <div class="product-image-section position-relative">
             <?php if ($product['is_discounted']): ?>
-                <div class="discount-banner1">SAVE ₹<?php echo $product['mrp'] - $product['selling_price']; ?> (<?php echo $product['discount_percentage']; ?>% OFF)</div>
+                <div class="discount-banner-detail">SAVE ₹<?php echo $product['mrp'] - $product['selling_price']; ?> (<?php echo $product['discount_percentage']; ?>% OFF)</div>
             <?php endif; ?>
             <button class="zoom-icon-btn modern-zoom" id="zoomBtn" title="Zoom"><i class="fas fa-search-plus"></i></button>
             <div class="img-magnifier-container" id="mainImageContainer" style="position:relative;">
@@ -86,7 +152,7 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
         </div>
         <div class="product-info-section modern-info">
             <h2 class="title"><?php echo cleanProductName($product['name']); ?></h2>
-            <p><strong>SKU:</strong> <?php echo htmlspecialchars($product['sku']); ?></p>
+            <p class="sku-row"><strong>SKU:</strong> <?php echo htmlspecialchars($product['sku']); ?></p>
             <?php if (!empty($product['hsn'])): ?>
                 <div class="product-hsn"><strong>HSN:</strong> <?php echo htmlspecialchars($product['hsn']); ?></div>
             <?php endif; ?>
@@ -205,7 +271,7 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                                     <?php if ($isOutOfStock): ?>
                                         <a href="product.php?slug=<?php echo $relatedProduct['slug']; ?>" class="read-more">READ MORE</a>
                                     <?php else: ?>
-                                        <div class="cart-actions d-flex align-items-center gap-2">
+                                        <div class="cart-actions d-flex align-items-center">
                                             <div class="quantity-control d-inline-flex align-items-center">
                                                 <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
                                                 <input type="number" class="quantity-input" value="1" min="1" max="99" data-product-id="<?php echo $relatedProduct['id']; ?>">
