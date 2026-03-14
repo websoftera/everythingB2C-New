@@ -478,7 +478,7 @@
     .wishlist {
         height: 28px !important;
         font-size: 0.85rem !important;
-        min-width: 50px !important;
+        /*min-width: 50px !important;*/
         padding: 0 3px !important;
     }
 
@@ -501,7 +501,7 @@
     /* Medium screen cart layout adjustments */
     .cart-actions {
         gap: 6px !important;
-        padding: 0 4px !important;
+        /*padding: 0 4px !important;*/
     }
 
     .quantity-control {
@@ -950,7 +950,7 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
         justify-content: space-between !important;
         /* Spread items across full width */
         align-items: stretch !important;
-        gap: 2px !important;
+        gap: 10px !important;
         width: 100% !important;
     }
 
@@ -969,7 +969,7 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
     }
 
     .price-btn.mrp {
-        flex: 0 0 70px !important;
+        flex: 0.75% !important;
         /* Slightly smaller to give more space */
         width: 70px !important;
     }
@@ -992,6 +992,7 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
+        padding: 0 !important;
     }
 
     .price-buttons .wishlist-label {
@@ -1004,7 +1005,7 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
         width: 100% !important;
         display: flex !important;
         flex-direction: row !important;
-        gap: 10px !important;
+        gap: 12px !important;
         /* 2px gap as requested */
         margin-top: 2px !important;
         align-items: center !important;
@@ -1012,7 +1013,7 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
 
     .add-to-cart-btn,
     .add-to-cart {
-        flex: 1 !important;
+        /*flex: 0.75 !important;*/
         height: 30px !important;
         /* MATCH quantity control height */
         font-size: 10px !important;
@@ -1028,7 +1029,7 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
     }
 
     .quantity-control {
-        flex: 0 0 70px !important;
+        flex: 0 0 40% !important;
         /* Match MRP width */
         width: 70px !important;
         height: 30px !important;

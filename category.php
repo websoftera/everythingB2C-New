@@ -508,7 +508,7 @@ endif; ?>
     padding-left: 2px !important;
     padding-right: 2px !important;
     max-width: 100% !important;
-    min-width: 40% !important;
+    min-width: 42% !important;
   }
 }
 </style>
