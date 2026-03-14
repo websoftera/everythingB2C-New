@@ -3010,7 +3010,7 @@ html .cart-added-highlight,
 
   /* Even more compact sections */
   section {
-    padding: 10px 0 !important;
+    padding: 2px 0 !important;
   }
 
   /* Smaller headings */
@@ -3767,7 +3767,8 @@ html .cart-added-highlight,
   }
 
   .step img {
-    max-height: 180px !important;
+    max-height: 120px !important;
+    padding: 0px !important;
   }
 }
 
