@@ -15,22 +15,25 @@ $discountedProducts = getDiscountedProducts(8);
 // Get user's wishlist for quick lookup
 $wishlist_ids = [];
 if (isLoggedIn()) {
-    $wishlistItems = getWishlistItems($_SESSION['user_id']);
-    foreach ($wishlistItems as $item) {
-        $wishlist_ids[] = $item['product_id'];
-    }
-} else {
-    // For guests, get wishlist from session
-    $wishlistItems = getSessionWishlistItems();
-    foreach ($wishlistItems as $item) {
-        $wishlist_ids[] = $item['product_id'];
-    }
+  $wishlistItems = getWishlistItems($_SESSION['user_id']);
+  foreach ($wishlistItems as $item) {
+    $wishlist_ids[] = $item['product_id'];
+  }
+}
+else {
+  // For guests, get wishlist from session
+  $wishlistItems = getSessionWishlistItems();
+  foreach ($wishlistItems as $item) {
+    $wishlist_ids[] = $item['product_id'];
+  }
 }
 
 
 
 // Filter to only main categories (parent_id is NULL)
-$main_categories = array_filter($categories, function($cat) { return empty($cat['parent_id']); });
+$main_categories = array_filter($categories, function ($cat) {
+  return empty($cat['parent_id']);
+});
 ?>
 
 <!-- Hero Section -->
@@ -128,16 +131,19 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                                 <?php $categoryImage = !empty($category['image']) ? ltrim($category['image'], './') : ''; ?>
                                 <?php if (!empty($categoryImage)): ?>
                             <img src="./<?php echo htmlspecialchars($categoryImage); ?>" alt="<?php echo htmlspecialchars($category['name']); ?>" />
-                                <?php else: ?>
+                                <?php
+  else: ?>
                                   <div class="category-placeholder">
                                     <i class="fas fa-box"></i>
                                   </div>
-                                <?php endif; ?>
+                                <?php
+  endif; ?>
                             </div>
                             <p class="category-label"><?php echo ucfirst($category['name']); ?></p>
                     </a>
                 </div>
-            <?php endforeach; ?>
+            <?php
+endforeach; ?>
         </div>
             <button class="category-nav-btn next-btn" aria-label="Scroll Right">
                 <img src="asset/icons/blue_arrow.png" alt="Next" style="transform: rotate(180deg);">
@@ -158,31 +164,36 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
           <img src="asset/icons/blue_arrow.png" alt="Previous">
         </button>
             <div class="discounted-products-container" id="discounted-slider">
-        <?php 
+        <?php
 
-        
-        foreach ($discountedProducts as $product): 
-            $inWishlist = in_array($product['id'], $wishlist_ids);
-            $isOutOfStock = ($product['stock_quantity'] <= 0);
-        ?>
+
+foreach ($discountedProducts as $product):
+  $inWishlist = in_array($product['id'], $wishlist_ids);
+  $isOutOfStock = ($product['stock_quantity'] <= 0);
+?>
             <div class="card product-card" data-id="prod-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>">
                 <?php if ($product['is_discounted']): ?>
                     <div class="discount-banner">SAVE ₹<?php echo $product['mrp'] - $product['selling_price']; ?> (<?php echo $product['discount_percentage']; ?>% OFF)</div>
-                <?php else: ?>
+                <?php
+  else: ?>
                     <div class="discount-banner" style="visibility: hidden;">&nbsp;</div>
-                <?php endif; ?>
+                <?php
+  endif; ?>
                 <div class="product-info">
                 <div class="product-image">
                     <a href="product.php?slug=<?php echo $product['slug']; ?>">
                         <?php if (!empty($product['main_image'])): ?>
                             <img src="<?php echo $product['main_image']; ?>" alt="<?php echo cleanProductName($product['name']); ?>">
-                        <?php else: ?>
+                        <?php
+  else: ?>
                             <img src="./uploads/products/blank-img.webp" alt="No image available">
-                        <?php endif; ?>
+                        <?php
+  endif; ?>
                     </a>
                     <?php if ($isOutOfStock): ?>
                         <div class="out-of-stock">OUT OF STOCK</div>
-                    <?php endif; ?>
+                    <?php
+  endif; ?>
                 </div>
                 <div class="product-details">
                     <a href="product.php?slug=<?php echo $product['slug']; ?>" class="product-title-link">
@@ -198,7 +209,8 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                             <span class="value"><?php echo formatPrice($product['selling_price']); ?></span>
                         </div>
                         <div class="wishlist">
-                          <input type="checkbox" class="heart-checkbox" id="wishlist-checkbox-discounted-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>" <?php if ($inWishlist) echo 'checked'; ?>>
+                          <input type="checkbox" class="heart-checkbox" id="wishlist-checkbox-discounted-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>" <?php if ($inWishlist)
+    echo 'checked'; ?>>
                           <label for="wishlist-checkbox-discounted-<?php echo $product['id']; ?>" class="wishlist-label <?php echo $inWishlist ? 'wishlist-active' : ''; ?>">
                               <i class="fas fa-heart"></i>
                           </label>
@@ -206,7 +218,8 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                     </div>
                     <?php if ($isOutOfStock): ?>
                         <a href="product.php?slug=<?php echo $product['slug']; ?>" class="read-more">READ MORE</a>
-                    <?php else: ?>
+                    <?php
+  else: ?>
                         <div class="cart-actions d-flex align-items-center">
                             <div class="quantity-control d-inline-flex align-items-center">
                                 <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
@@ -218,11 +231,13 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                                 ADD TO CART
                             </button>
                         </div>
-                    <?php endif; ?>
+                    <?php
+  endif; ?>
                 </div>
             </div>
             </div>
-        <?php endforeach; ?>
+        <?php
+endforeach; ?>
 </div>
             <button class="discounted-nav-btn next-btn" aria-label="Scroll Right">
           <img src="asset/icons/blue_arrow.png" alt="Next" style="transform: rotate(180deg);">
@@ -243,29 +258,33 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
           <img src="asset/icons/green_arrow.png" alt="Previous">
         </button>
             <div class="featured-products-container" id="featured-slider">
-        <?php 
+        <?php
 
-        
-        foreach ($featuredProducts as $product): 
-            $inWishlist = in_array($product['id'], $wishlist_ids);
-            $isOutOfStock = ($product['stock_quantity'] <= 0);
-        ?>
+
+foreach ($featuredProducts as $product):
+  $inWishlist = in_array($product['id'], $wishlist_ids);
+  $isOutOfStock = ($product['stock_quantity'] <= 0);
+?>
             <div class="card product-card" data-id="prod-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>">
                 <?php if ($product['is_discounted']): ?>
                     <div class="discount-banner">SAVE ₹<?php echo $product['mrp'] - $product['selling_price']; ?> (<?php echo $product['discount_percentage']; ?>% OFF)</div>
-                <?php endif; ?>
+                <?php
+  endif; ?>
                 <div class="product-info">
                 <div class="product-image">
                     <a href="product.php?slug=<?php echo $product['slug']; ?>">
                         <?php if (!empty($product['main_image'])): ?>
                             <img src="<?php echo $product['main_image']; ?>" alt="<?php echo cleanProductName($product['name']); ?>">
-                        <?php else: ?>
+                        <?php
+  else: ?>
                             <img src="./uploads/products/blank-img.webp" alt="No image available">
-                        <?php endif; ?>
+                        <?php
+  endif; ?>
                     </a>
                     <?php if ($isOutOfStock): ?>
                         <div class="out-of-stock">OUT OF STOCK</div>
-                    <?php endif; ?>
+                    <?php
+  endif; ?>
                 </div>
                 <div class="product-details">
                     <a href="product.php?slug=<?php echo $product['slug']; ?>" class="product-title-link">
@@ -281,7 +300,8 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                             <span class="value"><?php echo formatPrice($product['selling_price']); ?></span>
                         </div>
                         <div class="wishlist">
-                          <input type="checkbox" class="heart-checkbox" id="wishlist-checkbox-featured-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>" <?php if ($inWishlist) echo 'checked'; ?>>
+                          <input type="checkbox" class="heart-checkbox" id="wishlist-checkbox-featured-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>" <?php if ($inWishlist)
+    echo 'checked'; ?>>
                           <label for="wishlist-checkbox-featured-<?php echo $product['id']; ?>" class="wishlist-label <?php echo $inWishlist ? 'wishlist-active' : ''; ?>">
                               <i class="fas fa-heart"></i>
                           </label>
@@ -289,7 +309,8 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                     </div>
                     <?php if ($isOutOfStock): ?>
                         <a href="product.php?slug=<?php echo $product['slug']; ?>" class="read-more">READ MORE</a>
-                    <?php else: ?>
+                    <?php
+  else: ?>
                         <div class="cart-actions d-flex align-items-center">
                             <div class="quantity-control d-inline-flex align-items-center">
                                 <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
@@ -301,11 +322,13 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                                 ADD TO CART
                             </button>
                         </div>
-                    <?php endif; ?>
+                    <?php
+  endif; ?>
                 </div>
                 </div>
             </div>
-        <?php endforeach; ?>
+        <?php
+endforeach; ?>
 </div>
             <button class="featured-nav-btn next-btn" aria-label="Scroll Right">
           <img src="asset/icons/green_arrow.png" alt="Next" style="transform: rotate(180deg);">
@@ -1207,10 +1230,12 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
 
 @media (max-width: 575px) {
   .view-all-link {
-    padding: 6px 12px;
-    font-size: 10px;
-    padding: 8px 3px;
-    min-width: 45px;
+    
+  color: var(--dark-grey) !important;
+  font-size: 11px !important;
+  text-decoration: underline !important;
+  white-space: nowrap !important;
+  margin-left: 10px !important;
   }
 }
 
@@ -4035,7 +4060,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 500);
 });
 </script>
-<?php endif; ?>
+<?php
+endif; ?>
 
 <!-- Force wishlist styling on page load - always runs -->
 <script>
