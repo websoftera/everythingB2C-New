@@ -682,113 +682,122 @@ h3 {
 /* RESPONSIVE STYLES */
 /* Consolidated Professional Footer - Desktop */
 .desktop-footer {
-    padding: 40px 20px;
-    background-color: var(--secondary-color);
-    position: relative;
-    overflow: hidden;
+  padding: 40px 20px;
+  background-color: var(--secondary-color);
+  position: relative;
+  overflow: hidden;
 }
 
 .footer-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 40px;
 }
 
 .footer-column h3 {
-    font-size: 14px;
-    font-weight: 700;
-    margin-bottom: 20px;
-    color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #fff;
 }
 
-.footer-links-inline, .footer-connect-inline {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
+.footer-links-inline,
+.footer-connect-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
-.footer-links-inline a, .footer-connect-inline a, .footer-connect-inline .contact-info-inline {
-    color: #ccc;
-    text-decoration: none;
-    font-size: 14px;
-    transition: all 0.2s ease;
+.footer-links-inline a,
+.footer-connect-inline a,
+.footer-connect-inline .contact-info-inline {
+  color: #ccc;
+  text-decoration: none;
+  font-size: 14px;
+  transition: all 0.2s ease;
 }
 
-.footer-links-inline a:hover, .footer-connect-inline a:hover {
-    color: #fff;
-    text-decoration: underline;
+.footer-links-inline a:hover,
+.footer-connect-inline a:hover {
+  color: #fff;
+  text-decoration: underline;
 }
 
 .separator {
-    color: #666;
-    margin: 0 4px;
+  color: #666;
+  margin: 0 4px;
 }
 
 .social-icons {
-    display: flex;
-    gap: 12px;
+  display: flex;
+  gap: 12px;
 }
 
 .social-icons a {
-    font-size: 16px;
-    color: #ccc;
+  font-size: 16px;
+  color: #ccc;
 }
 
 /* Consolidated Professional Footer - Mobile (< 1025px) */
 @media (max-width: 1024px) {
-    .desktop-footer {
-        padding: 20px 15px !important;
-    }
+  .desktop-footer {
+    padding: 20px 15px !important;
+  }
 
-    .footer-container {
-        flex-direction: column !important;
-        align-items: center !important;
-        text-align: center !important;
-        gap: 10px !important;
-        display: flex !important;
-    }
+  .footer-container {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 10px !important;
+    display: flex !important;
+  }
 
-    .footer-column h3 {
-        display: none !important;
-    }
+  .footer-column h3 {
+    display: none !important;
+  }
 
-    .footer-links-inline {
-        display: flex !important;
-        justify-content: center !important;
-        margin-bottom: 5px !important;
-        gap: 6px !important;
-    }
+  .footer-links-inline {
+    display: flex !important;
+    justify-content: center !important;
+    margin-bottom: 5px !important;
+    gap: 2px !important;
+  }
 
-    .footer-links-inline a, .footer-links-inline .separator {
-        font-size: 12px !important;
-    }
+  .footer-links-inline a,
+  .footer-links-inline .separator {
+    font-size: 13px !important;
+    font-weight: 500 !important;
+  }
 
-    .footer-connect-inline {
-        display: flex !important;
-        justify-content: center !important;
-        gap: 6px !important;
-    }
+  .footer-connect-inline {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 6px !important;
+  }
 
-    .footer-connect-inline .contact-info-inline, 
-    .footer-connect-inline .separator,
-    .footer-connect-inline .social-icons a {
-        font-size: 12px !important;
-    }
+  .footer-connect-inline .contact-info-inline,
+  .footer-connect-inline .separator {
+    font-size: 13px !important;
+    font-weight: 500 !important;
+  }
 
-    .contact-info-inline a {
-        white-space: nowrap !important;
-    }
-    
-    .social-icons {
-        gap: 8px !important;
-    }
+  .footer-connect-inline .social-icons {
+    display: none !important;
+    /* Hide social icons in mobile as requested */
+  }
 
-    .footer-bottom {
-        margin-top: 5px !important;
-        font-size: 11px !important;
-    }
+  .contact-info-inline a {
+    white-space: nowrap !important;
+    font-weight: 500 !important;
+    font-size: 13px !important;
+  }
+
+  .footer-bottom {
+    margin-top: 5px !important;
+    font-size: 11px !important;
+  }
 }
 
 /* Scroll to Top Button */
