@@ -169,7 +169,9 @@ echo renderBreadcrumb($breadcrumbs);
                       <?php endif; ?>
                   </div>
                   <div class="product-details">
-                      <h3><?php echo strtoupper(cleanProductName($product['name'])); ?></h3>
+                      <a href="product.php?slug=<?php echo $product['slug']; ?>" class="product-title-link">
+                          <h3><?php echo strtoupper(cleanProductName($product['name'])); ?></h3>
+                      </a>
                       <div class="price-buttons">
                           <div class="price-btn mrp">
                               <span class="label">MRP</span>

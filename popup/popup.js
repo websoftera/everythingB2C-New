@@ -285,6 +285,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Add to Cart
         if (target.matches('.add-to-cart-btn, .add-to-cart, .shop-page-add-to-cart-btn')) {
             event.preventDefault();
+            event.stopPropagation(); // Stop click from triggering card navigation
             const productId = target.dataset.productId;
             let quantity = 1;
             let cardRoot = target.closest('.product-card, .card, .shop-page-product-card, .product-detail-card, .related-products-container .product-card');
@@ -380,6 +381,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Add/Remove from Wishlist (Toggle functionality)
         if (event.target.matches('.heart-checkbox, .shop-page-heart-checkbox')) {
+            event.stopPropagation(); // Stop click from triggering card navigation
             const checkbox = event.target;
             const productId = checkbox.dataset.productId;
             const label = checkbox.nextElementSibling;
@@ -432,6 +434,26 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     }
                 });
+        }
+
+        // Entire Product Card Click Navigation
+        const cardRoot = target.closest('.product-card, .card');
+        // Only navigate if:
+        // 1. We clicked a card
+        // 2. Not clicking a link directly (let browser handle it)
+        // 3. Not clicking quantity controls
+        // 4. Not clicking price buttons or wishlist label
+        // 5. Not clicking an input or button
+        if (cardRoot && 
+            !target.closest('a') && 
+            !target.closest('.quantity-control') && 
+            !target.closest('.price-btn') && 
+            !target.closest('.wishlist') &&
+            !target.matches('input, button')) {
+            const detailLink = cardRoot.querySelector('a[href^="product.php"]');
+            if (detailLink) {
+                window.location.href = detailLink.href;
+            }
         }
     });
 

@@ -185,7 +185,9 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                     <?php endif; ?>
                 </div>
                 <div class="product-details">
-                    <h3><?php echo cleanProductName($product['name']); ?></h3>
+                    <a href="product.php?slug=<?php echo $product['slug']; ?>" class="product-title-link">
+                        <h3><?php echo cleanProductName($product['name']); ?></h3>
+                    </a>
                     <div class="price-buttons">
                         <div class="price-btn mrp">
                             <span class="label">MRP</span>
@@ -266,7 +268,9 @@ $main_categories = array_filter($categories, function($cat) { return empty($cat[
                     <?php endif; ?>
                 </div>
                 <div class="product-details">
-                    <h3><?php echo cleanProductName($product['name']); ?></h3>
+                    <a href="product.php?slug=<?php echo $product['slug']; ?>" class="product-title-link">
+                        <h3><?php echo cleanProductName($product['name']); ?></h3>
+                    </a>
                     <div class="price-buttons">
                         <div class="price-btn mrp">
                             <span class="label">MRP</span>
