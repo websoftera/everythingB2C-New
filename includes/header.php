@@ -366,6 +366,12 @@ html body [data-product-id].cart-added-highlight {
     .offcanvas-backdrop {
         z-index: 99998 !important;
     }
+
+    /* Ensure User dropdown menu is above everything including mobile search */
+    .user-auth-dropdown .dropdown-menu,
+    .auth-dropdown-menu {
+        z-index: 105000 !important;
+    }
 </style>
 </head>
 <body>
@@ -419,7 +425,7 @@ if (!function_exists('renderCategoryDropdown')) {
 
 <!-- NAVBAR START -->
 <nav class="navbar navbar-expand-lg sticky-top bg-white" style="overflow: visible;">
-    <div class="container-fluid d-flex align-items-center flex-nowrap" style="gap: 8px; z-index: 1050; position: relative;">
+    <div class="container-fluid d-flex align-items-center flex-nowrap" style="gap: 8px; z-index: 2000; position: relative; overflow: visible !important;">
         <!-- Logo -->
         <a class="navbar-brand m-0" href="<?php echo $base_url; ?>index.php" style="flex-shrink: 0;">
             <img src="<?php echo $base_url; ?>logo.webp" alt="EverythingB2C" class="img-fluid" style="max-height: 60px;">
@@ -445,7 +451,7 @@ if (!function_exists('renderCategoryDropdown')) {
                         <i class="bi bi-search"></i>
                     </button>
                 </div>
-                <div id="headerSearchResultsPopup" class="position-absolute w-100" style="z-index: 9999; display: none;"></div>
+                <div id="headerSearchResultsPopup" class="position-absolute w-100" style="z-index: 2100; display: none;"></div>
             </form>
         </div>
 
@@ -514,7 +520,7 @@ if (!function_exists('renderCategoryDropdown')) {
     
     <!-- NEW: Mobile Search Row (Hidden on Desktop) -->
     <style>
-        div.mobile-search-row { padding: 0 15px !important; margin-top: 3px !important; margin-bottom: 3px !important; position: relative; z-index: 1000; }
+        div.mobile-search-row { padding: 0 15px !important; margin-top: 3px !important; margin-bottom: 3px !important; position: relative; z-index: 500; }
         .mobile-search-form { gap: 8px !important; justify-content: space-between !important; display: flex; width: 100%; margin: 0; align-items: center; }
         .mobile-search-input-group { height: 38px !important; flex: 1 1 auto !important; display: flex; flex-wrap: nowrap; width: 100%; }
         .mobile-search-input-field { height: 38px !important; border: 2px solid var(--primary-color) !important; border-right: none !important; border-radius: 4px 0 0 4px !important; padding-left: 12px !important; text-align: left !important; font-size: 14px !important; box-shadow: none !important; width: 100%; border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; }
@@ -533,7 +539,7 @@ if (!function_exists('renderCategoryDropdown')) {
             <button class="btn mobile-search-toggle-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileCategoryOffcanvas" aria-controls="mobileCategoryOffcanvas">
                 <i class="bi bi-list" style="font-size: 1.5rem; line-height: 1;"></i>
             </button>
-            <div id="headerSearchResultsPopupMobile" class="position-absolute w-100" style="z-index: 9999; display: none; top: 100%;"></div>
+            <div id="headerSearchResultsPopupMobile" class="position-absolute w-100" style="z-index: 2100; display: none; top: 100%;"></div>
         </form>
     </div>
 </nav>

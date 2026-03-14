@@ -539,7 +539,9 @@
         max-width: 48vw !important;
         min-width: 120px !important;
     }
-}/* Consolidated older 600px mobile styles into the 768px block at the bottom to prevent conflicts */
+}
+
+/* Consolidated older 600px mobile styles into the 768px block at the bottom to prevent conflicts */
 
 
 /* --- Discount Bar --- */
@@ -861,7 +863,9 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
         grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     }
 }
+
 @media (max-width: 768px) {
+
     /* Switch grid to 1 column for horizontal cards for all mobile devices */
     .products-grid {
         grid-template-columns: 1fr !important;
@@ -872,7 +876,8 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
     .products-grid .product-card,
     .card.product-card {
         max-width: 100% !important;
-        flex-direction: column !important; /* Banner on top, then info below */
+        flex-direction: column !important;
+        /* Banner on top, then info below */
         align-items: stretch !important;
         text-align: left !important;
         width: 100%;
@@ -883,20 +888,24 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
     .discount-banner {
         width: 100% !important;
         border-radius: 8px 8px 0 0 !important;
-        padding: 4px 10px !important; /* Tighter padding */
-        font-size: 9px !important; /* Smaller banner text */
+        padding: 4px 10px !important;
+        /* Tighter padding */
+        font-size: 9px !important;
+        /* Smaller banner text */
     }
 
     /* Horizontal layout for image and details */
     .product-info {
         flex-direction: row !important;
         align-items: flex-start !important;
-        padding: 8px !important; /* Reduced padding to gain space */
+        padding: 8px !important;
+        /* Reduced padding to gain space */
         gap: 6px !important;
     }
 
     .product-image {
-        flex: 0 0 75px !important; /* Reduced from 85px/100px to gain massive space for text */
+        flex: 0 0 75px !important;
+        /* Reduced from 85px/100px to gain massive space for text */
         width: 75px !important;
         max-width: 75px !important;
         height: 75px !important;
@@ -916,7 +925,8 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
         padding: 0 !important;
         display: flex !important;
         flex-direction: column !important;
-        gap: 6px !important; /* Tighter gap between rows */
+        gap: 6px !important;
+        /* Tighter gap between rows */
         min-width: 0 !important;
     }
 
@@ -937,7 +947,8 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
         display: flex !important;
         flex-direction: row !important;
         flex-wrap: nowrap !important;
-        justify-content: space-between !important; /* Spread items across full width */
+        justify-content: space-between !important;
+        /* Spread items across full width */
         align-items: stretch !important;
         gap: 2px !important;
         width: 100% !important;
@@ -946,9 +957,11 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
     .price-btn {
         flex: 1 !important;
         min-width: 0 !important;
-        height: 30px !important; /* Standardized height */
+        height: 30px !important;
+        /* Standardized height */
         font-size: 10px !important;
-        padding: 0 6px !important; /* Increased padding to prevent cropping */
+        padding: 0 6px !important;
+        /* Increased padding to prevent cropping */
         border-radius: 4px !important;
         display: flex !important;
         align-items: center !important;
@@ -956,14 +969,15 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
     }
 
     .price-btn.mrp {
-        flex: 0 0 70px !important; /* Slightly smaller to give more space */
+        flex: 0 0 70px !important;
+        /* Slightly smaller to give more space */
         width: 70px !important;
     }
-    
+
     .price-btn .label {
         font-size: 9px !important;
     }
-    
+
     .price-btn .value {
         font-size: 10px !important;
     }
@@ -973,14 +987,16 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
         height: 30px !important;
         width: 28px !important;
         margin: 0 !important;
-        margin-left: auto !important; /* PUSH to far right to align with cart edge */
+        margin-left: auto !important;
+        /* PUSH to far right to align with cart edge */
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
     }
 
     .price-buttons .wishlist-label {
-        font-size: 16px !important; /* Increased font-size for heart icon */
+        font-size: 16px !important;
+        /* Increased font-size for heart icon */
         padding: 0 !important;
     }
 
@@ -988,27 +1004,32 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
         width: 100% !important;
         display: flex !important;
         flex-direction: row !important;
-        gap: 2px !important; /* 2px gap as requested */
+        gap: 10px !important;
+        /* 2px gap as requested */
         margin-top: 2px !important;
         align-items: center !important;
     }
 
-    .add-to-cart-btn, 
+    .add-to-cart-btn,
     .add-to-cart {
         flex: 1 !important;
-        height: 30px !important; /* MATCH quantity control height */
+        height: 30px !important;
+        /* MATCH quantity control height */
         font-size: 10px !important;
-        padding: 0 6px !important; /* Increased padding */
+        padding: 0 6px !important;
+        /* Increased padding */
         white-space: nowrap !important;
         letter-spacing: 0 !important;
     }
-    
-    .add-to-cart-btn i, .add-to-cart i {
+
+    .add-to-cart-btn i,
+    .add-to-cart i {
         font-size: 10px !important;
     }
 
     .quantity-control {
-        flex: 0 0 70px !important; /* Match MRP width */
+        flex: 0 0 70px !important;
+        /* Match MRP width */
         width: 70px !important;
         height: 30px !important;
         border-radius: 4px !important;
