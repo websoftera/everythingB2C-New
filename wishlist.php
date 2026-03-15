@@ -73,7 +73,9 @@ echo renderBreadcrumb($breadcrumbs);
                                 <?php endif; ?>
                             </div>
                             <div class="product-details">
-                                <h3><?php echo strtoupper(cleanProductName($item['name'])); ?></h3>
+                                <a href="product.php?slug=<?php echo $item['slug']; ?>" class="product-title-link">
+                                    <h3><?php echo strtoupper(cleanProductName($item['name'])); ?></h3>
+                                </a>
                                 <div class="price-buttons">
                                     <div class="price-btn mrp">
                                         <span class="label">MRP</span>

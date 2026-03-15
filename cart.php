@@ -66,7 +66,7 @@ echo renderBreadcrumb($breadcrumbs);
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Cart Items (<?php echo count($cartItems); ?>)</h5>
                         <button type="button" class="btn btn-outline-danger btn-sm" id="removeAllItems" title="Remove all items from cart">
-                            <i class="fas fa-trash-alt me-1"></i>Remove All
+                            <i class="fas fa-trash me-1"></i>Remove All
                         </button>
                     </div>
                     <div class="card-body">

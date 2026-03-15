@@ -249,7 +249,9 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                                 </div>
                                 
                                 <div class="product-details">
-                                    <h3><?php echo cleanProductName($relatedProduct['name']); ?></h3>
+                                    <a href="product.php?slug=<?php echo $relatedProduct['slug']; ?>" class="product-title-link">
+                                        <h3><?php echo cleanProductName($relatedProduct['name']); ?></h3>
+                                    </a>
                                     
                                     <div class="price-buttons">
                                         <div class="price-btn mrp">
