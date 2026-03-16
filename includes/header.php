@@ -169,6 +169,44 @@ html body [data-product-id].cart-added-highlight {
   border-radius: 8px !important;
 }
 
+.swal2-container {
+  z-index: 999999 !important;
+}
+
+#floatingCartPanel .quantity-control .btn-qty:disabled {
+  background: transparent !important;
+  color: #ccc !important;
+  opacity: 0.8;
+}
+
+html body #floatingCartPanel .quantity-control button.btn-qty-minus:hover,
+html body #floatingCartPanel .quantity-control button.btn-qty-plus:hover,
+html body #floatingCartPanel .quantity-control button.btn-qty:active {
+  background: #ddd !important;
+}
+
+html body #floatingCartPanel .quantity-control button.btn-qty:disabled:hover,
+html body #floatingCartPanel .quantity-control button.btn-qty:disabled:active {
+  background: transparent !important;
+}
+
+#floatingCartPanel .quantity-control {
+  height: 24px !important;
+  border-radius: 4px;
+}
+
+#floatingCartPanel .quantity-control .btn-qty {
+  width: 22px !important;
+  height: 24px !important;
+  font-size: 14px !important;
+}
+
+#floatingCartPanel .quantity-control .quantity-input {
+  width: 26px !important;
+  height: 24px !important;
+  font-size: 11px !important;
+}
+
 #floatingCartPanel.fixed-panel {
   display: flex;
   flex-direction: column;
@@ -386,7 +424,7 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
 <div id="floatingCartBtn" class="floating-cart-btn" style="display: <?php echo $displayStyle; ?>;">
   <span style="position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:100%;">
     <img src="<?php echo $base_url; ?>asset/images/Cart_Icon.png" alt="Cart" class="floating-cart-icon">
-    <span id="floatingCartCount" style="position:absolute;top:0px;right:10px;background:none;color:#fff;font-weight:bold;font-size:0.95rem;padding:2px 7px;border-radius:12px;min-width:22px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,0.12);"><?php echo $cartCount; ?></span>
+    <span id="floatingCartCount" style="position:absolute;top:0px;right:10px;background:none;color:#fff;font-weight:bold;font-size:0.95rem;padding:2px 7px;min-width:22px;text-align:center;"><?php echo $cartCount; ?></span>
   </span>
   <!-- Floating Cart Panel (dropdown style) -->
   <div id="floatingCartPanel" class="fixed-panel" style="display:none;">
@@ -399,7 +437,7 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
     <div class="floating-cart-actions">
       <a href="<?php echo $base_url; ?>cart.php" class="btn btn-outline-primary w-100 mb-2" style="padding:6px 0;font-size:0.97rem;">View Full Cart</a>
       <button type="button" class="btn btn-outline-danger w-100" id="floatingRemoveAll" style="padding:6px 0;font-size:0.97rem;">
-        <i class="fas fa-trash-alt me-1"></i>Remove All
+        <i class="fas fa-trash me-1"></i>Remove All
       </button>
     </div>
   </div>
@@ -1341,14 +1379,16 @@ function renderFloatingCart() {
             <div class="flex-grow-1" style="min-width:0;">
               <div style="font-weight:600;font-size:0.97rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.name}</div>
               <div class="text-muted d-flex align-items-center gap-1" style="font-size:0.85rem;">
-                <button class="btn btn-xs btn-outline-secondary btn-qty-minus" data-cart-id="${cartId}" ${item.quantity <= 1 ? 'disabled' : ''} style="width:22px;height:22px;padding:0 0 2px 0;line-height:1;">-</button>
-                <input type="number" min="1" class="form-control form-control-xs cart-qty-input" data-cart-id="${cartId}" value="${item.quantity}" style="width:32px;text-align:center;display:inline-block;padding:0 2px;font-size:0.9rem;height:22px;">
-                <button class="btn btn-xs btn-outline-secondary btn-qty-plus" data-cart-id="${cartId}" style="width:22px;height:22px;padding:0 0 2px 0;line-height:1;">+</button>
-                <span class="ms-1">x ₹${parseFloat(item.selling_price).toFixed(2)}</span>
+                <div class="quantity-control d-inline-flex align-items-center">
+                  <button type="button" class="btn-qty btn-qty-minus" data-cart-id="${cartId}" ${parseInt(item.quantity, 10) <= 1 ? 'disabled' : ''}>-</button>
+                  <input type="number" class="quantity-input cart-qty-input" value="${item.quantity}" min="1" data-cart-id="${cartId}">
+                  <button type="button" class="btn-qty btn-qty-plus" data-cart-id="${cartId}">+</button>
+                </div>
+                <span class="ms-1">x ₹${parseFloat(item.selling_price).toFixed(2).replace('.00', '')}</span>
               </div>
             </div>
             <div class="text-end ms-1" style="min-width:54px;">
-              <div data-cart-total-id="${cartId}" style="font-weight:700;font-size:0.98rem;">₹${(item.selling_price * item.quantity).toFixed(2)}</div>
+              <div data-cart-total-id="${cartId}" style="font-weight:700;font-size:0.98rem;">₹${(item.selling_price * item.quantity).toFixed(2).replace('.00', '')}</div>
               <button class="btn btn-xs btn-outline-danger mt-1 remove-cart-item-btn" data-cart-id="${cartId}" style="padding:0 5px;font-size:0.9rem;"><i class="fas fa-trash"></i></button>
             </div>
           </div>
@@ -1386,14 +1426,14 @@ function renderFloatingCart() {
             const unitPrice = parseFloat(unitPriceText.match(/₹(\d+\.?\d*)/)?.[1] || 0);
             const totalDiv = row.querySelector('div[data-cart-total-id]');
             if (totalDiv && unitPrice) {
-              totalDiv.textContent = '₹' + ((qty - 1) * unitPrice).toFixed(2);
+              totalDiv.textContent = '₹' + ((qty - 1) * unitPrice).toFixed(2).replace('.00', '');
             }
             updateFloatingCartSummary(); // Real-time update
             updateCartQuantity(cartId, qty - 1, input, btn, function(success, updatedItem) {
               if (!success) {
                 input.value = prevQty;
                 if (totalDiv && unitPrice) {
-                  totalDiv.textContent = '₹' + (prevQty * unitPrice).toFixed(2);
+                  totalDiv.textContent = '₹' + (prevQty * unitPrice).toFixed(2).replace('.00', '');
                 }
                 if (typeof Swal !== 'undefined') {
                     Swal.fire({
@@ -1503,14 +1543,14 @@ function renderFloatingCart() {
           const unitPrice = parseFloat(unitPriceText.match(/₹(\d+\.?\d*)/)?.[1] || 0);
           const totalDiv = row.querySelector('div[data-cart-total-id]');
           if (totalDiv && unitPrice) {
-            totalDiv.textContent = '₹' + (newQty * unitPrice).toFixed(2);
+            totalDiv.textContent = '₹' + (newQty * unitPrice).toFixed(2).replace('.00', '');
           }
           updateFloatingCartSummary(); // Real-time update
           updateCartQuantity(cartId, newQty, input, btn, function(success, updatedItem) {
             if (!success) {
               input.value = prevQty;
               if (totalDiv && unitPrice) {
-                totalDiv.textContent = '₹' + (prevQty * unitPrice).toFixed(2);
+                totalDiv.textContent = '₹' + (prevQty * unitPrice).toFixed(2).replace('.00', '');
               }
               if (typeof Swal !== 'undefined') {
                   Swal.fire({

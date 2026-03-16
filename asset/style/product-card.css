@@ -292,7 +292,7 @@
 }
 
 .price-buttons .wishlist-label {
-    font-size: 12px !important;
+    font-size: 15px !important;
     color: transparent !important;
     -webkit-text-stroke: 0.99px #a0a0a0 !important;
     text-stroke: 0.99px #a0a0a0 !important;
@@ -632,6 +632,7 @@
     padding: 3px 10px;
     font-size: 15px;
     font-weight: bold;
+
 }
 
 .wishlist-btn {
@@ -974,7 +975,7 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
     }
 
     .price-btn.mrp {
-        flex: 0.75% !important;
+        flex: 18% !important;
         /* Slightly smaller to give more space */
         width: 70px !important;
     }
@@ -1034,10 +1035,10 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
     }
 
     .quantity-control {
-        flex: 0 0 40% !important;
+        flex: 0 0 39% !important;
         /* Match MRP width */
-        width: 70px !important;
-        height: 30px !important;
+        width: 69px !important;
+        height: 27px !important;
         border-radius: 4px !important;
         display: flex !important;
         align-items: center !important;

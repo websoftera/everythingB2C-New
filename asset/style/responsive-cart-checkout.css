@@ -10,94 +10,64 @@
         display: none !important;
     }
 
-    /* Make cart item row wrap content */
+    /* Redesign main cart row to match sticky cart compact card */
     .cart-item-row {
-        flex-wrap: wrap !important;
+        display: grid !important;
+        grid-template-columns: 45px 1fr 60px !important;
+        grid-template-areas: 
+            "img title total"
+            "img qty delete" !important;
+        gap: 6px !important;
+        padding: 8px !important;
+        align-items: center !important;
         height: auto !important;
-        padding: 12px !important;
-        position: relative;
+        position: relative !important;
+        flex-wrap: nowrap !important; /* overide flex */
     }
 
-    /* Image container */
-    .cart-item-row>div:nth-child(1) {
-        flex: 0 0 50px !important;
-        max-width: 50px !important;
-        margin-bottom: 8px;
-        margin-right: 15px;
-        text-align: left;
-        order: 1;
-    }
-
-    /* Product name (Full width on second row) */
-    .cart-item-row>div:nth-child(2) {
-        flex: 0 0 100% !important;
-        max-width: 100% !important;
-        margin-bottom: 12px;
-        white-space: normal !important;
-        overflow: visible !important;
-        text-align: left;
-        order: 4;
-        padding-top: 5px;
-    }
-
-    /* Price (Strike-through MRP) - move to new line or hide if redundant */
-    .cart-item-row>div:nth-child(3) {
-        display: none !important;
-        /* Hide MRP column on mobile to save space */
-    }
-
-    .cart-item-row>div:nth-child(4) {
-        flex: 0 0 auto !important;
-        min-width: auto !important;
+    .cart-item-row>div:nth-child(1) { grid-area: img; flex: unset !important; }
+    
+    .cart-item-row>div:nth-child(2) { 
+        grid-area: title; 
+        font-size: 0.93rem !important;
+        font-weight: 600 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
         text-align: left !important;
-        font-weight: normal;
+        flex: unset !important;
+        max-width: 100% !important;
+    }
+
+    .cart-item-row>div:nth-child(3) { display: none !important; } /* MRP */
+    .cart-item-row>div:nth-child(4) { display: none !important; } /* You Pay */
+    .cart-item-row>div:nth-child(5) { display: none !important; } /* Savings */
+
+    .cart-item-row>div:nth-child(6) { 
+        grid-area: qty; 
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        flex: unset !important;
+    }
+
+    .cart-item-row>div:nth-child(7) { 
+        grid-area: total; 
+        text-align: right !important;
+        font-weight: 700 !important;
         font-size: 0.95rem !important;
-        order: 2;
-        margin-right: 15px;
-        margin-bottom: 8px;
-        display: flex;
-        align-items: center;
+        align-self: start !important;
+        padding-top: 4px !important;
+        flex: unset !important;
+        display: block !important; /* make sure visible */
     }
 
-    .cart-item-row>div:nth-child(4)::before {
-        content: "Price: ";
-        font-weight: normal;
-        color: #666;
-        font-size: 0.9rem;
-        margin-right: 4px;
-    }
-
-    /* Savings */
-    .cart-item-row>div:nth-child(5) {
-        display: none !important;
-        /* Hide savings column on mobile */
-    }
-
-    /* Quantity Control */
-    .cart-item-row>div:nth-child(6) {
-        flex: 0 0 auto !important;
-        min-width: auto !important;
-        order: 3;
-        margin-bottom: 8px;
-        margin-right: auto;
-        display: flex;
-        align-items: center;
-        /* Push remove button to right */
-    }
-
-    /* Total Row (Duplicate of You Pay * Qty) - Often redundant on mobile, but let's keep it if needed or hide it */
-    .cart-item-row>div:nth-child(7) {
-        display: none !important;
-        /* Hide Total column, user sees subtotal at bottom */
-    }
-
-    /* Remove Button */
-    .cart-item-row>div:nth-child(8) {
-        position: absolute;
-        top: 12px;
-        right: 12px;
-        flex: 0 0 auto !important;
-        min-width: auto !important;
+    .cart-item-row>div:nth-child(8) { 
+        grid-area: delete; 
+        text-align: right !important;
+        align-self: end !important;
+        flex: unset !important;
+        position: static !important; /* override absolute */
     }
 
     /* Stack checkout summary */
