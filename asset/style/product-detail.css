@@ -534,14 +534,20 @@
 }
 
 
-/* Responsive Design */
 @media (max-width: 900px) {
     .modern-card {
         flex-direction: column;
-        padding: 24px 15px;
+        padding: 4px 15px !important;
+        /* Tighten up general padding container */
     }
 
-    .product-image-section,
+    .product-image-section {
+        padding-top: 1px !important;
+        padding-bottom: 1px !important;
+        min-width: 0;
+        flex: 1 1 auto;
+    }
+
     .product-info-section {
         min-width: 0;
         flex: 1 1 auto;
@@ -608,20 +614,47 @@
     }
 
     .related-products-container {
-        padding: 10px 10px 20px 10px !important; /* Extra bottom padding for shadows */
+        padding: 10px 10px 20px 10px !important;
+        /* Extra bottom padding for shadows */
         gap: 12px;
         scroll-snap-type: x mandatory;
     }
 
     .related-products-container .product-card {
-        flex: 0 0 95%; /* Increased from 92% to give more room */
-        max-width: 95% !important;
-        min-width: 95% !important;
+        flex: 0 0 280px !important;
+        /* Forces same absolute size as homepage sliders */
+        max-width: 280px !important;
+        min-width: 280px !important;
         scroll-snap-align: center;
     }
 
+    /* Fix related spacing */
+    .related-products-header {
+        margin-bottom: 2px !important;
+        margin-top: 20px !important;
+
+    }
+
     .related-nav-btn {
-        display: none;
+        display: flex !important;
+        border-radius: 4px !important;
+        width: 24px !important;
+        height: 24px !important;
+        background: #fff !important;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .related-nav-btn img {
+        width: 10px !important;
+        height: 10px !important;
+    }
+
+    .related-nav-btn.prev-btn {
+        left: 0px !important;
+    }
+
+    .related-nav-btn.next-btn {
+        right: 0px !important;
     }
 
     /* Target the product detail page actions specifically */
@@ -638,15 +671,65 @@
         display: flex;
         justify-content: flex-start;
         align-items: center;
-        margin-top: 20px !important;
-        /* Visual space between rows */
-        gap: 15px;
+        margin-top: 10px !important;
+        /* Tighten spacer under prices */
+        gap: 12px;
     }
 
-    /* Ensure the Add to Cart button isn't squished */
+    /* Redesign Quantity control inside product detail to transparent capsule design */
+    .product-info-section .quantity-control {
+        border: 1px solid #b3b3b3 !important;
+        border-radius: 4px !important;
+        overflow: hidden !important;
+        height: 32px !important;
+        /* Forces uniform height */
+        display: inline-flex !important;
+        background: transparent !important;
+        gap: 0px !important;
+    }
+
+    .product-info-section .quantity-control .btn-qty {
+        width: 24px !important;
+        min-width: 24px !important;
+        height: 32px !important;
+        border: none !important;
+        background: transparent !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+    }
+
+    .product-info-section .quantity-control .btn-qty-minus {
+        border-right: 1px solid #b3b3b3 !important;
+    }
+
+    .product-info-section .quantity-control .btn-qty-plus {
+        border-left: 1px solid #b3b3b3 !important;
+    }
+
+    .product-info-section .quantity-control .quantity-input {
+        width: 26px !important;
+        height: 32px !important;
+        border: none !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        padding: 0 !important;
+    }
+
+    /* Align buttons text gap 1px */
     .product-info-section .cart-actions .add-to-cart-btn {
         flex: 1;
         width: auto;
+        padding: 0 12px !important;
+        gap: 1px !important;
+        /* Force tight gap between icon and text */
+        height: 32px !important;
+        /* Forces uniform height */
+        font-size: 12px !important;
+    }
+
+    /* Hide cart icon specifically when added on related lists too */
+    .related-products-section .cart-added-highlight i {
+        display: none !important;
     }
 }
 

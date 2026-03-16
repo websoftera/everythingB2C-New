@@ -446,6 +446,7 @@ endforeach; ?>
     height: 32px !important;
     padding: 0 4px !important;
     letter-spacing: 0px !important;
+    gap: 1px !important;
   }
 
   /* Hide the cart icon specifically when added to save space on home page items */
