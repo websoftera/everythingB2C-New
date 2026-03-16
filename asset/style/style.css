@@ -761,7 +761,7 @@ h3 {
   .footer-links-inline {
     display: flex !important;
     justify-content: center !important;
-    margin-bottom: 5px !important;
+    /* margin-bottom: 5px !important; */
     gap: 2px !important;
   }
 

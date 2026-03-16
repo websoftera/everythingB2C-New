@@ -405,6 +405,67 @@ endforeach; ?>
 <link rel="stylesheet" href="./asset/style/style.css">
 
 <style>
+@media (max-width: 767px) {
+  /* Force all View All links absolute to right to sync layout regardless of title length */
+  .category-products-header,
+  .discounted-products-header,
+  .featured-products-header {
+    position: relative !important;
+    display: flex !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+  }
+
+  .category-products-title,
+  .discounted-products-title,
+  .featured-products-title {
+    max-width: calc(100% - 75px) !important;
+    white-space: normal !important;
+    text-align: left !important;
+    line-height: 1.2 !important;
+    font-size: 14px !important;
+  }
+
+  .category-products-header .view-all-link,
+  .discounted-products-header .view-all-link,
+  .featured-products-header .view-all-link {
+    position: absolute !important;
+    right: 2px !important;
+    top: 4px !important;
+    transform: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    font-size: 13px !important;
+    width: auto !important;
+  }
+
+  /* Fix cropping on Added to Cart button state on mobile */
+  html body .cart-added-highlight,
+  html body .add-to-cart.cart-added-highlight {
+    font-size: 11px !important; /* Can return to a slightly larger font size now without icon */
+    height: 32px !important;
+    padding: 0 4px !important;
+    letter-spacing: 0px !important;
+    gap: 1px !important;
+  }
+
+  /* Hide the cart icon specifically when added to save space on home page items */
+  html body .cart-added-highlight i {
+    display: none !important;
+  }
+
+  /* Shrink quantity control input on mobile to free up space for the button */
+  .discounted-products-section .quantity-control .quantity-input,
+  .featured-products-section .quantity-control .quantity-input {
+    width: 22px !important;
+    min-width: 22px !important;
+    padding: 0 !important;
+    font-size: 12px !important;
+  }
+}
+</style>
+
+<style>
 /* Service Section - Redesigned */
 .service-section {
   padding: 40px 0;

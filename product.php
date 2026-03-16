@@ -96,8 +96,80 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
 
         /* Mobile specific adjustments */
         @media (max-width: 900px) {
+            .product-page-container .modern-card {
+                margin: 2px 0 !important;
+                padding: 4px 10px !important;
+            }
+
+            .product-page-container .product-image-section {
+                padding-bottom: 2px !important; /* Remove gap after main image section */
+            }
+
+            .product-page-container .thumbnail-row {
+                margin-top: 4px !important; /* Space between main img & gallery */
+            }
+
             .product-page-container .product-info-section {
-                padding-top: 10px !important; /* Tighter on mobile below image */
+                padding: 12px !important; /* Standardized uniform padding for interior nodes border safety */
+            }
+
+            .product-page-container .modern-info h2.title {
+                margin-top: 2px !important;
+                margin-bottom: 4px !important; /* Product title top bottom space */
+                font-size: 18px !important;
+            }
+
+            .product-page-container .sku-row, 
+            .product-page-container .product-hsn {
+                margin-bottom: 4px !important;
+            }
+
+            .product-page-container .price-buttons1 {
+                margin-bottom: 10px !important;
+                gap: 5px !important;
+            }
+
+            .product-page-container .price-buttons1 .price-btn {
+                height: 32px !important; /* Forces height match */
+                padding: 0 10px !important;
+                display: flex !important;
+                align-items: center !important;
+            }
+
+            /* Increase wishlist heart size on mobile */
+            .product-page-container .price-buttons1 .wishlist-label {
+                font-size: 22px !important;
+                color: #DE0085 !important; /* Active indicator if needed, or stick to styles class */
+            }
+
+            .product-page-container .cart-actions {
+                margin-bottom: 10px !important;
+            }
+
+            /* Match height on quantity capsule */
+            .product-page-container .product-info-section .quantity-control {
+                height: 32px !important; 
+            }
+
+            .product-page-container .product-info-section .quantity-control .btn-qty {
+                height: 32px !important;
+            }
+
+            .product-page-container .product-info-section .quantity-control .quantity-input {
+                height: 32px !important;
+            }
+
+            .product-page-container .product-info-section .cart-actions .add-to-cart-btn {
+                height: 32px !important;
+            }
+
+            .product-page-container .product-info-section p.text-success,
+            .product-page-container .product-info-section p.text-danger {
+                margin-bottom: 2px !important; /* Space after stock */
+            }
+
+            .product-page-container .product-description {
+                margin-top: 5px !important;
             }
         }
 

@@ -128,6 +128,14 @@ html body [data-product-id].cart-added-highlight {
   position: relative !important;
   z-index: 999 !important;
 }
+
+/* Center floating cart count label on top of icon */
+#floatingCartCount {
+  left: 48% !important; /* Slightly offset to center over basket visual weight */
+  right: auto !important;
+  transform: translateX(-50%) !important;
+  top: 0px !important;
+}
 .breadcrumb-item::before,
 .breadcrumb-item::after {
   content: none !important;
@@ -167,6 +175,44 @@ html body [data-product-id].cart-added-highlight {
 .swiper-slide .card {
   padding-bottom: 0 !important;
   border-radius: 8px !important;
+}
+
+.swal2-container {
+  z-index: 999999 !important;
+}
+
+#floatingCartPanel .quantity-control .btn-qty:disabled {
+  background: transparent !important;
+  color: #ccc !important;
+  opacity: 0.8;
+}
+
+html body #floatingCartPanel .quantity-control button.btn-qty-minus:hover,
+html body #floatingCartPanel .quantity-control button.btn-qty-plus:hover,
+html body #floatingCartPanel .quantity-control button.btn-qty:active {
+  background: #ddd !important;
+}
+
+html body #floatingCartPanel .quantity-control button.btn-qty:disabled:hover,
+html body #floatingCartPanel .quantity-control button.btn-qty:disabled:active {
+  background: transparent !important;
+}
+
+#floatingCartPanel .quantity-control {
+  height: 24px !important;
+  border-radius: 4px;
+}
+
+#floatingCartPanel .quantity-control .btn-qty {
+  width: 22px !important;
+  height: 24px !important;
+  font-size: 14px !important;
+}
+
+#floatingCartPanel .quantity-control .quantity-input {
+  width: 26px !important;
+  height: 24px !important;
+  font-size: 11px !important;
 }
 
 #floatingCartPanel.fixed-panel {
@@ -386,12 +432,12 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
 <div id="floatingCartBtn" class="floating-cart-btn" style="display: <?php echo $displayStyle; ?>;">
   <span style="position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:100%;">
     <img src="<?php echo $base_url; ?>asset/images/Cart_Icon.png" alt="Cart" class="floating-cart-icon">
-    <span id="floatingCartCount" style="position:absolute;top:0px;right:10px;background:none;color:#fff;font-weight:bold;font-size:0.95rem;padding:2px 7px;border-radius:12px;min-width:22px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,0.12);"><?php echo $cartCount; ?></span>
+    <span id="floatingCartCount" style="position:absolute;top:0px;right:10px;background:none;color:#fff;font-weight:bold;font-size:0.95rem;padding:2px 7px;min-width:22px;text-align:center;"><?php echo $cartCount; ?></span>
   </span>
   <!-- Floating Cart Panel (dropdown style) -->
   <div id="floatingCartPanel" class="fixed-panel" style="display:none;">
     <div class="floating-cart-header">
-      <h5 style="margin:0;font-weight:bold;">My Cart</h5>
+      <h5 style="margin:0;font-weight:500;font-size:0.93rem;font-family:'Mulish', sans-serif !important;">My Cart</h5>
       <button id="closeFloatingCartPanel" style="background:none;border:none;font-size:1.7rem;line-height:1;color:#888;cursor:pointer;">&times;</button>
     </div>
     <div id="floatingCartContent"></div>
@@ -399,7 +445,7 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
     <div class="floating-cart-actions">
       <a href="<?php echo $base_url; ?>cart.php" class="btn btn-outline-primary w-100 mb-2" style="padding:6px 0;font-size:0.97rem;">View Full Cart</a>
       <button type="button" class="btn btn-outline-danger w-100" id="floatingRemoveAll" style="padding:6px 0;font-size:0.97rem;">
-        <i class="fas fa-trash-alt me-1"></i>Remove All
+        <i class="fas fa-trash me-1"></i>Remove All
       </button>
     </div>
   </div>
@@ -1299,11 +1345,11 @@ function updateFloatingCartSummary() {
       const totals = data.totals;
       summary.innerHTML = `
         <div class="floating-cart-summary-box" style="border:1px solid #cfd8dc;border-radius:8px;padding:8px 10px 4px 10px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:6px;">
-          <div style="font-weight:600;font-size:1.02rem;margin-bottom:6px;">Price Summary</div>
-          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Total MRP</span><span style="font-weight:600;text-decoration:line-through;">₹${parseFloat(totals.total_mrp || totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-          <div class="d-flex justify-content-between mb-1"><span class="text-muted">You Pay</span><span style="font-weight:600;">₹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Savings</span><span class="fw-bold" style="color:#2e7d32;">₹${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Delivery <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
+          <div style="font-weight:500;font-size:0.93rem;font-family:'Mulish', sans-serif !important;margin-bottom:6px;">Price Summary</div>
+          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Total MRP</span><span style="font-weight:500;text-decoration:line-through;">₹${parseFloat(totals.total_mrp || totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+          <div class="d-flex justify-content-between mb-1"><span class="text-muted">You Pay</span><span style="font-weight:500;">₹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Savings</span><span style="font-weight:500;color:#2e7d32;">₹${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Delivery <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger" style="font-weight:500;">+ Extra</span></div>
           <div class="d-grid mt-2 mb-1">
             <a href='checkout.php' class='btn btn-success btn-sm fw-bold' style='font-size:0.98rem;'>PROCEED TO CHECKOUT</a>
           </div>
@@ -1339,16 +1385,18 @@ function renderFloatingCart() {
           <div class="d-flex align-items-center gap-1 mb-2 border-bottom pb-1" style="min-width:0;">
             <img src="${item.main_image ? './' + item.main_image : './uploads/products/blank-img.webp'}" onerror="this.onerror=null; this.src='./uploads/products/blank-img.webp';" alt="${item.name}" style="width:38px;height:38px;object-fit:cover;border-radius:6px;border:1px solid #eee;flex-shrink:0;">
             <div class="flex-grow-1" style="min-width:0;">
-              <div style="font-weight:600;font-size:0.97rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.name}</div>
+              <div style="font-weight:500;font-size:0.93rem;font-family:'Mulish', sans-serif !important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.name}</div>
               <div class="text-muted d-flex align-items-center gap-1" style="font-size:0.85rem;">
-                <button class="btn btn-xs btn-outline-secondary btn-qty-minus" data-cart-id="${cartId}" ${item.quantity <= 1 ? 'disabled' : ''} style="width:22px;height:22px;padding:0 0 2px 0;line-height:1;">-</button>
-                <input type="number" min="1" class="form-control form-control-xs cart-qty-input" data-cart-id="${cartId}" value="${item.quantity}" style="width:32px;text-align:center;display:inline-block;padding:0 2px;font-size:0.9rem;height:22px;">
-                <button class="btn btn-xs btn-outline-secondary btn-qty-plus" data-cart-id="${cartId}" style="width:22px;height:22px;padding:0 0 2px 0;line-height:1;">+</button>
-                <span class="ms-1">x ₹${parseFloat(item.selling_price).toFixed(2)}</span>
+                <div class="quantity-control d-inline-flex align-items-center">
+                  <button type="button" class="btn-qty btn-qty-minus" data-cart-id="${cartId}" ${parseInt(item.quantity, 10) <= 1 ? 'disabled' : ''}>-</button>
+                  <input type="number" class="quantity-input cart-qty-input" value="${item.quantity}" min="1" data-cart-id="${cartId}">
+                  <button type="button" class="btn-qty btn-qty-plus" data-cart-id="${cartId}">+</button>
+                </div>
+                <span class="ms-1">x ₹${parseFloat(item.selling_price).toFixed(2).replace('.00', '')}</span>
               </div>
             </div>
             <div class="text-end ms-1" style="min-width:54px;">
-              <div data-cart-total-id="${cartId}" style="font-weight:700;font-size:0.98rem;">₹${(item.selling_price * item.quantity).toFixed(2)}</div>
+              <div data-cart-total-id="${cartId}" style="font-weight:700;font-size:0.98rem;">₹${(item.selling_price * item.quantity).toFixed(2).replace('.00', '')}</div>
               <button class="btn btn-xs btn-outline-danger mt-1 remove-cart-item-btn" data-cart-id="${cartId}" style="padding:0 5px;font-size:0.9rem;"><i class="fas fa-trash"></i></button>
             </div>
           </div>
@@ -1359,11 +1407,11 @@ function renderFloatingCart() {
       const totals = data.totals;
       summary.innerHTML = `
         <div class="floating-cart-summary-box" style="border:1px solid #cfd8dc;border-radius:8px;padding:8px 10px 4px 10px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:6px;">
-          <div style="font-weight:600;font-size:1.02rem;margin-bottom:6px;">Price Summary</div>
-          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Total MRP</span><span style="font-weight:600;text-decoration:line-through;">₹${parseFloat(totals.total_mrp || totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-          <div class="d-flex justify-content-between mb-1"><span class="text-muted">You Pay</span><span style="font-weight:600;">₹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Savings</span><span class="fw-bold" style="color:#2e7d32;">₹${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Delivery <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
+          <div style="font-weight:500;font-size:0.93rem;font-family:'Mulish', sans-serif !important;margin-bottom:6px;">Price Summary</div>
+          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Total MRP</span><span style="font-weight:500;text-decoration:line-through;">₹${parseFloat(totals.total_mrp || totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+          <div class="d-flex justify-content-between mb-1"><span class="text-muted">You Pay</span><span style="font-weight:500;">₹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Savings</span><span style="font-weight:500;color:#2e7d32;">₹${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Delivery <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger" style="font-weight:500;">+ Extra</span></div>
           <div class="d-grid mt-2 mb-1">
             <a href='checkout.php' class='btn btn-success btn-sm fw-bold' style='font-size:0.98rem;'>PROCEED TO CHECKOUT</a>
           </div>
@@ -1386,14 +1434,14 @@ function renderFloatingCart() {
             const unitPrice = parseFloat(unitPriceText.match(/₹(\d+\.?\d*)/)?.[1] || 0);
             const totalDiv = row.querySelector('div[data-cart-total-id]');
             if (totalDiv && unitPrice) {
-              totalDiv.textContent = '₹' + ((qty - 1) * unitPrice).toFixed(2);
+              totalDiv.textContent = '₹' + ((qty - 1) * unitPrice).toFixed(2).replace('.00', '');
             }
             updateFloatingCartSummary(); // Real-time update
             updateCartQuantity(cartId, qty - 1, input, btn, function(success, updatedItem) {
               if (!success) {
                 input.value = prevQty;
                 if (totalDiv && unitPrice) {
-                  totalDiv.textContent = '₹' + (prevQty * unitPrice).toFixed(2);
+                  totalDiv.textContent = '₹' + (prevQty * unitPrice).toFixed(2).replace('.00', '');
                 }
                 if (typeof Swal !== 'undefined') {
                     Swal.fire({
@@ -1503,14 +1551,14 @@ function renderFloatingCart() {
           const unitPrice = parseFloat(unitPriceText.match(/₹(\d+\.?\d*)/)?.[1] || 0);
           const totalDiv = row.querySelector('div[data-cart-total-id]');
           if (totalDiv && unitPrice) {
-            totalDiv.textContent = '₹' + (newQty * unitPrice).toFixed(2);
+            totalDiv.textContent = '₹' + (newQty * unitPrice).toFixed(2).replace('.00', '');
           }
           updateFloatingCartSummary(); // Real-time update
           updateCartQuantity(cartId, newQty, input, btn, function(success, updatedItem) {
             if (!success) {
               input.value = prevQty;
               if (totalDiv && unitPrice) {
-                totalDiv.textContent = '₹' + (prevQty * unitPrice).toFixed(2);
+                totalDiv.textContent = '₹' + (prevQty * unitPrice).toFixed(2).replace('.00', '');
               }
               if (typeof Swal !== 'undefined') {
                   Swal.fire({
