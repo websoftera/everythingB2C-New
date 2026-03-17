@@ -3,6 +3,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 require_once __DIR__ . '/functions.php';
+require_once __DIR__ . '/delivery_popup_functions.php';
 $base_url = $base_url ?? '';
 
 // Helper: Use this snippet for authentication checks
@@ -2471,3 +2472,4 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 </script>
+<?php include_once __DIR__ . '/delivery_popup.php'; ?>
