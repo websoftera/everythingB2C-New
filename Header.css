@@ -3225,7 +3225,7 @@ input[type="checkbox"]:checked+.heart-icon,
   .discounted-products-title,
   .featured-products-title {
     font-size: 16px !important;
-    margin-bottom: 5px !important;
+    margin-bottom: 2px !important;
   }
 
   /* Product card sizing handled in asset/style/product-card.css */
@@ -3475,7 +3475,7 @@ input[type="checkbox"]:checked+.heart-icon,
   .featured-products-section,
   .service-section,
   .process-container {
-    padding: 12px 0 !important;
+    padding: 8px 0 !important;
     margin: 0 !important;
   }
 

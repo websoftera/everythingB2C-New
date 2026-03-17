@@ -83,7 +83,7 @@ $main_categories = array_filter($categories, function ($cat) {
     </div>
 
 <section>
-    <div class="process-container" style="gap: 8px !important;">
+    <div class="process-container" style="gap: 5px !important;">
         <div class="step">
             <img src="./asset/images/work-1.webp" alt="Online Shopping">
             <p>ONLINE SHOPPING</p>
@@ -431,7 +431,7 @@ endforeach; ?>
   .featured-products-header .view-all-link {
     position: absolute !important;
     right: -13px !important;
-    top: 4px !important;
+    /* top: 4px !important; */
     transform: none !important;
     background: transparent !important;
     padding: 0 !important;
@@ -1389,7 +1389,7 @@ endforeach; ?>
   overflow-x: auto !important;
   overflow-y: hidden !important;
   scroll-behavior: smooth !important;
-  padding: 15px 10px !important;
+  padding: 15px 10px;
   -webkit-overflow-scrolling: touch !important;
   scrollbar-width: none !important;
   flex: 1 !important;
@@ -1778,23 +1778,25 @@ endforeach; ?>
 /* Mobile Responsive Design */
 @media (max-width: 768px) {
   .popular-categories-section {
-    padding: 15px;
-    margin: 15px 0;
+    padding: 1px 15px;
+    margin: 1px 0;
   }
   
   .categories-card {
-    padding: 15px;
+    padding: 1px 15px;
     border-radius: 6px;
   }
   
-  .categories-title {
+  .category-products-title {
+    margin-top: 1px !important;
+    margin-bottom: 1px !important;
     font-size: 14px;
-    margin-bottom: 15px;
   }
   
   .categories-container {
     gap: 12px;
-    padding: 8px 0;
+    row-gap: 1px;
+    padding: 1px 0;
   }
   
   .category-item {
@@ -1846,12 +1848,22 @@ endforeach; ?>
 
 @media (max-width: 480px) {
   .popular-categories-section {
-    padding: 10px;
-    margin: 10px 0;
+    padding: 1px 10px;
+    margin: 1px 0;
   }
   
   .categories-card {
-    padding: 12px;
+    padding: 1px 12px;
+  }
+  
+  .category-products-title {
+    margin-top: 1px !important;
+    margin-bottom: 1px !important;
+  }
+  
+  .categories-container {
+    row-gap: 1px;
+    padding: 1px 0;
   }
   
   .category-products-header .view-all-link {
@@ -1986,7 +1998,7 @@ endforeach; ?>
   .discounted-products-header .view-all-link,
   .featured-products-header .view-all-link {
     color: var(--dark-grey) !important;
-    font-size: 11px !important;
+    font-size: 13px !important;
     text-decoration: underline !important;
     white-space: nowrap !important;
     margin-left: 10px !important;
@@ -2187,7 +2199,7 @@ endforeach; ?>
     max-width: 100% !important;
     overflow-x: auto !important;
     overflow-y: hidden !important;
-    padding: 15px 5px !important;
+    padding: 1px 5px !important;
     gap: 10px !important;
   }
   
@@ -2351,8 +2363,8 @@ endforeach; ?>
   .featured-products-section {
     padding: 15px 0px;
     margin: 15px 0;
-    padding-top: 10px !important;
-    padding-bottom: 20px !important;
+    padding-top: 2px !important;
+    padding-bottom: 10px !important;
   }
   
   .featured-products-card {
@@ -2742,7 +2754,7 @@ endforeach; ?>
 @media (max-width: 768px) {
   .discounted-products-card,
   .featured-products-card {
-    padding: 15px !important;
+    padding: 10px 15px 8px 15px !important;
     max-width: 100% !important;
     margin: 0 !important;
     box-sizing: border-box !important;

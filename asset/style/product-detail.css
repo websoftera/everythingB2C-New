@@ -614,7 +614,7 @@
     }
 
     .related-products-container {
-        padding: 10px 10px 20px 10px !important;
+        padding: 10px 10px 2px 10px !important;
         /* Extra bottom padding for shadows */
         gap: 12px;
         scroll-snap-type: x mandatory;
@@ -631,7 +631,7 @@
     /* Fix related spacing */
     .related-products-header {
         margin-bottom: 2px !important;
-        margin-top: 10px !important;
+        margin-top: 17px !important;
 
     }
 

@@ -497,8 +497,8 @@ endif; ?>
     padding-right: 1px !important;
   }
   .col-12 {
-    padding-left: 4px !important;
-    padding-right: 4px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
   }
 
   /* Reduce MRP & PAY font by 2px so full text fits in narrow columns */
