@@ -405,7 +405,7 @@ endforeach; ?>
 <link rel="stylesheet" href="./asset/style/style.css">
 
 <style>
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   /* Force all View All links absolute to right to sync layout regardless of title length */
   .category-products-header,
   .discounted-products-header,
@@ -430,7 +430,7 @@ endforeach; ?>
   .discounted-products-header .view-all-link,
   .featured-products-header .view-all-link {
     position: absolute !important;
-    right: 2px !important;
+    right: -13px !important;
     top: 4px !important;
     transform: none !important;
     background: transparent !important;
@@ -1852,6 +1852,10 @@ endforeach; ?>
   
   .categories-card {
     padding: 12px;
+  }
+  
+  .category-products-header .view-all-link {
+    right: -10px !important;
   }
   
   .categories-title {
