@@ -1167,7 +1167,7 @@ h3 {
 
   .step p {
     font-size: 12px;
-    padding: 6px 12px;
+    padding: 4px 12px;
   }
 
   .arrow {
@@ -3068,7 +3068,7 @@ html .cart-added-highlight,
   .discounted-products-container,
   .featured-products-container {
     gap: 6px !important;
-    padding: 4px 0 !important;
+    padding: 0px 0 !important;
   }
 
   /* Smaller grid spacing */

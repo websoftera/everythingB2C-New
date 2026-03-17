@@ -83,7 +83,7 @@ $main_categories = array_filter($categories, function ($cat) {
     </div>
 
 <section>
-    <div class="process-container" style="gap: 8px !important;">
+    <div class="process-container" style="gap: 5px !important;">
         <div class="step">
             <img src="./asset/images/work-1.webp" alt="Online Shopping">
             <p>ONLINE SHOPPING</p>
@@ -1389,7 +1389,7 @@ endforeach; ?>
   overflow-x: auto !important;
   overflow-y: hidden !important;
   scroll-behavior: smooth !important;
-  padding: 15px 10px !important;
+  padding: 15px 10px;
   -webkit-overflow-scrolling: touch !important;
   scrollbar-width: none !important;
   flex: 1 !important;
@@ -2199,7 +2199,7 @@ endforeach; ?>
     max-width: 100% !important;
     overflow-x: auto !important;
     overflow-y: hidden !important;
-    padding: 15px 5px !important;
+    padding: 1px 5px !important;
     gap: 10px !important;
   }
   
@@ -2754,7 +2754,7 @@ endforeach; ?>
 @media (max-width: 768px) {
   .discounted-products-card,
   .featured-products-card {
-    padding: 15px !important;
+    padding: 10px 15px 8px 15px !important;
     max-width: 100% !important;
     margin: 0 !important;
     box-sizing: border-box !important;
