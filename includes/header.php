@@ -131,7 +131,7 @@ html body [data-product-id].cart-added-highlight {
 
 /* Center floating cart count label on top of icon */
 #floatingCartCount {
-  left: 48% !important; /* Slightly offset to center over basket visual weight */
+  left: 55% !important; /* Center over the icon */
   right: auto !important;
   transform: translateX(-50%) !important;
   top: 0px !important;
@@ -240,6 +240,17 @@ html body #floatingCartPanel .quantity-control button.btn-qty:disabled:active {
   padding: 14px 18px 8px 18px;
   border-bottom: 1px solid #eee;
   flex-shrink: 0;
+}
+#floatingCartPanel.fixed-panel .floating-cart-header h5 {
+  font-weight: 500;
+  font-size: 0.93rem;
+  color: #333;
+}
+@media (max-width: 768px) {
+  #floatingCartPanel.fixed-panel .floating-cart-header h5 {
+    font-size: 1.2rem !important;
+    font-weight: 500 !important;
+  }
 }
 /* Product list area always scrolls, never summary or actions */
 #floatingCartPanel.fixed-panel #floatingCartContent {
@@ -437,7 +448,7 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
   <!-- Floating Cart Panel (dropdown style) -->
   <div id="floatingCartPanel" class="fixed-panel" style="display:none;">
     <div class="floating-cart-header">
-      <h5 style="margin:0;font-weight:500;font-size:0.93rem;font-family:'Mulish', sans-serif !important;">My Cart</h5>
+      <h5 style="margin:0;font-family:'Mulish', sans-serif !important;">My Cart</h5>
       <button id="closeFloatingCartPanel" style="background:none;border:none;font-size:1.7rem;line-height:1;color:#888;cursor:pointer;">&times;</button>
     </div>
     <div id="floatingCartContent"></div>

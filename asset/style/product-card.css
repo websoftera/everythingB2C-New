@@ -941,12 +941,13 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
         font-size: 11px !important;
         font-weight: 600 !important;
         color: #333 !important;
-        min-height: unset !important;
+        min-height: 29px !important;
         max-height: unset !important;
         height: auto !important;
         margin: 0 0 2px 0 !important;
         display: -webkit-box !important;
         -webkit-line-clamp: 2 !important;
+        line-clamp: 2 !important;
     }
 
     .price-buttons {
