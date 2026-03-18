@@ -28,11 +28,15 @@ $categoryTree = buildCategoryTree($categories);
 <!-- Sidebar Filter Component -->
 <div class="sidebar-filter-container">
 
-  <!-- Mobile Filter Toggle Button -->
-  <button class="filter-toggle-btn d-lg-none" id="sidebarFilterToggle" type="button">
-    <span class="filter-icon-css"></span>
-    <span>Filter</span>
-  </button>
+  <!-- Mobile Filter Toggle Buttons -->
+  <div class="mobile-filter-toggles d-lg-none">
+    <button class="filter-toggle-btn" id="sidebarFilterToggle" type="button" data-toggle="category">
+      <i class="bi bi-funnel"></i> <span>Filter</span>
+    </button>
+    <button class="filter-toggle-btn" id="sidebarSortToggle" type="button" data-toggle="sort">
+      <i class="bi bi-arrow-down-up"></i> <span>Sort</span>
+    </button>
+  </div>
 
   <!-- Sidebar Filter Panel -->
   <div class="sidebar-filter-panel" id="sidebarFilterPanel">
@@ -43,127 +47,168 @@ $categoryTree = buildCategoryTree($categories);
       </button>
     </div>
 
-    <form method="get" id="sidebarFilterForm" class="sidebar-filter-form" action="<?php echo $_SERVER['REQUEST_URI']; ?>">
-      <!-- Preserve essential page parameters -->
-      <?php if (isset($_GET['slug'])): ?>
-        <input type="hidden" name="slug" value="<?php echo htmlspecialchars($_GET['slug']); ?>">
-      <?php endif; ?>
-      
-      <!-- Search Filter -->
-      <div class="filter-section">
-        <h5>Search</h5>
-        <div class="form-group">
-          <input type="text" name="q" value="<?php echo htmlspecialchars($currentSearch); ?>" 
-                 placeholder="Search products..." class="form-control">
+    <!-- Desktop View (Unchanged to maintain existing UI) -->
+    <div class="desktop-filter-view d-none d-lg-block">
+      <form method="get" id="sidebarFilterForm" class="sidebar-filter-form" action="<?php echo $_SERVER['REQUEST_URI']; ?>">
+        <!-- Preserve essential page parameters -->
+        <?php if (isset($_GET['slug'])): ?>
+          <input type="hidden" name="slug" value="<?php echo htmlspecialchars($_GET['slug']); ?>">
+        <?php endif; ?>
+        
+        <!-- Search Filter -->
+        <div class="filter-section">
+          <h5>Search</h5>
+          <div class="form-group">
+            <input type="text" name="q" value="<?php echo htmlspecialchars($currentSearch); ?>" 
+                   placeholder="Search products..." class="form-control">
+          </div>
         </div>
-      </div>
 
-      <!-- Category Filter -->
-      <div class="filter-section">
-        <h5>Categories</h5>
-        <div class="form-group">
-          <select name="category" id="sidebarCategorySelect" class="form-control" onchange="document.getElementById('sidebarFilterForm').dispatchEvent(new Event('submit'))">
-            <option value="">All Categories</option>
-            <?php 
-            // Function to render categories with subcategories as nested options
-            function renderCategoriesWithSubcategories($categories, $parentId = null, $level = 0) {
-                $output = '';
-                $indent = str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $level);
-                
-                foreach ($categories as $cat) {
-                    if ($cat['parent_id'] == $parentId) {
-                        $output .= '<option value="' . $cat['id'] . '"';
-                        if (isset($_GET['category']) && $_GET['category'] == $cat['id']) {
-                            $output .= ' selected';
+        <!-- Category Filter -->
+        <div class="filter-section">
+          <h5>Categories</h5>
+          <div class="form-group">
+            <select name="category" id="sidebarCategorySelect" class="form-control" onchange="document.getElementById('sidebarFilterForm').dispatchEvent(new Event('submit'))">
+              <option value="">All Categories</option>
+              <?php 
+              // Re-use current function if existing
+              if (!function_exists('renderCategoriesWithSubcategories')) {
+                  function renderCategoriesWithSubcategories($categories, $parentId = null, $level = 0) {
+                      $output = '';
+                      $indent = str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $level);
+                      foreach ($categories as $cat) {
+                          if ($cat['parent_id'] == $parentId) {
+                              $output .= '<option value="' . $cat['id'] . '"';
+                              if (isset($_GET['category']) && $_GET['category'] == $cat['id']) {
+                                  $output .= ' selected';
+                              }
+                              $output .= '>' . $indent . htmlspecialchars($cat['name']) . '</option>';
+                              $output .= renderCategoriesWithSubcategories($categories, $cat['id'], $level + 1);
+                          }
+                      }
+                      return $output;
+                  }
+              }
+              echo renderCategoriesWithSubcategories($categories);
+              ?>
+            </select>
+          </div>
+        </div>
+
+        <!-- Price Range Filter - COMMENTED OUT FOR DESKTOP -->
+        <!--
+        <div class="filter-section">
+           ...
+        </div>
+        -->
+
+        <!-- Option Actions -->
+        <div class="filter-actions">
+          <button type="submit" class="filter-btn filter-btn-primary" title="Apply Filters">
+            <i class="fas fa-check"></i> Apply
+          </button>
+          <button type="button" class="filter-btn filter-btn-secondary" id="clearAllFilters" title="Clear All Filters">
+            <i class="fas fa-times"></i> Clear All
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Mobile View (DMart Style - Tabs & Content Layout) -->
+    <div class="mobile-filter-layout d-lg-none">
+      <form method="get" id="mobileFilterForm" class="sidebar-filter-form" action="<?php echo $_SERVER['REQUEST_URI']; ?>">
+        <!-- Preserve essential page parameters -->
+        <?php if (isset($_GET['slug'])): ?>
+          <input type="hidden" name="slug" value="<?php echo htmlspecialchars($_GET['slug']); ?>">
+        <?php endif; ?>
+        
+        <div class="mobile-filter-body">
+          <!-- Left Navigation -->
+          <div class="mobile-filter-side-nav">
+            <button type="button" class="mob-nav-item active" data-target="mob-sec-category">Category</button>
+
+            <button type="button" class="mob-nav-item" data-target="mob-sec-sort">Sort</button>
+          </div>
+
+          <!-- Right Content Pane -->
+          <div class="mobile-filter-content">
+            <!-- Search Inside Content Pane (Local List Filter) -->
+            <div class="mob-filter-search-container">
+              <div class="mob-search-wrapper">
+                <input type="text" placeholder="Search Categories..." class="form-control mob-category-search">
+                <button type="button" class="mob-search-clear" id="mobSearchClear">&times;</button>
+              </div>
+            </div>
+
+            <!-- Category Pane -->
+            <div class="mob-filter-pane active" id="mob-sec-category">
+              <div class="mob-options-list">
+                <?php 
+                // Define helper for list on-the-fly or inside
+                if (!function_exists('renderMobileCategoriesList')) {
+                    function renderMobileCategoriesList($categories, $parentId = null, $level = 0) {
+                        $output = '';
+                        foreach ($categories as $cat) {
+                            if ($cat['parent_id'] == $parentId) {
+                                $checked = (isset($_GET['category']) && $_GET['category'] == $cat['id']) ? 'checked' : '';
+                                $indentStyle = 'padding-left: ' . ($level * 15 + 15) . 'px;';
+                                
+                                $output .= '<label class="mob-radio-item" style="' . $indentStyle . '">';
+                                $output .= '<input type="radio" name="category" value="' . $cat['id'] . '" ' . $checked . '>';
+                                $output .= '<span class="mob-radio-label">' . htmlspecialchars($cat['name']) . '</span>';
+                                $output .= '<span class="mob-radio-circle"></span>';
+                                $output .= '</label>';
+                                
+                                $output .= renderMobileCategoriesList($categories, $cat['id'], $level + 1);
+                            }
                         }
-                        $output .= '>' . $indent . htmlspecialchars($cat['name']) . '</option>';
-                        
-                        // Recursively add subcategories
-                        $output .= renderCategoriesWithSubcategories($categories, $cat['id'], $level + 1);
+                        return $output;
                     }
                 }
-                
-                return $output;
-            }
-            
-            echo renderCategoriesWithSubcategories($categories);
-            ?>
-          </select>
-        </div>
-      </div>
-
-      <!-- Price Range Filter - COMMENTED OUT FOR NOW -->
-      <!--
-      <div class="filter-section">
-        <h5>Price Range</h5>
-        <div class="price-range-container">
-          <div class="price-display">
-            <div class="price-inputs">
-              <div class="price-input-group">
-                <label>Min</label>
-                <div class="price-input-wrapper">
-                  <span class="currency-symbol">₹</span>
-                  <input type="number" id="minPriceInput" class="price-input" 
-                         min="<?php echo $siteMinPrice; ?>" max="<?php echo $siteMaxPrice; ?>" 
-                         value="<?php echo $currentMinPrice; ?>" step="10">
-                </div>
-              </div>
-              <div class="price-input-group">
-                <label>Max</label>
-                <div class="price-input-wrapper">
-                  <span class="currency-symbol">₹</span>
-                  <input type="number" id="maxPriceInput" class="price-input" 
-                         min="<?php echo $siteMinPrice; ?>" max="<?php echo $siteMaxPrice; ?>" 
-                         value="<?php echo $currentMaxPrice; ?>" step="10">
-                </div>
+                echo renderMobileCategoriesList($categories);
+                ?>
               </div>
             </div>
-          </div>
-          <div class="price-sliders">
-            <div class="slider-track">
-              <div class="slider-fill" id="sliderFill"></div>
+
+
+
+            <!-- Sort Pane -->
+            <div class="mob-filter-pane" id="mob-sec-sort">
+              <div class="mob-options-list">
+                <label class="mob-radio-item">
+                  <input type="radio" name="sort" value="newest" <?php if ($currentSort == 'newest') echo 'checked'; ?>>
+                  <span class="mob-radio-label">Newest First</span>
+                  <span class="mob-radio-circle"></span>
+                </label>
+                <label class="mob-radio-item">
+                  <input type="radio" name="sort" value="oldest" <?php if ($currentSort == 'oldest') echo 'checked'; ?>>
+                  <span class="mob-radio-label">Oldest First</span>
+                  <span class="mob-radio-circle"></span>
+                </label>
+                <label class="mob-radio-item">
+                  <input type="radio" name="sort" value="price_low" <?php if ($currentSort == 'price_low') echo 'checked'; ?>>
+                  <span class="mob-radio-label">Price: Low to High</span>
+                  <span class="mob-radio-circle"></span>
+                </label>
+                <label class="mob-radio-item">
+                  <input type="radio" name="sort" value="price_high" <?php if ($currentSort == 'price_high') echo 'checked'; ?>>
+                  <span class="mob-radio-label">Price: High to Low</span>
+                  <span class="mob-radio-circle"></span>
+                </label>
+              </div>
             </div>
-            <input type="range" id="minPriceSlider" name="min_price" 
-                   min="<?php echo $siteMinPrice; ?>" max="<?php echo $siteMaxPrice; ?>" 
-                   value="<?php echo $currentMinPrice; ?>" step="10">
-            <input type="range" id="maxPriceSlider" name="max_price" 
-                   min="<?php echo $siteMinPrice; ?>" max="<?php echo $siteMaxPrice; ?>" 
-                   value="<?php echo $currentMaxPrice; ?>" step="10">
-          </div>
-          <div class="price-range-info">
-            <span class="range-label">Range: ₹<?php echo number_format($siteMinPrice); ?> - ₹<?php echo number_format($siteMaxPrice); ?></span>
+
           </div>
         </div>
-      </div>
-      -->
 
-      <!-- Sort Options - COMMENTED OUT FOR NOW -->
-      <!--
-      <div class="filter-section">
-        <h5>Sort By</h5>
-        <div class="form-group">
-          <select name="sort" class="form-control">
-            <option value="newest" <?php if ($currentSort == 'newest') echo 'selected'; ?>>Newest First</option>
-            <option value="oldest" <?php if ($currentSort == 'oldest') echo 'selected'; ?>>Oldest First</option>
-            <option value="price_low" <?php if ($currentSort == 'price_low') echo 'selected'; ?>>Price: Low to High</option>
-            <option value="price_high" <?php if ($currentSort == 'price_high') echo 'selected'; ?>>Price: High to Low</option>
-            <option value="name_asc" <?php if ($currentSort == 'name_asc') echo 'selected'; ?>>Name: A to Z</option>
-            <option value="name_desc" <?php if ($currentSort == 'name_desc') echo 'selected'; ?>>Name: Z to A</option>
-          </select>
+        <!-- Fixed Footer Actions -->
+        <div class="mob-filter-footer">
+          <button type="button" class="mob-filter-foot-btn mob-clear-btn" id="mobileClearAllFilters">CLEAR ALL</button>
+          <button type="submit" class="mob-filter-foot-btn mob-apply-btn">APPLY</button>
         </div>
-      </div>
-      -->
+      </form>
+    </div>
 
-      <!-- Filter Actions -->
-      <div class="filter-actions">
-        <button type="submit" class="filter-btn filter-btn-primary" title="Apply Filters">
-          <i class="fas fa-check"></i> Apply
-        </button>
-        <button type="button" class="filter-btn filter-btn-secondary" id="clearAllFilters" title="Clear All Filters">
-          <i class="fas fa-times"></i> Clear All
-        </button>
-      </div>
-    </form>
   </div>
 </div>
 
@@ -546,14 +591,30 @@ select.form-control {
 @media (max-width: 991.98px) {
   .sidebar-filter-panel {
     position: fixed;
-    top: 0;
+    top: 15%; /* Top spacing for bottom-sheet effect */
     left: -100%;
     width: 100%;
-    height: 100vh;
+    height: 85vh; /* Takes 85% of screen height */
     z-index: 1050;
-    border-radius: 0;
+    border-radius: 20px 20px 0 0; /* Rounded top corners */
     transition: left 0.3s ease;
-    overflow-y: auto;
+    overflow-y: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 0 !important;
+    box-shadow: 0 -5px 25px rgba(0,0,0,0.15);
+  }
+
+  /* Support Backdrop for mobile bottom sheet offset view */
+  .sidebar-filter-panel.show::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 15%; /* Covers top buffer */
+    background: rgba(0,0,0,0.5);
+    z-index: -1;
   }
 
   .sidebar-filter-panel.show {
@@ -563,8 +624,251 @@ select.form-control {
   .sidebar-filter-header {
     position: sticky;
     top: 0;
+    background: #ffffff; /* White background for modal header */
+    z-index: 10;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e9ecef;
+    margin-bottom: 0px !important;
+    border-radius: 20px 20px 0 0 !important; /* Fix background corner overlap */
+  }
+
+  .sidebar-filter-header h4 {
+    font-size: 22px !important; /* Slightly bigger */
+    font-weight: 700 !important;
+    color: #007bff !important; /* Blue Title */
+  }
+
+  /* Side-by-Side Mobile Toggles Custom CSS */
+  .mobile-filter-toggles {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 15px;
+    width: 100%;
+  }
+
+  .mobile-filter-toggles .filter-toggle-btn {
+    flex: 1;
+    margin-bottom: 0 !important;
+    margin-left: 0 !important;
+    border-radius: 20px;
+    justify-content: center;
+    padding: 8px 0;
+  }
+
+  /* Custom Mobile Filter Layout (DMart Style) */
+  .mobile-filter-layout {
+    display: flex !important; 
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden; /* Prevent overall wrapper scrolling */
+  }
+
+  .mobile-filter-layout form {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .mobile-filter-body {
+    display: flex;
+    flex: 1;
+    overflow: hidden; /* Individual scrolling in nav and content */
+  }
+
+  /* Left Navigation Node */
+  .mobile-filter-side-nav {
+    width: 120px;
+    background-color: #f6f8fa;
+    border-right: 1px solid #e9ecef;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .mob-nav-item {
+    padding: 18px 15px;
+    background: none;
+    border: none;
+    border-bottom: 1px solid #e9ecef;
+    text-align: left;
+    font-size: 14px;
+    font-weight: 500;
+    color: #444;
+    cursor: pointer;
+    border-left: 4px solid transparent;
+    transition: all 0.2s;
+  }
+
+  .mob-nav-item.active {
+    background-color: white;
+    color: #9fbe1b; /* local matching shade */
+    border-left-color: #9fbe1b;
+    font-weight: 600;
+  }
+
+  /* Right Content Pane */
+  .mobile-filter-content {
+    flex: 1;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .mob-filter-search-container {
+    padding: 12px 15px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .mob-search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+
+  .mob-category-search {
+    width: 100%;
+    border-radius: 20px !important;
+    padding: 8px 35px 8px 15px !important; /* Right padding for X */
+    font-size: 14px;
+    background-color: #f1f3f5;
+    border: none !important;
+  }
+
+  .mob-search-clear {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #888;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    display: none; /* Hidden by default toggled in JS */
+  }
+
+  .mob-search-clear:hover {
+    color: #333;
+  }
+
+  .mob-filter-pane {
+    display: none;
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+  }
+
+  .mob-filter-pane.active {
+    display: block;
+  }
+
+  /* Option Lists on Mobile Pane */
+  .mob-options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .mob-radio-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 10px !important; /* Compact Row spacing */
+    border-bottom: 1px solid #f8f9fa;
+    cursor: pointer;
+    position: relative;
+    margin-bottom: 0;
+  }
+
+  .mob-radio-item input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .mob-radio-label {
+    font-size: 15px;
+    color: #333;
+    flex: 1;
+  }
+
+  .mob-radio-circle {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ccc;
+    border-radius: 4px; /* Makes it look like a Checkbox (Square) */
+    display: inline-block;
+    position: relative;
+    transition: all 0.2s;
+  }
+
+  .mob-radio-item input[type="radio"]:checked + .mob-radio-label {
+    color: #9fbe1b;
+    font-weight: 500;
+  }
+
+  .mob-radio-item input[type="radio"]:checked ~ .mob-radio-circle {
+    border-color: #9fbe1b;
+    background-color: #9fbe1b; /* Green fill filled */
+  }
+
+  .mob-radio-item input[type="radio"]:checked ~ .mob-radio-circle::after {
+    content: '\2713'; /* Tick checkmark symbol */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    width: auto;
+    height: auto;
+    background: none;
+    border-radius: 0;
+  }
+
+
+  /* Fixed Footer */
+  .mob-filter-footer {
+    display: flex;
+    padding: 15px;
+    border-top: 1px solid #eee;
     background: white;
-    z-index: 1;
+    gap: 15px;
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+  }
+
+  .mob-filter-foot-btn {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #ccc;
+    background: white;
+    font-weight: 600;
+    font-size: 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .mob-apply-btn {
+    background: #9fbe1b !important;
+    color: white !important;
+    border: none !important;
+  }
+
+  .mob-clear-btn {
+    color: #666;
+    background: #fff;
+  }
+
+  /* Price styling enhancements for compactness */
+  .mob-filter-pane .price-input-wrapper {
+    padding: 6px 10px;
   }
 }
 
@@ -650,13 +954,32 @@ select.form-control {
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   const filterToggle = document.getElementById('sidebarFilterToggle');
+  const sortToggle = document.getElementById('sidebarSortToggle');
   const filterPanel = document.getElementById('sidebarFilterPanel');
   const filterClose = document.getElementById('sidebarFilterClose');
 
-  if (filterToggle && filterPanel) {
-    filterToggle.addEventListener('click', function() {
+  function openModalWithTab(tabTargetId) {
+    if (filterPanel) {
       filterPanel.classList.add('show');
       document.body.style.overflow = 'hidden';
+
+      // Activate corresponding mobile nav item
+      const tabBtn = document.querySelector(`.mob-nav-item[data-target="${tabTargetId}"]`);
+      if (tabBtn) {
+        tabBtn.click();
+      }
+    }
+  }
+
+  if (filterToggle) {
+    filterToggle.addEventListener('click', function() {
+      openModalWithTab('mob-sec-category');
+    });
+  }
+
+  if (sortToggle) {
+    sortToggle.addEventListener('click', function() {
+      openModalWithTab('mob-sec-sort');
     });
   }
 
@@ -814,6 +1137,105 @@ document.addEventListener('DOMContentLoaded', function() {
       
       // Navigate to new URL
       window.location.href = newUrl;
+    });
+  }
+
+  // --- Mobile Local Search Filter (Pane Search) ---
+  const mobSearchInput = document.querySelector('.mob-category-search');
+  const mobSearchClear = document.getElementById('mobSearchClear');
+  const mobRadioItems = document.querySelectorAll('#mob-sec-category .mob-radio-item');
+
+  if (mobSearchInput) {
+    mobSearchInput.addEventListener('input', function() {
+      const val = this.value.toLowerCase().trim();
+      
+      if (mobSearchClear) {
+        mobSearchClear.style.display = val.length > 0 ? 'block' : 'none';
+      }
+
+      mobRadioItems.forEach(item => {
+        const labelNode = item.querySelector('.mob-radio-label');
+        if (labelNode) {
+          const txt = labelNode.textContent.toLowerCase();
+          item.style.display = txt.includes(val) ? 'flex' : 'none';
+        }
+      });
+    });
+  }
+
+  if (mobSearchClear) {
+    mobSearchClear.addEventListener('click', function() {
+      if (mobSearchInput) {
+        mobSearchInput.value = '';
+        mobSearchInput.dispatchEvent(new Event('input')); // Trigger visibility updates
+      }
+    });
+  }
+
+  // --- Mobile Filter Tabs & Actions Handler ---
+  const mobNavItems = document.querySelectorAll('.mob-nav-item');
+  const mobPanes = document.querySelectorAll('.mob-filter-pane');
+
+  if (mobNavItems.length > 0 && mobPanes.length > 0) {
+    mobNavItems.forEach(item => {
+      item.addEventListener('click', function() {
+        // Toggle Nav item active status
+        mobNavItems.forEach(i => i.classList.remove('active'));
+        this.classList.add('active');
+
+        // Toggle Content Pane active status
+        mobPanes.forEach(p => p.classList.remove('active'));
+        const targetId = this.getAttribute('data-target');
+        const targetPane = document.getElementById(targetId);
+        if (targetPane) {
+          targetPane.classList.add('active');
+        }
+      });
+    });
+  }
+
+  // Mobile Clear All Filters
+  const mobClearFiltersBtn = document.getElementById('mobileClearAllFilters');
+  if (mobClearFiltersBtn) {
+    mobClearFiltersBtn.addEventListener('click', function() {
+      const mobForm = document.getElementById('mobileFilterForm');
+      if (mobForm) {
+        // Uncheck all radios
+        mobForm.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+        // Clear Search
+        const searchIn = mobForm.querySelector('.mob-search-input');
+        if (searchIn) searchIn.value = '';
+        // Clear Price Inputs
+        mobForm.querySelectorAll('.price-input').forEach(i => i.value = '');
+        
+        // Trigger submit to apply clear
+        mobForm.dispatchEvent(new Event('submit'));
+      }
+    });
+  }
+
+  // Handle Mobile Form Submission
+  const mobFilterForm = document.getElementById('mobileFilterForm');
+  if (mobFilterForm) {
+    mobFilterForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const currentUrl = window.location.pathname;
+      const formData = new FormData(this);
+      const params = new URLSearchParams();
+      
+      const urlParams = new URLSearchParams(window.location.search);
+      const slug = urlParams.get('slug');
+      if (slug) params.append('slug', slug);
+
+      for (const [key, value] of formData.entries()) {
+        if (key !== 'slug' && value !== '') {
+          // Add standard parameter or handle arrays if needed
+          params.append(key, value);
+        }
+      }
+      
+      window.location.href = currentUrl + (params.toString() ? '?' + params.toString() : '');
     });
   }
 });
