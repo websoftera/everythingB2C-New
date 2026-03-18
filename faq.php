@@ -245,12 +245,13 @@ echo renderBreadcrumb($breadcrumbs);
 }
 
 .faq-section h2 {
-    color: var(--dark-blue);
+    color: #2c539f;
     font-size: 24px;
     font-weight: 600;
     margin-bottom: 25px;
     border-left: 4px solid var(--site-blue);
     padding-left: 15px;
+    text-align: left;
 }
 
 .faq-item {
@@ -367,7 +368,7 @@ echo renderBreadcrumb($breadcrumbs);
     }
     
     .faq-section h2 {
-        font-size: 20px;
+        font-size: 15px !important;
     }
     
     .faq-question {
@@ -379,7 +380,10 @@ echo renderBreadcrumb($breadcrumbs);
         padding: 15px;
     }
     
-    .faq-answer p,
+    .faq-answer p {
+        font-size: 12px !important;
+    }
+    
     .faq-answer li {
         font-size: 14px;
     }
