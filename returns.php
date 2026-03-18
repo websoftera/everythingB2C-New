@@ -116,12 +116,13 @@ echo renderBreadcrumb($breadcrumbs);
 }
 
 .policy-section h2 {
-    color: var(--dark-blue);
+    color: #2c539f;
     font-size: 24px;
     font-weight: 600;
     margin-bottom: 15px;
     border-left: 4px solid var(--site-blue);
     padding-left: 15px;
+    text-align: left;
 }
 
 .intro-text {
@@ -199,7 +200,11 @@ echo renderBreadcrumb($breadcrumbs);
     }
     
     .policy-section h2 {
-        font-size: 20px;
+        font-size: 15px !important;
+    }
+    
+    .policy-section p {
+        font-size: 14px !important;
     }
     
     .intro-text {

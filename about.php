@@ -148,12 +148,13 @@ echo renderBreadcrumb($breadcrumbs);
 }
 
 .about-section h2 {
-    color: var(--dark-blue);
+    color: #2c539f;
     font-size: 24px;
     font-weight: 600;
     margin-bottom: 20px;
     border-left: 4px solid var(--site-blue);
     padding-left: 15px;
+    text-align: left;
 }
 
 .intro-text {
@@ -201,17 +202,17 @@ echo renderBreadcrumb($breadcrumbs);
 
 .feature-item p {
     color: #666;
-    font-size: 14px;
-    line-height: 1.6;
+    font-size: 15px;
+    line-height: 1.7;
     margin: 0;
 }
 
-.category-list {
+.about-us-content .category-list {
     list-style: none;
     padding-left: 0;
 }
 
-.category-list li {
+.about-us-content .category-list li {
     font-size: 15px;
     line-height: 1.7;
     color: #666;
@@ -220,7 +221,7 @@ echo renderBreadcrumb($breadcrumbs);
     position: relative;
 }
 
-.category-list li::before {
+.about-us-content .category-list li::before {
     content: "•";
     color: var(--site-blue);
     font-weight: bold;
@@ -258,8 +259,8 @@ echo renderBreadcrumb($breadcrumbs);
 
 .reason-item p {
     color: #666;
-    font-size: 14px;
-    line-height: 1.5;
+    font-size: 15px;
+    line-height: 1.7;
     margin: 0;
 }
 
@@ -298,7 +299,11 @@ echo renderBreadcrumb($breadcrumbs);
     }
     
     .about-section h2 {
-        font-size: 20px;
+        font-size: 15px !important;
+    }
+    
+    .about-section p {
+        font-size: 12px !important;
     }
     
     .intro-text {

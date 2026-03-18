@@ -743,7 +743,7 @@ h3 {
 /* Consolidated Professional Footer - Mobile (< 1025px) */
 @media (max-width: 1024px) {
   .desktop-footer {
-    padding: 20px 15px !important;
+    padding: 5px 15px !important;
   }
 
   .footer-container {
@@ -3270,7 +3270,7 @@ html .cart-added-highlight,
   font-weight: bold !important;
   color: #333333 !important;
   margin: 0 !important;
-  padding-left: 8px !important;
+  padding-left: 0px !important;
 }
 
 /* Base item - Exactly 5 per row Large Screens */
@@ -3616,7 +3616,7 @@ html .cart-added-highlight,
     grid-auto-columns: calc((100% - 15px) / 2) !important;
     /* Forces 50% width for all columns */
     gap: 7px 15px !important;
-    padding: 5px 2px !important;
+    padding: 5px 0px !important;
     overflow-x: auto !important;
     /* Enables horizontal scroll */
     scroll-snap-type: x mandatory !important;
@@ -3793,7 +3793,7 @@ html .cart-added-highlight,
   .process-container {
     gap: 5px !important;
     /* Final ultra-tight gap between cards */
-    margin-bottom: 5px !important;
+    margin-bottom: 0px !important;
     /* Final ultra-tight bottom gap */
     padding: 0 15px !important;
   }
