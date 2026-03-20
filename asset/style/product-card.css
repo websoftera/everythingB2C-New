@@ -970,8 +970,9 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
     }
 
     .price-btn {
-        flex: 1 1 0 !important;
-        min-width: 0 !important;
+        flex: 0 0 80px !important;
+        min-width: 80px !important;
+        width: 80px !important;
         height: 30px !important;
         /* Standardized height */
         font-size: 10px !important;
@@ -983,7 +984,9 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
     }
 
     .price-btn.mrp {
-        flex: 1 1 0 !important;
+        flex: 0 0 80px !important;
+        min-width: 80px !important;
+        width: 80px !important;
     }
 
     .price-btn .label {
@@ -1041,10 +1044,10 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
     }
 
     .quantity-control {
-        flex: 0 0 39% !important;
+        flex: 0 0 80px !important;
         /* Match MRP width */
-        width: 69px !important;
-        height: 27px !important;
+        width: 80px !important;
+        height: 30px !important;
         border-radius: 4px !important;
         display: flex !important;
         align-items: center !important;

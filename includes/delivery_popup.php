@@ -18,13 +18,13 @@ if ($popupEnabled !== '1') {
 ?>
 
 <!-- Delivery Availability Popup -->
-<div id="deliveryPopup" class="delivery-popup-overlay" style="display: none;">
+<div id="deliveryPopup" class="delivery-popup-overlay" style="display: none; opacity: 0; visibility: hidden; pointer-events: none;">
     <div class="delivery-popup">
         <div class="delivery-popup-header">
             <div class="delivery-logo">
                 <img src="<?php echo $base_url; ?>asset/images/logo.webp" alt="EverythingB2C Logo" class="site-logo">
             </div>
-            <button class="delivery-popup-close" onclick="closeDeliveryPopup()">
+            <button type="button" class="delivery-popup-close" id="deliveryCloseBtn" title="Close">
                 <i class="fas fa-times"></i>
             </button>
         </div>
@@ -77,6 +77,9 @@ if ($popupEnabled !== '1') {
     z-index: 10000;
     backdrop-filter: blur(5px);
     pointer-events: auto;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 .delivery-popup {
@@ -91,6 +94,7 @@ if ($popupEnabled !== '1') {
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
     position: relative;
     pointer-events: auto;
+    z-index: 10001;
 }
 
 .delivery-popup-header {
@@ -129,8 +133,13 @@ if ($popupEnabled !== '1') {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 10;
-    pointer-events: auto;
+    z-index: 10001;
+    pointer-events: auto !important;
+    flex-shrink: 0;
+    line-height: 1;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
 }
 
 .delivery-popup-close:hover {
@@ -249,19 +258,33 @@ if ($popupEnabled !== '1') {
 </style>
 
 <script>
-// Ensure closeDeliveryPopup is available globally
+// Initialize popup functions immediately
 window.closeDeliveryPopup = function() {
+    console.log('closeDeliveryPopup called');
     const popup = document.getElementById('deliveryPopup');
     if (!popup) {
         console.error('Popup element not found');
         return false;
     }
     
+    console.log('Closing popup - Current display:', popup.style.display);
+    
+    // Remove all display-related inline styles that might prevent closing
     popup.style.display = 'none';
     popup.style.visibility = 'hidden';
+    popup.style.opacity = '0';
+    popup.style.pointerEvents = 'none';
+    popup.removeAttribute('open');
+    
+    // Ensure the popup overlay is really hidden
+    setTimeout(function() {
+        popup.style.display = 'none';
+    }, 50);
     
     // Set a flag in sessionStorage to prevent auto-opening again
     sessionStorage.setItem('deliveryPopupClosed', 'true');
+    
+    console.log('Popup closed successfully');
     
     // Call AJAX to mark popup as shown
     fetch('ajax/mark_popup_shown.php', {
@@ -275,7 +298,6 @@ window.closeDeliveryPopup = function() {
     return false;
 };
 
-// Ensure checkDeliveryPincode is available globally
 window.checkDeliveryPincode = function() {
     const input = document.getElementById('pincodeInput');
     if (!input) return false;
@@ -326,20 +348,22 @@ window.checkDeliveryPincode = function() {
     return false;
 };
 
-// Ensure startShopping is available globally
 window.startShopping = function() {
     return closeDeliveryPopup();
 };
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Direct click handler on close button
-    const closeBtn = document.querySelector('.delivery-popup-close');
+// Setup popup - runs both early and on DOMContentLoaded
+function setupDeliveryPopupListeners() {
+    // Setup close button with direct click handler
+    const closeBtn = document.getElementById('deliveryCloseBtn');
     if (closeBtn) {
         closeBtn.addEventListener('click', function(e) {
+            console.log('Close button clicked');
             e.preventDefault();
             e.stopPropagation();
             closeDeliveryPopup();
-        });
+            return false;
+        }, true); // Use capture phase for more reliable clicking
     }
 
     // Setup pincode input event listeners
@@ -347,6 +371,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (pincodeInput) {
         pincodeInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
+                e.preventDefault();
                 checkDeliveryPincode();
             }
         });
@@ -359,33 +384,88 @@ document.addEventListener('DOMContentLoaded', function() {
     const popupOverlay = document.getElementById('deliveryPopup');
     if (popupOverlay) {
         popupOverlay.addEventListener('click', function(e) {
-            // Only close if clicking directly on the overlay, not on the modal content
-            if (e.target === this || e.target.classList.contains('delivery-popup-overlay')) {
+            // Only close if clicking directly on the overlay (dark area), not the modal
+            if (e.target === this) {
+                console.log('Overlay clicked, closing popup');
                 closeDeliveryPopup();
             }
-        });
+        }, false);
     }
 
     // Setup ESC key to close popup
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             const popup = document.getElementById('deliveryPopup');
-            if (popup && popup.style.display !== 'none') {
+            if (popup && popup.style.display !== 'none' && popup.style.display === 'flex') {
+                console.log('ESC key pressed, closing popup');
                 closeDeliveryPopup();
             }
         }
     });
+}
 
+// Setup listeners as soon as script loads (for inline script)
+setupDeliveryPopupListeners();
+
+// Also setup on DOMContentLoaded to ensure DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOMContentLoaded - setting up popup');
+        setupDeliveryPopupListeners();
+        
+        // Check if user already closed the popup in this session
+        const popupClosed = sessionStorage.getItem('deliveryPopupClosed') === 'true';
+        
+        // Auto-open logic (only if session says so AND user hasn't already closed it)
+        <?php if ($showPopup): ?>
+        if (!popupClosed) {
+            console.log('Auto-opening popup');
+            const popup = document.getElementById('deliveryPopup');
+            if (popup) {
+                popup.style.display = 'flex';
+                popup.style.visibility = 'visible';
+                popup.style.opacity = '1';
+                popup.style.pointerEvents = 'auto';
+                popup.removeAttribute('inert'); // Remove inert attribute if present
+            }
+        }
+        <?php endif; ?>
+
+        // Handle open_pincode param
+        if (new URLSearchParams(window.location.search).get('open_pincode') === '1') {
+            if (!popupClosed) {
+                console.log('Opening popup via URL param');
+                const popup = document.getElementById('deliveryPopup');
+                if (popup) {
+                    popup.style.display = 'flex';
+                    popup.style.visibility = 'visible';
+                    popup.style.opacity = '1';
+                    popup.style.pointerEvents = 'auto';
+                    popup.removeAttribute('inert'); // Remove inert attribute if present
+                }
+            }
+            history.replaceState(null, '', window.location.pathname);
+        }
+    });
+} else {
+    // DOM already loaded
+    console.log('DOM already loaded - setting up popup immediately');
+    setupDeliveryPopupListeners();
+    
     // Check if user already closed the popup in this session
     const popupClosed = sessionStorage.getItem('deliveryPopupClosed') === 'true';
     
     // Auto-open logic (only if session says so AND user hasn't already closed it)
     <?php if ($showPopup): ?>
     if (!popupClosed) {
+        console.log('Auto-opening popup (DOM ready)');
         const popup = document.getElementById('deliveryPopup');
         if (popup) {
             popup.style.display = 'flex';
             popup.style.visibility = 'visible';
+            popup.style.opacity = '1';
+            popup.style.pointerEvents = 'auto';
+            popup.removeAttribute('inert');
         }
     }
     <?php endif; ?>
@@ -393,13 +473,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle open_pincode param
     if (new URLSearchParams(window.location.search).get('open_pincode') === '1') {
         if (!popupClosed) {
+            console.log('Opening popup via URL param (DOM ready)');
             const popup = document.getElementById('deliveryPopup');
             if (popup) {
                 popup.style.display = 'flex';
                 popup.style.visibility = 'visible';
+                popup.style.opacity = '1';
+                popup.style.pointerEvents = 'auto';
+                popup.removeAttribute('inert');
             }
         }
         history.replaceState(null, '', window.location.pathname);
     }
-});
+}
 </script>
