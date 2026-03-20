@@ -292,7 +292,7 @@
     position: relative !important;
     z-index: 10 !important;
     margin-left: 0 !important;
-    align-self: auto !important;
+    align-self: stretch !important;
     box-sizing: border-box !important;
 }
 

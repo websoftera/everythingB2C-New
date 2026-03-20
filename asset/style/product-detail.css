@@ -281,15 +281,15 @@
     flex: 0 0 80px !important;
     min-width: 80px !important;
     width: 80px !important;
-    height: 36px !important;
+    height: 38px !important;
 }
 
 .qty-minus,
 .qty-plus,
 .btn-qty-minus,
 .btn-qty-plus {
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
     border: 1px solid #dee2e6;
     background: #f8f9fa;
     color: #333;
@@ -319,7 +319,7 @@
     margin: 0;
     border: 1px solid #ced4da;
     border-radius: 4px;
-    height: 36px;
+    height: 38px;
     padding: 0;
     background: #fff;
 }
@@ -329,7 +329,7 @@
     color: #ffffff;
     border: none;
     padding: 0 20px;
-    height: 36px;
+    height: 38px;
     border-radius: 4px;
     font-size: 13px;
     font-weight: 700;
