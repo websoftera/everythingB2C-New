@@ -1651,8 +1651,8 @@ html {
 .price-btn,
 .mrp,
 .pay {
-  flex: 1 1 0;
-  min-width: 0;
+  flex: 0 1 80px;
+  min-width: 80px;
   max-width: 100%;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -1693,16 +1693,21 @@ html {
 }
 
 .heart-icon {
-  font-size: 18px;
-  pointer-events: none;
-  color: #fff;
-  /* default color */
-  transition: color 0.3s ease;
+  font-size: 15px !important;
+  pointer-events: none !important;
+  color: transparent !important;
+  -webkit-text-stroke: 0.99px #a0a0a0 !important;
+  text-stroke: 0.99px #a0a0a0 !important;
+  transition: all 0.3s ease !important;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.06)) !important;
 }
 
 input[type="checkbox"]:checked+.heart-icon,
 input[type="checkbox"]:checked+.wishlist-label i {
-  color: var(--pink) !important;
+  color: transparent !important;
+  -webkit-text-stroke: 0.99px #DE0085 !important;
+  text-stroke: 0.99px #DE0085 !important;
+  filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3)) !important;
 }
 
 .cart-actions,
@@ -1718,8 +1723,8 @@ input[type="checkbox"]:checked+.wishlist-label i {
   display: flex;
   align-items: center;
   gap: 4px;
-  flex: 1 1 0;
-  min-width: 0;
+  flex: 0 0 80px;
+  min-width: 80px;
   border-radius: 2px;
   overflow: hidden;
 }
@@ -2376,20 +2381,15 @@ input[type="checkbox"]:checked+.wishlist-label i {
 }
 
 .wishlist .wishlist-label {
-  cursor: pointer;
-  font-size: 1.2rem;
-  /* Smaller icon size */
-  color: transparent;
-  /* Transparent fill */
-  -webkit-text-stroke: 1px var(--dark-gray);
-  /* Dark grey border */
-  text-stroke: 1px var(--dark-gray);
-  /* Dark grey border for non-webkit browsers */
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-  /* Subtle shadow */
-  transition: all 0.3s ease-in-out;
-  display: inline-block;
-  line-height: 1;
+  cursor: pointer !important;
+  font-size: 15px !important;
+  color: transparent !important;
+  -webkit-text-stroke: 0.99px #a0a0a0 !important;
+  text-stroke: 0.99px #a0a0a0 !important;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.06)) !important;
+  transition: all 0.3s ease !important;
+  display: inline-block !important;
+  line-height: 1 !important;
 }
 
 /* Wishlist heart styling lives in asset/style/product-card.css */

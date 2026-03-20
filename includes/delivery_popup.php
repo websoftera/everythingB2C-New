@@ -76,6 +76,7 @@ if ($popupEnabled !== '1') {
     align-items: center;
     z-index: 10000;
     backdrop-filter: blur(5px);
+    pointer-events: auto;
 }
 
 .delivery-popup {
@@ -89,6 +90,7 @@ if ($popupEnabled !== '1') {
     overflow-y: auto;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
     position: relative;
+    pointer-events: auto;
 }
 
 .delivery-popup-header {
@@ -128,6 +130,7 @@ if ($popupEnabled !== '1') {
     align-items: center;
     justify-content: center;
     z-index: 10;
+    pointer-events: auto;
 }
 
 .delivery-popup-close:hover {
@@ -246,19 +249,37 @@ if ($popupEnabled !== '1') {
 </style>
 
 <script>
-function closeDeliveryPopup() {
-    document.getElementById('deliveryPopup').style.display = 'none';
-    // Set a flag in localStorage to prevent auto-opening again
+// Ensure closeDeliveryPopup is available globally
+window.closeDeliveryPopup = function() {
+    const popup = document.getElementById('deliveryPopup');
+    if (!popup) {
+        console.error('Popup element not found');
+        return false;
+    }
+    
+    popup.style.display = 'none';
+    popup.style.visibility = 'hidden';
+    
+    // Set a flag in sessionStorage to prevent auto-opening again
     sessionStorage.setItem('deliveryPopupClosed', 'true');
+    
+    // Call AJAX to mark popup as shown
     fetch('ajax/mark_popup_shown.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'mark_shown' })
-    }).catch(console.error);
-}
+    }).catch(function(error) {
+        console.error('Error marking popup as shown:', error);
+    });
+    
+    return false;
+};
 
-function checkDeliveryPincode() {
+// Ensure checkDeliveryPincode is available globally
+window.checkDeliveryPincode = function() {
     const input = document.getElementById('pincodeInput');
+    if (!input) return false;
+    
     const pincode = input.value.trim();
     const resultDiv = document.getElementById('deliveryResult');
     const resultMessage = resultDiv.querySelector('.delivery-result-message');
@@ -267,7 +288,7 @@ function checkDeliveryPincode() {
         resultDiv.className = 'delivery-result error';
         resultMessage.textContent = 'Please enter a valid 6-digit pincode.';
         resultDiv.style.display = 'block';
-        return;
+        return false;
     }
     
     const checkBtn = document.querySelector('.delivery-check-btn');
@@ -292,6 +313,7 @@ function checkDeliveryPincode() {
         resultDiv.style.display = 'block';
     })
     .catch(error => {
+        console.error('Error checking pincode:', error);
         resultDiv.className = 'delivery-result error';
         resultMessage.textContent = 'Network error.';
         resultDiv.style.display = 'block';
@@ -300,22 +322,59 @@ function checkDeliveryPincode() {
         checkBtn.textContent = originalText;
         checkBtn.disabled = false;
     });
-}
+    
+    return false;
+};
 
-function startShopping() {
-    closeDeliveryPopup();
-}
+// Ensure startShopping is available globally
+window.startShopping = function() {
+    return closeDeliveryPopup();
+};
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Direct click handler on close button
+    const closeBtn = document.querySelector('.delivery-popup-close');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            closeDeliveryPopup();
+        });
+    }
+
+    // Setup pincode input event listeners
     const pincodeInput = document.getElementById('pincodeInput');
     if (pincodeInput) {
         pincodeInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') checkDeliveryPincode();
+            if (e.key === 'Enter') {
+                checkDeliveryPincode();
+            }
         });
         pincodeInput.addEventListener('input', function(e) {
             this.value = this.value.replace(/[^0-9]/g, '');
         });
     }
+
+    // Setup overlay click handler to close popup when clicking outside modal
+    const popupOverlay = document.getElementById('deliveryPopup');
+    if (popupOverlay) {
+        popupOverlay.addEventListener('click', function(e) {
+            // Only close if clicking directly on the overlay, not on the modal content
+            if (e.target === this || e.target.classList.contains('delivery-popup-overlay')) {
+                closeDeliveryPopup();
+            }
+        });
+    }
+
+    // Setup ESC key to close popup
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const popup = document.getElementById('deliveryPopup');
+            if (popup && popup.style.display !== 'none') {
+                closeDeliveryPopup();
+            }
+        }
+    });
 
     // Check if user already closed the popup in this session
     const popupClosed = sessionStorage.getItem('deliveryPopupClosed') === 'true';
@@ -324,7 +383,10 @@ document.addEventListener('DOMContentLoaded', function() {
     <?php if ($showPopup): ?>
     if (!popupClosed) {
         const popup = document.getElementById('deliveryPopup');
-        if (popup) popup.style.display = 'flex';
+        if (popup) {
+            popup.style.display = 'flex';
+            popup.style.visibility = 'visible';
+        }
     }
     <?php endif; ?>
 
@@ -332,7 +394,10 @@ document.addEventListener('DOMContentLoaded', function() {
     if (new URLSearchParams(window.location.search).get('open_pincode') === '1') {
         if (!popupClosed) {
             const popup = document.getElementById('deliveryPopup');
-            if (popup) popup.style.display = 'flex';
+            if (popup) {
+                popup.style.display = 'flex';
+                popup.style.visibility = 'visible';
+            }
         }
         history.replaceState(null, '', window.location.pathname);
     }

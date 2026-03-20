@@ -323,6 +323,12 @@ nav {
   font-weight: bold;
   cursor: pointer;
   font-size: 13px;
+  min-width: 80px;
+  width: 80px;
+  flex: 0 0 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .mrp {
@@ -362,39 +368,27 @@ nav {
 }
 
 .heart-icon {
-  font-size: 18px;
-  pointer-events: none;
-  color: transparent;
-  /* Transparent fill */
-  -webkit-text-stroke: 1px #666;
-  /* Dark grey border */
-  text-stroke: 1px #666;
-  /* Dark grey border for non-webkit browsers */
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-  /* Subtle shadow */
-  transition: all 0.3s ease;
+  font-size: 15px !important;
+  pointer-events: none !important;
+  color: transparent !important;
+  -webkit-text-stroke: 0.99px #a0a0a0 !important;
+  text-stroke: 0.99px #a0a0a0 !important;
+  transition: all 0.3s ease !important;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.06)) !important;
 }
 
 input[type="checkbox"]:checked+.heart-icon {
-  color: #DE0085;
-  /* Pink fill when in wishlist */
-  -webkit-text-stroke: 2px #DE0085;
-  /* Pink border when in wishlist */
-  text-stroke: 2px #DE0085;
-  /* Pink border for non-webkit browsers */
-  filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3));
-  /* Pink shadow when in wishlist */
+  color: transparent !important;
+  -webkit-text-stroke: 0.99px #DE0085 !important;
+  text-stroke: 0.99px #DE0085 !important;
+  filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3)) !important;
 }
 
 .heart-checkbox:checked+.wishlist-label .heart-icon {
-  color: #DE0085;
-  /* Pink fill when in wishlist */
-  -webkit-text-stroke: 2px #DE0085;
-  /* Pink border when in wishlist */
-  text-stroke: 2px #DE0085;
-  /* Pink border for non-webkit browsers */
-  filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3));
-  /* Pink shadow when in wishlist */
+  color: transparent !important;
+  -webkit-text-stroke: 0.99px #DE0085 !important;
+  text-stroke: 0.99px #DE0085 !important;
+  filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3)) !important;
 }
 
 /* Product card wishlist styling centralized in asset/style/product-card.css */

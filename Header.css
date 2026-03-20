@@ -813,6 +813,12 @@ nav {
   font-weight: bold;
   cursor: default;
   font-size: 13px;
+  min-width: 80px;
+  width: 80px;
+  flex: 0 0 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .mrp {
@@ -851,15 +857,20 @@ nav {
 }
 
 .heart-icon {
-  font-size: 18px;
-  pointer-events: none;
-  color: #fff;
-  /* default color */
-  transition: color 0.3s ease;
+  font-size: 15px !important;
+  pointer-events: none !important;
+  color: transparent !important;
+  -webkit-text-stroke: 0.99px #a0a0a0 !important;
+  text-stroke: 0.99px #a0a0a0 !important;
+  transition: all 0.3s ease !important;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.06)) !important;
 }
 
 input[type="checkbox"]:checked+.heart-icon {
-  color: red;
+  color: transparent !important;
+  -webkit-text-stroke: 0.99px #DE0085 !important;
+  text-stroke: 0.99px #DE0085 !important;
+  filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3)) !important;
 }
 
 
@@ -2707,17 +2718,26 @@ input[type="checkbox"]:checked+.heart-icon,
 /* Ensure wishlist icons are visible and properly styled */
 .wishlist-label i,
 .heart-icon {
-  transition: color 0.3s ease;
+  transition: all 0.3s ease !important;
+  color: transparent !important;
+  -webkit-text-stroke: 0.99px #a0a0a0 !important;
+  text-stroke: 0.99px #a0a0a0 !important;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.06)) !important;
 }
 
 /* Default state for wishlist icons */
 .wishlist-label i {
-  color: #fff;
+  color: transparent !important;
+  -webkit-text-stroke: 0.99px #a0a0a0 !important;
+  text-stroke: 0.99px #a0a0a0 !important;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.06)) !important;
 }
 
 /* Hover state for wishlist icons */
 .wishlist-label:hover i {
-  color: #DE0085;
+  color: transparent !important;
+  -webkit-text-stroke: 0.99px #DE0085 !important;
+  text-stroke: 0.99px #DE0085 !important;
 }
 
 /* Shop page wishlist styling */

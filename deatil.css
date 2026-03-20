@@ -78,8 +78,9 @@
   justify-content: center;
   /* center content inside buttons */
   white-space: nowrap;
-  flex: 1 1 0;
-  min-width: 0;
+  flex: 0 0 80px;
+  min-width: 80px;
+  width: 80px;
   box-sizing: border-box !important;
 }
 
@@ -95,18 +96,33 @@
 }
 
 .price-buttons1 .wishlist-label {
-  background-color: #007bff;
-  color: white;
-  width: auto;
-  min-width: 40px;
-  height: 38px;
-  padding: 0 8px;
-  font-size: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  flex-shrink: 0;
+  font-size: 15px !important;
+  color: transparent !important;
+  -webkit-text-stroke: 0.99px #a0a0a0 !important;
+  text-stroke: 0.99px #a0a0a0 !important;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.06)) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: auto !important;
+  min-width: 24px !important;
+  height: 38px !important;
+  padding: 0 6px !important;
+  border-radius: 4px !important;
+  flex-shrink: 0 !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+}
+
+.price-buttons1 .heart-checkbox:checked+.wishlist-label {
+  color: transparent !important;
+  -webkit-text-stroke: 0.99px #DE0085 !important;
+  text-stroke: 0.99px #DE0085 !important;
+  filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3)) !important;
+}
+
+.price-buttons1 .heart-checkbox:checked+.wishlist-label i {
+  font-weight: 900 !important;
 }
 
 .heart-checkbox {
@@ -117,6 +133,184 @@
    Quantity control and add-to-cart styles are defined globally in:
    asset/style/product-card.css
    Do NOT add quantity/cart styles here. */
+
+/* === DETAIL PAGE SPECIFIC CART ACTIONS === 
+   New dedicated class to avoid affecting other cards
+   Apply to detail page only using !important */
+
+.cart-actions-detail {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 8px !important;
+  margin-bottom: 20px !important;
+  padding: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  flex-wrap: nowrap !important;
+}
+
+.cart-actions-detail .quantity-control {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0 !important;
+  flex: 0 0 80px !important;
+  min-width: 80px !important;
+  width: 80px !important;
+  height: 38px !important;
+  border: 1px solid #b3b3b3 !important;
+  border-radius: 4px !important;
+  overflow: hidden !important;
+  background: #fff !important;
+  box-sizing: border-box !important;
+}
+
+.cart-actions-detail .quantity-control .btn-qty {
+  width: 26px !important;
+  min-width: 26px !important;
+  max-width: 26px !important;
+  height: 38px !important;
+  font-size: 16px !important;
+  font-weight: bold !important;
+  border: none !important;
+  background: transparent !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: background-color 0.15s ease !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  flex-shrink: 0 !important;
+  line-height: 1 !important;
+  color: #333 !important;
+}
+
+.cart-actions-detail .quantity-control .btn-qty-minus {
+  border-right: 1px solid #b3b3b3 !important;
+}
+
+.cart-actions-detail .quantity-control .btn-qty-plus {
+  border-left: 1px solid #b3b3b3 !important;
+}
+
+.cart-actions-detail .quantity-control .btn-qty:hover {
+  background: #ddd !important;
+}
+
+.cart-actions-detail .quantity-control .btn-qty:disabled {
+  background: #ccc !important;
+  cursor: not-allowed !important;
+  color: #999 !important;
+}
+
+.cart-actions-detail .quantity-control .quantity-input {
+  width: 28px !important;
+  min-width: 28px !important;
+  height: 38px !important;
+  font-size: 14px !important;
+  font-weight: bold !important;
+  text-align: center !important;
+  border: none !important;
+  background: #fff !important;
+  color: #333 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  flex-shrink: 0 !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: textfield !important;
+  appearance: textfield !important;
+  box-sizing: border-box !important;
+}
+
+.cart-actions-detail .quantity-control .quantity-input::-webkit-inner-spin-button,
+.cart-actions-detail .quantity-control .quantity-input::-webkit-outer-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0 !important;
+}
+
+/* Add-to-Cart Button */
+.cart-actions-detail .add-to-cart,
+.cart-actions-detail .add-to-cart-btn {
+  flex: 1 1 auto !important;
+  min-width: 150px !important;
+  height: 38px !important;
+  background: #1c1f26 !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 4px !important;
+  font-size: 13px !important;
+  font-weight: bold !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  padding: 0 16px !important;
+  box-sizing: border-box !important;
+  transition: all 0.3s ease !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+.cart-actions-detail .add-to-cart:hover,
+.cart-actions-detail .add-to-cart-btn:hover {
+  background: #0f1115 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+.cart-actions-detail .add-to-cart i,
+.cart-actions-detail .add-to-cart-btn i {
+  font-size: 14px !important;
+  flex-shrink: 0 !important;
+}
+
+.cart-actions-detail .add-to-cart-disabled {
+  background: #ccc !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .cart-actions-detail {
+    gap: 6px !important;
+    margin-bottom: 15px !important;
+  }
+
+  .cart-actions-detail .quantity-control {
+    height: 36px !important;
+  }
+
+  .cart-actions-detail .quantity-control .btn-qty {
+    height: 36px !important;
+  }
+
+  .cart-actions-detail .quantity-control .quantity-input {
+    height: 36px !important;
+  }
+
+  .cart-actions-detail .add-to-cart,
+  .cart-actions-detail .add-to-cart-btn {
+    height: 36px !important;
+    font-size: 12px !important;
+    min-width: 120px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .cart-actions-detail {
+    gap: 4px !important;
+  }
+
+  .cart-actions-detail .add-to-cart,
+  .cart-actions-detail .add-to-cart-btn {
+    font-size: 11px !important;
+    padding: 0 12px !important;
+    min-width: 100px !important;
+  }
+}
 
 
 /* === Description === */
