@@ -304,9 +304,11 @@
     filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.06)) !important;
     transition: all 0.3s ease-in-out !important;
     display: flex !important;
-    padding: 0 6px !important;
+    padding: 0 !important;
     align-items: center !important;
     justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
 }
 
 /* =========================================================
