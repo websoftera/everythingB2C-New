@@ -423,7 +423,7 @@ endforeach; ?>
     white-space: normal !important;
     text-align: left !important;
     line-height: 1.2 !important;
-    font-size: 14px !important;
+    font-size: 16px !important;
   }
 
   .category-products-header .view-all-link,
