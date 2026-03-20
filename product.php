@@ -130,16 +130,20 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
             }
 
             .product-page-container .price-buttons1 .price-btn {
-                height: 32px !important; /* Forces height match */
+                height: 38px !important; /* Forces height match */
                 padding: 0 10px !important;
                 display: flex !important;
                 align-items: center !important;
+                flex: 0 0 80px !important;
+                min-width: 80px !important;
+                width: 80px !important;
             }
 
             /* Increase wishlist heart size on mobile */
             .product-page-container .price-buttons1 .wishlist-label {
                 font-size: 22px !important;
                 color: #DE0085 !important; /* Active indicator if needed, or stick to styles class */
+                height: 38px !important;
             }
 
             .product-page-container .cart-actions {
@@ -148,19 +152,22 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
 
             /* Match height on quantity capsule */
             .product-page-container .product-info-section .quantity-control {
-                height: 32px !important; 
+                height: 38px !important;
+                flex: 0 0 80px !important;
+                min-width: 80px !important;
+                width: 80px !important;
             }
 
             .product-page-container .product-info-section .quantity-control .btn-qty {
-                height: 32px !important;
+                height: 38px !important;
             }
 
             .product-page-container .product-info-section .quantity-control .quantity-input {
-                height: 32px !important;
+                height: 38px !important;
             }
 
             .product-page-container .product-info-section .cart-actions .add-to-cart-btn {
-                height: 32px !important;
+                height: 38px !important;
             }
 
             .product-page-container .product-info-section p.text-success,
@@ -243,7 +250,7 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                 </div>
             </div>
             <?php if ($product['stock_quantity'] > 0): ?>
-            <div class="cart-action-btns cart-actions d-flex align-items-center gap-2">
+            <div class="cart-action-btns cart-actions cart-actions-detail d-flex align-items-center gap-2">
                 <div class="quantity-control d-inline-flex align-items-center">
                     <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
                     <input type="number" class="quantity-input" value="1" min="1" max="99" data-product-id="<?php echo $product['id']; ?>">

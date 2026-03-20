@@ -188,8 +188,10 @@
     font-size: 12px;
     font-weight: 600;
     min-width: 80px;
+    width: 80px;
     white-space: nowrap;
     gap: 4px;
+    flex: 0 0 80px;
 }
 
 .price-buttons1 .price-btn.mrp {
@@ -228,34 +230,39 @@
 }
 
 .wishlist-label {
-    font-size: 24px;
-    color: #fff;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    line-height: 1;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    font-size: 15px !important;
+    color: transparent !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    line-height: 1 !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    -webkit-text-stroke: 0.99px #a0a0a0 !important;
+    text-stroke: 0.99px #a0a0a0 !important;
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.06)) !important;
 }
 
 .heart-checkbox {
-    display: none;
+    display: none !important;
 }
 
 .heart-checkbox:checked+.wishlist-label {
-    color: #DE0085;
-    filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3));
+    color: transparent !important;
+    -webkit-text-stroke: 0.99px #DE0085 !important;
+    text-stroke: 0.99px #DE0085 !important;
+    filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3)) !important;
 }
 
 .heart-checkbox:checked+.wishlist-label i {
-    font-weight: 900;
+    font-weight: 900 !important;
 }
 
 /* Cart Actions */
 .cart-actions {
     display: flex;
-    align-items: center;
+    align-items: stretch;
     gap: 6px;
     margin-bottom: 18px;
     justify-content: flex-start;
@@ -269,16 +276,20 @@
 
 .cart-actions .quantity-control {
     display: flex;
-    align-items: center;
+    align-items: stretch;
     gap: 4px;
+    flex: 0 0 80px !important;
+    min-width: 80px !important;
+    width: 80px !important;
+    height: 38px !important;
 }
 
 .qty-minus,
 .qty-plus,
 .btn-qty-minus,
 .btn-qty-plus {
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
     border: 1px solid #dee2e6;
     background: #f8f9fa;
     color: #333;
@@ -308,7 +319,7 @@
     margin: 0;
     border: 1px solid #ced4da;
     border-radius: 4px;
-    height: 36px;
+    height: 38px;
     padding: 0;
     background: #fff;
 }
@@ -318,7 +329,7 @@
     color: #ffffff;
     border: none;
     padding: 0 20px;
-    height: 36px;
+    height: 38px;
     border-radius: 4px;
     font-size: 13px;
     font-weight: 700;

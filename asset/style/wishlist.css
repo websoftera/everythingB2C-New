@@ -1,6 +1,37 @@
+/* Import Global Colors and Typography System */
+@import url('https://fonts.googleapis.com/css2?family=Mulish:wght@200;300;400;500;600;700;800;900&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
+@import url('global-colors.css');
+
 body {
   margin: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+  font-family: var(--font-family) !important;
+}
 
+/* Remove padding from header and footer */
+header,
+footer,
+.header,
+.header2,
+.navbar,
+nav {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Remove padding from banner/slider sections */
+.hero-slider-section,
+.custom-carousel,
+.carousel-item,
+.hero-banner,
+.banner,
+.slider,
+.main-banner,
+.hero-section {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 
 
@@ -292,6 +323,12 @@ body {
   font-weight: bold;
   cursor: pointer;
   font-size: 13px;
+  min-width: 80px;
+  width: 80px;
+  flex: 0 0 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .mrp {
@@ -308,17 +345,20 @@ body {
 /* ---------------------- Wishlist Button ---------------------- */
 .wishlist {
   background: none !important;
-  border-radius: 6px;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-  top: 0px;
-  right: 0px;
+  border-radius: 4px !important;
+  width: 24px !important;
+  height: 30px !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  position: relative !important;
   z-index: 10;
   cursor: pointer;
+  flex: 0 0 24px !important;
+  min-width: 24px !important;
+  max-width: 24px !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 .wishlist input[type="checkbox"] {
@@ -331,39 +371,27 @@ body {
 }
 
 .heart-icon {
-  font-size: 18px;
-  pointer-events: none;
-  color: transparent;
-  /* Transparent fill */
-  -webkit-text-stroke: 1px #666;
-  /* Dark grey border */
-  text-stroke: 1px #666;
-  /* Dark grey border for non-webkit browsers */
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-  /* Subtle shadow */
-  transition: all 0.3s ease;
+  font-size: 15px !important;
+  pointer-events: none !important;
+  color: transparent !important;
+  -webkit-text-stroke: 0.99px #a0a0a0 !important;
+  text-stroke: 0.99px #a0a0a0 !important;
+  transition: all 0.3s ease !important;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.06)) !important;
 }
 
 input[type="checkbox"]:checked+.heart-icon {
-  color: #DE0085;
-  /* Pink fill when in wishlist */
-  -webkit-text-stroke: 2px #DE0085;
-  /* Pink border when in wishlist */
-  text-stroke: 2px #DE0085;
-  /* Pink border for non-webkit browsers */
-  filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3));
-  /* Pink shadow when in wishlist */
+  color: transparent !important;
+  -webkit-text-stroke: 0.99px #DE0085 !important;
+  text-stroke: 0.99px #DE0085 !important;
+  filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3)) !important;
 }
 
 .heart-checkbox:checked+.wishlist-label .heart-icon {
-  color: #DE0085;
-  /* Pink fill when in wishlist */
-  -webkit-text-stroke: 2px #DE0085;
-  /* Pink border when in wishlist */
-  text-stroke: 2px #DE0085;
-  /* Pink border for non-webkit browsers */
-  filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3));
-  /* Pink shadow when in wishlist */
+  color: transparent !important;
+  -webkit-text-stroke: 0.99px #DE0085 !important;
+  text-stroke: 0.99px #DE0085 !important;
+  filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3)) !important;
 }
 
 /* Product card wishlist styling centralized in asset/style/product-card.css */
@@ -371,10 +399,13 @@ input[type="checkbox"]:checked+.heart-icon {
 /* ---------------------- Cart Actions ---------------------- */
 .cart-actions {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-start;
+  align-items: stretch;
   gap: 5px;
   margin-top: 10px;
+  width: 100%;
+  padding: 0px 6px;
+  box-sizing: border-box;
 }
 
 .add-to-cart {
@@ -390,10 +421,12 @@ input[type="checkbox"]:checked+.heart-icon {
   justify-content: center;
   gap: 4px;
   padding: 0 12px;
-  height: 34px;
-  min-height: 34px;
-  max-height: 34px;
+  height: 30px !important;
+  min-height: 30px !important;
+  max-height: 30px !important;
   box-sizing: border-box;
+  flex: 1 1 auto;
+  min-width: 150px;
 }
 
 .add-to-cart i {
@@ -781,21 +814,29 @@ input[type="checkbox"]:checked+.heart-icon {
 }
 
 .price-buttons .mrp {
-  border: 1px solid #038CC3 !important;
-  color: #038CC3 !important;
-  background: #038dc38e !important;
-  padding: 4px 10px;
-  margin-right: 5px;
-  border-radius: 5px;
+  border: none !important;
+  color: var(--dark-blue) !important;
+  background: var(--mrp-light-blue) !important;
+  padding: 0 !important;
+  margin-right: 0 !important;
+  border-radius: 2px !important;
   text-decoration: line-through;
+  flex: 0 0 80px !important;
+  min-width: 80px !important;
+  width: 80px !important;
+  height: 30px !important;
 }
 
 .price-buttons .pay {
-  border: 1px solid #9fbe1b;
-  color: #000;
-  background: none !important;
-  padding: 4px 10px;
-  border-radius: 5px;
+  border: none !important;
+  color: #000 !important;
+  background: var(--pay-light-green) !important;
+  padding: 0 !important;
+  border-radius: 2px !important;
+  flex: 0 0 80px !important;
+  min-width: 80px !important;
+  width: 80px !important;
+  height: 30px !important;
 }
 
 .remove-wish {
@@ -880,38 +921,51 @@ input[type="checkbox"]:checked+.heart-icon {
 
 /* PRICE BUTTONS */
 .price-buttons1 button {
-
-  padding: 0 14px;
-  font-size: 13px;
+  padding: 0 !important;
+  font-size: 12px !important;
   font-weight: bold;
   border: none;
-  border-radius: 6px;
+  border-radius: 4px !important;
   color: rgb(239, 239, 239);
-  cursor: default;
-
-
+  cursor: pointer;
+  flex: 0 0 80px !important;
+  min-width: 80px !important;
+  width: 80px !important;
+  height: 38px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 .price-buttons1 .mrp {
-  background-color: #007bff;
+  background-color: var(--mrp-light-blue) !important;
+  flex: 0 0 80px !important;
+  min-width: 80px !important;
+  width: 80px !important;
 }
 
 .price-buttons1 .pay {
-  background-color: #9fbe1b;
+  background-color: var(--pay-light-green) !important;
+  flex: 0 0 80px !important;
+  min-width: 80px !important;
+  width: 80px !important;
 }
 
-
 .price-buttons1 .wishlist-label {
-  width: 36px;
-  height: 37px;
-  padding: 6px 6px;
-  font-size: 18px;
+  width: 24px !important;
+  height: 38px !important;
+  padding: 0 !important;
+  font-size: 15px;
   font-weight: bold;
-  color: white;
-  background-color: #007bff;
+  color: transparent;
+  -webkit-text-stroke: 0.99px #a0a0a0 !important;
+  background-color: transparent !important;
   border: none;
-  border-radius: 8px;
+  border-radius: 4px !important;
   text-align: center;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 .heart-checkbox {
@@ -946,8 +1000,8 @@ input[type="checkbox"]:checked+.heart-icon {
 }
 
 .cart-controls .add-to-cart {
-  height: 34px;
-  min-height: 34px;
+  height: 30px !important;
+  min-height: 30px !important;
   width: 100%;
   max-width: 190px;
   padding: 0 12px;
@@ -975,12 +1029,12 @@ input[type="checkbox"]:checked+.heart-icon {
 .cart-controls {
   margin-top: 0px;
   display: flex;
-  justify-items: center;
+  align-items: stretch;
   flex-direction: row-reverse;
-  color: red;
   margin-bottom: 35px;
   margin-right: 18px;
   flex-wrap: nowrap;
+  gap: 5px;
 }
 
 

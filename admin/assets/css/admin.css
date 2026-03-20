@@ -4,9 +4,12 @@
 /* Font Awesome Import - Ensure icons are always available in admin */
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
 
+/* Import Global Colors and Typography System */
+@import url('../../asset/style/global-colors.css');
+
 /* Global font family for admin area - EXCEPT Font Awesome icons */
 .everythingb2c-admin-container * {
-    font-family: 'Mulish', sans-serif !important;
+    font-family: var(--font-family) !important;
 }
 
 /* Preserve Font Awesome icon fonts in admin area */

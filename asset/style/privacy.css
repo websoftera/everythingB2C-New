@@ -1,6 +1,37 @@
+/* Import Global Colors and Typography System */
+@import url('https://fonts.googleapis.com/css2?family=Mulish:wght@200;300;400;500;600;700;800;900&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
+@import url('global-colors.css');
+
 body {
   margin: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+  font-family: var(--font-family) !important;
+}
 
+/* Remove padding from header and footer */
+header,
+footer,
+.header,
+.header2,
+.navbar,
+nav {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Remove padding from banner/slider sections */
+.hero-slider-section,
+.custom-carousel,
+.carousel-item,
+.hero-banner,
+.banner,
+.slider,
+.main-banner,
+.hero-section {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 
 

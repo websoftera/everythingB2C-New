@@ -1074,7 +1074,7 @@ endforeach; ?>
 }
 
 .service-section{
-  margin: 0px 7px !important;
+  margin: 0px 0px !important;
 }
 .category-nav-btn {
   width: 18px !important;

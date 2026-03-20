@@ -21,7 +21,6 @@
     max-width: 240px !important;
     /* box-shadow: 0 2px 8px rgba(0,0,0,0.08); */
     margin: 0 auto 8px auto;
-    overflow: hidden !important;
     position: relative;
     padding: 0 !important;
     box-sizing: border-box !important;
@@ -133,14 +132,15 @@
     display: flex !important;
     flex-direction: column !important;
     align-items: stretch !important;
-    gap: 12px !important;
-    padding: 5px 6px !important;
+    gap: 8px !important;
+    padding: 5px 0px !important;
     box-sizing: border-box !important;
     width: 100% !important;
+    overflow: visible !important;
 }
 
 .product-details {
-    padding: 10px !important;
+    padding: 0px 6px 0px 6px !important;
     background: #fff;
     flex-grow: 0;
     display: flex;
@@ -148,7 +148,7 @@
     align-items: stretch;
     justify-content: flex-start;
     box-sizing: border-box !important;
-    gap: 12px !important;
+    gap: 8px !important;
     width: 100% !important;
 }
 
@@ -186,23 +186,28 @@
     margin: 0 !important;
 }
 
-/* --- Price Buttons: Pill, Horizontal --- */
 .price-buttons,
 .price-buttons1,
 .modern-prices {
     display: flex !important;
     flex-direction: row !important;
-    align-items: center !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
     gap: 3px !important;
     width: 100% !important;
+    padding: 0px 6px !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    overflow: visible !important;
 }
 
 .price-btn,
 .mrp,
 .pay {
-    flex: 1 1 0 !important;
-    min-width: 0 !important;
-    max-width: 100% !important;
+    flex: 0 0 80px !important;
+    min-width: 80px !important;
+    max-width: 80px !important;
+    width: 80px !important;
     white-space: nowrap !important;
     text-overflow: ellipsis !important;
     overflow: hidden !important;
@@ -286,8 +291,8 @@
     cursor: pointer !important;
     position: relative !important;
     z-index: 10 !important;
-    margin-left: 0 !important;
-    align-self: auto !important;
+    margin-left: auto !important;
+    align-self: stretch !important;
     box-sizing: border-box !important;
 }
 
@@ -299,9 +304,11 @@
     filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.06)) !important;
     transition: all 0.3s ease-in-out !important;
     display: flex !important;
-    padding: 0 6px !important;
+    padding: 0 !important;
     align-items: center !important;
     justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
 }
 
 /* =========================================================
@@ -315,10 +322,13 @@
 .cart-controls {
     display: flex !important;
     flex-direction: row !important;
-    align-items: center !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
     gap: 3px !important;
     width: 100% !important;
+    padding: 0px 6px !important;
     box-sizing: border-box !important;
+    margin: 0 !important;
 }
 
 /* Quantity control pill: [–] [input] [+] */
@@ -326,7 +336,8 @@
     display: flex !important;
     align-items: center !important;
     gap: 0 !important;
-    flex: 0 0 auto !important;
+    flex: 0 0 80px !important;
+    min-width: 80px !important;
     border: 1px solid #b3b3b3 !important;
     border-radius: 4px !important;
     overflow: hidden !important;
@@ -481,7 +492,7 @@
     .add-to-cart,
     .quantity-input,
     .wishlist {
-        height: 28px !important;
+        height: 30px !important;
         font-size: 0.85rem !important;
         /*min-width: 50px !important;*/
         padding: 0 3px !important;
@@ -510,29 +521,32 @@
     }
 
     .quantity-control {
-        height: 26px !important;
+        height: 30px !important;
+        flex: 0 0 80px !important;
+        min-width: 80px !important;
+        width: 80px !important;
     }
 
     .quantity-control .btn-qty {
         width: 22px !important;
         min-width: 22px !important;
-        height: 26px !important;
+        height: 30px !important;
         font-size: 12px !important;
     }
 
     .quantity-control .quantity-input {
         width: 28px !important;
         min-width: 28px !important;
-        height: 26px !important;
+        height: 30px !important;
         font-size: 11px !important;
     }
 
     .add-to-cart-btn,
     .add-to-cart {
-        height: 26px !important;
-        min-height: 26px !important;
-        max-height: 26px !important;
-        font-size: 8.5px !important;
+        height: 30px !important;
+        min-height: 30px !important;
+        max-height: 30px !important;
+        font-size: 9px !important;
         padding: 0 2px !important;
     }
 }
@@ -954,21 +968,22 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
         display: flex !important;
         flex-direction: row !important;
         flex-wrap: nowrap !important;
-        justify-content: space-between !important;
-        /* Spread items across full width */
-        align-items: stretch !important;
-        gap: 10px !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        gap: 4px !important;
         width: 100% !important;
+        padding: 0px 0px !important;
+        box-sizing: border-box !important;
     }
 
     .price-btn {
-        flex: 1 !important;
-        min-width: 0 !important;
+        flex: 0 0 80px !important;
+        min-width: 80px !important;
+        width: 80px !important;
         height: 30px !important;
         /* Standardized height */
         font-size: 10px !important;
-        padding: 0 6px !important;
-        /* Increased padding to prevent cropping */
+        padding: 0 4px !important;
         border-radius: 4px !important;
         display: flex !important;
         align-items: center !important;
@@ -976,9 +991,9 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
     }
 
     .price-btn.mrp {
-        flex: 18% !important;
-        /* Slightly smaller to give more space */
-        width: 70px !important;
+        flex: 0 0 80px !important;
+        min-width: 80px !important;
+        width: 80px !important;
     }
 
     .price-btn .label {
@@ -990,16 +1005,15 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
     }
 
     .price-buttons .wishlist {
-        flex: 0 0 28px !important;
+        flex: 0 0 auto !important;
         height: 30px !important;
-        width: 28px !important;
-        margin: 0 !important;
+        width: auto !important;
+        min-width: 28px !important;
         margin-left: auto !important;
-        /* PUSH to far right to align with cart edge */
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        padding: 0 !important;
+        padding: 0 4px !important;
     }
 
     .price-buttons .wishlist-label {
@@ -1012,10 +1026,11 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
         width: 100% !important;
         display: flex !important;
         flex-direction: row !important;
-        gap: 12px !important;
-        /* 2px gap as requested */
+        gap: 4px !important;
         margin-top: 2px !important;
         align-items: center !important;
+        padding: 0px 0px !important;
+        box-sizing: border-box !important;
     }
 
     .add-to-cart-btn,
@@ -1036,10 +1051,10 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
     }
 
     .quantity-control {
-        flex: 0 0 39% !important;
+        flex: 0 0 80px !important;
         /* Match MRP width */
-        width: 69px !important;
-        height: 27px !important;
+        width: 80px !important;
+        height: 30px !important;
         border-radius: 4px !important;
         display: flex !important;
         align-items: center !important;

@@ -1,9 +1,15 @@
 /* Google Font Import - Mulish */
 @import url('https://fonts.googleapis.com/css2?family=Mulish:wght@200;300;400;500;600;700;800;900&display=swap');
 
+/* Font Awesome Import - Ensure icons are always available */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
+
+/* Import Global Colors and Typography System */
+@import url('asset/style/global-colors.css');
+
 /* Global font family for entire website - EXCEPT Font Awesome icons */
 * {
-  font-family: 'Mulish', sans-serif !important;
+  font-family: var(--font-family) !important;
 }
 
 /* Preserve Font Awesome icon fonts */
@@ -40,7 +46,33 @@
 
 body {
   margin: 0;
+  padding-left: 4px;
+  padding-right: 4px;
   font-family: 'Mulish', sans-serif;
+}
+
+/* Remove padding from header and footer */
+header,
+footer,
+.header,
+.header2,
+.navbar,
+nav {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Remove padding from banner/slider sections */
+.hero-slider-section,
+.custom-carousel,
+.carousel-item,
+.hero-banner,
+.banner,
+.slider,
+.main-banner,
+.hero-section {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 
 .logo-wrapper {
@@ -781,6 +813,12 @@ body {
   font-weight: bold;
   cursor: default;
   font-size: 13px;
+  min-width: 80px;
+  width: 80px;
+  flex: 0 0 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .mrp {
@@ -819,15 +857,20 @@ body {
 }
 
 .heart-icon {
-  font-size: 18px;
-  pointer-events: none;
-  color: #fff;
-  /* default color */
-  transition: color 0.3s ease;
+  font-size: 15px !important;
+  pointer-events: none !important;
+  color: transparent !important;
+  -webkit-text-stroke: 0.99px #a0a0a0 !important;
+  text-stroke: 0.99px #a0a0a0 !important;
+  transition: all 0.3s ease !important;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.06)) !important;
 }
 
 input[type="checkbox"]:checked+.heart-icon {
-  color: red;
+  color: transparent !important;
+  -webkit-text-stroke: 0.99px #DE0085 !important;
+  text-stroke: 0.99px #DE0085 !important;
+  filter: drop-shadow(0 2px 4px rgba(222, 0, 133, 0.3)) !important;
 }
 
 
@@ -2675,17 +2718,26 @@ input[type="checkbox"]:checked+.heart-icon,
 /* Ensure wishlist icons are visible and properly styled */
 .wishlist-label i,
 .heart-icon {
-  transition: color 0.3s ease;
+  transition: all 0.3s ease !important;
+  color: transparent !important;
+  -webkit-text-stroke: 0.99px #a0a0a0 !important;
+  text-stroke: 0.99px #a0a0a0 !important;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.06)) !important;
 }
 
 /* Default state for wishlist icons */
 .wishlist-label i {
-  color: #fff;
+  color: transparent !important;
+  -webkit-text-stroke: 0.99px #a0a0a0 !important;
+  text-stroke: 0.99px #a0a0a0 !important;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.06)) !important;
 }
 
 /* Hover state for wishlist icons */
 .wishlist-label:hover i {
-  color: #DE0085;
+  color: transparent !important;
+  -webkit-text-stroke: 0.99px #DE0085 !important;
+  text-stroke: 0.99px #DE0085 !important;
 }
 
 /* Shop page wishlist styling */
