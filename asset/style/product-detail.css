@@ -262,7 +262,7 @@
 /* Cart Actions */
 .cart-actions {
     display: flex;
-    align-items: center;
+    align-items: stretch;
     gap: 6px;
     margin-bottom: 18px;
     justify-content: flex-start;
@@ -276,12 +276,12 @@
 
 .cart-actions .quantity-control {
     display: flex;
-    align-items: center;
+    align-items: stretch;
     gap: 4px;
     flex: 0 0 80px !important;
     min-width: 80px !important;
     width: 80px !important;
-    height: 30px !important;
+    height: 36px !important;
 }
 
 .qty-minus,

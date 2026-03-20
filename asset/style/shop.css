@@ -420,7 +420,7 @@
 
 .btn-qty {
   width: 33.33% !important; /* Equal width for each section */
-  height: 32px !important;
+  height: 30px !important;
   font-size: 14px !important;
   font-weight: bold !important;
   border: none !important;
@@ -455,7 +455,7 @@
 
 .quantity-input {
   width: 33.33% !important; /* Equal width for center section */
-  height: 32px !important;
+  height: 30px !important;
   font-size: 14px !important;
   font-weight: bold !important;
   text-align: center !important;

@@ -1651,9 +1651,10 @@ html {
 .price-btn,
 .mrp,
 .pay {
-  flex: 0 1 80px;
-  min-width: 80px;
-  max-width: 100%;
+  flex: 0 0 80px !important;
+  min-width: 80px !important;
+  max-width: 80px !important;
+  width: 80px !important;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -1662,10 +1663,10 @@ html {
 .wishlist,
 .wishlist-label,
 .wishlist input[type="checkbox"] {
-  flex: 0 0 38px;
-  width: 38px;
-  min-width: 38px;
-  max-width: 38px;
+  flex: 0 0 24px !important;
+  width: 24px !important;
+  min-width: 24px !important;
+  max-width: 24px !important;
   display: flex;
   align-items: center;
   justify-content: center;
