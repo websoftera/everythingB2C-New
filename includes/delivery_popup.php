@@ -248,6 +248,8 @@ if ($popupEnabled !== '1') {
 <script>
 function closeDeliveryPopup() {
     document.getElementById('deliveryPopup').style.display = 'none';
+    // Set a flag in localStorage to prevent auto-opening again
+    sessionStorage.setItem('deliveryPopupClosed', 'true');
     fetch('ajax/mark_popup_shown.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -315,16 +317,23 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Auto-open logic (only if session says so)
+    // Check if user already closed the popup in this session
+    const popupClosed = sessionStorage.getItem('deliveryPopupClosed') === 'true';
+    
+    // Auto-open logic (only if session says so AND user hasn't already closed it)
     <?php if ($showPopup): ?>
-    const popup = document.getElementById('deliveryPopup');
-    if (popup) popup.style.display = 'flex';
+    if (!popupClosed) {
+        const popup = document.getElementById('deliveryPopup');
+        if (popup) popup.style.display = 'flex';
+    }
     <?php endif; ?>
 
     // Handle open_pincode param
     if (new URLSearchParams(window.location.search).get('open_pincode') === '1') {
-        const popup = document.getElementById('deliveryPopup');
-        if (popup) popup.style.display = 'flex';
+        if (!popupClosed) {
+            const popup = document.getElementById('deliveryPopup');
+            if (popup) popup.style.display = 'flex';
+        }
         history.replaceState(null, '', window.location.pathname);
     }
 });
