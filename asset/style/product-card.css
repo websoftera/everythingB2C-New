@@ -291,7 +291,7 @@
     cursor: pointer !important;
     position: relative !important;
     z-index: 10 !important;
-    margin-left: 0 !important;
+    margin-left: auto !important;
     align-self: stretch !important;
     box-sizing: border-box !important;
 }
@@ -1007,7 +1007,7 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
         height: 30px !important;
         width: auto !important;
         min-width: 28px !important;
-        margin: 0 !important;
+        margin-left: auto !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
