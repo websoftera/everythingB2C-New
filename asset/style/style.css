@@ -1644,7 +1644,7 @@ html {
 .modern-prices {
   display: flex;
   flex-direction: row;
-  align-items: stretch;
+  align-items: center;
   gap: 10px;
   width: 100%;
 }
