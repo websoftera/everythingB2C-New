@@ -3611,8 +3611,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<!-- Delivery Availability Popup - DISABLED: This popup is now rendered via delivery_popup.php included in header.php -->
-<?php if (false): ?>
+<!-- Delivery Availability Popup -->
+<?php if ($showPopup && ($popupSettings['popup_enabled'] ?? '1') == '1'): ?>
 <div id="deliveryPopup" class="delivery-popup-overlay">
     <div class="delivery-popup">
         <div class="delivery-popup-header">
@@ -3911,7 +3911,6 @@ document.addEventListener('DOMContentLoaded', function() {
   /* margin: 0px 18px !important; */
 }
 </style>
-<?php endif; ?>
 
 <script>
 
