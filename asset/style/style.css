@@ -4,9 +4,12 @@
 /* Font Awesome Import - Ensure icons are always available */
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
 
+/* Import Global Colors and Typography System */
+@import url('global-colors.css');
+
 /* Global font family for entire website - EXCEPT Font Awesome icons */
 * {
-  font-family: 'Mulish', sans-serif !important;
+  font-family: var(--font-family) !important;
 }
 
 /* Preserve Font Awesome icon fonts */
@@ -203,6 +206,37 @@
   border-right: 0.3em solid transparent !important;
   border-bottom: 0 !important;
   border-left: 0.3em solid transparent !important;
+}
+
+/* Global body and html padding for left and right spacing on all devices */
+body,
+html {
+  padding-left: 4px !important;
+  padding-right: 4px !important;
+}
+
+/* Remove padding from header and footer elements */
+header,
+footer,
+.header,
+.header2,
+.navbar,
+nav {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Remove padding from banner/slider sections */
+.hero-slider-section,
+.custom-carousel,
+.carousel-item,
+.hero-banner,
+.banner,
+.slider,
+.main-banner,
+.hero-section {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 
 /* User link container styling */
@@ -500,10 +534,9 @@
 body,
 html {
   margin: 0;
-  font-family: 'Mulish', sans-serif;
-  line-height: 1.6;
-  font-size: 15px;
-  text-transform: capitalize !important;
+  font-family: var(--font-family) !important;
+  line-height: var(--line-height-relaxed) !important;
+  font-size: var(--font-size-md) !important;
   text-decoration: none;
   color: #222;
   background: #fff;
@@ -513,35 +546,7 @@ html {
   transform: translate(-166%, -90%) !important;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: 'Mulish', sans-serif;
-  color: #222;
-  font-weight: bold;
-  margin-bottom: 0.5em;
-}
-
-.h1,
-h1 {
-  font-size: 18px !important;
-  font-weight: bold !important;
-}
-
-h2 {
-  font-size: 14px;
-  margin: 12px auto;
-  text-align: center;
-}
-
-h3 {
-  font-size: 12px;
-  font-weight: bold;
-  text-transform: capitalize !important;
-}
+/* Heading styles are now defined in global-colors.css */
 
 /* Brand Colors - Matching Live Site */
 :root {

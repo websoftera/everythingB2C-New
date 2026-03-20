@@ -55,29 +55,32 @@
   align-items: center;
   justify-content: flex-start;
   /* aligns to the left */
-  gap: 18px;
+  gap: 8px;
   margin-bottom: 20px;
   flex-wrap: nowrap;
   /* keep buttons in one line */
-  padding-left: 0;
-  width: fit-content;
-  /* shrink container width to buttons only */
+  padding: 0px 0px;
+  width: 100%;
+  /* full width with consistent alignment */
+  box-sizing: border-box !important;
 }
 
 .price-buttons1 button {
   height: 38px;
-  padding: 0 16px;
+  padding: 0 12px;
   font-size: 14px;
   font-weight: bold;
   border: none;
-  border-radius: 8px;
+  border-radius: 4px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   /* center content inside buttons */
   white-space: nowrap;
-  width: 95px;
+  flex: 1 1 0;
+  min-width: 0;
+  box-sizing: border-box !important;
 }
 
 .price-buttons1 .mrp {
@@ -94,14 +97,16 @@
 .price-buttons1 .wishlist-label {
   background-color: #007bff;
   color: white;
-  width: 48px;
+  width: auto;
+  min-width: 40px;
   height: 38px;
-  padding: 0;
+  padding: 0 8px;
   font-size: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
+  border-radius: 4px;
+  flex-shrink: 0;
 }
 
 .heart-checkbox {

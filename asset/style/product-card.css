@@ -133,14 +133,14 @@
     display: flex !important;
     flex-direction: column !important;
     align-items: stretch !important;
-    gap: 12px !important;
-    padding: 5px 6px !important;
+    gap: 8px !important;
+    padding: 5px 0px !important;
     box-sizing: border-box !important;
     width: 100% !important;
 }
 
 .product-details {
-    padding: 10px !important;
+    padding: 0px 6px 0px 6px !important;
     background: #fff;
     flex-grow: 0;
     display: flex;
@@ -148,7 +148,7 @@
     align-items: stretch;
     justify-content: flex-start;
     box-sizing: border-box !important;
-    gap: 12px !important;
+    gap: 8px !important;
     width: 100% !important;
 }
 
@@ -186,15 +186,18 @@
     margin: 0 !important;
 }
 
-/* --- Price Buttons: Pill, Horizontal --- */
 .price-buttons,
 .price-buttons1,
 .modern-prices {
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
+    justify-content: flex-start !important;
     gap: 3px !important;
     width: 100% !important;
+    padding: 0px 6px !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
 }
 
 .price-btn,
@@ -316,9 +319,12 @@
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
+    justify-content: flex-start !important;
     gap: 3px !important;
     width: 100% !important;
+    padding: 0px 6px !important;
     box-sizing: border-box !important;
+    margin: 0 !important;
 }
 
 /* Quantity control pill: [–] [input] [+] */
@@ -954,21 +960,21 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
         display: flex !important;
         flex-direction: row !important;
         flex-wrap: nowrap !important;
-        justify-content: space-between !important;
-        /* Spread items across full width */
-        align-items: stretch !important;
-        gap: 10px !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        gap: 4px !important;
         width: 100% !important;
+        padding: 0px 0px !important;
+        box-sizing: border-box !important;
     }
 
     .price-btn {
-        flex: 1 !important;
+        flex: 1 1 0 !important;
         min-width: 0 !important;
         height: 30px !important;
         /* Standardized height */
         font-size: 10px !important;
-        padding: 0 6px !important;
-        /* Increased padding to prevent cropping */
+        padding: 0 4px !important;
         border-radius: 4px !important;
         display: flex !important;
         align-items: center !important;
@@ -976,9 +982,7 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
     }
 
     .price-btn.mrp {
-        flex: 18% !important;
-        /* Slightly smaller to give more space */
-        width: 70px !important;
+        flex: 1 1 0 !important;
     }
 
     .price-btn .label {
@@ -990,16 +994,15 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
     }
 
     .price-buttons .wishlist {
-        flex: 0 0 28px !important;
+        flex: 0 0 auto !important;
         height: 30px !important;
-        width: 28px !important;
+        width: auto !important;
+        min-width: 28px !important;
         margin: 0 !important;
-        margin-left: auto !important;
-        /* PUSH to far right to align with cart edge */
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        padding: 0 !important;
+        padding: 0 4px !important;
     }
 
     .price-buttons .wishlist-label {
@@ -1012,10 +1015,11 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
         width: 100% !important;
         display: flex !important;
         flex-direction: row !important;
-        gap: 12px !important;
-        /* 2px gap as requested */
+        gap: 4px !important;
         margin-top: 2px !important;
         align-items: center !important;
+        padding: 0px 0px !important;
+        box-sizing: border-box !important;
     }
 
     .add-to-cart-btn,

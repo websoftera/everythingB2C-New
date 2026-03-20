@@ -1,11 +1,13 @@
-/* Google Font Import - Poppins */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+/* Import Global Colors and Typography System */
+@import url('https://fonts.googleapis.com/css2?family=Mulish:wght@200;300;400;500;600;700;800;900&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
+@import url('../asset/style/global-colors.css');
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    
+    font-family: var(--font-family) !important;
 }
 
 :root {
@@ -30,6 +32,8 @@ body {
     width: 100%;
     display: flex; /* Use flexbox for overall layout */
     flex-direction: column; /* Stack header, app-container, footer vertically */
+    padding-left: 4px;
+    padding-right: 4px;
 }
 
 ::selection {

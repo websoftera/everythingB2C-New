@@ -3,7 +3,46 @@
 * This file contains all color variables that can be used throughout the site
 */
 
+/* ===== TYPOGRAPHY SYSTEM ===== */
 :root {
+  /* Font Family */
+  --font-family: 'Mulish', sans-serif;
+  --font-family-icons: "Font Awesome 6 Free", "Font Awesome 6 Pro", "Font Awesome 6 Brands", "Font Awesome 5 Free", "Font Awesome 5 Pro", "FontAwesome";
+  
+  /* Font Sizes - Standardized Scale */
+  --font-size-xs: 10px;
+  --font-size-sm: 12px;
+  --font-size-base: 14px;
+  --font-size-md: 15px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 20px;
+  --font-size-3xl: 24px;
+  --font-size-4xl: 28px;
+  --font-size-5xl: 32px;
+  --font-size-6xl: 35px;
+  
+  /* Font Weights */
+  --font-weight-light: 200;
+  --font-weight-normal: 300;
+  --font-weight-medium: 400;
+  --font-weight-semibold: 500;
+  --font-weight-bold: 600;
+  --font-weight-extrabold: 700;
+  --font-weight-black: 800;
+  
+  /* Line Heights */
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.6;
+  --line-height-loose: 1.8;
+  
+  /* Letter Spacing */
+  --letter-spacing-tight: -0.5px;
+  --letter-spacing-normal: 0px;
+  --letter-spacing-wide: 0.5px;
+  --letter-spacing-wider: 1px;
+  
   /* Primary Color Palette */
   --light-green: #E3F2AA;
   --dark-green: #9fbe1b;
@@ -45,9 +84,121 @@
   --bg-light: #f8f9fa;
 }
 
-/* Global Color Classes */
-.bg-light-green {
-  background-color: var(--light-green) !important;
+/* ===== GLOBAL TYPOGRAPHY STYLES ===== */
+html,
+body {
+  font-family: var(--font-family) !important;
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-normal);
+  color: #222;
+}
+
+/* Heading Hierarchy - Consistent Across All Pages */
+h1,
+.h1 {
+  font-size: var(--font-size-5xl) !important;
+  font-weight: var(--font-weight-bold) !important;
+  line-height: var(--line-height-tight) !important;
+  margin-bottom: 0.5em !important;
+  color: #222 !important;
+  font-family: var(--font-family) !important;
+}
+
+h2,
+.h2 {
+  font-size: var(--font-size-3xl) !important;
+  font-weight: var(--font-weight-bold) !important;
+  line-height: var(--line-height-tight) !important;
+  margin-bottom: 0.5em !important;
+  color: #222 !important;
+  font-family: var(--font-family) !important;
+}
+
+h3,
+.h3 {
+  font-size: var(--font-size-2xl) !important;
+  font-weight: var(--font-weight-bold) !important;
+  line-height: var(--line-height-tight) !important;
+  margin-bottom: 0.5em !important;
+  color: #222 !important;
+  font-family: var(--font-family) !important;
+}
+
+h4,
+.h4 {
+  font-size: var(--font-size-xl) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  line-height: var(--line-height-normal) !important;
+  margin-bottom: 0.5em !important;
+  color: #222 !important;
+  font-family: var(--font-family) !important;
+}
+
+h5,
+.h5 {
+  font-size: var(--font-size-lg) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  line-height: var(--line-height-normal) !important;
+  margin-bottom: 0.5em !important;
+  color: #222 !important;
+  font-family: var(--font-family) !important;
+}
+
+h6,
+.h6 {
+  font-size: var(--font-size-base) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  line-height: var(--line-height-normal) !important;
+  margin-bottom: 0.5em !important;
+  color: #222 !important;
+  font-family: var(--font-family) !important;
+}
+
+/* Paragraph Tags */
+p,
+.paragraph {
+  font-size: var(--font-size-base) !important;
+  line-height: var(--line-height-relaxed) !important;
+  margin-bottom: 1em !important;
+  color: #222 !important;
+  font-family: var(--font-family) !important;
+}
+
+/* Utility Font Size Classes */
+.text-xs { font-size: var(--font-size-xs) !important; }
+.text-sm { font-size: var(--font-size-sm) !important; }
+.text-base { font-size: var(--font-size-base) !important; }
+.text-md { font-size: var(--font-size-md) !important; }
+.text-lg { font-size: var(--font-size-lg) !important; }
+.text-xl { font-size: var(--font-size-xl) !important; }
+.text-2xl { font-size: var(--font-size-2xl) !important; }
+.text-3xl { font-size: var(--font-size-3xl) !important; }
+.text-4xl { font-size: var(--font-size-4xl) !important; }
+.text-5xl { font-size: var(--font-size-5xl) !important; }
+.text-6xl { font-size: var(--font-size-6xl) !important; }
+
+/* Font Weight Utility Classes */
+.font-light { font-weight: var(--font-weight-light) !important; }
+.font-normal { font-weight: var(--font-weight-normal) !important; }
+.font-medium { font-weight: var(--font-weight-medium) !important; }
+.font-semibold { font-weight: var(--font-weight-semibold) !important; }
+.font-bold { font-weight: var(--font-weight-bold) !important; }
+.font-extrabold { font-weight: var(--font-weight-extrabold) !important; }
+.font-black { font-weight: var(--font-weight-black) !important; }
+
+/* Line Height Utility Classes */
+.leading-tight { line-height: var(--line-height-tight) !important; }
+.leading-normal { line-height: var(--line-height-normal) !important; }
+.leading-relaxed { line-height: var(--line-height-relaxed) !important; }
+.leading-loose { line-height: var(--line-height-loose) !important; }
+
+/* Letter Spacing Utility Classes */
+.tracking-tight { letter-spacing: var(--letter-spacing-tight) !important; }
+.tracking-normal { letter-spacing: var(--letter-spacing-normal) !important; }
+.tracking-wide { letter-spacing: var(--letter-spacing-wide) !important; }
+.tracking-wider { letter-spacing: var(--letter-spacing-wider) !important; }
+
+/* ===== GLOBAL COLOR CLASSES ===== */
 }
 
 .bg-dark-green {
