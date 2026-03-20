@@ -258,6 +258,9 @@ if ($popupEnabled !== '1') {
 </style>
 
 <script>
+// Set base URL for AJAX calls
+const deliveryPopupBaseUrl = '<?php echo $base_url ?? "/"; ?>';
+
 // Initialize popup functions immediately
 window.closeDeliveryPopup = function() {
     console.log('closeDeliveryPopup called');
@@ -287,7 +290,7 @@ window.closeDeliveryPopup = function() {
     console.log('Popup closed successfully');
     
     // Call AJAX to mark popup as shown
-    fetch('ajax/mark_popup_shown.php', {
+    fetch(deliveryPopupBaseUrl + 'ajax/mark_popup_shown.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'mark_shown' })
@@ -318,7 +321,7 @@ window.checkDeliveryPincode = function() {
     checkBtn.textContent = 'Checking...';
     checkBtn.disabled = true;
     
-    fetch('ajax/check_pincode.php', {
+    fetch(deliveryPopupBaseUrl + 'ajax/check_pincode.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pincode: pincode })
