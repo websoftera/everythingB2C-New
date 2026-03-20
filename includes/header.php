@@ -248,9 +248,24 @@ html body #floatingCartPanel .quantity-control button.btn-qty:disabled:active {
   color: #333;
 }
 @media (max-width: 768px) {
+  #floatingCartPanel.fixed-panel {
+    height: auto !important;
+    max-height: 94vh !important;
+  }
   #floatingCartPanel.fixed-panel .floating-cart-header h5 {
     font-size: 1.2rem !important;
     font-weight: 500 !important;
+  }
+  #floatingCartPanel.fixed-panel #floatingCartContent {
+    height: auto !important;
+    max-height: 360px !important;
+    flex: 1 !important;
+  }
+  
+  @media (max-height: 700px) {
+    #floatingCartPanel.fixed-panel #floatingCartContent {
+      max-height: 240px !important;
+    }
   }
 }
 /* Product list area always scrolls, never summary or actions */

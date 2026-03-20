@@ -77,7 +77,7 @@ echo renderBreadcrumb($breadcrumbs);
                             <div style="flex:0 0 90px; min-width:60px; text-align:center;">MRP</div>
                             <div style="flex:0 0 90px; min-width:60px; text-align:center;">You Pay</div>
                             <div style="flex:0 0 90px; min-width:60px; text-align:center;">You Save</div>
-                            <div style="flex:0 0 130px; min-width:100px; text-align:center;">Qty</div>
+                            <div style="flex:0 0 80px; min-width:50px; text-align:center;">Qty</div>
                             <div style="flex:0 0 70px; min-width:50px; text-align:center;">Total</div>
                             <div style="flex:0 0 36px; min-width:28px; text-align:center; flex-shrink:0;"></div>
                         </div>
@@ -99,13 +99,13 @@ echo renderBreadcrumb($breadcrumbs);
                                 <div style="flex:0 0 90px; min-width:60px; font-size:0.93em; color:#888; text-align:center;"> <s><?php echo formatPrice($item['mrp'] * $item['quantity']); ?></s> </div>
                                 <div style="flex:0 0 90px; min-width:60px; font-size:0.97em; color:#007bff; font-weight:500; text-align:center;"> <?php echo formatPrice($item['selling_price'] * $item['quantity']); ?> </div>
                                 <div style="flex:0 0 90px; min-width:60px; font-size:0.93em; color:#23a036; text-align:center;"> <?php echo formatPrice(($item['mrp'] - $item['selling_price']) * $item['quantity']); ?> </div>
-                                <div style="flex:0 0 130px; min-width:100px; text-align:center; display:flex; align-items:center; gap:6px; justify-content:center;">
+                                <div style="flex:0 0 80px; min-width:50px; text-align:center;">
                                     <div class="quantity-control d-inline-flex align-items-center justify-content-center">
                                         <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
                                         <input type="number" class="quantity-input" value="<?php echo $item['quantity']; ?>" min="1" max="99" data-cart-id="<?php echo $item['id']; ?>">
                                         <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
                                     </div>
-                                    <span class="unit-price-multiplier" style="font-size:0.9em; color:#666; white-space:nowrap;">X <?php echo formatPrice($item['selling_price']); ?></span>
+                                    <span class="unit-price-multiplier d-md-none ms-2" style="font-size:0.9em; color:#666; white-space:nowrap;">X <?php echo formatPrice($item['selling_price']); ?></span>
                                 </div>
                                 <div style="flex:0 0 70px; min-width:50px; text-align:center; font-weight:600; font-size:1.01em;"> <?php echo formatPrice($item['selling_price'] * $item['quantity']); ?> </div>
                                 <div style="flex:0 0 36px; min-width:28px; text-align:center; flex-shrink:0;">
@@ -115,6 +115,7 @@ echo renderBreadcrumb($breadcrumbs);
                                 </div>
                             </div>
                         <?php endforeach; ?>
+                        <div id="cartPagination" class="mt-3 mb-md-4 mb-2"></div>
                     </div>
                 </div>
             </div>
@@ -566,5 +567,90 @@ document.getElementById('removeAllItems').addEventListener('click', function() {
         });
         }
     });
+});
+</script> 
+
+<!-- Cart Pagination Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const itemsPerPage = 10;
+    let currentPage = 1;
+    
+    function renderPagination() {
+        const items = document.querySelectorAll('.cart-item-row');
+        const totalItems = items.length;
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        const paginationContainer = document.getElementById('cartPagination');
+        
+        if (!paginationContainer) return;
+        
+        if (totalPages <= 1) {
+            paginationContainer.innerHTML = '';
+            items.forEach(item => item.style.setProperty('display', '', ''));
+            return;
+        }
+        
+        let html = '<nav aria-label="Cart items pagination"><ul class="pagination justify-content-center mb-0">';
+        
+        // Previous Button
+        if (currentPage > 1) {
+            html += `<li class="page-item">
+                        <a class="page-link" href="#" data-page="${currentPage - 1}">Previous</a>
+                     </li>`;
+        }
+        
+        for (let i = 1; i <= totalPages; i++) {
+            html += `<li class="page-item ${currentPage === i ? 'active' : ''}">
+                        <a class="page-link" href="#" data-page="${i}">${i}</a>
+                     </li>`;
+        }
+        
+        // Next Button
+        if (currentPage < totalPages) {
+            html += `<li class="page-item">
+                        <a class="page-link" href="#" data-page="${currentPage + 1}">Next</a>
+                     </li>`;
+        }
+        
+        html += '</ul></nav>';
+        paginationContainer.innerHTML = html;
+        
+        paginationContainer.querySelectorAll('.page-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const page = parseInt(this.getAttribute('data-page'));
+                if (page >= 1 && page <= totalPages) {
+                    currentPage = page;
+                    updateItemVisibility();
+                    renderPagination();
+                    
+                    // Smooth scroll to top of cart list
+                    const cardHeader = document.querySelector('.shopping-card');
+                    if (cardHeader) {
+                        cardHeader.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
+            });
+        });
+        
+        updateItemVisibility();
+    }
+    
+    function updateItemVisibility() {
+        const items = document.querySelectorAll('.cart-item-row');
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        
+        items.forEach((item, index) => {
+            if (index >= startIndex && index < endIndex) {
+                item.style.setProperty('display', '', ''); // remove inline display
+            } else {
+                item.style.setProperty('display', 'none', 'important');
+            }
+        });
+    }
+    
+    // Initial render
+    renderPagination();
 });
 </script> 
