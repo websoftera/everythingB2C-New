@@ -204,7 +204,7 @@ echo renderBreadcrumb($breadcrumbs);
     }
     
     .policy-section p {
-        font-size: 14px !important;
+        font-size: 12px !important;
     }
     
     .intro-text {
@@ -213,7 +213,7 @@ echo renderBreadcrumb($breadcrumbs);
     
     .policy-section p,
     .policy-list li {
-        font-size: 14px;
+        font-size: 12px;
     }
 }
 

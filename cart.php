@@ -77,7 +77,7 @@ echo renderBreadcrumb($breadcrumbs);
                             <div style="flex:0 0 90px; min-width:60px; text-align:center;">MRP</div>
                             <div style="flex:0 0 90px; min-width:60px; text-align:center;">You Pay</div>
                             <div style="flex:0 0 90px; min-width:60px; text-align:center;">You Save</div>
-                            <div style="flex:0 0 80px; min-width:50px; text-align:center;">Qty</div>
+                            <div style="flex:0 0 130px; min-width:100px; text-align:center;">Qty</div>
                             <div style="flex:0 0 70px; min-width:50px; text-align:center;">Total</div>
                             <div style="flex:0 0 36px; min-width:28px; text-align:center; flex-shrink:0;"></div>
                         </div>
@@ -99,12 +99,13 @@ echo renderBreadcrumb($breadcrumbs);
                                 <div style="flex:0 0 90px; min-width:60px; font-size:0.93em; color:#888; text-align:center;"> <s><?php echo formatPrice($item['mrp'] * $item['quantity']); ?></s> </div>
                                 <div style="flex:0 0 90px; min-width:60px; font-size:0.97em; color:#007bff; font-weight:500; text-align:center;"> <?php echo formatPrice($item['selling_price'] * $item['quantity']); ?> </div>
                                 <div style="flex:0 0 90px; min-width:60px; font-size:0.93em; color:#23a036; text-align:center;"> <?php echo formatPrice(($item['mrp'] - $item['selling_price']) * $item['quantity']); ?> </div>
-                                <div style="flex:0 0 80px; min-width:50px; text-align:center;">
+                                <div style="flex:0 0 130px; min-width:100px; text-align:center; display:flex; align-items:center; gap:6px; justify-content:center;">
                                     <div class="quantity-control d-inline-flex align-items-center justify-content-center">
                                         <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
                                         <input type="number" class="quantity-input" value="<?php echo $item['quantity']; ?>" min="1" max="99" data-cart-id="<?php echo $item['id']; ?>">
                                         <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
                                     </div>
+                                    <span class="unit-price-multiplier" style="font-size:0.9em; color:#666; white-space:nowrap;">X <?php echo formatPrice($item['selling_price']); ?></span>
                                 </div>
                                 <div style="flex:0 0 70px; min-width:50px; text-align:center; font-weight:600; font-size:1.01em;"> <?php echo formatPrice($item['selling_price'] * $item['quantity']); ?> </div>
                                 <div style="flex:0 0 36px; min-width:28px; text-align:center; flex-shrink:0;">
