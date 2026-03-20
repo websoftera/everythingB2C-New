@@ -3555,6 +3555,13 @@ input[type="checkbox"]:checked+.heart-icon,
     font-size: 14px !important;
   }
 
+  /* Ensure titles stay 16px at all breakpoints */
+  .category-products-title,
+  .discounted-products-title,
+  .featured-products-title {
+    font-size: 16px !important;
+  }
+
   h3 {
     font-size: 12px !important;
   }
@@ -3697,6 +3704,13 @@ input[type="checkbox"]:checked+.heart-icon,
   /* Minimal padding */
   section {
     padding: 8px 0 !important;
+  }
+
+  /* Ensure titles stay 16px on ultra-small devices */
+  .category-products-title,
+  .discounted-products-title,
+  .featured-products-title {
+    font-size: 16px !important;
   }
 
   /* Minimal text sizes */
