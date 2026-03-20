@@ -1790,7 +1790,7 @@ endforeach; ?>
   .category-products-title {
     margin-top: 1px !important;
     margin-bottom: 1px !important;
-    font-size: 14px;
+    font-size: 16px;
   }
   
   .categories-container {
@@ -1991,7 +1991,7 @@ endforeach; ?>
     text-align: left !important;
     padding-left: 0 !important;
     line-height: 1.2 !important;
-    font-size: 14px !important;
+    font-size: 16px !important;
     font-weight: bold;
   }
 
@@ -2018,7 +2018,7 @@ endforeach; ?>
   }
   
   .discounted-products-title {
-    font-size: 18px;
+    font-size: 16px;
   }
   
   .discounted-products-slider-wrapper {
@@ -2380,7 +2380,7 @@ endforeach; ?>
   } */
   
   .featured-products-title {
-    font-size: 14px;
+    font-size: 16px;
     padding-left: 8px;
   }
   
@@ -2430,7 +2430,7 @@ endforeach; ?>
   }
   
   .featured-products-title {
-    font-size: 18px;
+    font-size: 16px;
   }
   
   .featured-products-slider-wrapper {
