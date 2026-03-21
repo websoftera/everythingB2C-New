@@ -445,6 +445,21 @@ html body #floatingCartPanel .quantity-control button.btn-qty:disabled:active {
     .auth-dropdown-menu {
         z-index: 105000 !important;
     }
+
+    /* Prevent user dropdown from opening on hover, open only on click (toggle adds .show) */
+    body .user-auth-dropdown:hover > .dropdown-menu:not(.show) {
+        display: none !important;
+    }
+
+    /* Center user dropdown on mobile view */
+    @media (max-width: 767px) {
+        .user-auth-dropdown .dropdown-menu {
+            left: 50% !important;
+            right: auto !important;
+            transform: translateX(-50%) !important;
+            min-width: 160px !important;
+        }
+    }
 </style>
 </head>
 <body>
@@ -553,7 +568,7 @@ if (!function_exists('renderCategoryDropdown')) {
             <!-- User Account / Login -->
             <div class="dropdown user-auth-dropdown me-1 me-lg-3">
               <?php if (isLoggedIn()): ?>
-                <a href="#" title="Account" class="text-decoration-none user-account-link d-flex align-items-center dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <a href="#" title="Account" class="text-decoration-none user-account-link d-flex align-items-center dropdown-toggle" role="button" aria-expanded="false">
                   <i class="fas fa-user user-account-icon me-1 me-lg-2"></i>
                   <div class="user-welcome-text d-none d-lg-block">
                     <div class="welcome-line-1">Welcome</div>
@@ -568,7 +583,7 @@ if (!function_exists('renderCategoryDropdown')) {
                   <li><a class="dropdown-item" href="<?php echo $base_url; ?>seller/login.php">Seller Login</a></li>
                 </ul>
               <?php else: ?>
-                <a href="#" title="Sign In / Register" class="text-decoration-none user-signin-link d-flex align-items-center dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <a href="#" title="Sign In / Register" class="text-decoration-none user-signin-link d-flex align-items-center dropdown-toggle" role="button" aria-expanded="false">
                   <i class="fas fa-user user-signin-icon me-1"></i>
                   <span class="user-signin-text d-none d-sm-inline">Sign In / Register</span>
                 </a>
