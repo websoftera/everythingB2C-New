@@ -12,23 +12,24 @@ $searchTerm = isset($_GET['q']) ? trim($_GET['q']) : '';
 
 // By default, only show main parent categories (not subcategories)
 if (empty($selectedCategory) && empty($searchTerm)) {
-    $display_list = array_filter($all_categories_with_products, function($cat) { 
-        return empty($cat['parent_id']); 
+    $display_list = array_filter($all_categories_with_products, function ($cat) {
+        return empty($cat['parent_id']);
     });
-} else {
+}
+else {
     // If we're filtering by name or by a specific ID, we search against ALL categories including subcategories
     $display_list = $all_categories_with_products;
-    
+
     // Filter categories based on search
     if (!empty($searchTerm)) {
-        $display_list = array_filter($display_list, function($cat) use ($searchTerm) {
+        $display_list = array_filter($display_list, function ($cat) use ($searchTerm) {
             return stripos($cat['name'], $searchTerm) !== false;
         });
     }
 
     // Filter by selected category if specified
     if (!empty($selectedCategory)) {
-        $display_list = array_filter($display_list, function($cat) use ($selectedCategory) {
+        $display_list = array_filter($display_list, function ($cat) use ($selectedCategory) {
             return $cat['id'] == $selectedCategory;
         });
     }
@@ -43,17 +44,18 @@ $offset = ($currentPage - 1) * $itemsPerPage;
 $displayCategories = array_slice($display_list, $offset, $itemsPerPage);
 
 // Helper function to build pagination URLs
-function buildCategoriesPaginationUrl($page, $params = []) {
+function buildCategoriesPaginationUrl($page, $params = [])
+{
     $url = "?page=" . $page;
-    
+
     if (isset($params['q']) && $params['q'] !== '') {
         $url .= "&q=" . urlencode($params['q']);
     }
-    
+
     if (isset($params['category']) && $params['category'] !== '') {
         $url .= "&category=" . urlencode($params['category']);
     }
-    
+
     return $url;
 }
 ?>
@@ -91,7 +93,8 @@ echo renderBreadcrumb($breadcrumbs);
                             <p>Try adjusting your search terms or filters.</p>
                             <a href="categories.php" class="filter-clear-btn">Clear All Filters</a>
                         </div>
-                    <?php else: ?>
+                    <?php
+else: ?>
                         <?php foreach ($displayCategories as $category): ?>
                             <div class="card category-card" data-id="cat-<?php echo $category['id']; ?>">
                                 <div class="category-info">
@@ -99,11 +102,13 @@ echo renderBreadcrumb($breadcrumbs);
                                         <a href="category.php?slug=<?php echo $category['slug']; ?>">
                                             <?php if (!empty($category['image']) && file_exists('./' . $category['image'])): ?>
                                                 <img src="./<?php echo $category['image']; ?>" alt="<?php echo $category['name']; ?>" />
-                                            <?php else: ?>
+                                            <?php
+        else: ?>
                                                 <div class="category-placeholder">
                                                     <i class="fas fa-box"></i>
                                                 </div>
-                                            <?php endif; ?>
+                                            <?php
+        endif; ?>
                                         </a>
                                     </div>
                                     <div class="category-details">
@@ -117,7 +122,8 @@ echo renderBreadcrumb($breadcrumbs);
                                                 <i class="bi bi-box"></i>
                                                 <?php echo $category['product_count']; ?> product<?php echo $category['product_count'] != 1 ? 's' : ''; ?>
                                             </div>
-                                        <?php endif; ?>
+                                        <?php
+        endif; ?>
                                         <div class="category-actions">
                                             <a href="category.php?slug=<?php echo $category['slug']; ?>" class="btn btn-primary view-category-btn">
                                                 <i class="bi bi-eye"></i> View Products
@@ -126,8 +132,10 @@ echo renderBreadcrumb($breadcrumbs);
                                     </div>
                                 </div>
                             </div>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
+                        <?php
+    endforeach; ?>
+                    <?php
+endif; ?>
                 </div>
 
                 <!-- Pagination -->
@@ -138,22 +146,26 @@ echo renderBreadcrumb($breadcrumbs);
                                 <li class="page-item">
                                     <a class="page-link" href="<?php echo buildCategoriesPaginationUrl($currentPage - 1, $_GET); ?>">Previous</a>
                                 </li>
-                            <?php endif; ?>
+                            <?php
+    endif; ?>
                             
                             <?php for ($i = max(1, $currentPage - 2); $i <= min($totalPages, $currentPage + 2); $i++): ?>
                                 <li class="page-item <?php echo $i == $currentPage ? 'active' : ''; ?>">
                                     <a class="page-link" href="<?php echo buildCategoriesPaginationUrl($i, $_GET); ?>"><?php echo $i; ?></a>
                                 </li>
-                            <?php endfor; ?>
+                            <?php
+    endfor; ?>
                             
                             <?php if ($currentPage < $totalPages): ?>
                                 <li class="page-item">
                                     <a class="page-link" href="<?php echo buildCategoriesPaginationUrl($currentPage + 1, $_GET); ?>">Next</a>
                                 </li>
-                            <?php endif; ?>
+                            <?php
+    endif; ?>
                         </ul>
                     </nav>
-                <?php endif; ?>
+                <?php
+endif; ?>
             </div>
         </div>
     </div>
@@ -438,6 +450,7 @@ echo renderBreadcrumb($breadcrumbs);
         grid-template-columns: 1fr !important;
         gap: 20px !important;
         padding: 0 15px;
+        padding-top:20px;
     }
     
     .category-card {

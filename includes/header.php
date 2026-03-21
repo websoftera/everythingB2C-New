@@ -243,7 +243,7 @@ html body #floatingCartPanel .quantity-control button.btn-qty:disabled:active {
   flex-shrink: 0;
 }
 #floatingCartPanel.fixed-panel .floating-cart-header h5 {
-  font-weight: 500;
+  font-weight: 600;
   font-size: 0.93rem;
   color: #333;
 }
@@ -445,6 +445,21 @@ html body #floatingCartPanel .quantity-control button.btn-qty:disabled:active {
     .auth-dropdown-menu {
         z-index: 105000 !important;
     }
+
+    /* Prevent user dropdown from opening on hover, open only on click (toggle adds .show) */
+    body .user-auth-dropdown:hover > .dropdown-menu:not(.show) {
+        display: none !important;
+    }
+
+    /* Center user dropdown on mobile view */
+    @media (max-width: 767px) {
+        .user-auth-dropdown .dropdown-menu {
+            left: 50% !important;
+            right: auto !important;
+            transform: translateX(-50%) !important;
+            min-width: 160px !important;
+        }
+    }
 </style>
 </head>
 <body>
@@ -464,7 +479,7 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
   <!-- Floating Cart Panel (dropdown style) -->
   <div id="floatingCartPanel" class="fixed-panel" style="display:none;">
     <div class="floating-cart-header">
-      <h5 style="margin:0;font-family:'Mulish', sans-serif !important;">My Cart</h5>
+      <h5 class="text-primary" style="margin:0;font-family:'Mulish', sans-serif !important;">My Cart</h5>
       <button id="closeFloatingCartPanel" style="background:none;border:none;font-size:1.7rem;line-height:1;color:#888;cursor:pointer;">&times;</button>
     </div>
     <div id="floatingCartContent"></div>
@@ -553,7 +568,7 @@ if (!function_exists('renderCategoryDropdown')) {
             <!-- User Account / Login -->
             <div class="dropdown user-auth-dropdown me-1 me-lg-3">
               <?php if (isLoggedIn()): ?>
-                <a href="#" title="Account" class="text-decoration-none user-account-link d-flex align-items-center dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <a href="#" title="Account" class="text-decoration-none user-account-link d-flex align-items-center dropdown-toggle" role="button" aria-expanded="false">
                   <i class="fas fa-user user-account-icon me-1 me-lg-2"></i>
                   <div class="user-welcome-text d-none d-lg-block">
                     <div class="welcome-line-1">Welcome</div>
@@ -568,7 +583,7 @@ if (!function_exists('renderCategoryDropdown')) {
                   <li><a class="dropdown-item" href="<?php echo $base_url; ?>seller/login.php">Seller Login</a></li>
                 </ul>
               <?php else: ?>
-                <a href="#" title="Sign In / Register" class="text-decoration-none user-signin-link d-flex align-items-center dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <a href="#" title="Sign In / Register" class="text-decoration-none user-signin-link d-flex align-items-center dropdown-toggle" role="button" aria-expanded="false">
                   <i class="fas fa-user user-signin-icon me-1"></i>
                   <span class="user-signin-text d-none d-sm-inline">Sign In / Register</span>
                 </a>
@@ -1423,7 +1438,7 @@ function renderFloatingCart() {
               </div>
             </div>
             <div class="text-end ms-1" style="min-width:54px;">
-              <div data-cart-total-id="${cartId}" style="font-weight:700;font-size:0.98rem;">₹${(item.selling_price * item.quantity).toFixed(2).replace('.00', '')}</div>
+              <div data-cart-total-id="${cartId}" style="font-weight:500;font-size:0.93rem;">₹${(item.selling_price * item.quantity).toFixed(2).replace('.00', '')}</div>
               <button class="btn btn-xs btn-outline-danger mt-1 remove-cart-item-btn" data-cart-id="${cartId}" style="padding:0 5px;font-size:0.9rem;"><i class="fas fa-trash"></i></button>
             </div>
           </div>

@@ -638,21 +638,32 @@ select.form-control {
     color: #007bff !important; /* Blue Title */
   }
 
+  /* Reduce space before filter buttons for mobile (2px after breadcrumbs) */
+  .category-container, .shop-page-container, .search-page-container, .products-list-page-container, .wishlist-container {
+    margin-top: 2px !important;
+  }
+
   /* Side-by-Side Mobile Toggles Custom CSS */
   .mobile-filter-toggles {
     display: flex;
     gap: 12px;
-    margin-bottom: 15px;
+    margin-bottom: 4px !important; /* 4px bottom space before cards */
     width: 100%;
+    justify-content: flex-end; /* Align right */
   }
 
   .mobile-filter-toggles .filter-toggle-btn {
-    flex: 1;
+    flex: 0 0 auto; /* Compact width fit content */
+    width: auto !important;
     margin-bottom: 0 !important;
     margin-left: 0 !important;
     border-radius: 20px;
     justify-content: center;
-    padding: 8px 0;
+    padding: 6px 16px !important; /* Proper padding for pill button */
+    height: 34px !important; /* Standard height */
+    display: inline-flex;
+    align-items: center;
+    font-size: 14px;
   }
 
   /* Custom Mobile Filter Layout (DMart Style) */
