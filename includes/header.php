@@ -243,7 +243,7 @@ html body #floatingCartPanel .quantity-control button.btn-qty:disabled:active {
   flex-shrink: 0;
 }
 #floatingCartPanel.fixed-panel .floating-cart-header h5 {
-  font-weight: 500;
+  font-weight: 600;
   font-size: 0.93rem;
   color: #333;
 }
@@ -479,7 +479,7 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
   <!-- Floating Cart Panel (dropdown style) -->
   <div id="floatingCartPanel" class="fixed-panel" style="display:none;">
     <div class="floating-cart-header">
-      <h5 style="margin:0;font-family:'Mulish', sans-serif !important;">My Cart</h5>
+      <h5 class="text-primary" style="margin:0;font-family:'Mulish', sans-serif !important;">My Cart</h5>
       <button id="closeFloatingCartPanel" style="background:none;border:none;font-size:1.7rem;line-height:1;color:#888;cursor:pointer;">&times;</button>
     </div>
     <div id="floatingCartContent"></div>
@@ -1438,7 +1438,7 @@ function renderFloatingCart() {
               </div>
             </div>
             <div class="text-end ms-1" style="min-width:54px;">
-              <div data-cart-total-id="${cartId}" style="font-weight:700;font-size:0.98rem;">₹${(item.selling_price * item.quantity).toFixed(2).replace('.00', '')}</div>
+              <div data-cart-total-id="${cartId}" style="font-weight:500;font-size:0.93rem;">₹${(item.selling_price * item.quantity).toFixed(2).replace('.00', '')}</div>
               <button class="btn btn-xs btn-outline-danger mt-1 remove-cart-item-btn" data-cart-id="${cartId}" style="padding:0 5px;font-size:0.9rem;"><i class="fas fa-trash"></i></button>
             </div>
           </div>
