@@ -147,6 +147,8 @@ echo renderBreadcrumb($breadcrumbs);
         <?php endif; ?>
         
     <?php endif; ?>
+</div>
+
 <style>
 /* Wishlist Page Layout Styles */
 .products-container {
