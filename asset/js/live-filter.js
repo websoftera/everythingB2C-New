@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
     filterForms.forEach(form => {
         const searchInput = form.querySelector('input[name="q"], .mob-search-input');
         const categorySelect = form.querySelector('select[name="category"]');
-        const categoryRadios = form.querySelectorAll('input[name="category"][type="radio"]');
+        const categoryCheckboxes = form.querySelectorAll('input[name="category[]"][type="checkbox"]');
         const sortRadios = form.querySelectorAll('input[name="sort"][type="radio"]');
         const minPriceIn = form.querySelector('#minPriceInput');
         const maxPriceIn = form.querySelector('#maxPriceInput');
@@ -103,11 +103,11 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
 
-        // 3. Category Radios (Mobile)
-        if (categoryRadios.length > 0) {
-            categoryRadios.forEach(radio => {
+        // 3. Category Checkboxes (Mobile)
+        if (categoryCheckboxes.length > 0) {
+            categoryCheckboxes.forEach(checkbox => {
                 // For live-filtering on select (optional, usually footer does it, but ajax updates standard UX)
-                radio.addEventListener('change', triggerFilter);
+                checkbox.addEventListener('change', triggerFilter);
             });
         }
 

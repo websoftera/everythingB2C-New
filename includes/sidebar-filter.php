@@ -150,11 +150,18 @@ $categoryTree = buildCategoryTree($categories);
                         $output = '';
                         foreach ($categories as $cat) {
                             if ($cat['parent_id'] == $parentId) {
-                                $checked = (isset($_GET['category']) && $_GET['category'] == $cat['id']) ? 'checked' : '';
+                                $checked = '';
+                                if (isset($_GET['category'])) {
+                                    if (is_array($_GET['category'])) {
+                                        $checked = in_array($cat['id'], $_GET['category']) ? 'checked' : '';
+                                    } else {
+                                        $checked = ($_GET['category'] == $cat['id']) ? 'checked' : '';
+                                    }
+                                }
                                 $indentStyle = 'padding-left: ' . ($level * 15 + 15) . 'px;';
                                 
                                 $output .= '<label class="mob-radio-item" style="' . $indentStyle . '">';
-                                $output .= '<input type="radio" name="category" value="' . $cat['id'] . '" ' . $checked . '>';
+                                $output .= '<input type="checkbox" name="category[]" value="' . $cat['id'] . '" ' . $checked . '>';
                                 $output .= '<span class="mob-radio-label">' . htmlspecialchars($cat['name']) . '</span>';
                                 $output .= '<span class="mob-radio-circle"></span>';
                                 $output .= '</label>';
@@ -594,7 +601,8 @@ select.form-control {
     top: 15%; /* Top spacing for bottom-sheet effect */
     left: -100%;
     width: 100%;
-    height: 85vh; /* Takes 85% of screen height */
+    bottom: 0;
+    height: auto; /* Takes remaining space to avoid cutting off bottom buttons */
     z-index: 1050;
     border-radius: 20px 20px 0 0; /* Rounded top corners */
     transition: left 0.3s ease;
@@ -793,7 +801,8 @@ select.form-control {
     margin-bottom: 0;
   }
 
-  .mob-radio-item input[type="radio"] {
+  .mob-radio-item input[type="radio"],
+  .mob-radio-item input[type="checkbox"] {
     position: absolute;
     opacity: 0;
     width: 0;
@@ -816,17 +825,20 @@ select.form-control {
     transition: all 0.2s;
   }
 
-  .mob-radio-item input[type="radio"]:checked + .mob-radio-label {
+  .mob-radio-item input[type="radio"]:checked + .mob-radio-label,
+  .mob-radio-item input[type="checkbox"]:checked + .mob-radio-label {
     color: #9fbe1b;
     font-weight: 500;
   }
 
-  .mob-radio-item input[type="radio"]:checked ~ .mob-radio-circle {
+  .mob-radio-item input[type="radio"]:checked ~ .mob-radio-circle,
+  .mob-radio-item input[type="checkbox"]:checked ~ .mob-radio-circle {
     border-color: #9fbe1b;
     background-color: #9fbe1b; /* Green fill filled */
   }
 
-  .mob-radio-item input[type="radio"]:checked ~ .mob-radio-circle::after {
+  .mob-radio-item input[type="radio"]:checked ~ .mob-radio-circle::after,
+  .mob-radio-item input[type="checkbox"]:checked ~ .mob-radio-circle::after {
     content: '\2713'; /* Tick checkmark symbol */
     position: absolute;
     top: 50%;
@@ -867,9 +879,17 @@ select.form-control {
   }
 
   .mob-apply-btn {
+    background: #ccc !important;
+    color: #888 !important;
+    border: none !important;
+    pointer-events: none;
+    transition: all 0.3s ease;
+  }
+
+  .mob-apply-btn.active-btn {
     background: #9fbe1b !important;
     color: white !important;
-    border: none !important;
+    pointer-events: auto;
   }
 
   .mob-clear-btn {
@@ -1211,8 +1231,8 @@ document.addEventListener('DOMContentLoaded', function() {
     mobClearFiltersBtn.addEventListener('click', function() {
       const mobForm = document.getElementById('mobileFilterForm');
       if (mobForm) {
-        // Uncheck all radios
-        mobForm.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+        // Uncheck all radios and checkboxes
+        mobForm.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(r => r.checked = false);
         // Clear Search
         const searchIn = mobForm.querySelector('.mob-search-input');
         if (searchIn) searchIn.value = '';
@@ -1248,6 +1268,32 @@ document.addEventListener('DOMContentLoaded', function() {
       
       window.location.href = currentUrl + (params.toString() ? '?' + params.toString() : '');
     });
+  }
+
+  // --- Mobile Apply Button State Logic ---
+  const applyBtn = document.querySelector('.mob-apply-btn');
+  
+  if (mobFilterForm && applyBtn) {
+      // Store initial state
+      const initialData = new FormData(mobFilterForm);
+      const initialState = new URLSearchParams(initialData).toString();
+      
+      function updateApplyState() {
+          const currentData = new FormData(mobFilterForm);
+          const currentState = new URLSearchParams(currentData).toString();
+          
+          if (currentState !== initialState) {
+              applyBtn.classList.add('active-btn');
+              applyBtn.disabled = false;
+          } else {
+              applyBtn.classList.remove('active-btn');
+              applyBtn.disabled = true;
+          }
+      }
+      
+      mobFilterForm.addEventListener('change', updateApplyState);
+      mobFilterForm.addEventListener('input', updateApplyState);
+      updateApplyState(); // Set initial state
   }
 });
 </script> 
