@@ -5,7 +5,7 @@ $categories = getAllCategories();
 $categoryTree = buildCategoryTree($categories);
 
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
-$selectedCategory = isset($_GET['category']) ? intval($_GET['category']) : null;
+$selectedCategory = isset($_GET['category']) ? $_GET['category'] : null;
 $selectedSubcategory = isset($_GET['subcategory']) ? intval($_GET['subcategory']) : null;
 $minPrice = isset($_GET['min_price']) ? floatval($_GET['min_price']) : 0;
 $maxPrice = isset($_GET['max_price']) ? floatval($_GET['max_price']) : 0;
@@ -20,13 +20,27 @@ if ($search !== '') {
 if ($selectedSubcategory) {
     $where[] = 'p.category_id = ?';
     $params[] = $selectedSubcategory;
-} elseif ($selectedCategory) {
-    $subcatIds = array_map(function($cat) { return $cat['id']; }, array_merge(
-        isset($categoryTree[$selectedCategory]['children']) ? $categoryTree[$selectedCategory]['children'] : [],
-        [ ['id' => $selectedCategory] ]
-    ));
-    $where[] = 'p.category_id IN (' . implode(',', array_fill(0, count($subcatIds), '?')) . ')';
-    $params = array_merge($params, $subcatIds);
+} elseif ($selectedCategory !== null && $selectedCategory !== '') {
+    $allSubcatIds = [];
+    if (is_array($selectedCategory)) {
+        foreach ($selectedCategory as $catId) {
+            $catId = intval($catId);
+            $subcatIds = array_map(function($cat) { return $cat['id']; }, array_merge(
+                isset($categoryTree[$catId]['children']) ? $categoryTree[$catId]['children'] : [],
+                [ ['id' => $catId] ]
+            ));
+            $allSubcatIds = array_merge($allSubcatIds, $subcatIds);
+        }
+    } else {
+        $selectedCategory = intval($selectedCategory);
+        $allSubcatIds = array_map(function($cat) { return $cat['id']; }, array_merge(
+            isset($categoryTree[$selectedCategory]['children']) ? $categoryTree[$selectedCategory]['children'] : [],
+            [ ['id' => $selectedCategory] ]
+        ));
+    }
+    $allSubcatIds = array_unique($allSubcatIds);
+    $where[] = 'p.category_id IN (' . implode(',', array_fill(0, count($allSubcatIds), '?')) . ')';
+    $params = array_merge($params, $allSubcatIds);
 }
 if ($minPrice > 0) {
     $where[] = 'p.selling_price >= ?';

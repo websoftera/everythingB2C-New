@@ -47,7 +47,15 @@ $params = [];
 // Category filtering - if a category is selected, include all its descendants
 if ($selectedCategory !== null && $selectedCategory !== '') {
   // Get all descendant category IDs for the selected category
-  $categoryIds = getAllDescendantCategoryIdsRecursive($pdo, intval($selectedCategory));
+  $allCategoryIds = [];
+  if (is_array($selectedCategory)) {
+      foreach ($selectedCategory as $catId) {
+          $allCategoryIds = array_merge($allCategoryIds, getAllDescendantCategoryIdsRecursive($pdo, intval($catId)));
+      }
+  } else {
+      $allCategoryIds = getAllDescendantCategoryIdsRecursive($pdo, intval($selectedCategory));
+  }
+  $categoryIds = array_unique($allCategoryIds);
   $placeholders = str_repeat('?,', count($categoryIds) - 1) . '?';
   $whereConditions[] = "p.category_id IN ($placeholders)";
   $params = array_merge($params, $categoryIds);
