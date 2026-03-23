@@ -1062,3 +1062,54 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
 .product-info {
     position: relative;
 }
+
+/* ===== MOBILE ONLY OVERRIDES FOR MRP / QUANTITY MATCHING ===== */
+@media (max-width: 767px) {
+    /* Match MRP, PAY, and Quantity width/height exactly */
+    html body .container-fluid .product-card .price-buttons .price-btn.mrp,
+    html body .container-fluid .product-card .price-buttons .price-btn.pay,
+    html body .container-fluid .product-card .cart-actions .quantity-control {
+        flex: 0 0 calc(50% - 17px) !important;
+        min-width: calc(50% - 17px) !important;
+        max-width: calc(50% - 17px) !important;
+        width: calc(50% - 17px) !important;
+        height: 32px !important;
+        min-height: 32px !important;
+        max-height: 32px !important;
+        padding: 0 2px !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    html body .container-fluid .product-card .cart-actions .quantity-control .btn-qty,
+    html body .container-fluid .product-card .cart-actions .quantity-control .quantity-input {
+        height: 100% !important;
+        min-height: 30px !important;
+    }
+
+    /* Adjust Row Containers for exact 5px gaps */
+    html body .container-fluid .product-card .price-buttons,
+    html body .container-fluid .product-card .cart-actions {
+        justify-content: flex-start !important;
+        gap: 5px !important;
+        width: 100% !important;
+    }
+    
+    html body .container-fluid .product-card .price-buttons .wishlist {
+        margin-left: auto !important;
+        flex: 0 0 24px !important;
+        display: flex !important;
+        justify-content: flex-end !important;
+    }
+
+    /* Allow ADD TO CART to fill the remaining exact space */
+    html body .container-fluid .product-card .cart-actions .add-to-cart-btn,
+    html body .container-fluid .product-card .cart-actions .add-to-cart {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        height: 32px !important;
+        min-height: 32px !important;
+        max-height: 32px !important;
+        margin: 0 !important;
+    }
+}
