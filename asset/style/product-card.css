@@ -326,7 +326,8 @@
     display: flex !important;
     align-items: center !important;
     gap: 0 !important;
-    flex: 0 0 calc(50% - 15px) !important; /* Mathematically identical to MRP box width */
+    flex: 0 0 calc(50% - 15px) !important;
+    /* Mathematically identical to MRP box width */
     width: calc(50% - 15px) !important;
     min-width: calc(50% - 15px) !important;
     max-width: calc(50% - 15px) !important;
@@ -334,7 +335,8 @@
     border-radius: 4px !important;
     overflow: hidden !important;
     height: 30px !important;
-    box-sizing: border-box !important; /* Prevents 1px border from adding width past 50%-15px */
+    box-sizing: border-box !important;
+    /* Prevents 1px border from adding width past 50%-15px */
 }
 
 /* Minus / Plus buttons */
@@ -391,7 +393,8 @@
     color: #333 !important;
     padding: 0 !important;
     margin: 0 !important;
-    flex: 1 1 auto !important; /* Stretch to fill completely */
+    flex: 1 1 auto !important;
+    /* Stretch to fill completely */
     -webkit-appearance: none !important;
     -moz-appearance: textfield !important;
     appearance: textfield !important;
@@ -901,7 +904,7 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
         border-radius: 8px 8px 0 0 !important;
         padding: 4px 10px !important;
         /* Tighter padding */
-        font-size: 9px !important;
+        font-size: 11px !important;
         /* Smaller banner text */
     }
 
@@ -1070,6 +1073,7 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
 
 /* ===== MOBILE ONLY OVERRIDES FOR MRP / QUANTITY MATCHING ===== */
 @media (max-width: 767px) {
+
     /* Set manual row layouts, avoiding flex gap for absolute consistency */
     html body .product-card .price-buttons,
     html body .product-card .cart-actions {
@@ -1077,7 +1081,8 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
         flex-direction: row !important;
         flex-wrap: nowrap !important;
         justify-content: flex-start !important;
-        gap: 0 !important; /* disabled gap, using margin */
+        gap: 0 !important;
+        /* disabled gap, using margin */
         width: 100% !important;
         padding: 0 !important;
     }
@@ -1117,7 +1122,7 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
         max-width: 20px !important;
         padding: 0 !important;
     }
-    
+
     html body .product-card .cart-actions .quantity-control .quantity-input {
         height: 32px !important;
         min-height: 32px !important;
@@ -1157,9 +1162,10 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
     html body .featured-products-container {
         scroll-snap-type: x mandatory !important;
         scroll-padding-left: 10px !important;
-        padding: 5px 10px 5px 10px !important; /* Add left/right padding to start off the edge */
+        padding: 5px 10px 5px 10px !important;
+        /* Add left/right padding to start off the edge */
     }
-    
+
     html body .discounted-products-container .product-card,
     html body .featured-products-container .product-card {
         scroll-snap-align: start !important;
@@ -1176,6 +1182,6 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
 }
 
 .wishlist-active .header-wishlist-icon,
-.heart-checkbox:checked + .wishlist-label .header-wishlist-icon {
+.heart-checkbox:checked+.wishlist-label .header-wishlist-icon {
     color: #DE0085 !important;
 }
