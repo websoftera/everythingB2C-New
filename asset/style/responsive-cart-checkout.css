@@ -75,6 +75,12 @@
         padding: 15px;
     }
 
+    /* Increase font size and weight of Cart & Price Summary Headers on Mobile */
+    .shopping-card .card-header h5 {
+        font-size: 1.05rem !important;
+        font-weight: 600 !important;
+    }
+
     /* --- Checkout Page --- */
 
     /* Address Actions Buttons */

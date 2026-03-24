@@ -49,6 +49,16 @@ echo renderBreadcrumb($breadcrumbs);
     display: flex !important;
     color: #444 !important;
 }
+
+/* Fix desktop cart quantity control collapsing from product-card.css overrides */
+@media (min-width: 768px) {
+    .cart-item-row .quantity-control {
+        flex: 0 0 80px !important;
+        width: 80px !important;
+        min-width: 80px !important;
+        max-width: 80px !important;
+    }
+}
 </style>
 <div class="container mt-4">
     <!-- <h1>Shopping Cart</h1> -->
@@ -65,7 +75,7 @@ echo renderBreadcrumb($breadcrumbs);
                 <div class="shopping-card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Cart Items (<?php echo count($cartItems); ?>)</h5>
-                        <button type="button" class="btn btn-outline-danger btn-sm" id="removeAllItems" title="Remove all items from cart">
+                        <button type="button" class="btn btn-outline-danger btn-sm d-none d-md-block" id="removeAllItems" title="Remove all items from cart">
                             <i class="fas fa-trash me-1"></i>Remove All
                         </button>
                     </div>
@@ -92,7 +102,7 @@ echo renderBreadcrumb($breadcrumbs);
                                     </a>
                                 </div>
                                 <div style="flex:1 1 120px; min-width:60px; max-width:220px; font-size:0.97em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                                    <a href="product.php?slug=<?php echo urlencode($item['slug']); ?>" title="<?php echo htmlspecialchars($item['name']); ?>" style="color:inherit; text-decoration:underline dotted; cursor:pointer;">
+                                    <a href="product.php?slug=<?php echo urlencode($item['slug']); ?>" title="<?php echo htmlspecialchars($item['name']); ?>" style="color:inherit; text-decoration:none; cursor:pointer;">
                                         <?php echo htmlspecialchars($item['name']); ?>
                                     </a>
                                 </div>
@@ -121,6 +131,12 @@ echo renderBreadcrumb($breadcrumbs);
             </div>
             
             <div class="col-md-4">
+                <!-- Mobile Remove All Button placed before Price Summary -->
+                <div class="text-end d-md-none mb-2">
+                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="document.getElementById('removeAllItems').click()" title="Remove all items from cart">
+                        <i class="fas fa-trash me-1"></i>Remove All
+                    </button>
+                </div>
                 <div class="shopping-card">
                     <div class="card-header">
                         <h5>Price Summary</h5>
