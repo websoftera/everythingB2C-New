@@ -403,10 +403,24 @@ document.addEventListener('DOMContentLoaded', function () {
                         // Update checkbox and label based on action
                         if (data.action === 'added') {
                             checkbox.checked = true;
-                            if (label) label.classList.add('wishlist-active');
+                            if (label) {
+                                label.classList.add('wishlist-active');
+                                const icon = label.querySelector('i');
+                                if (icon) {
+                                    icon.classList.add('bi-heart-fill');
+                                    icon.classList.remove('bi-heart');
+                                }
+                            }
                         } else if (data.action === 'removed') {
                             checkbox.checked = false;
-                            if (label) label.classList.remove('wishlist-active');
+                            if (label) {
+                                label.classList.remove('wishlist-active');
+                                const icon = label.querySelector('i');
+                                if (icon) {
+                                    icon.classList.remove('bi-heart-fill');
+                                    icon.classList.add('bi-heart');
+                                }
+                            }
                         }
                     } else {
                         // Revert checkbox state on failure
@@ -427,10 +441,19 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Revert checkbox state on error
                     checkbox.checked = !checkbox.checked;
                     if (label) {
+                        const icon = label.querySelector('i');
                         if (checkbox.checked) {
                             label.classList.add('wishlist-active');
+                            if (icon) {
+                                icon.classList.add('bi-heart-fill');
+                                icon.classList.remove('bi-heart');
+                            }
                         } else {
                             label.classList.remove('wishlist-active');
+                            if (icon) {
+                                icon.classList.remove('bi-heart-fill');
+                                icon.classList.add('bi-heart');
+                            }
                         }
                     }
                 });
@@ -462,11 +485,20 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.heart-checkbox, .shop-page-heart-checkbox').forEach(checkbox => {
             const productId = checkbox.dataset.productId;
             const label = checkbox.nextElementSibling;
+            const icon = label? label.querySelector('i') : null;
 
             if (checkbox.checked) {
                 if (label) label.classList.add('wishlist-active');
+                if (icon) {
+                    icon.classList.add('bi-heart-fill');
+                    icon.classList.remove('bi-heart');
+                }
             } else {
                 if (label) label.classList.remove('wishlist-active');
+                if (icon) {
+                    icon.classList.remove('bi-heart-fill');
+                    icon.classList.add('bi-heart');
+                }
             }
         });
     }
@@ -805,8 +837,12 @@ document.body.addEventListener('click', function (e) {
                 if (data.success) {
                     if (icon) {
                         if (data.action === 'added') {
+                            icon.classList.add('bi-heart-fill');
+                            icon.classList.remove('bi-heart');
                             icon.style.color = '#DE0085'; // Pink color when added
                         } else if (data.action === 'removed') {
+                            icon.classList.remove('bi-heart-fill');
+                            icon.classList.add('bi-heart');
                             icon.style.color = '#fff'; // White color when removed
                         }
                     }

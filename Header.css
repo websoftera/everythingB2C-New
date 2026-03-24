@@ -1435,7 +1435,7 @@ body {
   }
 
   .input-group>.form-control {
-    margin-left: -2px !important;
+    /* margin-left: -2px !important; */
   }
 
   /* Force remove border radius from mobile dropdown button */

@@ -445,7 +445,7 @@ echo renderBreadcrumb($breadcrumbs);
                     <i class="fas fa-map-marker-alt"></i> Addresses
                 </a>
                 <a href="#wishlist" class="account-menu-item" onclick="showSection('wishlist')">
-                    <i class="fas fa-heart"></i> Wishlist
+                    <i class="bi bi-heart"></i> Wishlist
                 </a>
                 <a href="#profile" class="account-menu-item" onclick="showSection('profile')">
                     <i class="fas fa-user"></i> Account Info
@@ -730,7 +730,7 @@ echo renderBreadcrumb($breadcrumbs);
                     
                 <?php else: ?>
                     <div class="account-empty">
-                        <i class="fas fa-heart"></i>
+                        <i class="bi bi-heart"></i>
                         <h5>Your wishlist is empty</h5>
                         <p>Start adding products to your wishlist</p>
                         <a href="index.php" class="btn">Start Shopping</a>

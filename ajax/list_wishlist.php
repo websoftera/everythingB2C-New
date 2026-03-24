@@ -18,7 +18,7 @@ if (!empty($wishlistItems)) {
     }
 } else {
     echo '<div class="account-empty-state">';
-    echo '<i class="fas fa-heart"></i>';
+    echo '<i class="bi bi-heart"></i>';
     echo '<h5>Your wishlist is empty</h5>';
     echo '<p>Start adding products to your wishlist</p>';
     echo '<a href="index.php" class="account-btn">Start Shopping</a>';

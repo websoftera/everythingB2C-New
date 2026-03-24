@@ -88,7 +88,7 @@ echo renderBreadcrumb($breadcrumbs);
                                     <div class="wishlist">
                                         <input type="checkbox" class="heart-checkbox" id="wishlist-checkbox-<?php echo $item['product_id']; ?>" data-product-id="<?php echo $item['product_id']; ?>" checked>
                                         <label for="wishlist-checkbox-<?php echo $item['product_id']; ?>" class="wishlist-label wishlist-active">
-                                            <span class="heart-icon">&#10084;</span>
+                                            <i class="bi bi-heart-fill header-wishlist-icon"></i>
                                         </label>
                                     </div>
                                 </div>
