@@ -212,7 +212,7 @@ foreach ($discountedProducts as $product):
                           <input type="checkbox" class="heart-checkbox" id="wishlist-checkbox-discounted-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>" <?php if ($inWishlist)
     echo 'checked'; ?>>
                           <label for="wishlist-checkbox-discounted-<?php echo $product['id']; ?>" class="wishlist-label <?php echo $inWishlist ? 'wishlist-active' : ''; ?>">
-                              <i class="fas fa-heart"></i>
+                              <i class="bi <?php echo $inWishlist ? 'bi-heart-fill' : 'bi-heart'; ?> header-wishlist-icon"></i>
                           </label>
                         </div>
                     </div>
@@ -303,7 +303,7 @@ foreach ($featuredProducts as $product):
                           <input type="checkbox" class="heart-checkbox" id="wishlist-checkbox-featured-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>" <?php if ($inWishlist)
     echo 'checked'; ?>>
                           <label for="wishlist-checkbox-featured-<?php echo $product['id']; ?>" class="wishlist-label <?php echo $inWishlist ? 'wishlist-active' : ''; ?>">
-                              <i class="fas fa-heart"></i>
+                              <i class="bi <?php echo $inWishlist ? 'bi-heart-fill' : 'bi-heart'; ?> header-wishlist-icon"></i>
                           </label>
                         </div>
                     </div>

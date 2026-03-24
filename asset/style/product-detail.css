@@ -608,6 +608,51 @@
     }
 }
 
+/* Desktop Detail Page Button Alignment Overrides */
+@media (min-width: 901px) {
+
+    .product-page-container .price-buttons1,
+    .product-page-container .cart-actions {
+        max-width: 250px !important;
+        width: 100% !important;
+        gap: 5px !important;
+        /* Standardized uniform gaps */
+    }
+
+    .product-page-container .price-buttons1 .price-btn.mrp,
+    .product-page-container .cart-actions .quantity-control {
+        flex: 0 0 calc(50% - 15px) !important;
+        width: calc(50% - 15px) !important;
+        min-width: calc(50% - 15px) !important;
+        max-width: calc(50% - 15px) !important;
+    }
+
+    .product-page-container .price-buttons1 .price-btn {
+        height: 36px !important;
+        min-height: 36px !important;
+        max-height: 36px !important;
+        padding: 0 12px !important;
+        /* Reset tall padding to center values */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .product-page-container .price-buttons1 .price-btn.pay,
+    .product-page-container .cart-actions .add-to-cart-btn {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        /* Strip the 185px restriction */
+    }
+
+    .product-page-container .price-buttons1 .wishlist {
+        flex: 0 0 24px !important;
+        width: 24px !important;
+        margin-left: auto !important;
+    }
+}
+
 @media (max-width: 768px) {
     .related-products-slider-wrapper {
         overflow: visible;

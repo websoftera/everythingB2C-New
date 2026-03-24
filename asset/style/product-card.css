@@ -326,11 +326,15 @@
     display: flex !important;
     align-items: center !important;
     gap: 0 !important;
-    flex: 0 0 auto !important;
+    flex: 0 0 calc(50% - 15px) !important; /* Mathematically identical to MRP box width */
+    width: calc(50% - 15px) !important;
+    min-width: calc(50% - 15px) !important;
+    max-width: calc(50% - 15px) !important;
     border: 1px solid #b3b3b3 !important;
     border-radius: 4px !important;
     overflow: hidden !important;
     height: 30px !important;
+    box-sizing: border-box !important; /* Prevents 1px border from adding width past 50%-15px */
 }
 
 /* Minus / Plus buttons */
@@ -375,8 +379,9 @@
 
 /* Number input inside quantity control */
 .quantity-control .quantity-input {
-    width: 28px !important;
-    min-width: 28px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
     height: 30px !important;
     font-size: 13px !important;
     font-weight: bold !important;
@@ -386,7 +391,7 @@
     color: #333 !important;
     padding: 0 !important;
     margin: 0 !important;
-    flex-shrink: 0 !important;
+    flex: 1 1 auto !important; /* Stretch to fill completely */
     -webkit-appearance: none !important;
     -moz-appearance: textfield !important;
     appearance: textfield !important;
@@ -1159,4 +1164,18 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
     html body .featured-products-container .product-card {
         scroll-snap-align: start !important;
     }
+}
+
+/* Standardised Wishlist Icon (Bootstrap style ala Header) */
+.header-wishlist-icon {
+    font-size: 16px !important;
+    color: #a0a0a0 !important;
+    -webkit-text-stroke: 0px transparent !important;
+    text-stroke: 0px transparent !important;
+    transition: color 0.2s ease, transform 0.2s ease !important;
+}
+
+.wishlist-active .header-wishlist-icon,
+.heart-checkbox:checked + .wishlist-label .header-wishlist-icon {
+    color: #DE0085 !important;
 }

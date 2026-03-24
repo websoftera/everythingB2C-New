@@ -67,7 +67,7 @@ function abs_img($rel) {
         <span style="background:#007bff;color:#fff;padding:6px 14px;border-radius:7px;font-weight:600;">MRP <s>₹<?php echo number_format($product['mrp'],0); ?></s></span>
         <span style="background:#23a036;color:#fff;padding:6px 14px;border-radius:7px;font-weight:600;">PAY ₹<?php echo number_format($product['selling_price'],0); ?></span>
         <button id="popupWishlistBtn" class="popup-wishlist-btn" style="background:#007bff;border:none;border-radius:7px;padding:6px 10px;display:inline-flex;align-items:center;cursor:pointer;outline:none;">
-          <i class="fas fa-heart" style="color:<?php echo $inWishlist ? 'orange' : '#fff'; ?>;font-size:1.2em;"></i>
+          <i class="bi <?php echo $inWishlist ? 'bi-heart-fill' : 'bi-heart'; ?>" style="color:<?php echo $inWishlist ? '#DE0085' : '#fff'; ?>;font-size:1.2em;"></i>
         </button>
       </div>
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">

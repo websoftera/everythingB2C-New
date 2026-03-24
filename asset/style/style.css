@@ -148,6 +148,13 @@
   text-align: left !important;
 }
 
+/* Hide on mobile to prevent row overflow cutting of the cart icon */
+@media (max-width: 991px) {
+  .user-welcome-text {
+    display: none !important;
+  }
+}
+
 .welcome-line-1 {
   font-size: 10px !important;
   font-weight: 400 !important;

@@ -106,7 +106,7 @@ foreach ($products as $product):
             <div class="wishlist">
               <input type="checkbox" class="heart-checkbox" id="wishlist-checkbox-ajax-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>" <?php if ($inWishlist) echo 'checked'; ?>>
               <label for="wishlist-checkbox-ajax-<?php echo $product['id']; ?>" class="wishlist-label <?php echo $inWishlist ? 'wishlist-active' : ''; ?>">
-                  <span class="heart-icon">&#10084;</span>
+                  <i class="bi <?php echo $inWishlist ? 'bi-heart-fill' : 'bi-heart'; ?> header-wishlist-icon"></i>
               </label>
             </div>
         </div>

@@ -235,13 +235,13 @@ else: ?>
                               <span class="label">PAY</span>
                               <span class="value"><?php echo formatPrice($product['selling_price']); ?></span>
                           </div>
-                          <div class="wishlist">
-                            <input type="checkbox" class="heart-checkbox" id="wishlist-checkbox-products-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>" <?php if ($inWishlist)
-      echo 'checked'; ?>>
-                            <label for="wishlist-checkbox-products-<?php echo $product['id']; ?>" class="wishlist-label <?php echo $inWishlist ? 'wishlist-active' : ''; ?>">
-                                <span class="heart-icon">&#10084;</span>
-                            </label>
-                          </div>
+                           <div class="wishlist">
+                             <input type="checkbox" class="heart-checkbox" id="wishlist-checkbox-products-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>" <?php if ($inWishlist)
+       echo 'checked'; ?>>
+                             <label for="wishlist-checkbox-products-<?php echo $product['id']; ?>" class="wishlist-label <?php echo $inWishlist ? 'wishlist-active' : ''; ?>">
+                                 <i class="bi <?php echo $inWishlist ? 'bi-heart-fill' : 'bi-heart'; ?> header-wishlist-icon"></i>
+                             </label>
+                           </div>
                       </div>
                       <?php if ($isOutOfStock): ?>
                           <a href="product.php?slug=<?php echo $product['slug']; ?>" class="read-more">READ MORE</a>
