@@ -774,7 +774,7 @@ h3 {
 
   .footer-links-inline a,
   .footer-links-inline .separator {
-    font-size: 13px !important;
+    font-size: 11px !important;
     font-weight: 500 !important;
   }
 
@@ -798,7 +798,7 @@ h3 {
   .contact-info-inline a {
     white-space: nowrap !important;
     font-weight: 500 !important;
-    font-size: 13px !important;
+    font-size: 11px !important;
   }
 
   .footer-bottom {
