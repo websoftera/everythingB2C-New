@@ -1065,14 +1065,27 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
 
 /* ===== MOBILE ONLY OVERRIDES FOR MRP / QUANTITY MATCHING ===== */
 @media (max-width: 767px) {
-    /* Match MRP, PAY, and Quantity width/height exactly */
-    html body .container-fluid .product-card .price-buttons .price-btn.mrp,
-    html body .container-fluid .product-card .price-buttons .price-btn.pay,
-    html body .container-fluid .product-card .cart-actions .quantity-control {
-        flex: 0 0 calc(50% - 17px) !important;
-        min-width: calc(50% - 17px) !important;
-        max-width: calc(50% - 17px) !important;
-        width: calc(50% - 17px) !important;
+    /* Set manual row layouts, avoiding flex gap for absolute consistency */
+    html body .product-card .price-buttons,
+    html body .product-card .cart-actions {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        justify-content: flex-start !important;
+        gap: 0 !important; /* disabled gap, using margin */
+        width: 100% !important;
+        padding: 0 !important;
+    }
+
+    /* Exact Math: W_mrp + 5 + W_pay + 5 + 26 = 100% */
+    /* 2 * W + 36 = 100% => W = 50% - 18px */
+    html body .product-card .price-buttons .price-btn.mrp,
+    html body .product-card .price-buttons .price-btn.pay,
+    html body .product-card .cart-actions .quantity-control {
+        flex: 0 0 calc(50% - 18px) !important;
+        min-width: calc(50% - 18px) !important;
+        max-width: calc(50% - 18px) !important;
+        width: calc(50% - 18px) !important;
         height: 32px !important;
         min-height: 32px !important;
         max-height: 32px !important;
@@ -1081,30 +1094,47 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
         box-sizing: border-box !important;
     }
 
-    html body .container-fluid .product-card .cart-actions .quantity-control .btn-qty,
-    html body .container-fluid .product-card .cart-actions .quantity-control .quantity-input {
-        height: 100% !important;
-        min-height: 30px !important;
+    /* Set exact 5px gaps */
+    html body .product-card .price-buttons .price-btn.mrp,
+    html body .product-card .price-buttons .price-btn.pay,
+    html body .product-card .cart-actions .quantity-control {
+        margin-right: 5px !important;
     }
 
-    /* Adjust Row Containers for exact 5px gaps */
-    html body .container-fluid .product-card .price-buttons,
-    html body .container-fluid .product-card .cart-actions {
-        justify-content: flex-start !important;
-        gap: 5px !important;
-        width: 100% !important;
+    /* Fix internal quantity bounds */
+    html body .product-card .cart-actions .quantity-control .btn-qty {
+        height: 32px !important;
+        min-height: 32px !important;
+        max-height: 32px !important;
+        flex: 0 0 26px !important;
     }
     
-    html body .container-fluid .product-card .price-buttons .wishlist {
-        margin-left: auto !important;
-        flex: 0 0 24px !important;
-        display: flex !important;
-        justify-content: flex-end !important;
+    html body .product-card .cart-actions .quantity-control .quantity-input {
+        height: 32px !important;
+        min-height: 32px !important;
+        max-height: 32px !important;
+        flex: 1 1 auto !important;
+        width: 100% !important;
+        max-width: none !important;
+        min-width: 0 !important;
     }
 
-    /* Allow ADD TO CART to fill the remaining exact space */
-    html body .container-fluid .product-card .cart-actions .add-to-cart-btn,
-    html body .container-fluid .product-card .cart-actions .add-to-cart {
+    /* Force Wishlist exact width to complete 100% equation */
+    html body .product-card .price-buttons .wishlist {
+        flex: 0 0 26px !important;
+        width: 26px !important;
+        min-width: 26px !important;
+        max-width: 26px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: flex !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+    }
+
+    /* Allow ADD TO CART to identically fill the remaining 50% + 13px */
+    html body .product-card .cart-actions .add-to-cart-btn,
+    html body .product-card .cart-actions .add-to-cart {
         flex: 1 1 auto !important;
         min-width: 0 !important;
         height: 32px !important;

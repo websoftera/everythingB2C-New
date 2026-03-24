@@ -124,43 +124,86 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                 margin-bottom: 4px !important;
             }
 
+            /* Set exact manual layouts for the two rows */
+            .product-page-container .price-buttons1,
+            .product-page-container .cart-actions {
+                display: flex !important;
+                flex-direction: row !important;
+                flex-wrap: nowrap !important;
+                justify-content: flex-start !important;
+                gap: 0 !important;
+                width: 100% !important;
+            }
+
             .product-page-container .price-buttons1 {
                 margin-bottom: 10px !important;
-                gap: 5px !important;
-            }
-
-            .product-page-container .price-buttons1 .price-btn {
-                height: 32px !important; /* Forces height match */
-                padding: 0 10px !important;
-                display: flex !important;
-                align-items: center !important;
-            }
-
-            /* Increase wishlist heart size on mobile */
-            .product-page-container .price-buttons1 .wishlist-label {
-                font-size: 22px !important;
-                color: #DE0085 !important; /* Active indicator if needed, or stick to styles class */
             }
 
             .product-page-container .cart-actions {
                 margin-bottom: 10px !important;
             }
 
-            /* Match height on quantity capsule */
-            .product-page-container .product-info-section .quantity-control {
-                height: 32px !important; 
+            /* Exact Math: 50% - 24px for identical parts to allow 12px right gap */
+            .product-page-container .price-buttons1 .price-btn,
+            .product-page-container .cart-actions .quantity-control {
+                flex: 0 0 calc(50% - 24px) !important;
+                min-width: calc(50% - 24px) !important;
+                max-width: calc(50% - 24px) !important;
+                width: calc(50% - 24px) !important;
+                height: 32px !important;
+                min-height: 32px !important;
+                max-height: 32px !important;
+                padding: 0 2px !important;
+                margin: 0 !important;
+                margin-right: 5px !important; /* Exact 5px gap */
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                box-sizing: border-box !important;
+                overflow: hidden !important;
+                white-space: nowrap !important;
             }
 
+            /* Wishlist specific exact layout */
+            .product-page-container .price-buttons1 .wishlist {
+                flex: 0 0 26px !important;
+                width: 26px !important;
+                min-width: 26px !important;
+                max-width: 26px !important;
+                margin: 0 !important;
+                margin-left: auto !important; /* Push to right */
+                display: flex !important;
+                justify-content: flex-end !important;
+                align-items: center !important;
+            }
+            .product-page-container .price-buttons1 .wishlist-label {
+                font-size: 22px !important;
+                color: #DE0085 !important;
+            }
+
+            /* Quantity Inner Buttons exact layout */
             .product-page-container .product-info-section .quantity-control .btn-qty {
-                height: 32px !important;
+                height: 100% !important;
+                flex: 0 0 26px !important;
             }
-
             .product-page-container .product-info-section .quantity-control .quantity-input {
-                height: 32px !important;
+                height: 100% !important;
+                flex: 1 1 auto !important;
+                width: 100% !important;
+                max-width: none !important;
+                min-width: 0 !important;
             }
 
+            /* Add to Cart exact layout to fill gap perfectly */
             .product-page-container .product-info-section .cart-actions .add-to-cart-btn {
+                flex: 1 1 auto !important;
+                min-width: 0 !important;
                 height: 32px !important;
+                min-height: 32px !important;
+                max-height: 32px !important;
+                margin: 0 !important;
+                margin-right: 12px !important; /* Gap from the absolute right edge */
+                padding: 0 !important;
             }
 
             .product-page-container .product-info-section p.text-success,

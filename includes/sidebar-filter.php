@@ -857,10 +857,10 @@ select.form-control {
   /* Fixed Footer */
   .mob-filter-footer {
     display: flex;
-    padding: 15px;
+    padding: 8px 12px; /* Reduced vertical padding for compactness */
     border-top: 1px solid #eee;
     background: white;
-    gap: 15px;
+    gap: 10px; /* Tighter gap */
     position: sticky;
     bottom: 0;
     z-index: 10;
@@ -868,7 +868,7 @@ select.form-control {
 
   .mob-filter-foot-btn {
     flex: 1;
-    padding: 12px;
+    padding: 8px; /* Reduced button height */
     border: 1px solid #ccc;
     background: white;
     font-weight: 600;
