@@ -454,11 +454,13 @@ endforeach; ?>
     display: none !important;
   }
 
-  /* Shrink quantity control input on mobile to free up space for the button */
+  /* Stretch quantity control input on mobile to fill out the inner gap */
   .discounted-products-section .quantity-control .quantity-input,
   .featured-products-section .quantity-control .quantity-input {
-    width: 22px !important;
-    min-width: 22px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    flex: 1 1 auto !important;
     padding: 0 !important;
     font-size: 12px !important;
   }

@@ -618,6 +618,7 @@
         /* Extra bottom padding for shadows */
         gap: 12px;
         scroll-snap-type: x mandatory;
+        scroll-padding-left: 10px !important;
     }
 
     .related-products-container .product-card {
@@ -625,7 +626,7 @@
         /* Forces same absolute size as homepage sliders */
         max-width: 280px !important;
         min-width: 280px !important;
-        scroll-snap-align: center;
+        scroll-snap-align: start !important;
     }
 
     /* Fix related spacing */
