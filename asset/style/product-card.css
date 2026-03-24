@@ -1106,7 +1106,11 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
         height: 32px !important;
         min-height: 32px !important;
         max-height: 32px !important;
-        flex: 0 0 26px !important;
+        flex: 0 0 20px !important;
+        width: 20px !important;
+        min-width: 20px !important;
+        max-width: 20px !important;
+        padding: 0 !important;
     }
     
     html body .product-card .cart-actions .quantity-control .quantity-input {
