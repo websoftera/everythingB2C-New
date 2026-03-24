@@ -184,7 +184,11 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
             /* Quantity Inner Buttons exact layout */
             .product-page-container .product-info-section .quantity-control .btn-qty {
                 height: 100% !important;
-                flex: 0 0 26px !important;
+                flex: 0 0 20px !important;
+                width: 20px !important;
+                min-width: 20px !important;
+                max-width: 20px !important;
+                padding: 0 !important;
             }
             .product-page-container .product-info-section .quantity-control .quantity-input {
                 height: 100% !important;
