@@ -1,7 +1,7 @@
 # Seller/Vendor Management System - Complete Setup Guide
 
 ## Overview
-This comprehensive seller system allows EverythingB2C to support multiple sellers/vendors. Each seller can manage their own products, categories, orders, and view reports, while admin maintains full control over all sellers and their data.
+This comprehensive seller system allows everythingb2c to support multiple sellers/vendors. Each seller can manage their own products, categories, orders, and view reports, while admin maintains full control over all sellers and their data.
 
 ## Features Implemented
 
@@ -371,4 +371,4 @@ For questions or issues with the seller system:
 
 **Version:** 1.0.0  
 **Last Updated:** January 2025  
-**Compatibility:** EverythingB2C Platform
+**Compatibility:** everythingb2c Platform

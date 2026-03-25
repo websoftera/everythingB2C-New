@@ -1,6 +1,6 @@
 # DTDC API Integration Setup Guide
 
-This guide will help you set up the DTDC API integration for live tracking in your EverythingB2C platform.
+This guide will help you set up the DTDC API integration for live tracking in your everythingb2c platform.
 
 ## Overview
 

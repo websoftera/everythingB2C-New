@@ -57,7 +57,7 @@ echo renderBreadcrumb($breadcrumbs);
                 <div class="privacy-section">
                     <h2>Amendment to the Policy</h2>
                     <p>
-                        EverythingB2C.in reserves the right to change the Policy to its business requirements. We will post those changes on this site as and when modified. Such changes shall be effective immediately upon posting.
+                        everythingb2c.in reserves the right to change the Policy to its business requirements. We will post those changes on this site as and when modified. Such changes shall be effective immediately upon posting.
                     </p>
                 </div>
 

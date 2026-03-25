@@ -14,18 +14,18 @@ echo renderBreadcrumb($breadcrumbs);
     <div class="row">
         <div class="col-lg-10 mx-auto">
             <div class="about-us-content">
-                <h1 class="page-title">About EverythingB2C</h1>
+                <h1 class="page-title">About everythingb2c</h1>
                 
                 <div class="about-section">
                     <p class="intro-text">
-                        Welcome to EverythingB2C.in - your one-stop destination for all your business and personal needs. We are committed to providing high-quality products at competitive prices with exceptional customer service.
+                        Welcome to everythingb2c.in - your one-stop destination for all your business and personal needs. We are committed to providing high-quality products at competitive prices with exceptional customer service.
                     </p>
                 </div>
 
                 <div class="about-section">
                     <h2>Our Story</h2>
                     <p>
-                        EverythingB2C.in was founded with a simple yet powerful vision: to make quality products accessible to everyone. We understand that businesses and individuals need reliable suppliers who can deliver consistent quality, competitive pricing, and excellent service.
+                        everythingb2c.in was founded with a simple yet powerful vision: to make quality products accessible to everyone. We understand that businesses and individuals need reliable suppliers who can deliver consistent quality, competitive pricing, and excellent service.
                     </p>
                     <p>
                         Starting as a small venture, we have grown into a trusted name in the B2C marketplace, serving thousands of satisfied customers across India. Our journey has been marked by continuous innovation, customer-centric approach, and unwavering commitment to quality.
@@ -89,7 +89,7 @@ echo renderBreadcrumb($breadcrumbs);
                 </div>
 
                 <div class="about-section">
-                    <h2>Why Choose EverythingB2C?</h2>
+                    <h2>Why Choose everythingb2c?</h2>
                     <div class="why-choose-us">
                         <div class="reason-item">
                             <h3>Trusted by Thousands</h3>

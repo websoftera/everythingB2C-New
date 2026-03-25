@@ -18,7 +18,7 @@ echo renderBreadcrumb($breadcrumbs);
                 
                 <div class="faq-intro">
                     <p class="intro-text">
-                        Find answers to the most commonly asked questions about EverythingB2C.in. If you don't find what you're looking for, feel free to contact us.
+                        Find answers to the most commonly asked questions about everythingb2c.in. If you don't find what you're looking for, feel free to contact us.
                     </p>
                 </div>
 
@@ -26,9 +26,9 @@ echo renderBreadcrumb($breadcrumbs);
                     <h2>General Questions</h2>
                     
                     <div class="faq-item">
-                        <h3 class="faq-question">What is EverythingB2C.in?</h3>
+                        <h3 class="faq-question">What is everythingb2c.in?</h3>
                         <div class="faq-answer">
-                            <p>EverythingB2C.in is a comprehensive B2C platform offering a wide range of products including office stationery, personal care items, cleaning supplies, home essentials, and more. We provide quality products at competitive prices with reliable delivery across India.</p>
+                            <p>everythingb2c.in is a comprehensive B2C platform offering a wide range of products including office stationery, personal care items, cleaning supplies, home essentials, and more. We provide quality products at competitive prices with reliable delivery across India.</p>
                         </div>
                     </div>
 

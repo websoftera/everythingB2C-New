@@ -13,7 +13,7 @@ echo "Testing Email Configuration...\n";
 try {
     // Test sending a simple email
     $testEmail = "test@example.com"; // Replace with a real email for testing
-    $subject = "EverythingB2C - Email Test";
+    $subject = "everythingb2c - Email Test";
     $body = "
     <!DOCTYPE html>
     <html>
@@ -30,7 +30,7 @@ try {
         <div class='container'>
             <div class='header'>
                 <h1>Email Test Successful!</h1>
-                <p>EverythingB2C Email System</p>
+                <p>everythingb2c Email System</p>
             </div>
             <div class='content'>
                 <p>This is a test email to verify that the email system is working correctly.</p>

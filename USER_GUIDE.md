@@ -1,4 +1,4 @@
-# EverythingB2C - Complete User Guide
+# everythingb2c - Complete User Guide
 
 ## 📖 Table of Contents
 1. [For Administrators](#for-administrators)
@@ -805,4 +805,4 @@ For technical issues or questions:
 
 **Version:** 1.0  
 **Last Updated:** October 2025  
-**Platform:** EverythingB2C Multi-Vendor System
+**Platform:** everythingb2c Multi-Vendor System

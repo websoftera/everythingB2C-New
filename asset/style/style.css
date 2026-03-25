@@ -510,7 +510,6 @@ html {
   font-family: 'Mulish', sans-serif;
   line-height: 1.6;
   font-size: 15px;
-  text-transform: capitalize !important;
   text-decoration: none;
   color: #222;
   background: #fff;
@@ -547,7 +546,6 @@ h2 {
 h3 {
   font-size: 12px;
   font-weight: bold;
-  text-transform: capitalize !important;
 }
 
 /* Brand Colors - Matching Live Site */
@@ -1111,13 +1109,11 @@ h3 {
 }
 
 .nav-item {
-  text-transform: capitalize !important;
   font-size: 14px !important;
   color: #373737 !important;
 }
 
 .nav-link {
-  text-transform: capitalize !important;
   font-size: 14px !important;
   color: #373737 !important;
 }

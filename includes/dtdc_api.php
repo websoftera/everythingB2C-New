@@ -199,7 +199,7 @@ class DTDCAPI {
             CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json',
                 'Accept: application/json',
-                'User-Agent: EverythingB2C/1.0',
+                'User-Agent: everythingb2c/1.0',
                 'X-API-Key: ' . $this->apiKey,
                 'Authorization: ' . $this->config['api']['token']
             ]
