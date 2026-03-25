@@ -22,7 +22,7 @@ if ($popupEnabled !== '1') {
     <div class="delivery-popup">
         <div class="delivery-popup-header">
             <div class="delivery-logo">
-                <img src="<?php echo $base_url; ?>asset/images/logo.webp" alt="EverythingB2C Logo" class="site-logo">
+                <img src="<?php echo $base_url; ?>asset/images/logo.webp" alt="everythingb2c logo" class="site-logo">
             </div>
             <button class="delivery-popup-close" onclick="closeDeliveryPopup()">
                 <i class="fas fa-times"></i>

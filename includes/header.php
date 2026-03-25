@@ -54,7 +54,7 @@ if (isLoggedIn()) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?php echo $pageTitle ?? 'EverythingB2C'; ?></title>
+    <title><?php echo $pageTitle ?? 'everythingb2c'; ?></title>
 
     <!-- Favicon -->
     <link rel="icon" href="<?php echo $base_url; ?>sitelogo.png" type="image/webp">
@@ -516,7 +516,7 @@ if (!function_exists('renderCategoryDropdown')) {
     <div class="container-fluid d-flex align-items-center flex-nowrap" style="gap: 8px; z-index: 2000; position: relative; overflow: visible !important;">
         <!-- Logo -->
         <a class="navbar-brand m-0" href="<?php echo $base_url; ?>index.php" style="flex-shrink: 0;">
-            <img src="<?php echo $base_url; ?>logo.webp" alt="EverythingB2C" class="img-fluid" style="max-height: 60px;">
+            <img src="<?php echo $base_url; ?>logo.webp" alt="everythingb2c" class="img-fluid" style="max-height: 60px;">
         </a>
 
         <!-- Desktop: Search Bar — fills all space between logo and icons -->
@@ -1096,7 +1096,7 @@ function openPincodePopup(e) {
                 logoDiv.className = 'swal2-logo-custom';
                 const logoImg = document.createElement('img');
                 logoImg.src = './logo.webp';
-                logoImg.alt = 'EverythingB2C';
+                logoImg.alt = 'everythingb2c';
                 logoDiv.appendChild(logoImg);
                 
                 headerContainer.appendChild(logoDiv);

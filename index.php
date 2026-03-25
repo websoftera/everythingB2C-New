@@ -1,5 +1,5 @@
 <?php
-$pageTitle = 'EverythingB2C';
+$pageTitle = 'everythingb2c';
 require_once 'includes/header.php';
 require_once 'includes/delivery_popup_functions.php';
 

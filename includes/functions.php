@@ -700,7 +700,7 @@ function calculateCartTotals($cartItems) {
 function generateTrackingId() {
     global $pdo;
     do {
-        $trackingId = 'EverythingB2C' . str_pad(mt_rand(1, 99999999), 8, '0', STR_PAD_LEFT);
+        $trackingId = 'everythingb2c' . str_pad(mt_rand(1, 99999999), 8, '0', STR_PAD_LEFT);
         $stmt = $pdo->prepare("SELECT COUNT(*) FROM orders WHERE tracking_id = ?");
         $stmt->execute([$trackingId]);
     } while ($stmt->fetchColumn() > 0);

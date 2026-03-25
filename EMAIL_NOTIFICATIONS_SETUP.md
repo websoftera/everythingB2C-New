@@ -18,7 +18,7 @@ The email configuration is stored in `config/email.php`:
     'username' => 'help.websoftera@gmail.com',
     'password' => 'sxxe qwel jemx alze',
     'from_email' => 'help.websoftera@gmail.com',
-    'from_name' => 'EverythingB2C'
+    'from_name' => 'everythingb2c'
 ],
 'admin_email' => 'info@everythingb2c.in'
 ```
@@ -33,7 +33,7 @@ The email configuration is stored in `config/email.php`:
 - **Recipient**: Customer who placed the order
 - **Subject**: "Order Confirmed - Order #[ORDER_ID]"
 - **Content**: Order details, items, total amount, next steps
-- **Design**: Green theme with EverythingB2C branding
+- **Design**: Green theme with everythingb2c branding
 
 ### 2. Order Placed - Admin Notification
 - **Recipient**: info@everythingb2c.in
@@ -93,7 +93,7 @@ if ($oldStatusId != $statusId) {
 
 ### ✅ Professional Design
 - HTML emails with responsive design
-- EverythingB2C branding and colors
+- everythingb2c branding and colors
 - Clear, actionable content
 
 ### ✅ Robust Error Handling

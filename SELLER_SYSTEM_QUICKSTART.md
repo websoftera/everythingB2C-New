@@ -2,7 +2,7 @@
 
 ## 🚀 What Has Been Created
 
-I've built a comprehensive **multi-vendor/seller management system** for your EverythingB2C website with the following components:
+I've built a comprehensive **multi-vendor/seller management system** for your everythingb2c website with the following components:
 
 ### ✅ **Files Created:**
 

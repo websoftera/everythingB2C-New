@@ -85,7 +85,7 @@ curl_setopt_array($ch, [
     CURLOPT_HTTPHEADER => [
         'Content-Type: application/json',
         'Accept: application/json',
-        'User-Agent: EverythingB2C/1.0',
+        'User-Agent: everythingb2c/1.0',
         'Authorization: Bearer bbb8196c734d8487983936199e880072',
         'X-API-Key: bbb8196c734d8487983936199e880072'
     ]

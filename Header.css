@@ -610,7 +610,6 @@ body {
     transition: color 0.2s ease-in-out, text-decoration 0.2s;
     white-space: nowrap;
     position: relative;
-    text-transform: capitalize !important;
   }
 
   .category-navbar .nav-link:hover {
@@ -2720,7 +2719,6 @@ input[type="checkbox"]:checked+.heart-icon,
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  text-transform: capitalize !important;
   border: 0 !important;
 }
 

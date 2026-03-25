@@ -18,7 +18,7 @@ echo renderBreadcrumb($breadcrumbs);
                 
                 <div class="policy-section">
                     <p class="intro-text">
-                        At EverythingB2C.in, customer satisfaction is our priority. If you are not entirely satisfied with your purchase, we're here to help.
+                        At everythingb2c.in, customer satisfaction is our priority. If you are not entirely satisfied with your purchase, we're here to help.
                     </p>
                 </div>
 
@@ -38,10 +38,10 @@ echo renderBreadcrumb($breadcrumbs);
                     <ul class="policy-list">
                         <li>Products can only be returned for a refund. We don't provide an exchange of products.</li>
                         <li>In the event of any quality related complaint or feedback about a product, the customer should contact the consumer care number or the consumer care cell of the manufacturer/ marketer of the product. Details of the consumer care cell of the Manufacturer or Marketer will be on the packaging of the product.</li>
-                        <li>EverythingB2C.in will refund customers through the same payment mode that was used to purchase the product online.</li>
-                        <li>EverythingB2C.in shall not be held liable either directly or indirectly for the quality of any Product. Products covered under Manufacturer's warranty/guarantee cannot be returned to EverythingB2C, as the same is covered by the after-sale service offered by the manufacturer of the Product. EverythingB2C.in will not be directly or indirectly liable for goods covered under the manufacturer's warranty/guarantee.</li>
+                        <li>everythingb2c.in will refund customers through the same payment mode that was used to purchase the product online.</li>
+                        <li>everythingb2c.in shall not be held liable either directly or indirectly for the quality of any Product. Products covered under Manufacturer's warranty/guarantee cannot be returned to everythingb2c, as the same is covered by the after-sale service offered by the manufacturer of the Product. everythingb2c.in will not be directly or indirectly liable for goods covered under the manufacturer's warranty/guarantee.</li>
                         <li>In the event of any disputes in this regard, the same shall be referred to courts of competent jurisdiction at Pune.</li>
-                        <li>EverythingB2C.in reserves the right to alter or modify any of the terms and conditions of this Policy without assigning any reason or providing intimation whatsoever. EverythingB2C's decision on the above would be final and the customer shall abide by the same unconditionally.</li>
+                        <li>everythingb2c.in reserves the right to alter or modify any of the terms and conditions of this Policy without assigning any reason or providing intimation whatsoever. everythingb2c's decision on the above would be final and the customer shall abide by the same unconditionally.</li>
                     </ul>
                 </div>
 
@@ -52,7 +52,7 @@ echo renderBreadcrumb($breadcrumbs);
 
                 <div class="policy-section">
                     <h2>Cancellation Policy</h2>
-                    <p>Orders placed on EverythingB2C can be cancelled under the following conditions:</p>
+                    <p>Orders placed on everythingb2c can be cancelled under the following conditions:</p>
                     <ul class="policy-list">
                         <li>The cancellation request is made before the order is dispatched from our warehouse.</li>
                         <li>Once an order has been shipped, it cannot be cancelled. In such cases, customers may choose to return the product in accordance with our Return and Refund Policy after receiving it.</li>
@@ -69,14 +69,14 @@ echo renderBreadcrumb($breadcrumbs);
 
                 <div class="policy-section">
                     <h2>Please Note:</h2>
-                    <p>EverythingB2C reserves the right to cancel an order under the following circumstances:</p>
+                    <p>everythingb2c reserves the right to cancel an order under the following circumstances:</p>
                     <ul class="policy-list">
                         <li>The product is out of stock or unavailable</li>
                         <li>There are issues with payment confirmation</li>
                         <li>The shipping address is incomplete or non-serviceable</li>
                         <li>The order is flagged as suspicious or potentially fraudulent</li>
                     </ul>
-                    <p>EverythingB2C.in reserves the right to modify this Policy at any time without prior notice.</p>
+                    <p>everythingb2c.in reserves the right to modify this Policy at any time without prior notice.</p>
                 </div>
 
                 <div class="policy-section">

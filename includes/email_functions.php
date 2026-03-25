@@ -228,7 +228,7 @@ function generateOrderPlacedUserEmail($user, $order, $orderItems) {
                 </div>
             </div>
             <div class='footer'>
-                <p>Thank you for shopping with EverythingB2C!</p>
+                <p>Thank you for shopping with everythingb2c!</p>
                 <p>If you have any questions, please contact us at info@everythingb2c.in</p>
             </div>
         </div>
@@ -374,7 +374,7 @@ function generateOrderStatusChangedEmail($user, $order, $newStatus, $oldStatus =
                 </div>
             </div>
             <div class='footer'>
-                <p>Thank you for shopping with EverythingB2C!</p>
+                <p>Thank you for shopping with everythingb2c!</p>
                 <p>If you have any questions, please contact us at info@everythingb2c.in</p>
             </div>
         </div>

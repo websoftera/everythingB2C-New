@@ -39,7 +39,7 @@ try {
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
         'Accept: text/plain',
-        'User-Agent: EverythingB2C/1.0'
+        'User-Agent: everythingb2c/1.0'
     ]);
     curl_setopt($ch, CURLOPT_TIMEOUT, 30);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -105,7 +105,7 @@ try {
             curl_setopt($ch, CURLOPT_HTTPHEADER, [
                 'Content-Type: application/json',
                 'Accept: application/json',
-                'User-Agent: EverythingB2C/1.0',
+                'User-Agent: everythingb2c/1.0',
                 'X-Access-Token: ' . $token
             ]);
             curl_setopt($ch, CURLOPT_TIMEOUT, 30);

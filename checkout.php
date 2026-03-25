@@ -314,7 +314,7 @@ foreach ($cartItems as $item) {
             </form>
           </div>
           <!-- GST Number Input (NEW) -->
-          <div class="mt-4 mb-2">
+          <div class="mt-4 mb-2 gst-section-wrapper">
             <div class="row align-items-center">
               <div class="col-md-6">
                 <label for="gst_number_left" class="form-label">GST Number (optional, for business invoice)</label>
@@ -342,7 +342,7 @@ foreach ($cartItems as $item) {
         </div>
         <div class="checkout-card">
           <div class="card-body">
-            <h5 class="mb-3">Bill Summary <span class="text-muted" style="font-size:1rem;">(<?php echo $count; ?> products)</span></h5>
+            <h5 class="mb-3 header-font-size">Bill Summary <span>(<?php echo $count; ?> products)</span></h5>
             <!-- Per-product breakdown -->
             <!-- Removed per-product table as requested -->
             <div class="mb-2"></div>
@@ -390,15 +390,15 @@ foreach ($cartItems as $item) {
                   <!-- UPI Step 2 fields will be inserted here by JS -->
                 </div>
                 <div id="directPaymentInfoMsg" class="text-success text-center mb-2" style="display:none;"></div>
-                <div class="d-grid mb-3">
+                <div class="d-grid mb-3 place-order-wrapper">
                   <button type="submit" name="place_order" id="placeOrderBtn" class="place-order-btn btn btn-primary w-100 mt-3" <?php if ($orderTotals['total'] < 150) echo 'disabled'; ?>>
                     <i class="fas fa-shopping-cart"></i> PLACE ORDER
                   </button>
                 </div>
               </div>
             </div>
-            <div class="text-center mt-3">
-              <a href="cart.php" class="btn btn-outline-secondary">Back to Cart</a>
+            <div class="text-center mt-2 back-to-cart-wrapper">
+              <a href="cart.php" class="btn btn-outline-primary back-to-cart-btn">Back to Cart</a>
             </div>
           </div>
         </div>

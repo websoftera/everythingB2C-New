@@ -142,7 +142,7 @@ echo renderBreadcrumb($breadcrumbs);
                         BECOME A SELLER
                     </div>
                     <div class="form-body seller-info-content">
-                        <h4>Start Selling on EverythingB2C</h4>
+                        <h4>Start Selling on everythingb2c</h4>
                         <p>Join our growing community of sellers and reach thousands of customers every day. We provide the tools you need to manage your business efficiently.</p>
                         
                         <ul>

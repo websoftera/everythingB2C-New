@@ -12,7 +12,7 @@ return [
         'username' => 'help.websoftera@gmail.com',
         'password' => 'sxxe qwel jemx alze',
         'from_email' => 'help.websoftera@gmail.com',
-        'from_name' => 'EverythingB2C'
+        'from_name' => 'everythingb2c'
     ],
     
     'admin_email' => 'info@everythingb2c.in',

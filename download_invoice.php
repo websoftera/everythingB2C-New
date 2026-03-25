@@ -33,7 +33,7 @@ $address = [
 ];
 
 $company = [
-    'name' => 'EverythingB2C',
+    'name' => 'everythingb2c',
     'address' => 'Shop 12, D, Media Park, Bhagwan Tatyasaheb Kawade Rd, Dombi Wadi, R, Pune, Maharashtra 411001',
     'gstin' => '27AAABC1711H1ZF',
     'phone' => '+91 878 040 6230',
@@ -53,8 +53,8 @@ $total = $order['total_amount'];
 
 // Prepare QR code data with required info
 $qrData =
-    "Seller: EverythingB2C\n" .
-    "Logo: EverythingB2C\n" .
+    "Seller: everythingb2c\n" .
+    "Logo: everythingb2c\n" .
     "\n" .
     "Order ID: $orderId\n" .
     "Date: $invoiceDate\n" .
@@ -326,7 +326,7 @@ $html .= '<div class="footer" style="font-size:11px; margin-top:24px;">
   <table style="width:100%;"><tr>
     <td style="vertical-align:top; width:33%;">' . htmlspecialchars($company['name']) . '<br>' . htmlspecialchars($company['address']) . '</td>
     <td style="vertical-align:top; width:33%;"><b>Contact Us</b><br>' . htmlspecialchars($company['phone']) . '<br>' . htmlspecialchars($company['email']) . '</td>
-    <td style="vertical-align:top; width:33%;">www.EverythingB2C.in<br><b>CIN:</b> U12345MH2024PTC000000</td>
+    <td style="vertical-align:top; width:33%;">www.everythingb2c.in<br><b>CIN:</b> U12345MH2024PTC000000</td>
   </tr></table>
   <div style="margin-top:10px; text-align:center; color:#555;">This is a system generated invoice issued under provisions of the Information Technology Act, 2000.<br>Thank you for shopping with us!</div>
 </div>';
