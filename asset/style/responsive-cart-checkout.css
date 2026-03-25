@@ -107,6 +107,8 @@
     .place-order-btn {
         padding: 12px;
         font-size: 1.1rem;
+        border: none !important; /* Request 4: Remove blue border */
+        box-shadow: none !important;
     }
 
     /* Add Address Form inputs */
@@ -118,6 +120,111 @@
     }
 
     .checkout-card {
-        margin-bottom: 15px;
+        margin-bottom: 8px !important; /* Phase 4: Reduce card margin */
+    }
+
+    /* --- Checkout Page Refinements --- */
+    .container.my-5 {
+        margin-top: 10px !important; /* Phase 4: Reduce top margin */
+        margin-bottom: 10px !important;
+    }
+
+    .row.g-4 {
+        --bs-gutter-x: 10px !important;
+        --bs-gutter-y: 0px !important; /* Phase 4: Remove vertical gutter between columns */
+    }
+
+    .checkout-card .card-body {
+        padding: 12px !important;
+    }
+
+    /* Request 2: Align Bill Summary card with Address section */
+    .col-lg-4 form > .checkout-card {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    /* Phase 4: Aggressive pull-up for the summary column */
+    .col-lg-4 {
+        margin-top: -20px !important;
+    }
+
+    /* Headings font size increase */
+    .checkout-card h5 {
+        font-size: 1.3rem !important;
+        font-weight: 700 !important;
+        margin-bottom: 8px !important;
+    }
+
+    /* Request 1: Bill Summary Header standardization */
+    .checkout-card h5 span {
+        color: inherit !important;
+        font-weight: inherit !important;
+        font-size: inherit !important;
+    }
+
+    .checkout-card h6 {
+        font-size: 1.15rem !important;
+        font-weight: 700 !important;
+        margin-bottom: 10px !important;
+    }
+
+    /* Bill Summary details font size increase */
+    .checkout-card .d-flex.justify-content-between.mb-2 {
+        font-size: 1.1rem !important;
+        margin-bottom: 10px !important;
+    }
+
+    .checkout-card .d-flex.justify-content-between.mb-2 span:last-child {
+        font-weight: 600 !important;
+    }
+
+    /* Total amount font size */
+    #order-total-amount {
+        font-size: 1.25rem !important;
+    }
+
+    /* Savings rectangle alignment and styling */
+    .checkout-card .bg-light.p-2.rounded {
+        margin-left: -5px !important;
+        margin-right: -5px !important;
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+
+    /* Request 3 & Phase 3: Back to Cart Button refinements */
+    .back-to-cart-wrapper {
+        margin-top: 0 !important;
+    }
+    .back-to-cart-btn {
+        padding: 8px 16px !important;
+    }
+
+    /* Request 5 & Phase 4: Absolute minimal space above summary components */
+    .col-lg-4 form > .checkout-card:first-child {
+        margin-top: 0 !important;
+    }
+
+    /* Phase 3 & 5: Payment section spacing adjustments */
+    .checkout-card.mt-3 {
+        margin-top: 5px !important; /* Reduce mt-3 override */
+    }
+    .checkout-card h6.mb-2 {
+        font-size: 1.15rem !important;
+        font-weight: 700 !important;
+        margin-top: 0 !important; /* Phase 5: Minimal top space */
+    }
+    .checkout-card.mt-3 .card-body {
+        padding-top: 2px !important; /* Phase 5: 2px top gap inside card */
+    }
+
+    /* Phase 3: Explicit spacing reductions */
+    .gst-section-wrapper {
+        margin-bottom: 0 !important;
+        margin-top: 10px !important;
+    }
+
+    .place-order-wrapper {
+        margin-bottom: 0 !important;
     }
 }
