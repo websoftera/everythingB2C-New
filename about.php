@@ -213,7 +213,7 @@ echo renderBreadcrumb($breadcrumbs);
 }
 
 .about-us-content .category-list li {
-    font-size: 15px;
+    font-size: 12px;
     line-height: 1.7;
     color: #666;
     margin-bottom: 12px;

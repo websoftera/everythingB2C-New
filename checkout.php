@@ -1,14 +1,15 @@
 <?php
 session_set_cookie_params([
-    'lifetime' => 0,
-    'path' => '/',
-    'domain' => '',
-    'secure' => false,
-    'httponly' => false,
-    'samesite' => 'Lax'
+  'lifetime' => 0,
+  'path' => '/',
+  'domain' => '',
+  'secure' => false,
+  'httponly' => false,
+  'samesite' => 'Lax'
 ]);
 ob_start();
-if (session_status() === PHP_SESSION_NONE) session_start();
+if (session_status() === PHP_SESSION_NONE)
+  session_start();
 require_once 'includes/functions.php';
 require_once 'includes/gst_shipping_functions.php';
 
@@ -17,101 +18,107 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 if (!isLoggedIn()) {
-    $_SESSION['redirect_after_login'] = 'checkout.php';
-    header('Location: login.php');
-    exit;
+  $_SESSION['redirect_after_login'] = 'checkout.php';
+  header('Location: login.php');
+  exit;
 }
 
 $userId = $_SESSION['user_id'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['set_default']) && isset($_POST['address_id'])) {
-        $addressId = intval($_POST['address_id']);
-        setDefaultAddress($userId, $addressId);
-        header('Location: checkout.php');
-        exit;
-    }
-    if (isset($_POST['add_address'])) {
-        $data = [
-            'name' => sanitizeInput($_POST['name']),
-            'phone' => sanitizeInput($_POST['phone']),
-            'pincode' => sanitizeInput($_POST['pincode']),
-            'address_line1' => sanitizeInput($_POST['address_line1']),
-            'address_line2' => sanitizeInput($_POST['address_line2']),
-            'city' => sanitizeInput($_POST['city']),
-            'state' => sanitizeInput($_POST['state']),
-            'is_default' => isset($_POST['is_default']) ? 1 : 0
-        ];
-        addUserAddress($userId, $data);
-        if ($data['is_default']) setDefaultAddress($userId, $pdo->lastInsertId());
-        header('Location: checkout.php');
-        exit;
-    }
-    if (isset($_POST['edit_address'])) {
-        $addressId = intval($_POST['address_id']);
-        $data = [
-            'name' => sanitizeInput($_POST['name']),
-            'phone' => sanitizeInput($_POST['phone']),
-            'pincode' => sanitizeInput($_POST['pincode']),
-            'address_line1' => sanitizeInput($_POST['address_line1']),
-            'address_line2' => sanitizeInput($_POST['address_line2']),
-            'city' => sanitizeInput($_POST['city']),
-            'state' => sanitizeInput($_POST['state']),
-            'is_default' => isset($_POST['is_default']) ? 1 : 0
-        ];
-        updateUserAddress($userId, $addressId, $data);
-        if ($data['is_default']) setDefaultAddress($userId, $addressId);
-        header('Location: checkout.php');
-        exit;
-    }
-    if (isset($_POST['delete_address'])) {
-        $addressId = intval($_POST['address_id']);
-        deleteUserAddress($userId, $addressId);
-        header('Location: checkout.php');
-        exit;
-    }
-    // === PLACE ORDER HANDLER ===
-    if (isset($_POST['place_order'])) {
-        $selected_address_id = isset($_POST['selected_address']) ? intval($_POST['selected_address']) : 0;
-        $payment_method = isset($_POST['payment_method']) ? $_POST['payment_method'] : '';
-        $gst_number = isset($_POST['gst_number']) ? trim($_POST['gst_number']) : '';
-        $upi_transaction_id = null;
-        $upi_screenshot_path = null;
-        if ($payment_method === 'direct_payment') {
-            $upi_transaction_id = isset($_POST['upi_transaction_id']) ? trim($_POST['upi_transaction_id']) : null;
-            // Handle file upload
-            if (isset($_FILES['upi_screenshot']) && $_FILES['upi_screenshot']['error'] === UPLOAD_ERR_OK) {
-                $uploadDir = 'uploads/payments/';
-                if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
-                $ext = pathinfo($_FILES['upi_screenshot']['name'], PATHINFO_EXTENSION);
-                $filename = 'upi_' . time() . '_' . rand(1000,9999) . '.' . $ext;
-                $targetPath = $uploadDir . $filename;
-                if (move_uploaded_file($_FILES['upi_screenshot']['tmp_name'], $targetPath)) {
-                    $upi_screenshot_path = $targetPath;
-                }
-            }
+  if (isset($_POST['set_default']) && isset($_POST['address_id'])) {
+    $addressId = intval($_POST['address_id']);
+    setDefaultAddress($userId, $addressId);
+    header('Location: checkout.php');
+    exit;
+  }
+  if (isset($_POST['add_address'])) {
+    $data = [
+      'name' => sanitizeInput($_POST['name']),
+      'phone' => sanitizeInput($_POST['phone']),
+      'pincode' => sanitizeInput($_POST['pincode']),
+      'address_line1' => sanitizeInput($_POST['address_line1']),
+      'address_line2' => sanitizeInput($_POST['address_line2']),
+      'city' => sanitizeInput($_POST['city']),
+      'state' => sanitizeInput($_POST['state']),
+      'is_default' => isset($_POST['is_default']) ? 1 : 0
+    ];
+    addUserAddress($userId, $data);
+    if ($data['is_default'])
+      setDefaultAddress($userId, $pdo->lastInsertId());
+    header('Location: checkout.php');
+    exit;
+  }
+  if (isset($_POST['edit_address'])) {
+    $addressId = intval($_POST['address_id']);
+    $data = [
+      'name' => sanitizeInput($_POST['name']),
+      'phone' => sanitizeInput($_POST['phone']),
+      'pincode' => sanitizeInput($_POST['pincode']),
+      'address_line1' => sanitizeInput($_POST['address_line1']),
+      'address_line2' => sanitizeInput($_POST['address_line2']),
+      'city' => sanitizeInput($_POST['city']),
+      'state' => sanitizeInput($_POST['state']),
+      'is_default' => isset($_POST['is_default']) ? 1 : 0
+    ];
+    updateUserAddress($userId, $addressId, $data);
+    if ($data['is_default'])
+      setDefaultAddress($userId, $addressId);
+    header('Location: checkout.php');
+    exit;
+  }
+  if (isset($_POST['delete_address'])) {
+    $addressId = intval($_POST['address_id']);
+    deleteUserAddress($userId, $addressId);
+    header('Location: checkout.php');
+    exit;
+  }
+  // === PLACE ORDER HANDLER ===
+  if (isset($_POST['place_order'])) {
+    $selected_address_id = isset($_POST['selected_address']) ? intval($_POST['selected_address']) : 0;
+    $payment_method = isset($_POST['payment_method']) ? $_POST['payment_method'] : '';
+    $gst_number = isset($_POST['gst_number']) ? trim($_POST['gst_number']) : '';
+    $upi_transaction_id = null;
+    $upi_screenshot_path = null;
+    if ($payment_method === 'direct_payment') {
+      $upi_transaction_id = isset($_POST['upi_transaction_id']) ? trim($_POST['upi_transaction_id']) : null;
+      // Handle file upload
+      if (isset($_FILES['upi_screenshot']) && $_FILES['upi_screenshot']['error'] === UPLOAD_ERR_OK) {
+        $uploadDir = 'uploads/payments/';
+        if (!is_dir($uploadDir))
+          mkdir($uploadDir, 0777, true);
+        $ext = pathinfo($_FILES['upi_screenshot']['name'], PATHINFO_EXTENSION);
+        $filename = 'upi_' . time() . '_' . rand(1000, 9999) . '.' . $ext;
+        $targetPath = $uploadDir . $filename;
+        if (move_uploaded_file($_FILES['upi_screenshot']['tmp_name'], $targetPath)) {
+          $upi_screenshot_path = $targetPath;
         }
-        if (!$selected_address_id || !$payment_method) {
-            $error_message = 'Please select a delivery address and payment method.';
-        } else {
-            $cartItems = getCartItems($userId);
-            if (empty($cartItems)) {
-                $error_message = 'Your cart is empty.';
-            } else {
-                $result = createOrder($userId, $selected_address_id, $payment_method, $gst_number, null, false, $upi_transaction_id, $upi_screenshot_path);
-                if ($result && !empty($result['success'])) {
-                    $orderPlaced = true;
-                    $placedOrderId = $result['order_id'];
-                    if ($payment_method === 'razorpay') {
-                        header('Location: process_payment.php?order_id=' . $placedOrderId);
-                        exit;
-                    }
-                } else {
-                    $error_message = isset($result['message']) ? $result['message'] : 'Order could not be placed.';
-                }
-            }
-        }
+      }
     }
+    if (!$selected_address_id || !$payment_method) {
+      $error_message = 'Please select a delivery address and payment method.';
+    }
+    else {
+      $cartItems = getCartItems($userId);
+      if (empty($cartItems)) {
+        $error_message = 'Your cart is empty.';
+      }
+      else {
+        $result = createOrder($userId, $selected_address_id, $payment_method, $gst_number, null, false, $upi_transaction_id, $upi_screenshot_path);
+        if ($result && !empty($result['success'])) {
+          $orderPlaced = true;
+          $placedOrderId = $result['order_id'];
+          if ($payment_method === 'razorpay') {
+            header('Location: process_payment.php?order_id=' . $placedOrderId);
+            exit;
+          }
+        }
+        else {
+          $error_message = isset($result['message']) ? $result['message'] : 'Order could not be placed.';
+        }
+      }
+    }
+  }
 }
 
 $pageTitle = 'Checkout';
@@ -128,12 +135,12 @@ $cartItems = getCartItems($userId);
 
 $selectedAddress = $defaultAddress;
 if (isset($_POST['selected_address'])) {
-    foreach ($addresses as $addr) {
-        if ($addr['id'] == $_POST['selected_address']) {
-            $selectedAddress = $addr;
-            break;
-        }
+  foreach ($addresses as $addr) {
+    if ($addr['id'] == $_POST['selected_address']) {
+      $selectedAddress = $addr;
+      break;
     }
+  }
 }
 $delivery_state = $selectedAddress['state'] ?? 'Maharashtra';
 $delivery_city = $selectedAddress['city'] ?? null;
@@ -144,18 +151,20 @@ $orderTotals['cgst_total'] = 0;
 $orderTotals['igst_total'] = 0;
 $orderTotals['total_gst'] = 0;
 if (!empty($orderTotals['gst_breakdown'])) {
-    foreach ($orderTotals['gst_breakdown'] as $gst) {
-        $orderTotals['sgst_total'] += $gst['sgst'];
-        $orderTotals['cgst_total'] += $gst['cgst'];
-        $orderTotals['igst_total'] += $gst['igst'];
-        $orderTotals['total_gst'] += $gst['gst_amount'];
-    }
+  foreach ($orderTotals['gst_breakdown'] as $gst) {
+    $orderTotals['sgst_total'] += $gst['sgst'];
+    $orderTotals['cgst_total'] += $gst['cgst'];
+    $orderTotals['igst_total'] += $gst['igst'];
+    $orderTotals['total_gst'] += $gst['gst_amount'];
+  }
 }
-$mrp = 0; $savings = 0; $count = 0;
+$mrp = 0;
+$savings = 0;
+$count = 0;
 foreach ($cartItems as $item) {
-    $mrp += $item['mrp'] * $item['quantity'];
-    $savings += ($item['mrp'] - $item['selling_price']) * $item['quantity'];
-    $count += $item['quantity'];
+  $mrp += $item['mrp'] * $item['quantity'];
+  $savings += ($item['mrp'] - $item['selling_price']) * $item['quantity'];
+  $count += $item['quantity'];
 }
 ?>
 
@@ -205,6 +214,14 @@ foreach ($cartItems as $item) {
     border-color: #dc3545;
     color: white;
 }
+@media (max-width: 768px) {
+    .place-order-btn {
+        padding-top: 9px !important;
+        padding-bottom: 9px !important;
+        font-size: 1.10rem !important;
+        font-weight: 600 !important;
+    }
+}
 </style>
 
 <?php if (isset($error_message)): ?>
@@ -215,17 +232,20 @@ foreach ($cartItems as $item) {
         <?php if (isset($result)): ?>
             <br><strong>Order Result Debug:</strong>
             <pre style="max-height:200px;overflow:auto;font-size:0.95em;"><?php echo htmlspecialchars(print_r($result, true)); ?></pre>
-        <?php endif; ?>
+        <?php
+  endif; ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 </div>
-<?php endif; ?>
+<?php
+endif; ?>
 
 <?php if ($orderTotals['total'] < 150): ?>
   <div class="alert alert-danger text-center" id="minOrderAlert">
     Minimum order amount is ₹150. Please add more items to your cart to proceed.
   </div>
-<?php endif; ?>
+<?php
+endif; ?>
 
 <!-- === ADDRESS SECTION (OUTSIDE ORDER FORM, RESTORED) === -->
 <div class="container my-5">
@@ -245,9 +265,11 @@ foreach ($cartItems as $item) {
           <?php if ($addresses): ?>
             <?php foreach ($addresses as $addr): ?>
               <div class="form-check mb-2">
-                <input class="form-check-input address-radio" type="radio" name="selected_address_left" id="addr<?php echo $addr['id']; ?>" value="<?php echo $addr['id']; ?>" <?php if ($addr['is_default']) echo 'checked'; ?> required>
+                <input class="form-check-input address-radio" type="radio" name="selected_address_left" id="addr<?php echo $addr['id']; ?>" value="<?php echo $addr['id']; ?>" <?php if ($addr['is_default'])
+      echo 'checked'; ?> required>
                 <label class="form-check-label" for="addr<?php echo $addr['id']; ?>">
-                  <b><?php echo htmlspecialchars($addr['name']); ?></b>, <?php echo htmlspecialchars($addr['address_line1']); ?><?php if ($addr['address_line2']) echo ', ' . htmlspecialchars($addr['address_line2']); ?>, <?php echo htmlspecialchars($addr['city']); ?>, <?php echo htmlspecialchars($addr['state']); ?>, <?php echo htmlspecialchars($addr['pincode']); ?>, Mob: <?php echo htmlspecialchars($addr['phone']); ?>
+                  <b><?php echo htmlspecialchars($addr['name']); ?></b>, <?php echo htmlspecialchars($addr['address_line1']); ?><?php if ($addr['address_line2'])
+      echo ', ' . htmlspecialchars($addr['address_line2']); ?>, <?php echo htmlspecialchars($addr['city']); ?>, <?php echo htmlspecialchars($addr['state']); ?>, <?php echo htmlspecialchars($addr['pincode']); ?>, Mob: <?php echo htmlspecialchars($addr['phone']); ?>
                 </label>
                 <div class="address-actions">
                   <?php if (!$addr['is_default']): ?>
@@ -256,7 +278,8 @@ foreach ($cartItems as $item) {
                       <input type="hidden" name="address_id" value="<?php echo $addr['id']; ?>">
                       <button type="submit" class="btn btn-link btn-sm">Set as default</button>
                     </form>
-                  <?php endif; ?>
+                  <?php
+    endif; ?>
                   <button type="button" class="btn btn-outline-primary btn-sm" onclick="editAddress(<?php echo $addr['id']; ?>)">
                     <i class="fas fa-edit"></i> Edit
                   </button>
@@ -266,17 +289,21 @@ foreach ($cartItems as $item) {
                   </form>
                 </div>
               </div>
-            <?php endforeach; ?>
-          <?php else: ?>
+            <?php
+  endforeach; ?>
+          <?php
+else: ?>
             <div class="alert alert-info">No saved addresses. Please add one below.</div>
-          <?php endif; ?>
+          <?php
+endif; ?>
           <!-- Add New Address Form (collapsible, outside order form) -->
           <div class="mt-3 mb-2">
             <button type="button" class="btn btn-outline-success" data-bs-toggle="collapse" data-bs-target="#addAddressForm" aria-expanded="false" aria-controls="addAddressForm">
               + Add New Address
             </button>
           </div>
-          <div class="collapse<?php if (!$addresses) echo ' show'; ?> mt-2" id="addAddressForm">
+          <div class="collapse<?php if (!$addresses)
+  echo ' show'; ?> mt-2" id="addAddressForm">
             <form method="post" id="addAddressFormReal">
               <input type="hidden" name="add_address" value="1">
               <div class="row g-2 mt-2">
@@ -346,14 +373,14 @@ foreach ($cartItems as $item) {
             <!-- Per-product breakdown -->
             <!-- Removed per-product table as requested -->
             <div class="mb-2"></div>
-            <div class="d-flex justify-content-between mb-2"><span>Total MRP</span><span>₹<?php echo number_format($mrp,0); ?></span></div>
-            <div class="d-flex justify-content-between mb-2"><span>You Pay</span><span id="you-pay-amount">₹<?php echo number_format($orderTotals['subtotal'],0); ?></span></div>
-            <div class="d-flex justify-content-between mb-2 bg-light p-2 rounded"><span class="text-success"><b>Savings</b></span><span class="text-success">₹<?php echo number_format($savings,0); ?></span></div>
+            <div class="d-flex justify-content-between mb-2"><span>Total MRP</span><span>₹<?php echo number_format($mrp, 0); ?></span></div>
+            <div class="d-flex justify-content-between mb-2"><span>You Pay</span><span id="you-pay-amount">₹<?php echo number_format($orderTotals['subtotal'], 0); ?></span></div>
+            <div class="d-flex justify-content-between mb-2 bg-light p-2 rounded"><span class="text-success"><b>Savings</b></span><span class="text-success">₹<?php echo number_format($savings, 0); ?></span></div>
             <div class="d-flex justify-content-between mb-2"><span>Delivery charge</span><span id="cart-shipping">₹<?php echo $orderTotals['shipping_charge']; ?></span></div>
             <!-- <div class="d-flex justify-content-between mb-2"><span>Shipping Zone</span><span id="cart-shipping-zone"><?php echo htmlspecialchars($orderTotals['shipping_zone_name'] ?? ''); ?></span></div> -->
             
             <!-- GST Breakdown removed: prices are inclusive of GST -->
-            <div class="d-flex justify-content-between mb-2 bg-primary bg-opacity-10 p-2 rounded"><span><b>Total Amount to Pay</b></span><span id="order-total-amount"><b>₹<?php echo number_format($orderTotals['total'],0); ?></b></span></div>
+            <div class="d-flex justify-content-between mb-2 bg-primary bg-opacity-10 p-2 rounded"><span><b>Total Amount to Pay</b></span><span id="order-total-amount"><b>₹<?php echo number_format($orderTotals['total'], 0); ?></b></span></div>
             <!-- Payment Method Section and Place Order Button -->
             <div class="checkout-card mt-3">
               <div class="card-body">
@@ -391,7 +418,8 @@ foreach ($cartItems as $item) {
                 </div>
                 <div id="directPaymentInfoMsg" class="text-success text-center mb-2" style="display:none;"></div>
                 <div class="d-grid mb-3 place-order-wrapper">
-                  <button type="submit" name="place_order" id="placeOrderBtn" class="place-order-btn btn btn-primary w-100 mt-3" <?php if ($orderTotals['total'] < 150) echo 'disabled'; ?>>
+                  <button type="submit" name="place_order" id="placeOrderBtn" class="place-order-btn btn btn-primary w-100 mt-3" <?php if ($orderTotals['total'] < 150)
+  echo 'disabled'; ?>>
                     <i class="fas fa-shopping-cart"></i> PLACE ORDER
                   </button>
                 </div>
@@ -945,7 +973,8 @@ const directPaymentConfirmModal = new bootstrap.Modal(document.getElementById('d
     showOrderSuccessPopup();
   });
 </script>
-<?php endif; ?>
+<?php
+endif; ?>
 <script>
 function showOrderSuccessPopup() {
   Swal.fire({
