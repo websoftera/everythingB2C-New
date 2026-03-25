@@ -258,14 +258,35 @@ html body #floatingCartPanel .quantity-control button.btn-qty:disabled:active {
   }
   #floatingCartPanel.fixed-panel #floatingCartContent {
     height: auto !important;
-    max-height: 360px !important;
+    max-height: 240px !important;
     flex: 1 !important;
+  }
+  #floatingRemoveAllMobile,
+  .remove-cart-item-btn {
+      padding: 5px 10px !important;
+      font-size: 11px !important;
+      line-height: 1 !important;
   }
   
   @media (max-height: 700px) {
     #floatingCartPanel.fixed-panel #floatingCartContent {
       max-height: 240px !important;
     }
+  }
+  /* Precise 2px gap between checkout button and view cart button */
+  #floatingCartPanel.fixed-panel .floating-cart-summary-box {
+      margin-bottom: 0px !important;
+      padding-bottom: 0px !important;
+  }
+  #floatingCartPanel.fixed-panel .floating-cart-summary-box .d-grid {
+      margin-bottom: 0px !important;
+  }
+  #floatingCartPanel.fixed-panel .floating-cart-actions {
+      padding-top: 2px !important;
+  }
+  #floatingRemoveAllMobile i,
+  .remove-cart-item-btn i {
+      font-size: 11px !important;
   }
 }
 /* Product list area always scrolls, never summary or actions */
@@ -483,10 +504,16 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
       <button id="closeFloatingCartPanel" style="background:none;border:none;font-size:1.7rem;line-height:1;color:#888;cursor:pointer;">&times;</button>
     </div>
     <div id="floatingCartContent"></div>
+    <div id="floatingCartPagination" class="mt-2 mb-2"></div>
+    <div class="d-lg-none text-end px-3 mb-1">
+      <button type="button" class="btn btn-sm btn-outline-danger" id="floatingRemoveAllMobile" style="font-size: 11px !important; padding: 5px 10px !important; font-weight: 500;">
+        <i class="fas fa-trash me-1" style="font-size: 11px !important;"></i>Remove All
+      </button>
+    </div>
     <div id="floatingCartSummary"></div>
     <div class="floating-cart-actions">
       <a href="<?php echo $base_url; ?>cart.php" class="btn btn-outline-primary w-100 mb-2" style="padding:6px 0;font-size:0.97rem;">View Full Cart</a>
-      <button type="button" class="btn btn-outline-danger w-100" id="floatingRemoveAll" style="padding:6px 0;font-size:0.97rem;">
+      <button type="button" class="btn btn-outline-danger w-100 d-none d-lg-block" id="floatingRemoveAll" style="padding:6px 0;font-size:0.97rem;">
         <i class="fas fa-trash me-1"></i>Remove All
       </button>
     </div>
@@ -1418,11 +1445,32 @@ function renderFloatingCart() {
       if (!items || items.length === 0) {
         content.innerHTML = '<div class="text-center text-muted py-4">Your cart is empty.</div>';
         summary.innerHTML = '';
+        const paginationContainer = document.getElementById('floatingCartPagination');
+        if (paginationContainer) paginationContainer.innerHTML = '';
         return;
       }
+      
+      const isMobile = window.innerWidth < 768;
+      const itemsPerPage = 10;
+      
+      if (!window.currentFloatingPage) window.currentFloatingPage = 1;
+      const totalItems = items.length;
+      const totalPages = Math.ceil(totalItems / itemsPerPage);
+      
+      let paginatedItems = items;
+      if (isMobile && totalItems > itemsPerPage) {
+          // Ensure current page is valid
+          if (window.currentFloatingPage > totalPages) window.currentFloatingPage = totalPages;
+          if (window.currentFloatingPage < 1) window.currentFloatingPage = 1;
+          
+          const startIndex = (window.currentFloatingPage - 1) * itemsPerPage;
+          const endIndex = startIndex + itemsPerPage;
+          paginatedItems = items.slice(startIndex, endIndex);
+      }
+      
       let itemsHtml = '';
-      items.forEach(item => {
-        const cartId = item.id; // Use the cart table's primary key
+      paginatedItems.forEach(item => {
+        const cartId = item.id;
         itemsHtml += `
           <div class="d-flex align-items-center gap-1 mb-2 border-bottom pb-1" style="min-width:0;">
             <img src="${item.main_image ? './' + item.main_image : './uploads/products/blank-img.webp'}" onerror="this.onerror=null; this.src='./uploads/products/blank-img.webp';" alt="${item.name}" style="width:38px;height:38px;object-fit:cover;border-radius:6px;border:1px solid #eee;flex-shrink:0;">
@@ -1439,12 +1487,21 @@ function renderFloatingCart() {
             </div>
             <div class="text-end ms-1" style="min-width:54px;">
               <div data-cart-total-id="${cartId}" style="font-weight:500;font-size:0.93rem;">₹${(item.selling_price * item.quantity).toFixed(2).replace('.00', '')}</div>
-              <button class="btn btn-xs btn-outline-danger mt-1 remove-cart-item-btn" data-cart-id="${cartId}" style="padding:0 5px;font-size:0.9rem;"><i class="fas fa-trash"></i></button>
+              <button class="btn btn-sm btn-outline-danger remove-cart-item-btn" data-cart-id="${cartId}"><i class="fas fa-trash" style="font-size: 11px !important;"></i></button>
             </div>
           </div>
         `;
       });
       content.innerHTML = itemsHtml;
+      
+      // Render Pagination UI (Mobile Only)
+      if (isMobile) {
+          renderFloatingCartPagination(totalItems, itemsPerPage, window.currentFloatingPage);
+      } else {
+          const paginationContainer = document.getElementById('floatingCartPagination');
+          if (paginationContainer) paginationContainer.innerHTML = '';
+      }
+      
       // Summary
       const totals = data.totals;
       summary.innerHTML = `
@@ -1832,6 +1889,56 @@ function renderFloatingCart() {
       summary.innerHTML = '';
     });
 }
+
+function renderFloatingCartPagination(totalItems, itemsPerPage, currentPage) {
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const paginationContainer = document.getElementById('floatingCartPagination');
+  if (!paginationContainer) return;
+
+  if (totalPages <= 1) {
+    paginationContainer.innerHTML = '';
+    return;
+  }
+
+  let html = '<nav aria-label="Cart items pagination"><ul class="pagination pagination-sm justify-content-center mb-0">';
+  
+  // Previous Button
+  if (currentPage > 1) {
+    html += `<li class="page-item">
+                <a class="page-link" href="#" data-page="${currentPage - 1}" style="padding: 2px 8px; font-size: 0.8rem;">Prev</a>
+             </li>`;
+  }
+  
+  for (let i = 1; i <= totalPages; i++) {
+      html += `<li class="page-item ${currentPage === i ? 'active' : ''}">
+                  <a class="page-link" href="#" data-page="${i}" style="padding: 2px 8px; font-size: 0.8rem;">${i}</a>
+               </li>`;
+  }
+  
+  // Next Button
+  if (currentPage < totalPages) {
+    html += `<li class="page-item">
+                <a class="page-link" href="#" data-page="${currentPage + 1}" style="padding: 2px 8px; font-size: 0.8rem;">Next</a>
+             </li>`;
+  }
+  
+  html += '</ul></nav>';
+  paginationContainer.innerHTML = html;
+  
+  paginationContainer.querySelectorAll('.page-link').forEach(link => {
+      link.onclick = function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          const page = parseInt(this.getAttribute('data-page'));
+          if (page >= 1 && page <= totalPages) {
+              window.currentFloatingPage = page;
+              renderFloatingCart();
+              const content = document.getElementById('floatingCartContent');
+              if (content) content.scrollTop = 0;
+          }
+      };
+  });
+}
 // Add this helper function to update only the floating cart summary
 function updateFloatingCartSummary() {
   const summary = document.getElementById('floatingCartSummary');
@@ -1967,8 +2074,9 @@ document.addEventListener('DOMContentLoaded', function() {
 // Floating Cart Remove All functionality
 document.addEventListener('DOMContentLoaded', function() {
   const floatingRemoveAllBtn = document.getElementById('floatingRemoveAll');
-  if (floatingRemoveAllBtn) {
-    floatingRemoveAllBtn.addEventListener('click', function() {
+  const floatingRemoveAllBtnMobile = document.getElementById('floatingRemoveAllMobile');
+  
+  const handleRemoveAll = function() {
       Swal.fire({
         title: 'Remove All Items?',
         text: 'Do you want to remove all items from your cart? This action cannot be undone.',
@@ -2076,7 +2184,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         }
       });
-    });
+  };
+
+  if (floatingRemoveAllBtn) {
+    floatingRemoveAllBtn.addEventListener('click', handleRemoveAll);
+  }
+  if (floatingRemoveAllBtnMobile) {
+    floatingRemoveAllBtnMobile.addEventListener('click', handleRemoveAll);
   }
 });
 
