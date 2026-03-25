@@ -14,7 +14,7 @@
     .cart-item-row {
         display: grid !important;
         grid-template-columns: 45px 1fr 60px !important;
-        grid-template-areas: 
+        grid-template-areas:
             "img title total"
             "img qty delete" !important;
         gap: 6px !important;
@@ -22,13 +22,17 @@
         align-items: center !important;
         height: auto !important;
         position: relative !important;
-        flex-wrap: nowrap !important; /* overide flex */
+        flex-wrap: nowrap !important;
+        /* overide flex */
     }
 
-    .cart-item-row>div:nth-child(1) { grid-area: img; flex: unset !important; }
-    
-    .cart-item-row>div:nth-child(2) { 
-        grid-area: title; 
+    .cart-item-row>div:nth-child(1) {
+        grid-area: img;
+        flex: unset !important;
+    }
+
+    .cart-item-row>div:nth-child(2) {
+        grid-area: title;
         font-size: 0.93rem !important;
         font-weight: 600 !important;
         white-space: nowrap !important;
@@ -39,35 +43,49 @@
         max-width: 100% !important;
     }
 
-    .cart-item-row>div:nth-child(3) { display: none !important; } /* MRP */
-    .cart-item-row>div:nth-child(4) { display: none !important; } /* You Pay */
-    .cart-item-row>div:nth-child(5) { display: none !important; } /* Savings */
+    .cart-item-row>div:nth-child(3) {
+        display: none !important;
+    }
 
-    .cart-item-row>div:nth-child(6) { 
-        grid-area: qty; 
+    /* MRP */
+    .cart-item-row>div:nth-child(4) {
+        display: none !important;
+    }
+
+    /* You Pay */
+    .cart-item-row>div:nth-child(5) {
+        display: none !important;
+    }
+
+    /* Savings */
+
+    .cart-item-row>div:nth-child(6) {
+        grid-area: qty;
         display: flex !important;
         align-items: center !important;
         justify-content: flex-start !important;
         flex: unset !important;
     }
 
-    .cart-item-row>div:nth-child(7) { 
-        grid-area: total; 
+    .cart-item-row>div:nth-child(7) {
+        grid-area: total;
         text-align: right !important;
         font-weight: 700 !important;
         font-size: 0.95rem !important;
         align-self: start !important;
         padding-top: 4px !important;
         flex: unset !important;
-        display: block !important; /* make sure visible */
+        display: block !important;
+        /* make sure visible */
     }
 
-    .cart-item-row>div:nth-child(8) { 
-        grid-area: delete; 
+    .cart-item-row>div:nth-child(8) {
+        grid-area: delete;
         text-align: right !important;
         align-self: end !important;
         flex: unset !important;
-        position: static !important; /* override absolute */
+        position: static !important;
+        /* override absolute */
     }
 
     /* Stack checkout summary */
@@ -107,7 +125,8 @@
     .place-order-btn {
         padding: 12px;
         font-size: 1.1rem;
-        border: none !important; /* Request 4: Remove blue border */
+        border: none !important;
+        /* Request 4: Remove blue border */
         box-shadow: none !important;
     }
 
@@ -120,18 +139,21 @@
     }
 
     .checkout-card {
-        margin-bottom: 8px !important; /* Phase 4: Reduce card margin */
+        margin-bottom: 8px !important;
+        /* Phase 4: Reduce card margin */
     }
 
     /* --- Checkout Page Refinements --- */
     .container.my-5 {
-        margin-top: 10px !important; /* Phase 4: Reduce top margin */
+        margin-top: 10px !important;
+        /* Phase 4: Reduce top margin */
         margin-bottom: 10px !important;
     }
 
     .row.g-4 {
         --bs-gutter-x: 10px !important;
-        --bs-gutter-y: 0px !important; /* Phase 4: Remove vertical gutter between columns */
+        --bs-gutter-y: 0px !important;
+        /* Phase 4: Remove vertical gutter between columns */
     }
 
     .checkout-card .card-body {
@@ -139,7 +161,7 @@
     }
 
     /* Request 2: Align Bill Summary card with Address section */
-    .col-lg-4 form > .checkout-card {
+    .col-lg-4 form>.checkout-card {
         margin-left: 0 !important;
         margin-right: 0 !important;
     }
@@ -151,8 +173,8 @@
 
     /* Headings font size increase */
     .checkout-card h5 {
-        font-size: 1.3rem !important;
-        font-weight: 700 !important;
+        font-size: 1.05rem !important;
+        font-weight: 600 !important;
         margin-bottom: 8px !important;
     }
 
@@ -171,7 +193,7 @@
 
     /* Bill Summary details font size increase */
     .checkout-card .d-flex.justify-content-between.mb-2 {
-        font-size: 1.1rem !important;
+        font-size: 1.05rem !important;
         margin-bottom: 10px !important;
     }
 
@@ -181,7 +203,7 @@
 
     /* Total amount font size */
     #order-total-amount {
-        font-size: 1.25rem !important;
+        font-size: 1rem !important;
     }
 
     /* Savings rectangle alignment and styling */
@@ -196,26 +218,32 @@
     .back-to-cart-wrapper {
         margin-top: 0 !important;
     }
+
     .back-to-cart-btn {
         padding: 8px 16px !important;
     }
 
     /* Request 5 & Phase 4: Absolute minimal space above summary components */
-    .col-lg-4 form > .checkout-card:first-child {
+    .col-lg-4 form>.checkout-card:first-child {
         margin-top: 0 !important;
     }
 
     /* Phase 3 & 5: Payment section spacing adjustments */
     .checkout-card.mt-3 {
-        margin-top: 5px !important; /* Reduce mt-3 override */
+        margin-top: 5px !important;
+        /* Reduce mt-3 override */
     }
+
     .checkout-card h6.mb-2 {
-        font-size: 1.15rem !important;
-        font-weight: 700 !important;
-        margin-top: 0 !important; /* Phase 5: Minimal top space */
+        font-size: 1.05rem !important;
+        font-weight: 600 !important;
+        margin-top: 0 !important;
+        /* Phase 5: Minimal top space */
     }
+
     .checkout-card.mt-3 .card-body {
-        padding-top: 2px !important; /* Phase 5: 2px top gap inside card */
+        padding-top: 2px !important;
+        /* Phase 5: 2px top gap inside card */
     }
 
     /* Phase 3: Explicit spacing reductions */
