@@ -213,12 +213,18 @@ echo renderBreadcrumb($breadcrumbs);
 }
 
 .about-us-content .category-list li {
-    font-size: 12px;
+    font-size: 15px;
     line-height: 1.7;
     color: #666;
     margin-bottom: 12px;
     padding-left: 25px;
     position: relative;
+}
+
+@media (max-width: 767px) {
+    .about-us-content .category-list li {
+        font-size: 12px; /* adjust as needed */
+    }
 }
 
 .about-us-content .category-list li::before {
