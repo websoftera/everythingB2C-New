@@ -1472,7 +1472,7 @@ function renderFloatingCart() {
       paginatedItems.forEach(item => {
         const cartId = item.id;
         itemsHtml += `
-          <div class="d-flex align-items-center gap-1 mb-2 border-bottom pb-1" style="min-width:0;">
+          <div class="d-flex align-items-center gap-1 mb-2" style="min-width:0; border: 1px solid #e0e0e0; border-radius: 7px; padding: 7px 8px; background: #fff; gap: 8px;">
             <img src="${item.main_image ? './' + item.main_image : './uploads/products/blank-img.webp'}" onerror="this.onerror=null; this.src='./uploads/products/blank-img.webp';" alt="${item.name}" style="width:38px;height:38px;object-fit:cover;border-radius:6px;border:1px solid #eee;flex-shrink:0;">
             <div class="flex-grow-1" style="min-width:0;">
               <div style="font-weight:500;font-size:0.93rem;font-family:'Mulish', sans-serif !important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.name}</div>
