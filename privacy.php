@@ -186,7 +186,7 @@ echo renderBreadcrumb($breadcrumbs);
     }
     
     .privacy-section p {
-        font-size: 14px !important;
+        font-size: 12px !important;
     }
     
     .intro-text {
@@ -195,7 +195,7 @@ echo renderBreadcrumb($breadcrumbs);
     
     .privacy-section p,
     .privacy-list li {
-        font-size: 14px;
+        font-size: 12px;
     }
 }
 
