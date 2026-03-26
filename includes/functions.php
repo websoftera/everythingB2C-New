@@ -1,6 +1,9 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
 
+// Set default timezone for India
+date_default_timezone_set('Asia/Kolkata');
+
 // Function to get cart summary for header display
 function getCartSummary() {
     $total_items = 0;

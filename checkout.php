@@ -284,7 +284,8 @@ endif; ?>
                     <i class="fas fa-edit"></i> Edit
                   </button>
                   <form method="post" style="display:inline;" onsubmit="return confirmDeleteCheckoutAddress(this);">
-                    <input type="hidden" name="delete_address" value="<?php echo $addr['id']; ?>">
+                    <input type="hidden" name="delete_address" value="1">
+                    <input type="hidden" name="address_id" value="<?php echo $addr['id']; ?>">
                     <button type="submit" class="btn btn-outline-danger btn-sm"><i class="fas fa-trash"></i> Delete</button>
                   </form>
                 </div>
