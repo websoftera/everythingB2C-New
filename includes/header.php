@@ -1846,7 +1846,7 @@ function renderFloatingCart() {
           const unitPrice = parseFloat(unitPriceText.match(/₹(\d+\.?\d*)/)?.[1] || 0);
           const totalDiv = row.querySelector('div[data-cart-total-id]');
           if (totalDiv && unitPrice) {
-            totalDiv.textContent = '₹' + (qty * unitPrice).toFixed(2);
+            totalDiv.textContent = '₹' + (qty * unitPrice).toFixed(2).replace('.00', '');
           }
           
           updateCartQuantity(cartId, qty, this, null, function(success, updatedItem) {
@@ -1879,7 +1879,7 @@ function renderFloatingCart() {
           const unitPrice = parseFloat(unitPriceText.match(/₹(\d+\.?\d*)/)?.[1] || 0);
           const totalDiv = row.querySelector('div[data-cart-total-id]');
           if (totalDiv && unitPrice) {
-            totalDiv.textContent = '₹' + (qty * unitPrice).toFixed(2);
+            totalDiv.textContent = '₹' + (qty * unitPrice).toFixed(2).replace('.00', '');
           }
         };
       });
@@ -2251,7 +2251,7 @@ function updateItemTotal(cartId, quantity, unitPrice) {
   
   if (totalDiv) {
     const oldText = totalDiv.textContent;
-    const newTotal = (quantity * unitPrice).toFixed(2);
+    const newTotal = (quantity * unitPrice).toFixed(2).replace('.00', '');
     totalDiv.textContent = '₹' + newTotal;
     console.log('[updateItemTotal] Updated from', oldText, 'to ₹' + newTotal);
   } else {
@@ -2318,7 +2318,7 @@ function smoothUpdatePerItemTotal(cartId, newTotal) {
     totalDiv.style.padding = '2px 4px';
     
     // Update value
-    totalDiv.textContent = '₹' + newTotalValue.toFixed(2);
+    totalDiv.textContent = '₹' + newTotalValue.toFixed(2).replace('.00', '');
     
     // Remove highlight
     setTimeout(() => {

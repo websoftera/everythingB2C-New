@@ -36,7 +36,7 @@ function initHeaderFeatures() {
         if (isNaN(quantity) || quantity < 1) quantity = 1;
 
         const total = unitPrice * quantity;
-        payButton.textContent = `PAY ₹${total.toFixed(2)}`;
+        payButton.textContent = `PAY ₹${total.toFixed(2).replace('.00', '')}`;
       }
 
       qtyInput.addEventListener('input', updatePayText);
@@ -242,13 +242,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // Correct all PAY buttons dynamically
   document.querySelectorAll('.pay').forEach(btn => {
     let amount = parseFloat(btn.getAttribute('data-pay')) || 0;
-    btn.textContent = `PAY \u20B9${amount.toFixed(2)}`;
+    btn.textContent = `PAY \u20B9${amount.toFixed(2).replace('.00', '')}`;
   });
 
   // Correct all MRP buttons dynamically (if similar structure)
   document.querySelectorAll('.mrp').forEach(btn => {
     let amount = parseFloat(btn.getAttribute('data-mrp')) || 0;
-    btn.textContent = `MRP \u20B9${amount.toFixed(2)}`;
+    btn.textContent = `MRP \u20B9${amount.toFixed(2).replace('.00', '')}`;
   });
 
 });
