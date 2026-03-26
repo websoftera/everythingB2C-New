@@ -15,7 +15,7 @@ use PHPMailer\PHPMailer\Exception;
  * Send email using PHPMailer
  */
 function sendEmail($to, $subject, $body, $isHTML = true) {
-    $emailConfig = include 'config/email.php';
+    $emailConfig = include __DIR__ . '/../config/email.php';
     
     $mail = new PHPMailer(true);
     
@@ -102,7 +102,7 @@ function sendOrderPlacedAdminNotification($orderId) {
         // Get order items
         $orderItems = getOrderItems($orderId);
         
-        $emailConfig = include 'config/email.php';
+        $emailConfig = include __DIR__ . '/../config/email.php';
         $subject = "New Order Received - Order #{$orderId}";
         $body = generateOrderPlacedAdminEmail($order, $orderItems);
         

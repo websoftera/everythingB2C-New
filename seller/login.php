@@ -128,7 +128,7 @@ echo renderBreadcrumb($breadcrumbs);
                                 <button type="submit" class="login-btn login-btn-login" style="background-color: #7a9615;">Log In</button>
                             </div>
                             <div class="forgot-password" style="margin-top: 15px;">
-                                <a href="#">Forgot Password?</a>
+                                <a href="../forgot_password.php">Forgot Password?</a>
                             </div>
                         </form>
                     </div>
