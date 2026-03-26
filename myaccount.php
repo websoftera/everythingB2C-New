@@ -388,7 +388,7 @@ echo renderBreadcrumb($breadcrumbs);
 }
 
 /* === Buttons === */
-.btn {
+.account-wrapper .btn {
   display: inline-block;
   background: #007bff;
   color: #fff;
@@ -398,20 +398,20 @@ echo renderBreadcrumb($breadcrumbs);
   font-size: 0.9rem;
 }
 
-.btn:hover {
+.account-wrapper .btn:hover {
   background: #0056b3;
 }
 
-.btn.small {
+.account-wrapper .btn.small {
   padding: 5px 10px;
   font-size: 0.8rem;
 }
 
-.btn.danger {
+.account-wrapper .btn.danger {
   background: #dc3545;
 }
 
-.btn.danger:hover {
+.account-wrapper .btn.danger:hover {
   background: #b02a37;
 }
 
