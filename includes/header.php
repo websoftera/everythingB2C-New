@@ -504,7 +504,7 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
       <button id="closeFloatingCartPanel" style="background:none;border:none;font-size:1.7rem;line-height:1;color:#888;cursor:pointer;">&times;</button>
     </div>
     <div id="floatingCartContent"></div>
-    <div id="floatingCartPagination" class="mt-2 mb-2"></div>
+    <div id="floatingCartPagination" class="mt-2 mb-2 d-md-none"></div>
     <div class="d-lg-none text-end px-3 mb-1">
       <button type="button" class="btn btn-sm btn-outline-danger" id="floatingRemoveAllMobile" style="font-size: 11px !important; padding: 5px 10px !important; font-weight: 500;">
         <i class="fas fa-trash me-1" style="font-size: 11px !important;"></i>Remove All
