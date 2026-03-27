@@ -169,7 +169,7 @@ $parentCategories = getParentCategories();
                                     </div>
                                 </div>
                                 <div class="col-md-3">
-                                    <select class="form-control" name="category">
+                                    <select class="form-select" name="category">
                                         <option value="">All Categories</option>
                                         <?php foreach ($parentCategories as $parentCategory): ?>
                                             <optgroup label="<?php echo htmlspecialchars($parentCategory['name']); ?>">
@@ -191,7 +191,7 @@ $parentCategories = getParentCategories();
                                     </select>
                                 </div>
                                 <div class="col-md-2">
-                                    <select class="form-control" name="status">
+                                    <select class="form-select" name="status">
                                         <option value="">All Status</option>
                                         <option value="1" <?php echo $status_filter === '1' ? 'selected' : ''; ?>>Active</option>
                                         <option value="0" <?php echo $status_filter === '0' ? 'selected' : ''; ?>>Inactive</option>
@@ -354,7 +354,7 @@ $parentCategories = getParentCategories();
                                     <!-- Bulk Actions -->
                                     <div class="d-flex justify-content-between align-items-center mt-3">
                                         <div class="d-flex gap-2">
-                                            <select class="form-control form-control-sm" name="bulk_action" style="width: auto;">
+                                            <select class="form-select form-select-sm" name="bulk_action" style="width: auto;">
                                                 <option value="">Bulk Actions</option>
                                                 <option value="activate">Activate</option>
                                                 <option value="deactivate">Deactivate</option>
