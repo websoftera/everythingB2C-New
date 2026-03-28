@@ -22,15 +22,28 @@ if (!$order) {
 $orderItems = getOrderItems($orderId);
 
 // Address
-$address = [
-    'name' => $order['address_name'],
-    'phone' => $order['address_phone'],
-    'address_line1' => $order['address_line1'],
-    'address_line2' => $order['address_line2'],
-    'city' => $order['city'],
-    'state' => $order['state'],
-    'pincode' => $order['pincode'],
-];
+if (!empty($order['address_name'])) {
+    $address = [
+        'name' => $order['address_name'],
+        'phone' => $order['address_phone'],
+        'address_line1' => $order['address_line1'],
+        'address_line2' => $order['address_line2'],
+        'city' => $order['city'],
+        'state' => $order['state'],
+        'pincode' => $order['pincode'],
+    ];
+} else {
+    // Fallback to snapshotted fields
+    $address = [
+        'name' => '', // Will be part of the formatted block
+        'phone' => '', 
+        'address_line1' => $order['shipping_address'] ?: 'Address Not Available',
+        'address_line2' => '',
+        'city' => $order['billing_city'] ?: '',
+        'state' => $order['billing_state'] ?: '',
+        'pincode' => $order['billing_pincode'] ?: '',
+    ];
+}
 
 $company = [
     'name' => 'everythingb2c',

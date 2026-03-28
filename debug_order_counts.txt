@@ -1,0 +1,6 @@
+Order counts per status ID:
+Status: Delivered, ID: 34, Count: 1
+Status: Delivered, ID: 41, Count: 1
+Status: Pending, ID: 1, Count: 68
+Status: Shipped, ID: 3, Count: 2
+Status: Shipped, ID: 31, Count: 1

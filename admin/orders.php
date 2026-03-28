@@ -168,7 +168,7 @@ $statuses = getAllOrderStatuses();
                             <form method="GET" class="row g-3">
                                 <div class="col-md-2">
                                     <label class="form-label">Status</label>
-                                    <select name="status" class="form-control">
+                                    <select name="status" class="form-select">
                                         <option value="">All Statuses</option>
                                         <?php foreach ($statuses as $status): ?>
                                             <option value="<?php echo $status['id']; ?>" <?php echo $status_filter == $status['id'] ? 'selected' : ''; ?>>
@@ -179,7 +179,7 @@ $statuses = getAllOrderStatuses();
                                 </div>
                                 <div class="col-md-2">
                                     <label class="form-label">Payment</label>
-                                    <select name="payment" class="form-control">
+                                    <select name="payment" class="form-select">
                                         <option value="">All Payments</option>
                                         <option value="pending" <?php echo $payment_filter == 'pending' ? 'selected' : ''; ?>>Pending</option>
                                         <option value="paid" <?php echo $payment_filter == 'paid' ? 'selected' : ''; ?>>Paid</option>
@@ -372,7 +372,7 @@ $statuses = getAllOrderStatuses();
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <label class="form-label">Order Status *</label>
-                                        <select name="status_id" class="form-control" required>
+                                        <select name="status_id" class="form-select" required>
                                             <?php foreach ($statuses as $status): ?>
                                                 <option value="<?php echo $status['id']; ?>">
                                                     <?php echo htmlspecialchars($status['name']); ?>
@@ -399,7 +399,7 @@ $statuses = getAllOrderStatuses();
                                     <!-- Payment Status Update for COD -->
                                     <div class="col-12" id="paymentStatusSection" style="display:none;">
                                         <label class="form-label">Payment Status (COD & Direct Payment only)</label>
-                                        <select name="payment_status" class="form-control">
+                                        <select name="payment_status" class="form-select">
                                             <option value="pending">Pending</option>
                                             <option value="paid">Paid</option>
                                             <option value="unpaid">Unpaid</option>

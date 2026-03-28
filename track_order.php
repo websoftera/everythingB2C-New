@@ -29,505 +29,479 @@ $pageTitle = 'Track Order';
 include 'includes/header.php';
 ?>
 
-<!-- <div class="page-banner" style="background: url('asset/images/internalpage-bg.webp') center/cover no-repeat; min-height: 240px; display: flex; align-items: center;">
-    <div class="container">
-        <h2 style="color: #fff; font-size: 2rem; font-weight: bold; text-shadow: 0 2px 8px rgba(0,0,0,0.3); margin: 0; padding: 32px 0;">
-            Track Your Order
-        </h2>
-    </div>
-</div> -->
-
-<div class="container my-5">
-    <!-- Track Order Form -->
-    <div class="row justify-content-center mb-5">
-        <div class="col-lg-6">
-            <div class="trackorder-card">
-                <div class="card-body">
-                    <form method="GET" action="track_order.php">
-                        <div class="input-group">
-                            <input type="text" class="form-control" name="tracking_id" placeholder="Enter your tracking ID (e.g., DEMO_SITE00000001)" value="<?php echo htmlspecialchars($trackingId); ?>" required>
-                            <button class="btn btn-primary" type="submit">
-                                <i class="fas fa-search"></i> Track
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <?php if ($trackingId && !$order): ?>
-        <!-- Order Not Found -->
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="alert alert-warning text-center">
-                    <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
-                    <h4>Order Not Found</h4>
-                    <p>The tracking ID "<?php echo htmlspecialchars($trackingId); ?>" was not found in our system.</p>
-                    <p>Please check your tracking ID and try again.</p>
-                </div>
-            </div>
-        </div>
-    <?php elseif ($order): ?>
-        <?php 
-        // Check if DTDC tracking is available for this order
-        $dtdcEnabled = $order['dtdc_enabled'] ?? false;
-        $dtdcTrackingId = $order['dtdc_tracking_id'] ?? '';
-        $externalTrackingId = $order['external_tracking_id'] ?? '';
-        $dtdcTrackingData = null;
-        
-        // Use DTDC tracking ID from either dtdc_tracking_id or external_tracking_id
-        $trackingIdToUse = $dtdcTrackingId ?: $externalTrackingId;
-        
-        // Check if it's a DTDC tracking ID (starts with 'D' followed by numbers, or starts with '7D' followed by numbers)
-        $isDTDCTrackingId = preg_match('/^(D|7D)\d+$/', $trackingIdToUse);
-        
-        if ($isDTDCTrackingId) {
-            $dtdcTrackingData = getDTDCTracking($trackingIdToUse);
-            $dtdcEnabled = true; // Enable DTDC tracking for this order
-        }
-        ?>
-        
-        <!-- DTDC Live Tracking Section -->
-        <?php if ($dtdcEnabled && $trackingIdToUse): ?>
-            <div class="container mb-4">
-                <!-- <div class="alert alert-success d-flex align-items-center justify-content-between" style="border-radius: 8px;">
-                    <div>
-                        <i class="fas fa-shipping-fast me-2"></i>
-                        <strong>DTDC Live Tracking:</strong> Your shipment is being tracked in real time.
-                        <?php if ($dtdcTrackingData): ?>
-                            <br><small>Current Status: <strong><?php echo htmlspecialchars($dtdcTrackingData['status']); ?></strong></small>
-                        <?php endif; ?>
-                    </div>
-                    <div class="d-flex gap-2">
-                        <button onclick="refreshDTDCTracking('<?php echo $trackingIdToUse; ?>')" class="btn btn-outline-success btn-sm">
-                            <i class="fas fa-sync-alt"></i> Refresh
-                        </button>
-                        <button onclick="viewDTDCTrackingDetails('<?php echo $trackingIdToUse; ?>')" class="btn btn-success btn-sm">
-                            <i class="fas fa-truck"></i> View Details
-                        </button>
-                    </div>
-                </div> -->
-            </div>
-        <?php elseif ($order && $order['external_tracking_link']): ?>
-            <div class="container mb-4">
-                <div class="alert alert-info d-flex align-items-center justify-content-between" style="border-radius: 8px;">
-                    <div>
-                        <i class="fas fa-shipping-fast me-2"></i>
-                        <strong>Check Live Updates:</strong> You can track your shipment in real time.
-                    </div>
-                    <a href="<?php echo htmlspecialchars($order['external_tracking_link']); ?>" target="_blank" class="btn btn-primary ms-3">
-                        <i class="fas fa-external-link-alt"></i> Check Live Updates
-                    </a>
-                </div>
-            </div>
-        <?php endif; ?>
-        <!-- Order Found - Display Details -->
-        <div class="row">
-            <div class="col-lg-8">
-                <!-- Order Items -->
-                <div class="trackorder-card mb-4">
-                    <div class="card-header">
-                        <h5 class="mb-0">Order Items</h5>
-                    </div>
-                    <div class="card-body">
-                        <?php foreach ($orderItems as $item): ?>
-                            <div class="row mb-3 align-items-center">
-                                <div class="col-md-2">
-                                    <img src="./<?php echo $item['main_image']; ?>" alt="<?php echo $item['name']; ?>" class="img-fluid">
-                                </div>
-                                <div class="col-md-6">
-                                    <h6><a href="product.php?slug=<?php echo urlencode($item['slug']); ?>" target="_blank"><?php echo htmlspecialchars($item['name']); ?></a></h6>
-                                    <p class="text-muted">Quantity: <?php echo $item['quantity']; ?></p>
-                                </div>
-                                <div class="col-md-4">
-                                    <p><strong>HSN:</strong> <?php echo htmlspecialchars($item['hsn'] ?? ''); ?></p>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-                <!-- Order Status Timeline - Only show if no DTDC tracking -->
-                <?php if (!$dtdcEnabled || !$trackingIdToUse): ?>
-                <div class="trackorder-card mb-4">
-                    <div class="card-header">
-                        <h5 class="mb-0">Order Status</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="timeline">
-                            <?php foreach ($statusHistory as $index => $status): ?>
-                                <div class="timeline-item">
-                                    <div class="timeline-marker" style="background-color: <?php echo $status['status_color']; ?>"></div>
-                                    <div class="timeline-content">
-                                        <h6 class="mb-1"><?php echo htmlspecialchars($status['status_name']); ?></h6>
-                                        <p class="text-muted mb-1"><?php echo date('F j, Y g:i A', strtotime($status['created_at'])); ?></p>
-                                        <?php if ($status['status_description']): ?>
-                                            <p class="mb-0"><?php echo htmlspecialchars($status['status_description']); ?></p>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-                </div>
-                <?php endif; ?>
-                
-                <!-- DTDC Tracking Events Section -->
-                <?php if ($dtdcEnabled && $trackingIdToUse && $dtdcTrackingData): ?>
-                    <?php 
-                    // Get events from API response or database
-                    $dtdcEvents = $dtdcTrackingData['events'] ?? getDTDCTrackingEvents($order['id']); 
-                    
-                    // Reverse the events array to show latest updates first
-                    if (!empty($dtdcEvents)) {
-                        $dtdcEvents = array_reverse($dtdcEvents);
-                    }
-                    ?>
-                    <?php if (!empty($dtdcEvents)): ?>
-                        <div class="trackorder-card mb-4">
-                            <div class="card-header">
-                                <h5 class="mb-0">
-                                    <i class="fas fa-shipping-fast me-2"></i>Order Live Tracking Details
-                                    <button onclick="refreshDTDCTracking('<?php echo $trackingIdToUse; ?>')" class="btn btn-sm btn-outline-success float-end">
-                                        <i class="fas fa-sync-alt"></i> Refresh
-                                    </button>
-                                </h5>
-                                <div class="mt-2">
-                                    <small class="text-muted">
-                                        <i class="fas fa-info-circle me-1"></i>
-                                        Real-time tracking powered by DTDC • Tracking ID: <strong><?php echo htmlspecialchars($trackingIdToUse); ?></strong>
-                                        <?php if ($dtdcTrackingData && isset($dtdcTrackingData['current_location'])): ?>
-                                            • Current Location: <strong><?php echo htmlspecialchars($dtdcTrackingData['current_location']); ?></strong>
-                                        <?php endif; ?>
-                                    </small>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <div class="timeline">
-                                    <?php foreach ($dtdcEvents as $event): ?>
-                                        <div class="timeline-item">
-                                            <div class="timeline-marker" style="background-color: #28a745;"></div>
-                                            <div class="timeline-content">
-                                                <h6 class="mb-1"><?php echo htmlspecialchars($event['status'] ?? $event['event_status'] ?? 'Status Update'); ?></h6>
-                                                <p class="text-muted mb-1">
-                                                    <?php 
-                                                    if (isset($event['event_date'])) {
-                                                        echo date('F j, Y g:i A', strtotime($event['event_date']));
-                                                    } elseif (isset($event['date']) && isset($event['time'])) {
-                                                        echo date('F j, Y g:i A', strtotime($event['date'] . ' ' . $event['time']));
-                                                    } else {
-                                                        echo 'Recent';
-                                                    }
-                                                    ?>
-                                                </p>
-                                                <?php if ($event['location'] ?? $event['event_location']): ?>
-                                                    <p class="mb-1"><i class="fas fa-map-marker-alt me-1"></i><?php echo htmlspecialchars($event['location'] ?? $event['event_location']); ?></p>
-                                                <?php endif; ?>
-                                                <?php if ($event['description'] ?? $event['event_description']): ?>
-                                                    <p class="mb-0"><?php echo htmlspecialchars($event['description'] ?? $event['event_description']); ?></p>
-                                                <?php endif; ?>
-                                            </div>
-                                        </div>
-                                    <?php endforeach; ?>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endif; ?>
-                <?php endif; ?>
-            </div>
-
-            <div class="col-lg-4">
-                <!-- Order Summary -->
-                <div class="trackorder-card mb-4">
-                    <div class="card-header d-flex align-items-center">
-                        <h5 class="mb-0">Order Summary</h5>
-                        <span title="These are the official order values as confirmed at checkout." style="margin-left:8px; color:#007bff; cursor:help;"><i class="fas fa-info-circle"></i></span>
-                    </div>
-                    <div class="card-body">
-                        <p><strong>Order ID:</strong> #<?php echo $order['id']; ?></p>
-                        <p><strong>Tracking ID:</strong> <?php echo $order['tracking_id']; ?></p>
-                        <p><strong>Order Date:</strong> <?php echo date('F j, Y', strtotime($order['created_at'])); ?></p>
-                        <p><strong>Current Status:</strong> 
-                            <span class="badge" style="background-color: <?php echo $order['status_color']; ?>">
-                                <?php echo $order['status_name']; ?>
-                            </span>
-                        </p>
-                        <p><strong>Subtotal:</strong> ₹<?php echo number_format($order['subtotal'], 0); ?></p>
-                        <?php if (!empty($order['shipping_charge'])): ?>
-                            <p><strong>Shipping:</strong> ₹<?php echo number_format($order['shipping_charge'], 0); ?></p>
-                        <?php endif; ?>
-                        <!-- GST is already included in the selling prices -->
-                        <?php 
-                        $total_savings = 0;
-                        foreach ($orderItems as $item) {
-                            if (isset($item['mrp']) && isset($item['selling_price'])) {
-                                $total_savings += ($item['mrp'] - $item['selling_price']) * $item['quantity'];
-                            }
-                        }
-                        ?>
-                        <p class="text-success"><strong>Total Savings:</strong> ₹<?php echo number_format($total_savings, 0); ?></p>
-                        <p><strong>Total Amount:</strong> ₹<?php echo number_format($order['total_amount'], 0); ?></p>
-                        <?php if ($order['estimated_delivery_date']): ?>
-                            <p><strong>Estimated Delivery:</strong> <?php echo date('F j, Y', strtotime($order['estimated_delivery_date'])); ?></p>
-                        <?php endif; ?>
-                        <?php if ($order['external_tracking_link']): ?>
-                            <p><strong>External Tracking:</strong> 
-                                <a href="<?php echo htmlspecialchars($order['external_tracking_link']); ?>" target="_blank" class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-external-link-alt"></i> Track on Courier Site
-                                </a>
-                            </p>
-                        <?php endif; ?>
-                    </div>
-                    <div class="px-3 pb-3"><small class="text-muted"><i class="fas fa-info-circle"></i> All amounts are as per your order confirmation at checkout.</small></div>
-                </div>
-
-                <!-- Delivery Address -->
-                <div class="trackorder-card mb-4">
-                    <div class="card-header">
-                        <h5 class="mb-0">Delivery Address</h5>
-                    </div>
-                    <div class="card-body">
-                        <p><strong><?php echo htmlspecialchars($order['address_name']); ?></strong></p>
-                        <p><?php echo htmlspecialchars($order['address_line1']); ?></p>
-                        <?php if ($order['address_line2']): ?>
-                            <p><?php echo htmlspecialchars($order['address_line2']); ?></p>
-                        <?php endif; ?>
-                        <p><?php echo htmlspecialchars($order['city'] . ', ' . $order['state'] . ' - ' . $order['pincode']); ?></p>
-                        <p>Phone: <?php echo htmlspecialchars($order['address_phone']); ?></p>
-                    </div>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="d-grid gap-2">
-                    <?php if (isLoggedIn() && $order['user_id'] == $_SESSION['user_id']): ?>
-                        <a href="myaccount.php" class="btn btn-outline-primary">
-                            <i class="fas fa-user"></i> My Account
-                        </a>
-                    <?php endif; ?>
-                    <a href="index.php" class="btn btn-outline-secondary">
-                        <i class="fas fa-home"></i> Continue Shopping
-                    </a>
-                </div>
-            </div>
-        </div>
-    <?php endif; ?>
-</div>
-
 <style>
-.timeline {
+:root {
+    --primary-color: #007bff;
+    --success-color: #28a745;
+    --card-border-radius: 12px;
+}
+
+.track-order-wrapper {
+    background-color: #f8f9fb;
+    min-height: 100vh;
+    padding-bottom: 50px;
+    width: 100% !important;
+}
+
+.track-main-container {
+    width: 100% !important;
+    max-width: 1300px !important;
+    margin: 0 auto !important;
+    padding: 20px 15px;
+    box-sizing: border-box;
+}
+
+.section-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 25px;
+    color: #2d3748;
+}
+
+/* Base card styles */
+.track-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: var(--card-border-radius);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    margin-bottom: 24px;
+    overflow: hidden;
+    width: 100% !important;
+}
+
+/* Product Card with Blue Bar */
+.product-item-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+}
+
+.product-card-blue-bar {
+    background: #007bff;
+    color: #fff;
+    padding: 6px 15px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.product-row-inner {
+    display: flex;
+    padding: 12px 20px;
+}
+
+.product-img-wrapper {
+    width: 100px;
+    min-width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #f0f4f8;
+    border-radius: 10px;
+    background: #fff;
+    padding: 8px;
+}
+
+.product-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.product-info {
+    flex-grow: 1;
+    padding-left: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.product-price-desktop {
+    width: 160px;
+    min-width: 160px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: #007bff;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 767.98px) {
+    .product-row-inner {
+        padding: 10px !important;
+        gap: 12px !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: flex-start !important;
+    }
+
+    .product-img-wrapper {
+        width: 65px !important;
+        height: 65px !important;
+        min-width: 65px !important;
+    }
+
+    .product-info {
+        padding-left: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        flex: 1 !important;
+    }
+
+    .product-info h5 {
+        font-size: 11px !important;
+        line-height: 1.3 !important;
+        margin-bottom: 5px !important;
+        width: 100% !important;
+        display: block !important;
+        float: none !important;
+    }
+
+    .product-details-line-mobile {
+        display: block !important;
+        width: 100% !important;
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        color: #1a202c !important;
+        float: none !important;
+        margin-top: 0 !important;
+    }
+
+    .qty-info {
+        color: #718096 !important;
+        font-weight: 600 !important;
+        font-size: 10px !important;
+        margin-left: 5px !important;
+    }
+
+    /* Section Headers to 11px */
+    .sidebar-title, 
+    .track-card h6,
+    .address-title {
+        font-size: 11px !important;
+        font-weight: 800 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+    }
+
+    .section-title {
+        font-size: 1.2rem !important;
+    }
+
+    .track-card h1 {
+        font-size: 1.3rem !important;
+    }
+
+    /* General text in summary cards to 11px */
+    .track-card .small, 
+    .track-card .extra-small,
+    .track-card span,
+    .track-card div:not(.sidebar-title):not(h1):not(h4) {
+        font-size: 11px !important;
+    }
+
+    .track-card .fs-4 {
+        font-size: 1.2rem !important; /* Keep final amount slightly prominent */
+    }
+}
+
+/* Stepper & Timeline */
+.stepper-wrapper {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    max-width: 1100px;
+    margin: 30px auto 10px;
+}
+
+.stepper-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 24px;
+    left: 50px;
+    right: 50px;
+    height: 4px;
+    background: #f0f4f8;
+}
+
+.stepper-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    z-index: 1;
+}
+
+.step-counter {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #fff;
+    border: 3px solid #f0f4f8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #cbd5e0;
+}
+
+.stepper-item.completed .step-counter {
+    background: #28a745;
+    border-color: #28a745;
+    color: #fff;
+}
+
+.detailed-timeline {
     position: relative;
     padding-left: 30px;
 }
 
-.trackorder-card{
-    width: 100%;
-    min-width: 270px;
-}
-
-.timeline::before {
+.detailed-timeline::before {
     content: '';
     position: absolute;
-    left: 15px;
-    top: 0;
-    bottom: 0;
+    left: 10px;
+    top: 5px;
+    bottom: 5px;
     width: 2px;
-    background-color: #e9ecef;
+    background: #f0f4f8;
 }
 
-.timeline-item {
+.detailed-timeline-item {
     position: relative;
-    margin-bottom: 30px;
+    padding-bottom: 25px;
 }
 
-.timeline-marker {
+.time-marker {
     position: absolute;
-    left: -22px;
-    top: 0;
-    width: 12px;
-    height: 12px;
+    left: -25px;
+    top: 5px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
-    border: 2px solid #fff;
-    box-shadow: 0 0 0 2px #e9ecef;
-}
-
-.timeline-content {
-    background-color: #f8f9fa;
-    padding: 15px;
-    border-radius: 8px;
-    margin-left: 10px;
-}
-
-.timeline-item:first-child .timeline-content {
-    background-color: #e3f2fd;
-    border-left: 4px solid #2196f3;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 2px #f0f4f8;
 }
 </style>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  var trackingInput = document.querySelector('input[name="tracking_id"]');
-  if (trackingInput && trackingInput.value) {
-    trackingInput.form && trackingInput.form.classList.add('d-none'); // Hide form if tracking_id is present
-  }
-  // Copy tracking ID button
-  var copyBtn = document.getElementById('copyTrackingIdBtn');
-  if (copyBtn) {
-    copyBtn.onclick = function() {
-      var tid = document.getElementById('trackingIdText');
-      if (tid) {
-        navigator.clipboard.writeText(tid.textContent);
-        copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
-        setTimeout(function(){ copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy'; }, 1500);
-      }
-    };
-  }
-});
-
-// ==================== DTDC TRACKING FUNCTIONS ====================
-
-/**
- * Refresh DTDC tracking data
- */
-function refreshDTDCTracking(trackingId) {
-    // Show loading indicator
-    const refreshBtn = event.target.closest('button');
-    const originalContent = refreshBtn.innerHTML;
-    refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
-    refreshBtn.disabled = true;
-
-    fetch('ajax/dtdc_tracking.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `action=track_shipment&tracking_id=${trackingId}`
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Reload the page to show updated tracking data
-            location.reload();
-        } else {
-            alert('Error refreshing tracking data: ' + (data.message || 'Unknown error'));
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error refreshing tracking data. Please try again.');
-    })
-    .finally(() => {
-        // Restore button state
-        refreshBtn.innerHTML = originalContent;
-        refreshBtn.disabled = false;
-    });
-}
-
-/**
- * View DTDC tracking details in a modal
- */
-function viewDTDCTrackingDetails(trackingId) {
-    // Show loading
-    const modal = document.createElement('div');
-    modal.innerHTML = `
-        <div class="modal fade" id="dtdcTrackingModal" tabindex="-1">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Order Live Tracking Details</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="text-center">
-                            <i class="fas fa-spinner fa-spin fa-2x"></i>
-                            <p>Loading tracking details...</p>
-                        </div>
-                    </div>
+<div class="track-order-wrapper">
+    <div class="track-main-container">
+        <!-- Search -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h3 class="section-title">Track Your Order</h3>
+                <div class="track-order-search-box" style="max-width: 550px;">
+                    <form method="GET" action="track_order.php" class="d-flex gap-2">
+                        <input type="text" class="form-control" name="tracking_id" placeholder="Enter Tracking ID" value="<?php echo htmlspecialchars($trackingId); ?>" required>
+                        <button class="btn btn-primary px-4 fw-bold" type="submit">Track Status</button>
+                    </form>
                 </div>
             </div>
         </div>
-    `;
-    document.body.appendChild(modal);
-    
-    const bsModal = new bootstrap.Modal(modal.querySelector('#dtdcTrackingModal'));
-    bsModal.show();
 
-    fetch('ajax/dtdc_tracking.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `action=track_shipment&tracking_id=${trackingId}`
-    })
-    .then(response => response.json())
-    .then(data => {
-        const modalBody = modal.querySelector('.modal-body');
-        
-        if (data.success) {
-            let html = `
-                <div class="row">
-                    <div class="col-md-6">
-                        <p><strong>Tracking ID:</strong> ${data.data.tracking_id}</p>
-                        <p><strong>Status:</strong> <span class="badge bg-success">${data.data.status}</span></p>
-                        <p><strong>Current Location:</strong> ${data.data.current_location || 'N/A'}</p>
+        <?php if ($trackingId && !$order): ?>
+            <div class="track-card p-5 text-center">
+                <i class="fas fa-search-minus fa-4x mb-4 text-muted opacity-25"></i>
+                <h4 class="fw-bold">No Order Found</h4>
+                <p class="text-muted">No order matches the tracking ID "<?php echo htmlspecialchars($trackingId); ?>".</p>
+                <a href="index.php" class="btn btn-primary rounded-pill px-4 mt-3">Back to Store</a>
+            </div>
+        <?php elseif ($order): ?>
+            <?php 
+            $currentStatus = strtolower($order['status_name'] ?? '');
+            $step = 1;
+            if (in_array($currentStatus, ['packed'])) $step = 2;
+            if (in_array($currentStatus, ['shipped', 'out_for_delivery', 'dispatched'])) $step = 3;
+            if (in_array($currentStatus, ['delivered'])) $step = 4;
+            if (in_array($currentStatus, ['cancelled', 'returned'])) $step = -1;
+            ?>
+
+            <!-- Top Summary -->
+            <div class="track-card p-4 p-md-5 mb-4">
+                <div class="row align-items-center">
+                    <div class="col-md-7">
+                        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 mb-3 fw-bold rounded-pill" style="font-size: 0.75rem;">ORDER STATUS TRACKER</span>
+                        <h1 class="fw-bold mb-3" style="font-size: clamp(1.3rem, 4vw, 2.1rem);">Order #<?php echo htmlspecialchars($order['tracking_id'] ?? $order['id']); ?></h1>
+                        <div class="d-flex flex-wrap gap-4 text-muted" style="font-size: 0.9rem;">
+                            <span><i class="far fa-calendar-alt me-2 text-primary"></i> <?php echo date('M j, Y', strtotime($order['created_at'])); ?></span>
+                            <span><i class="fas fa-wallet me-2 text-primary"></i> <?php echo strtoupper($order['payment_method']); ?></span>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <p><strong>Delivery Date:</strong> ${data.data.delivery_date || 'N/A'}</p>
-                        <p><strong>Delivered To:</strong> ${data.data.delivered_to || 'N/A'}</p>
+                    <div class="col-md-5 text-md-end mt-4 mt-md-0">
+                        <div class="d-inline-block p-3 rounded-4 bg-light border text-center" style="min-width: 180px;">
+                            <div class="small fw-bold text-muted text-uppercase mb-1" style="font-size: 10px;">Status</div>
+                            <div class="fw-bold fs-5" style="color: <?php echo $order['status_color']; ?>;"><?php echo $order['status_name']; ?></div>
+                        </div>
+                        <div class="mt-3">
+                            <a href="download_invoice.php?order_id=<?php echo $order['id']; ?>" class="btn btn-dark rounded-pill px-4" target="_blank">
+                                <i class="fas fa-file-invoice me-2"></i>Invoice
+                            </a>
+                        </div>
                     </div>
                 </div>
-            `;
-            
-            if (data.data.events && data.data.events.length > 0) {
-                html += `
-                    <hr>
-                    <h6>Tracking Events</h6>
-                    <div class="timeline">
-                `;
-                
-                // Reverse events to show latest first
-                data.data.events.reverse().forEach(event => {
-                    html += `
-                        <div class="timeline-item">
-                            <div class="timeline-marker" style="background-color: #28a745;"></div>
-                            <div class="timeline-content">
-                                <h6 class="mb-1">${event.status || 'Status Update'}</h6>
-                                <p class="text-muted mb-1">${event.date} ${event.time}</p>
-                                ${event.location ? `<p class="mb-1"><i class="fas fa-map-marker-alt me-1"></i>${event.location}</p>` : ''}
-                                ${event.description ? `<p class="mb-0">${event.description}</p>` : ''}
+
+                <?php if ($step != -1): ?>
+                <div class="stepper-wrapper mt-5 pt-3">
+                    <div class="stepper-item <?php echo $step >= 1 ? 'completed' : ''; ?>">
+                        <div class="step-counter"><?php echo $step >= 1 ? '<i class="fas fa-check"></i>' : '1'; ?></div>
+                        <div class="step-name small">Placed</div>
+                    </div>
+                    <div class="stepper-item <?php echo $step >= 2 ? 'completed' : ($step == 1 ? 'active' : ''); ?>">
+                        <div class="step-counter"><?php echo $step > 2 ? '<i class="fas fa-check"></i>' : '2'; ?></div>
+                        <div class="step-name small">Packed</div>
+                    </div>
+                    <div class="stepper-item <?php echo $step >= 3 ? 'completed' : ($step == 2 ? 'active' : ''); ?>">
+                        <div class="step-counter"><?php echo $step > 3 ? '<i class="fas fa-check"></i>' : '3'; ?></div>
+                        <div class="step-name small">Shipped</div>
+                    </div>
+                    <div class="stepper-item <?php echo $step >= 4 ? 'completed' : ($step == 3 ? 'active' : ''); ?>">
+                        <div class="step-counter"><?php echo $step == 4 ? '<i class="fas fa-check"></i>' : '4'; ?></div>
+                        <div class="step-name small">Delivered</div>
+                    </div>
+                </div>
+                <?php else: ?>
+                <div class="alert alert-danger mt-5 mb-0 rounded-4 border p-4 text-center">
+                    <i class="fas fa-exclamation-circle me-2"></i> This order status is <strong><?php echo $order['status_name']; ?></strong>.
+                </div>
+                <?php endif; ?>
+            </div>
+
+            <div class="row g-4 mb-5">
+                <!-- Products -->
+                <div class="col-lg-8">
+                    <h4 class="sidebar-title ms-1">Product Details</h4>
+                    <div class="products-list mb-5">
+                        <?php foreach ($orderItems as $item): ?>
+                        <div class="product-item-card">
+                            <div class="product-card-blue-bar">ITEM DETAILS</div>
+                            <div class="product-row-inner">
+                                <div class="product-img-wrapper">
+                                    <img src="./<?php echo $item['main_image']; ?>" class="product-img" onerror="this.src='./uploads/products/blank-img.webp';">
+                                </div>
+                                <div class="product-info">
+                                    <h5 class="fw-bold"><?php echo htmlspecialchars($item['name']); ?></h5>
+                                    
+                                    <div class="product-details-line-mobile d-md-none">
+                                        ₹<?php echo number_format($item['price'] * $item['quantity'], 0); ?>
+                                        <span class="qty-info">(₹<?php echo number_format($item['price'], 0); ?> x <?php echo $item['quantity']; ?>)</span>
+                                    </div>
+
+                                    <div class="d-none d-md-block text-muted small mt-1">
+                                        ₹<?php echo number_format($item['price'], 0); ?> x <?php echo $item['quantity']; ?>
+                                    </div>
+                                </div>
+                                <div class="product-price-desktop d-none d-md-flex">
+                                    ₹<?php echo number_format($item['price'] * $item['quantity'], 0); ?>
+                                </div>
                             </div>
                         </div>
-                    `;
-                });
-                
-                html += '</div>';
-            }
-            
-            modalBody.innerHTML = html;
-        } else {
-            modalBody.innerHTML = `
-                <div class="alert alert-danger">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    Error: ${data.message || 'Failed to fetch tracking details'}
+                        <?php endforeach; ?>
+                    </div>
+
+                    <h4 class="sidebar-title ms-1">Tracking History</h4>
+                    <div class="track-card p-4 p-md-5 border-0 shadow-sm">
+                        <div class="detailed-timeline">
+                            <?php foreach ($statusHistory as $status): ?>
+                            <div class="detailed-timeline-item">
+                                <div class="time-marker" style="background-color: <?php echo $status['status_color'] ?: '#007bff'; ?>;"></div>
+                                <div class="ps-3 ps-md-4">
+                                    <div class="fw-bold fs-6 mb-1"><?php echo htmlspecialchars($status['status_name']); ?></div>
+                                    <div class="text-muted small mb-2"><i class="far fa-clock me-1"></i> <?php echo date('M j, Y - g:i A', strtotime($status['created_at'])); ?></div>
+                                    <?php if ($status['status_description']): ?>
+                                        <p class="mb-0 small text-muted lh-sm"><?php echo htmlspecialchars($status['status_description']); ?></p>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
                 </div>
-            `;
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        const modalBody = modal.querySelector('.modal-body');
-        modalBody.innerHTML = `
-            <div class="alert alert-danger">
-                <i class="fas fa-exclamation-triangle"></i>
-                Error loading tracking details. Please try again.
+
+                <!-- Sidebar Summary -->
+                <div class="col-lg-4">
+                    <h4 class="sidebar-title">Order Details</h4>
+                    <div class="track-card border-0 shadow-sm mb-4">
+                        <div class="bg-primary bg-opacity-10 p-2 border-bottom text-primary fw-bold text-center address-title">
+                            <i class="fas fa-truck me-2"></i> Shipping Address
+                        </div>
+                        <div class="card-body p-3">
+                            <h6 class="mb-3 fw-bold extra-small text-uppercase text-muted letter-spacing-1">Shipping Address</h6>
+                            <?php if (!empty($order['address_name']) || !empty($order['shipping_address'])): ?>
+                                <?php if (!empty($order['address_name'])): ?>
+                                    <div class="fw-bold mb-1 small"><?php echo htmlspecialchars($order['address_name']); ?></div>
+                                    <div class="text-muted extra-small mb-3">
+                                        <?php echo htmlspecialchars($order['address_line1']); ?><br>
+                                        <?php if (!empty($order['address_line2'])) echo htmlspecialchars($order['address_line2']) . '<br>'; ?>
+                                        <?php echo htmlspecialchars($order['city'] . ', ' . $order['state'] . ' - ' . $order['pincode']); ?>
+                                    </div>
+                                    <div class="bg-light p-2 rounded-3 border-start border-primary border-4">
+                                        <span class="extra-small text-muted d-block mb-1">Mobile</span>
+                                        <div class="fw-bold small"><?php echo htmlspecialchars($order['address_phone']); ?></div>
+                                    </div>
+                                <?php else: ?>
+                                    <!-- Fallback to snapshotted address -->
+                                    <div class="text-muted extra-small mb-3" style="white-space: pre-line;">
+                                        <?php echo htmlspecialchars($order['shipping_address']); ?>
+                                    </div>
+                                <?php endif; ?>
+                            <?php else: ?>
+                                <div class="text-muted extra-small">Address details not available for this order.</div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <div class="track-card p-4 border-0 shadow-sm mb-4">
+                        <h6 class="fw-bold mb-4 small">Billing Summary</h6>
+                        <div class="d-flex justify-content-between mb-2 extra-small text-muted">
+                            <span>Subtotal</span>
+                            <span class="fw-bold text-dark">₹<?php echo number_format($order['subtotal'] ?? 0, 0); ?></span>
+                        </div>
+                        <?php if (!empty($order['shipping_charge'])): ?>
+                        <div class="d-flex justify-content-between mb-2 extra-small text-muted">
+                            <span>Shipping</span>
+                            <span class="fw-bold text-dark">₹<?php echo number_format($order['shipping_charge'], 0); ?></span>
+                        </div>
+                        <?php endif; ?>
+                        <div class="d-flex justify-content-between mb-0 extra-small text-success">
+                            <span>Total Savings</span>
+                            <span class="fw-bold">-₹<?php 
+                                $savings = 0;
+                                foreach($orderItems as $it) {
+                                    if(isset($it['mrp']) && isset($it['selling_price'])) $savings += ($it['mrp'] - $it['selling_price']) * $it['quantity'];
+                                }
+                                echo number_format($savings, 0);
+                            ?></span>
+                        </div>
+                        <hr class="my-3 border-dashed">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold small">Net Amount</span>
+                            <span class="fw-bold text-primary fs-4">₹<?php echo number_format($order['total_amount'], 0); ?></span>
+                        </div>
+                    </div>
+
+                    <div class="track-card p-3 text-center bg-white border-0 shadow-sm">
+                        <h6 class="fw-bold mb-2 small">Need Assistance?</h6>
+                        <p class="extra-small text-muted mb-3">Our support team is here.</p>
+                        <a href="tel:+918780406230" class="btn btn-outline-primary w-100 rounded-pill mb-2 fw-bold extra-small py-2">
+                            <i class="fas fa-phone-alt me-2"></i>+91 878 040 6230
+                        </a>
+                        <a href="mailto:info@everythingb2c.in" class="btn btn-outline-primary w-100 rounded-pill fw-bold extra-small py-2">
+                            <i class="fas fa-envelope me-2"></i>info@everythingb2c.in
+                        </a>
+                    </div>
+                </div>
             </div>
-        `;
-    });
+        <?php endif; ?>
+    </div>
+</div>
 
-    // Clean up modal when closed
-    modal.addEventListener('hidden.bs.modal', () => {
-        document.body.removeChild(modal);
-    });
-}
-</script>
-
-<?php include 'includes/footer.php'; ?> 
+<?php include 'includes/footer.php'; ?>

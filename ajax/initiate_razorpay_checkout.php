@@ -64,7 +64,12 @@ $trackingId = generateTrackingId();
 try {
     global $pdo;
     $pdo->beginTransaction();
-    $stmt = $pdo->prepare("INSERT INTO orders (user_id, address_id, order_number, tracking_id, total_amount, subtotal, gst_amount, shipping_charge, payment_method, gst_number, order_status_id, payment_status, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 'pending', 'pending', NOW())");
+    $shippingAddressText = $selectedAddress['name'] . "\n" . 
+                           $selectedAddress['address_line1'] . ($selectedAddress['address_line2'] ? "\n" . $selectedAddress['address_line2'] : "") . "\n" . 
+                           $selectedAddress['city'] . ", " . $selectedAddress['state'] . " - " . $selectedAddress['pincode'] . "\n" . 
+                           "Phone: " . $selectedAddress['phone'];
+
+    $stmt = $pdo->prepare("INSERT INTO orders (user_id, address_id, order_number, tracking_id, total_amount, subtotal, gst_amount, shipping_charge, payment_method, gst_number, order_status_id, payment_status, status, created_at, shipping_address, billing_city, billing_state, billing_pincode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 'pending', 'pending', NOW(), ?, ?, ?, ?)");
     $stmt->execute([
         $userId,
         $addressId,
@@ -75,7 +80,11 @@ try {
         $orderTotals['gst_amount'],
         $orderTotals['shipping_charge'],
         'razorpay',
-        $gstNumber
+        $gstNumber,
+        $shippingAddressText,
+        $selectedAddress['city'],
+        $selectedAddress['state'],
+        $selectedAddress['pincode']
     ]);
     $tempOrderId = $pdo->lastInsertId();
     // Insert order items (use correct columns)

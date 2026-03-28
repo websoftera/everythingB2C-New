@@ -1,5 +1,6 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) session_start();
+if (session_status() === PHP_SESSION_NONE)
+    session_start();
 require_once 'includes/functions.php';
 
 // Handle logout BEFORE any output
@@ -21,22 +22,24 @@ $user = getCurrentUser();
 if (isset($_POST['change_password'])) {
     $currentPassword = $_POST['current_password'];
     $newPassword = $_POST['new_password'];
-    
+
     // Verify current password first
     $stmt = $pdo->prepare("SELECT password FROM users WHERE id = ?");
     $stmt->execute([$userId]);
     $userRecord = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
     if ($userRecord && password_verify($currentPassword, $userRecord['password'])) {
         // Hash new password and update
         $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
         $updateStmt = $pdo->prepare("UPDATE users SET password = ? WHERE id = ?");
         if ($updateStmt->execute([$hashedPassword, $userId])) {
             $password_message = "Password successfully updated!";
-        } else {
+        }
+        else {
             $password_message = "Error updating password. Please try again.";
         }
-    } else {
+    }
+    else {
         $password_message = "Current password is incorrect.";
     }
 }
@@ -66,7 +69,8 @@ if (isset($_POST['add_address'])) {
         'is_default' => isset($_POST['is_default']) ? 1 : 0
     ];
     addUserAddress($userId, $data);
-    if ($data['is_default']) setDefaultAddress($userId, $pdo->lastInsertId());
+    if ($data['is_default'])
+        setDefaultAddress($userId, $pdo->lastInsertId());
     header('Location: myaccount.php#addresses');
     exit;
 }
@@ -84,7 +88,8 @@ if (isset($_POST['edit_address'])) {
         'is_default' => isset($_POST['is_default']) ? 1 : 0
     ];
     updateUserAddress($userId, $addressId, $data);
-    if ($data['is_default']) setDefaultAddress($userId, $addressId);
+    if ($data['is_default'])
+        setDefaultAddress($userId, $addressId);
     header('Location: myaccount.php#addresses');
     exit;
 }
@@ -100,7 +105,8 @@ $userAddresses = getUserAddresses($userId);
 
 // Wishlist Pagination setup for myaccount.php
 $wishlistPage = isset($_GET['wishlist_page']) ? (int)$_GET['wishlist_page'] : 1;
-if ($wishlistPage < 1) $wishlistPage = 1;
+if ($wishlistPage < 1)
+    $wishlistPage = 1;
 $wishlistLimit = 6;
 $wishlistOffset = ($wishlistPage - 1) * $wishlistLimit;
 
@@ -333,11 +339,31 @@ echo renderBreadcrumb($breadcrumbs);
   text-align: center;
   border: 1px solid #ddd;
   border-radius: 6px;
-  padding: 15px;
   background: #fff;
   transition: box-shadow 0.3s ease;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.wishlist-blue-bar {
+  background: #007bff;
+  color: #fff;
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.wishlist-item-content {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   justify-content: space-between;
 }
 
@@ -399,7 +425,16 @@ echo renderBreadcrumb($breadcrumbs);
 }
 
 .account-wrapper .btn:hover {
-  background: #0056b3;
+  background: #007bff;
+}
+
+.account-wrapper .btn-success {
+  background: #007bff !important;
+  border: none !important;
+}
+
+.account-wrapper .btn-success:hover {
+  background: #007bff !important;
 }
 
 .account-wrapper .btn.small {
@@ -427,6 +462,134 @@ echo renderBreadcrumb($breadcrumbs);
 
 
 
+
+/* Mobile Order Item Cards */
+@media (max-width: 767.98px) {
+    .account-order-card {
+        padding: 12px !important;
+    }
+    .order-header-mobile {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+    .order-actions-mobile {
+        width: 100% !important;
+        display: flex !important;
+        gap: 8px !important;
+        margin-top: 10px !important;
+    }
+    .order-actions-mobile .btn {
+        flex: 1 !important;
+        text-align: center !important;
+        font-size: 0.85rem !important;
+    }
+    .order-item-mobile-card {
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        background: #fff;
+        display: flex;
+        flex-direction: column; /* Stack blue bar and content */
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .order-item-blue-bar {
+        background: #007bff;
+        color: #fff;
+        padding: 4px 8px;
+        font-size: 11px;
+        font-weight: 700;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+    }
+    .order-item-mobile-content {
+        display: flex;
+        gap: 12px;
+        padding: 10px;
+        align-items: center;
+    }
+    .order-item-mobile-card img {
+        width: 65px;
+        height: 65px;
+        object-fit: cover;
+        border-radius: 6px;
+        border: 1px solid #eee;
+    }
+    .order-item-mobile-info {
+        flex: 1;
+        min-width: 0;
+    }
+    .order-item-mobile-title {
+        font-weight: 600;
+        font-size: 0.92rem;
+        color: #222;
+        margin-bottom: 2px;
+        display: block;
+        text-decoration: none;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .order-item-mobile-meta {
+        font-size: 0.82rem;
+        color: #666;
+        margin-bottom: 4px;
+    }
+    .order-item-mobile-price-qty {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        font-size: 0.88rem;
+    }
+    .order-item-mobile-total {
+        font-weight: 700;
+        color: #222;
+    }
+    .mobile-order-summary-table {
+        max-width: 100% !important;
+        width: 100% !important;
+        float: none !important;
+        margin-top: 15px !important;
+    }
+    .breadcrumb-nav {
+        margin-bottom: 4px !important;
+    }
+    .account-wrapper {
+        margin-top: 4px !important;
+        gap: 4px !important;
+    }
+    .account-sidebar {
+        margin-bottom: 4px !important;
+    }
+    .account-card h3 {
+        font-size: 15px !important;
+    }
+    .account-card h5 {
+        font-size: 11px !important;
+        font-weight: 800 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+        margin-top: 20px !important;
+        margin-bottom: 4px !important;
+    }
+    .account-menu-item {
+        font-size: 13px !important;
+        padding: 10px 12px !important;
+    }
+    .account-card {
+        padding: 0px !important;
+        border: none !important;
+    }
+    .account-order-card h6 {
+        font-size: 11px !important;
+        font-weight: 700 !important;
+    }
+    .account-order-card p {
+        font-size: 11px !important;
+    }
+}
 </style>
 
 
@@ -490,15 +653,18 @@ echo renderBreadcrumb($breadcrumbs);
                                 </span>
                             </div>
                         </div>
-                    <?php endforeach; ?>
-                <?php else: ?>
+                    <?php
+    endforeach; ?>
+                <?php
+else: ?>
                     <div class="account-empty">
                         <i class="fas fa-shopping-bag"></i>
                         <h5>No orders yet</h5>
                         <p>Start shopping to see your orders here</p>
                         <a href="index.php" class="btn">Start Shopping</a>
                     </div>
-                <?php endif; ?>
+                <?php
+endif; ?>
             </div>
         </div>
 
@@ -509,14 +675,14 @@ echo renderBreadcrumb($breadcrumbs);
                 <?php if (!empty($userOrders)): ?>
                     <?php foreach ($userOrders as $order): ?>
                         <div class="account-order-card" style="flex-direction: column; align-items: stretch;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div class="order-header-mobile" style="display: flex; justify-content: space-between; align-items: center;">
                                 <div>
                                     <h6>Order #<?php echo htmlspecialchars($order['tracking_id'] ?? $order['order_number']); ?></h6>
                                     <p>₹<?php echo number_format($order['total_amount'], 0); ?> • <?php echo date('M d, Y', strtotime($order['created_at'])); ?></p>
                                     <p>Payment: <strong><?php echo strtoupper($order['payment_method'] ?? 'N/A'); ?></strong> • Status: <strong><?php echo ucfirst($order['payment_status'] ?? 'N/A'); ?></strong></p>
                                     <p>Order Status: <span class="badge" style="background-color: <?php echo $order['color'] ?? '#007bff'; ?>; color: #fff;"><?php echo $order['status_name'] ?? ucfirst($order['status']); ?></span></p>
                                 </div>
-                                <div>
+                                <div class="order-actions-mobile">
                                     <a href="track_order.php?tracking_id=<?php echo urlencode($order['tracking_id']); ?>" class="btn small">Track Order</a>
                                     <a href="download_invoice.php?order_id=<?php echo $order['id']; ?>" class="btn small btn-success" target="_blank">Download Invoice</a>
                                 </div>
@@ -524,52 +690,90 @@ echo renderBreadcrumb($breadcrumbs);
                             <!-- Product Details for this order -->
                             <?php $orderItems = getOrderItems($order['id']); ?>
                             <div style="margin-top: 10px;">
-                                <table class="table table-sm table-bordered" style="background: #fafbfc;">
-                                    <thead>
-                                        <tr>
-                                            <th>Product</th>
-                                            <th>SKU</th>
-                                            <th>HSN</th>
-                                            <th>Qty</th>
-                                            <th>Price</th>
-                                            <th>Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php foreach (
-                                            $orderItems as $item): ?>
+                                <!-- Desktop Table View -->
+                                <div class="d-none d-md-block">
+                                    <table class="table table-sm table-bordered" style="background: #fafbfc;">
+                                        <thead>
                                             <tr>
-                                                <td>
-                                                    <img src="<?php echo htmlspecialchars($item['main_image']); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" style="height:32px;width:32px;object-fit:cover;margin-right:8px;">
-                                                    <a href="product.php?slug=<?php echo htmlspecialchars($item['slug']); ?>" target="_blank"><?php echo htmlspecialchars($item['name']); ?></a>
-                                                </td>
-                                                <td><?php echo htmlspecialchars($item['sku']); ?></td>
-                                                <td><?php echo htmlspecialchars($item['hsn'] ?? ''); ?></td>
-                                                <td><?php echo $item['quantity']; ?></td>
-                                                <td>₹<?php echo number_format($item['price'], 0); ?></td>
-                                                <td>₹<?php echo number_format($item['price'] * $item['quantity'], 0); ?></td>
+                                                <th>Product</th>
+                                                <th>SKU</th>
+                                                <th>HSN</th>
+                                                <th>Qty</th>
+                                                <th>Price</th>
+                                                <th>Total</th>
                                             </tr>
-                                        <?php endforeach; ?>
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($orderItems as $item): ?>
+                                                <tr>
+                                                    <td>
+                                                        <img src="<?php echo htmlspecialchars($item['main_image'] ? $item['main_image'] : './uploads/products/blank-img.webp'); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" style="height:32px;width:32px;object-fit:cover;margin-right:8px;" onerror="this.onerror=null; this.src='./uploads/products/blank-img.webp';">
+                                                        <a href="product.php?slug=<?php echo htmlspecialchars($item['slug']); ?>" target="_blank"><?php echo htmlspecialchars($item['name']); ?></a>
+                                                    </td>
+                                                    <td><?php echo htmlspecialchars($item['sku']); ?></td>
+                                                    <td><?php echo htmlspecialchars($item['hsn'] ?? ''); ?></td>
+                                                    <td><?php echo $item['quantity']; ?></td>
+                                                    <td>₹<?php echo number_format($item['price'], 0); ?></td>
+                                                    <td>₹<?php echo number_format($item['price'] * $item['quantity'], 0); ?></td>
+                                                </tr>
+                                            <?php
+        endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Mobile Card View -->
+                                <div class="d-md-none">
+                                    <?php foreach ($orderItems as $item):
+            $unit_price = $item['selling_price'] ?? $item['price'];
+            $item_savings = ($item['mrp'] - $unit_price) * $item['quantity'];
+            $item_percent = $item['mrp'] > 0 ? round((($item['mrp'] - $unit_price) / $item['mrp']) * 100) : 0;
+?>
+                                        <div class="order-item-mobile-card">
+                                            <?php if ($item_savings > 0): ?>
+                                                <div class="order-item-blue-bar">SAVE ₹<?php echo number_format($item_savings, 0); ?> (<?php echo $item_percent; ?>% OFF)</div>
+                                            <?php
+            endif; ?>
+                                            <div class="order-item-mobile-content">
+                                                <a href="product.php?slug=<?php echo htmlspecialchars($item['slug']); ?>">
+                                                    <img src="<?php echo htmlspecialchars($item['main_image'] ? $item['main_image'] : './uploads/products/blank-img.webp'); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" onerror="this.onerror=null; this.src='./uploads/products/blank-img.webp';">
+                                                </a>
+                                                <div class="order-item-mobile-info">
+                                                    <a href="product.php?slug=<?php echo htmlspecialchars($item['slug']); ?>" class="order-item-mobile-title"><?php echo htmlspecialchars($item['name']); ?></a>
+                                                    <div class="order-item-mobile-meta">
+                                                        SKU: <?php echo htmlspecialchars($item['sku']); ?> 
+                                                        <?php if (!empty($item['hsn'])): ?>| HSN: <?php echo htmlspecialchars($item['hsn']); ?><?php
+            endif; ?>
+                                                    </div>
+                                                    <div class="order-item-mobile-price-qty">
+                                                        <span>₹<?php echo number_format($item['price'], 0); ?> x <?php echo $item['quantity']; ?></span>
+                                                        <span class="order-item-mobile-total">₹<?php echo number_format($item['price'] * $item['quantity'], 0); ?></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <?php
+        endforeach; ?>
+                                </div>
                                 <div class="order-summary-note" style="font-size:0.95em;color:#888;margin-bottom:4px;">
                                     <i class="fas fa-info-circle" title="Order total includes shipping and taxes as shown below."></i>
                                     Product totals do not include shipping or taxes. See order summary below.
                                 </div>
-                                <?php 
-                                $total_savings = 0;
-                                foreach ($orderItems as $item) {
-                                    if (isset($item['mrp']) && isset($item['selling_price'])) {
-                                        $total_savings += ($item['mrp'] - $item['selling_price']) * $item['quantity'];
-                                    }
-                                }
-                                ?>
-                                <table class="table table-sm mb-0" style="max-width:350px;float:right;background:#f8f9fa;">
+                                <?php
+        $total_savings = 0;
+        foreach ($orderItems as $item) {
+            if (isset($item['mrp']) && isset($item['selling_price'])) {
+                $total_savings += ($item['mrp'] - $item['selling_price']) * $item['quantity'];
+            }
+        }
+?>
+                                <table class="table table-sm mb-0 mobile-order-summary-table" style="max-width:350px;float:right;background:#f8f9fa;">
                                     <tbody>
                                         <tr><td>Subtotal</td><td class="text-end">₹<?php echo number_format($order['subtotal'], 0); ?></td></tr>
                                         <?php if (!empty($order['shipping_charge'])): ?>
                                             <tr><td>Shipping</td><td class="text-end">₹<?php echo number_format($order['shipping_charge'], 0); ?></td></tr>
-                                        <?php endif; ?>
+                                        <?php
+        endif; ?>
                                         <!-- GST is included in the selling price -->
                                         <tr><td class="text-success">Total Savings</td><td class="text-end text-success">₹<?php echo number_format($total_savings, 0); ?></td></tr>
                                         <tr class="fw-bold"><td>Total Paid</td><td class="text-end">₹<?php echo number_format($order['total_amount'], 0); ?></td></tr>
@@ -578,15 +782,18 @@ echo renderBreadcrumb($breadcrumbs);
                                 <div style="clear:both;"></div>
                             </div>
                         </div>
-                    <?php endforeach; ?>
-                <?php else: ?>
+                    <?php
+    endforeach; ?>
+                <?php
+else: ?>
                     <div class="account-empty">
                         <i class="fas fa-shopping-bag"></i>
                         <h5>No orders yet</h5>
                         <p>Start shopping to see your orders here</p>
                         <a href="index.php" class="btn">Start Shopping</a>
                     </div>
-                <?php endif; ?>
+                <?php
+endif; ?>
             </div>
         </div>
 
@@ -636,13 +843,15 @@ echo renderBreadcrumb($breadcrumbs);
                             <div class="account-address-card">
                                 <?php if ($address['is_default']): ?>
                                     <span class="default-badge">Default</span>
-                                <?php endif; ?>
+                                <?php
+        endif; ?>
                                 <h6><?php echo htmlspecialchars($address['name']); ?></h6>
                                 <p><?php echo htmlspecialchars($address['phone']); ?></p>
                                 <p><?php echo htmlspecialchars($address['address_line1']); ?></p>
                                 <?php if ($address['address_line2']): ?>
                                     <p><?php echo htmlspecialchars($address['address_line2']); ?></p>
-                                <?php endif; ?>
+                                <?php
+        endif; ?>
                                 <p><?php echo htmlspecialchars($address['city'] . ', ' . $address['state'] . ' - ' . $address['pincode']); ?></p>
                                 <div class="address-actions">
                                     <?php if (!$address['is_default']): ?>
@@ -651,7 +860,8 @@ echo renderBreadcrumb($breadcrumbs);
                                             <input type="hidden" name="address_id" value="<?php echo $address['id']; ?>">
                                             <button type="submit" class="btn small">Set as Default</button>
                                         </form>
-                                    <?php endif; ?>
+                                    <?php
+        endif; ?>
                                     <button type="button" class="btn small" onclick="handleEditAddressClick(<?php echo $address['id']; ?>)">Edit</button>
                                     <form method="post" style="display:inline;" onsubmit="return confirmDeleteAddress(this);">
                                         <input type="hidden" name="delete_address" value="1">
@@ -660,15 +870,18 @@ echo renderBreadcrumb($breadcrumbs);
                                     </form>
                                 </div>
                             </div>
-                        <?php endforeach; ?>
+                        <?php
+    endforeach; ?>
                     </div>
-                <?php else: ?>
+                <?php
+else: ?>
                     <div class="account-empty">
                         <i class="fas fa-map-marker-alt"></i>
                         <h5>No addresses saved</h5>
                         <p>Add an address to make checkout easier</p>
                     </div>
-                <?php endif; ?>
+                <?php
+endif; ?>
             </div>
         </div>
 
@@ -678,21 +891,31 @@ echo renderBreadcrumb($breadcrumbs);
                 <h3>My Wishlist</h3>
                 <?php if (!empty($wishlistItems)): ?>
                     <div class="account-wishlist">
-                        <?php foreach ($wishlistItems as $item): ?>
+                        <?php foreach ($wishlistItems as $item):
+        $wishlist_savings = $item['mrp'] - $item['selling_price'];
+        $wishlist_percent = $item['mrp'] > 0 ? round((($item['mrp'] - $item['selling_price']) / $item['mrp']) * 100) : 0;
+?>
                             <div class="account-wishlist-item">
-                                <a href="product.php?slug=<?php echo $item['slug']; ?>">
-                                    <img src="<?php echo (!empty($item['main_image']) ? htmlspecialchars($item['main_image']) : 'uploads/products/blank-img.webp'); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" onerror="this.onerror=null; this.src='./uploads/products/blank-img.webp';">
-                                </a>
-                                <div>
-                                    <h6><a href="product.php?slug=<?php echo $item['slug']; ?>" style="color:inherit; text-decoration:none;"><?php echo strtoupper(htmlspecialchars($item['name'])); ?></a></h6>
-                                    <p>₹<?php echo number_format($item['selling_price'], 0); ?></p>
-                                    <div style="display: flex; gap: 8px; justify-content: center;">
-                                        <a href="product.php?slug=<?php echo $item['slug']; ?>" class="btn small" style="flex: 1;">View</a>
-                                        <a href="#" class="btn small danger" style="flex: 1;" onclick="confirmRemoveWishlist('<?php echo $item['product_id']; ?>'); return false;">Remove</a>
+                                <?php if ($wishlist_savings > 0): ?>
+                                    <div class="wishlist-blue-bar">SAVE ₹<?php echo number_format($wishlist_savings, 0); ?> (<?php echo $wishlist_percent; ?>% OFF)</div>
+                                <?php
+        endif; ?>
+                                <div class="wishlist-item-content">
+                                    <a href="product.php?slug=<?php echo $item['slug']; ?>">
+                                        <img src="<?php echo(!empty($item['main_image']) ? htmlspecialchars($item['main_image']) : 'uploads/products/blank-img.webp'); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" onerror="this.onerror=null; this.src='./uploads/products/blank-img.webp';">
+                                    </a>
+                                    <div>
+                                        <h6><a href="product.php?slug=<?php echo $item['slug']; ?>" style="color:inherit; text-decoration:none;"><?php echo strtoupper(htmlspecialchars($item['name'])); ?></a></h6>
+                                        <p>₹<?php echo number_format($item['selling_price'], 0); ?></p>
+                                        <div style="display: flex; gap: 8px; justify-content: center;">
+                                            <a href="product.php?slug=<?php echo $item['slug']; ?>" class="btn small" style="flex: 1;">View</a>
+                                            <a href="#" class="btn small danger" style="flex: 1;" onclick="confirmRemoveWishlist('<?php echo $item['product_id']; ?>'); return false;">Remove</a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        <?php endforeach; ?>
+                        <?php
+    endforeach; ?>
                     </div>
                     
                     <!-- Pagination for Account Wishlist -->
@@ -703,39 +926,47 @@ echo renderBreadcrumb($breadcrumbs);
                                     <li class="page-item">
                                         <a class="page-link" href="?wishlist_page=<?php echo $wishlistPage - 1; ?>#wishlist">Previous</a>
                                     </li>
-                                <?php else: ?>
+                                <?php
+        else: ?>
                                     <li class="page-item">
                                         <a class="page-link" href="javascript:void(0)" style="cursor: default;">Previous</a>
                                     </li>
-                                <?php endif; ?>
+                                <?php
+        endif; ?>
 
                                 <?php for ($i = 1; $i <= $totalWishlistPages; $i++): ?>
-                                    <li class="page-item <?php echo ($i === $wishlistPage) ? 'active' : ''; ?>">
+                                    <li class="page-item <?php echo($i === $wishlistPage) ? 'active' : ''; ?>">
                                         <a class="page-link" href="?wishlist_page=<?php echo $i; ?>#wishlist"><?php echo $i; ?></a>
                                     </li>
-                                <?php endfor; ?>
+                                <?php
+        endfor; ?>
 
                                 <?php if ($wishlistPage < $totalWishlistPages): ?>
                                     <li class="page-item">
                                         <a class="page-link" href="?wishlist_page=<?php echo $wishlistPage + 1; ?>#wishlist">Next</a>
                                     </li>
-                                <?php else: ?>
+                                <?php
+        else: ?>
                                     <li class="page-item">
                                         <a class="page-link" href="javascript:void(0)" style="cursor: default;">Next</a>
                                     </li>
-                                <?php endif; ?>
+                                <?php
+        endif; ?>
                             </ul>
                         </nav>
-                    <?php endif; ?>
+                    <?php
+    endif; ?>
                     
-                <?php else: ?>
+                <?php
+else: ?>
                     <div class="account-empty">
                         <i class="bi bi-heart"></i>
                         <h5>Your wishlist is empty</h5>
                         <p>Start adding products to your wishlist</p>
                         <a href="index.php" class="btn">Start Shopping</a>
                     </div>
-                <?php endif; ?>
+                <?php
+endif; ?>
             </div>
         </div>
 
@@ -748,7 +979,8 @@ echo renderBreadcrumb($breadcrumbs);
                         <h5>Personal Info</h5>
                         <?php if (isset($profile_message)): ?>
                             <div class="alert alert-success"><?php echo htmlspecialchars($profile_message); ?></div>
-                        <?php endif; ?>
+                        <?php
+endif; ?>
                         <form method="post" style="margin-bottom: 20px;">
                             <input type="hidden" name="update_info" value="1">
                             <div class="mb-2">
@@ -768,7 +1000,8 @@ echo renderBreadcrumb($breadcrumbs);
                         <h5>Change Password</h5>
                         <?php if (isset($password_message)): ?>
                             <div class="alert <?php echo strpos($password_message, 'success') !== false ? 'alert-success' : 'alert-info'; ?>"><?php echo htmlspecialchars($password_message); ?></div>
-                        <?php endif; ?>
+                        <?php
+endif; ?>
                         <form method="post">
                             <input type="hidden" name="change_password" value="1">
                             <div class="mb-2">

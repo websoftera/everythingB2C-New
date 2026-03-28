@@ -617,3 +617,21 @@
     border-top: 1px solid #e3e6f0;
     padding: 1rem 1.25rem;
 } 
+.search-box {
+    position: relative;
+    width: 100%;
+}
+
+.search-box .search-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #b7b9cc;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.search-box .form-control {
+    padding-left: 40px !important;
+}

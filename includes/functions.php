@@ -748,8 +748,13 @@ function createOrder($userId, $addressId, $paymentMethod, $gstNumber = null, $co
         $trackingId = generateTrackingId();
         $orderNumber = generateOrderNumber();
         // --- Direct Payment: add UPI fields if provided ---
-        $columns = "user_id, address_id, order_number, tracking_id, total_amount, subtotal, gst_amount, shipping_charge, payment_method, gst_number, company_name, is_business_purchase, order_status_id, payment_status";
-        $placeholders = "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 'pending'";
+        $shippingAddressText = $address['name'] . "\n" . 
+                               $address['address_line1'] . ($address['address_line2'] ? "\n" . $address['address_line2'] : "") . "\n" . 
+                               $address['city'] . ", " . $address['state'] . " - " . $address['pincode'] . "\n" . 
+                               "Phone: " . $address['phone'];
+
+        $columns = "user_id, address_id, order_number, tracking_id, total_amount, subtotal, gst_amount, shipping_charge, payment_method, gst_number, company_name, is_business_purchase, order_status_id, payment_status, shipping_address, billing_city, billing_state, billing_pincode";
+        $placeholders = "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 'pending', ?, ?, ?, ?";
         $values = [
             $userId,
             $addressId,
@@ -762,7 +767,11 @@ function createOrder($userId, $addressId, $paymentMethod, $gstNumber = null, $co
             $paymentMethod,
             $gstNumber,
             $companyName,
-            $isBusinessPurchase ? 1 : 0
+            $isBusinessPurchase ? 1 : 0,
+            $shippingAddressText,
+            $address['city'],
+            $address['state'],
+            $address['pincode']
         ];
         if ($paymentMethod === 'direct_payment') {
             $columns .= ", upi_transaction_id, upi_screenshot";
