@@ -34,30 +34,40 @@ else {
 $main_categories = array_filter($categories, function ($cat) {
   return empty($cat['parent_id']);
 });
+
+// Fetch active banners for the slider
+$bannersList = [];
+try {
+    $stmt = $pdo->query("SELECT * FROM banners WHERE is_active = 1 ORDER BY order_index ASC, id DESC");
+    if ($stmt) {
+        $bannersList = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+} catch (Exception $e) {
+    // Table might not exist yet, proceed with fallback
+}
+
+// Fallback to hardcoded if no banners or table strictly missing
+if (empty($bannersList)) {
+    $bannersList = [
+        ['image_path' => 'asset/images/b1.webp', 'title' => 'Banner 1'],
+        ['image_path' => 'asset/images/b2.webp', 'title' => 'Banner 2'],
+        ['image_path' => 'asset/images/b3.webp', 'title' => 'Banner 3']
+    ];
+}
 ?>
 
 <!-- Hero Section -->
 <section class="hero-slider-section">
     <div id="heroCarousel" class="custom-carousel">
         <div class="carousel-inner">
-            <div class="carousel-item active">
-                <img src="asset/images/b1.webp" alt="Banner 1" class="carousel-image">
-                <div class="carousel-caption d-block text-start">
+            <?php foreach ($bannersList as $index => $banner): ?>
+            <div class="carousel-item <?php echo $index === 0 ? 'active' : ''; ?>">
+                <img src="<?php echo htmlspecialchars($banner['image_path']); ?>" alt="<?php echo htmlspecialchars($banner['title'] ?? 'Banner ' . ($index + 1)); ?>" class="carousel-image">
+                <div class="carousel-caption d-block <?php echo $index === 0 ? 'text-start' : 'text-end'; ?>">
                     <!-- Optional caption content -->
                 </div>
             </div>
-            <div class="carousel-item">
-                <img src="asset/images/b2.webp" alt="Banner 2" class="carousel-image">
-                <div class="carousel-caption d-block text-end">
-                    <!-- Optional caption content -->
-                </div>
-            </div>
-            <div class="carousel-item">
-                <img src="asset/images/b3.webp" alt="Banner 3" class="carousel-image">
-                <div class="carousel-caption d-block text-end">
-                    <!-- Optional caption content -->
-                </div>
-            </div>
+            <?php endforeach; ?>
         </div>
         <!-- Carousel Controls -->
         <button class="carousel-control-prev" type="button" aria-label="Previous">
@@ -70,9 +80,9 @@ $main_categories = array_filter($categories, function ($cat) {
         </button>
         <!-- Carousel Indicators -->
         <div class="carousel-indicators">
-            <button type="button" class="indicator active" data-slide="0" aria-current="true" aria-label="Slide 1"></button>
-            <button type="button" class="indicator" data-slide="1" aria-label="Slide 2"></button>
-            <button type="button" class="indicator" data-slide="2" aria-label="Slide 3"></button>
+            <?php foreach ($bannersList as $index => $banner): ?>
+            <button type="button" class="indicator <?php echo $index === 0 ? 'active' : ''; ?>" data-slide="<?php echo $index; ?>" <?php echo $index === 0 ? 'aria-current="true"' : ''; ?> aria-label="Slide <?php echo $index + 1; ?>"></button>
+            <?php endforeach; ?>
         </div>
     </div>
 </section>

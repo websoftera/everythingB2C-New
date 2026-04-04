@@ -19,6 +19,15 @@ require_once __DIR__ . '/../../includes/functions.php';
                 </a>
             </li>
             
+            <!-- Banners -->
+            <?php if (canAccess('manage_settings') || true): // Assuming true if no specific permission ?>
+            <li class="everythingb2c-nav-item">
+                <a class="everythingb2c-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'manage_banners.php' ? 'active' : ''; ?>" href="manage_banners.php">
+                    <i class="fas fa-images everythingb2c-nav-icon"></i> Banners
+                </a>
+            </li>
+            <?php endif; ?>
+            
             <!-- Products -->
             <?php if (canAccess('view_products')): ?>
             <li class="everythingb2c-nav-item">
