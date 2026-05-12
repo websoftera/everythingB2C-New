@@ -7,10 +7,10 @@
 
 // Production Use Database configuration
 define('DB_HOST', 'localhost');
-define('DB_USER', 'u141519101_everythingb2c1');
-define('DB_PASS', 'EveryThing@b2c#2025');
-define('DB_NAME', 'u141519101_everythingb2c1');
-// Create connection
+define('DB_USER', 'u728317772_everythingb2c');
+define('DB_PASS', 'a^0y9oZ8');
+define('DB_NAME', 'u728317772_everythingb2c');
+// Create connection//
 try {
     $pdo = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PASS);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
