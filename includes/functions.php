@@ -237,7 +237,7 @@ function getProductsByCategory($categoryId, $limit = null) {
     $sql = "SELECT p.*, c.name as category_name FROM products p 
             LEFT JOIN categories c ON p.category_id = c.id 
             WHERE p.category_id = ? AND p.is_active = 1 
-            ORDER BY p.created_at DESC";
+            ORDER BY CASE WHEN p.sort_order IS NULL OR p.sort_order = 0 THEN 1 ELSE 0 END, p.sort_order ASC, p.created_at DESC";
     
     if ($limit) {
         $sql .= " LIMIT " . (int)$limit;
@@ -278,7 +278,7 @@ function getAllProducts($limit = null) {
     $sql = "SELECT p.*, c.name as category_name FROM products p 
             LEFT JOIN categories c ON p.category_id = c.id 
             WHERE p.is_active = 1 
-            ORDER BY p.created_at DESC";
+            ORDER BY CASE WHEN p.sort_order IS NULL OR p.sort_order = 0 THEN 1 ELSE 0 END, p.sort_order ASC, p.created_at DESC";
     
     if ($limit) {
         $sql .= " LIMIT " . (int)$limit;
@@ -356,6 +356,20 @@ function cleanProductName($name) {
     $cleaned = strip_tags($cleaned);
     // Trim whitespace
     return trim($cleaned);
+}
+
+// Function to format product names on listing cards while allowing manual <br> breaks
+function formatProductListName($name, $uppercase = false) {
+    $cleaned = html_entity_decode($name, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $cleaned = preg_replace('/<\s*br\s*\/?\s*>/i', '[[PRODUCT_NAME_BR]]', $cleaned);
+    $cleaned = trim(strip_tags($cleaned));
+
+    if ($uppercase) {
+        $cleaned = strtoupper($cleaned);
+    }
+
+    $safe = htmlspecialchars($cleaned, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    return str_replace('[[PRODUCT_NAME_BR]]', '<br>', $safe);
 }
 
 // Function to format price

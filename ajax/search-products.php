@@ -13,7 +13,7 @@ $results = searchProducts($query, 10); // Limit to 10 results for live search
 // Format results for frontend
 $formatted = array_map(function($product) {
     return [
-        'name' => $product['name'],
+        'name' => cleanProductName($product['name']),
         'slug' => $product['slug'],
         'image' => $product['main_image'],
         'category' => $product['category_name'],

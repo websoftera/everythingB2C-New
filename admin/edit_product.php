@@ -12,6 +12,11 @@ if (!isset($_SESSION['admin_id'])) {
 $pageTitle = 'Edit Product';
 $success_message = '';
 $error_message = '';
+$return_to = $_GET['return_to'] ?? $_POST['return_to'] ?? 'products.php';
+if (strpos($return_to, 'products.php') !== 0) {
+    $return_to = 'products.php';
+}
+$encoded_return_to = urlencode($return_to);
 
 // Get product ID
 $product_id = intval($_GET['id'] ?? 0);
@@ -161,7 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $pdo->commit();
             $_SESSION['success_message'] = 'Product updated successfully!';
-            header('Location: edit_product.php?id=' . $product_id);
+            header('Location: edit_product.php?id=' . $product_id . '&return_to=' . $encoded_return_to);
             exit;
             
         } catch (Exception $e) {
@@ -173,6 +178,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Helper functions
 function createSlug($string) {
+    $string = html_entity_decode($string, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $string = strip_tags($string);
     $slug = strtolower(trim($string));
     $slug = preg_replace('/[^a-z0-9-]/', '-', $slug);
     $slug = preg_replace('/-+/', '-', $slug);
@@ -211,6 +218,264 @@ function uploadImage($file, $folder) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="assets/css/admin.css" rel="stylesheet">
+    <style>
+        .product-form-page {
+            background: #f6f7fb;
+            color: #000;
+        }
+
+        .product-form-page,
+        .product-form-page label,
+        .product-form-page .form-label,
+        .product-form-page .form-check-label,
+        .product-form-page .form-control,
+        .product-form-page .form-select,
+        .product-form-page select,
+        .product-form-page textarea,
+        .product-form-page .description-toolbar,
+        .product-form-page .description-toolbar select,
+        .product-form-page .description-toolbar button,
+        .product-form-page .description-content,
+        .product-form-page .form-text {
+            color: #000 !important;
+        }
+
+        .product-form-page h1 {
+            font-size: 30px;
+            font-weight: 500;
+            color: #000;
+        }
+
+        .product-form-page .btn {
+            border-radius: 4px;
+            font-size: 15px;
+            font-weight: 500;
+            min-height: 38px;
+        }
+
+        .product-form-page .card {
+            border: 1px solid #d9dee7;
+            border-radius: 4px;
+            box-shadow: none;
+        }
+
+        .product-form-page .card-body {
+            padding: 20px;
+        }
+
+        .product-form-page h5 {
+            font-size: 22px;
+            font-weight: 500;
+            color: #000;
+            margin-bottom: 20px !important;
+        }
+
+        .product-form-page .form-label {
+            font-size: 15px;
+            font-weight: 500;
+            color: #000;
+            margin-bottom: 8px;
+        }
+
+        .product-form-page .form-control,
+        .product-form-page .form-select,
+        .product-form-page select {
+            min-height: 42px;
+            border: 1px solid #cfd6df;
+            border-radius: 4px;
+            color: #000;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .product-form-page textarea.form-control {
+            min-height: 280px;
+        }
+
+        .product-form-page .description-editor {
+            border: 1px solid #cfd6df;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #fff;
+        }
+
+        .product-form-page .description-toolbar {
+            min-height: 58px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 10px 24px;
+            border-bottom: 1px solid #cfd6df;
+            color: #000;
+        }
+
+        .product-form-page .description-toolbar select {
+            width: 150px;
+            min-height: 34px;
+            border: 0;
+            color: #000;
+            font-size: 15px;
+            background-color: transparent;
+        }
+
+        .product-form-page .description-toolbar button {
+            border: 0;
+            background: transparent;
+            color: #000;
+            padding: 2px;
+            font-size: 17px;
+            line-height: 1;
+        }
+
+        .product-form-page .description-content {
+            border: 0;
+            border-radius: 0;
+            min-height: 360px;
+            padding: 24px;
+            box-shadow: none;
+            color: #000;
+            font-size: 15px;
+            font-weight: 500;
+            outline: 0;
+        }
+
+        .product-form-page .description-content:empty::before {
+            content: attr(data-placeholder);
+            color: #000;
+        }
+
+        .product-form-page .description-content.is-invalid {
+            box-shadow: inset 0 0 0 1px #dc3545;
+        }
+
+        .product-form-page .description-source {
+            display: none;
+        }
+
+        .product-form-page .form-text {
+            color: #000;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .product-form-page .unit-help-text {
+            white-space: nowrap;
+            font-size: 12px;
+        }
+
+        .product-form-page .form-control-plaintext {
+            min-height: 42px;
+            border: 1px solid #cfd6df;
+            border-radius: 4px;
+            padding: 8px 12px;
+            color: #000;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .product-form-page .image-upload-tile {
+            position: relative;
+            width: 150px;
+            min-height: 160px;
+            border: 2px dashed #c9d4e3;
+            border-radius: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: #000;
+            cursor: pointer;
+            background: #f8fafc;
+            text-align: center;
+            font-size: 15px;
+            font-weight: 500;
+            overflow: hidden;
+        }
+
+        .product-form-page .image-upload-tile i {
+            color: #98a4b6;
+            font-size: 30px;
+        }
+
+        .product-form-page .image-upload-tile.has-image i,
+        .product-form-page .image-upload-tile.has-image span {
+            display: none;
+        }
+
+        .product-form-page .image-upload-tile img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            display: none;
+            border-radius: 4px;
+        }
+
+        .product-form-page .image-upload-tile.has-image img {
+            display: block;
+        }
+
+        .product-form-page .feature-image-wrap,
+        .product-form-page .gallery-image-wrap {
+            position: relative;
+            display: inline-block;
+        }
+
+        .product-form-page .remove-image-preview {
+            position: absolute;
+            top: -12px;
+            right: -12px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 0;
+            background: #ff4848;
+            color: #fff;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+        }
+
+        .product-form-page .feature-image-wrap.has-image .remove-image-preview,
+        .product-form-page .gallery-image-wrap.has-image .remove-image-preview {
+            display: inline-flex;
+        }
+
+        .product-form-page .gallery-upload-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .product-form-page .image-upload-input {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .product-form-page .img-preview {
+            max-width: 150px;
+            max-height: 150px;
+            object-fit: contain;
+            border: 1px solid #d9dee7;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+
+        .product-form-page .gallery-add-btn {
+            border: 0;
+            background: transparent;
+            color: #0d6efd;
+            padding: 0;
+            font-size: 15px;
+            font-weight: 500;
+        }
+    </style>
 </head>
 <body>
     <div class="everythingb2c-admin-container">
@@ -223,15 +488,20 @@ function uploadImage($file, $folder) {
             <?php include 'includes/header.php'; ?>
 
             <!-- Edit Product Content -->
-            <div class="everythingb2c-dashboard-content">
+            <div class="everythingb2c-dashboard-content product-form-page">
                 <div class="container-fluid">
                     <div class="row mb-4">
                         <div class="col-12">
                             <div class="d-flex justify-content-between align-items-center">
                                 <h1 class="h3 mb-0">Edit Product: <?php echo cleanProductName($product['name']); ?></h1>
-                                <a href="products.php" class="btn btn-secondary">
-                                    <i class="fas fa-arrow-left"></i> Back to Products
-                                </a>
+                                <div class="d-flex gap-2">
+                                    <a href="../product.php?slug=<?php echo urlencode($product['slug']); ?>" class="btn btn-outline-primary" target="_blank">
+                                        <i class="fas fa-eye"></i> View Page
+                                    </a>
+                                    <a href="<?php echo htmlspecialchars($return_to); ?>" class="btn btn-secondary">
+                                        <i class="fas fa-arrow-left"></i> Back to Products
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -247,23 +517,22 @@ function uploadImage($file, $folder) {
                     <div class="card">
                         <div class="card-body">
                             <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                                <input type="hidden" name="return_to" value="<?php echo htmlspecialchars($return_to); ?>">
                                 <div class="row">
                                     <!-- Basic Information -->
                                     <div class="col-md-8">
                                         <h5 class="mb-3">Basic Information</h5>
                                         
                                         <div class="row mb-3">
-                                            <div class="col-md-4">
+                                            <div class="col-md-6">
                                                 <label for="edit_name" class="form-label">Product Name *</label>
-                                                <input type="text" class="form-control" id="edit_name" name="name" 
-                                                       value="<?php echo cleanProductName($product['name']); ?>" required>
+                                                <input type="text" class="form-control" id="edit_name" name="name" value="<?php echo htmlspecialchars($product['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8'); ?>" required>
                                             </div>
-                                            <div class="col-md-4">
+                                            <div class="col-md-6">
                                                 <label for="parent_category_id" class="form-label">Category *</label>
-                                                <select class="form-control" id="parent_category_id" name="parent_category_id" required>
+                                                <select class="form-control form-select" id="parent_category_id" name="parent_category_id" required>
                                                     <option value="">Select Category</option>
                                                     <?php 
-                                                    // Display categories in hierarchical structure
                                                     function displayCategoryOptions($categories, $level = 0, $selectedId = null) {
                                                         foreach ($categories as $category) {
                                                             $indent = str_repeat('— ', $level);
@@ -271,7 +540,6 @@ function uploadImage($file, $folder) {
                                                             echo '<option value="' . $category['id'] . '" ' . $selected . '>';
                                                             echo $indent . htmlspecialchars($category['name']);
                                                             echo '</option>';
-                                                            
                                                             if (!empty($category['children'])) {
                                                                 displayCategoryOptions($category['children'], $level + 1, $selectedId);
                                                             }
@@ -283,19 +551,73 @@ function uploadImage($file, $folder) {
                                             </div>
                                         </div>
 
-
-
                                         <div class="row mb-3">
-                                            <div class="col-md-4">
+                                            <div class="col-md-3">
                                                 <label for="mrp" class="form-label">MRP (₹) *</label>
                                                 <input type="number" class="form-control" id="mrp" name="mrp" step="0.01" min="0" value="<?php echo htmlspecialchars($product['mrp']); ?>" required>
                                                 <div class="invalid-feedback">Please provide a valid MRP.</div>
                                             </div>
-                                            <div class="col-md-4">
+                                            <div class="col-md-3">
                                                 <label for="selling_price" class="form-label">Selling Price (₹) *</label>
                                                 <input type="number" class="form-control" id="selling_price" name="selling_price" step="0.01" min="0" value="<?php echo htmlspecialchars($product['selling_price']); ?>" required>
                                                 <div class="invalid-feedback">Please provide a valid selling price.</div>
                                             </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label">Pay / Unit (₹)</label>
+                                                <input type="number" class="form-control" placeholder="e.g. 49">
+                                                <div class="form-text unit-help-text">Shown as ₹ price / selected unit.</div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label">Unit</label>
+                                                <select class="form-control form-select">
+                                                    <option>No.</option>
+                                                    <option>Pair</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-3">
+                                            <div class="col-md-4">
+                                                <label for="gst_rate" class="form-label">GST Rate (%)</label>
+                                                <select class="form-control form-select" id="gst_rate" name="gst_rate" required>
+                                                    <option value="0" <?php echo ($product['gst_rate'] == '0') ? 'selected' : ''; ?>>0%</option>
+                                                    <option value="5" <?php echo ($product['gst_rate'] == '5') ? 'selected' : ''; ?>>5%</option>
+                                                    <option value="12" <?php echo ($product['gst_rate'] == '12') ? 'selected' : ''; ?>>12%</option>
+                                                    <option value="18" <?php echo ($product['gst_rate'] == '18') ? 'selected' : ''; ?>>18%</option>
+                                                </select>
+                                                <div class="form-text">Select GST rate for record keeping</div>
+                                                <div class="invalid-feedback">Please select a GST rate.</div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="sku" class="form-label">SKU *</label>
+                                                <input type="text" class="form-control" id="sku" name="sku" value="<?php echo htmlspecialchars($product['sku']); ?>" required>
+                                                <div class="invalid-feedback">Please provide a unique SKU.</div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="hsn" class="form-label">HSN Code</label>
+                                                <input type="text" class="form-control" id="hsn" name="hsn" maxlength="20" value="<?php echo htmlspecialchars($product['hsn'] ?? ''); ?>">
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-3">
+                                            <div class="col-md-3">
+                                                <label for="stock_quantity" class="form-label">Stock Quantity *</label>
+                                                <input type="number" class="form-control" id="stock_quantity" name="stock_quantity" min="0" value="<?php echo htmlspecialchars($product['stock_quantity']); ?>" required>
+                                                <div class="invalid-feedback">Please provide stock quantity.</div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Package Quantity</label>
+                                                <input type="number" class="form-control" value="1">
+                                                <div class="form-text">Units per package (e.g., 50)</div>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <label for="max_quantity_per_order" class="form-label">Max Quantity Per Order</label>
+                                                <input type="number" class="form-control" id="max_quantity_per_order" name="max_quantity_per_order" min="1" value="<?php echo htmlspecialchars($product['max_quantity_per_order'] ?? ''); ?>" placeholder="Leave empty for no limit">
+                                                <div class="form-text">Maximum quantity a customer can order at once</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-3">
                                             <div class="col-md-4">
                                                 <label class="form-label">Discount % (Auto)</label>
                                                 <div class="form-control-plaintext" id="discount_display">
@@ -305,33 +627,6 @@ function uploadImage($file, $folder) {
                                                     ?>
                                                 </div>
                                                 <div class="form-text">Calculated automatically</div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row mb-3">
-                                            <div class="col-md-4">
-                                                <label for="gst_rate" class="form-label">GST Rate (%)</label>
-                                                <select class="form-control" id="gst_rate" name="gst_rate" required>
-                                                    <option value="0" <?php echo ($product['gst_rate'] == '0') ? 'selected' : ''; ?>>0%</option>
-                                                    <option value="5" <?php echo ($product['gst_rate'] == '5') ? 'selected' : ''; ?>>5%</option>
-                                                    <option value="12" <?php echo ($product['gst_rate'] == '12') ? 'selected' : ''; ?>>12%</option>
-                                                    <option value="18" <?php echo ($product['gst_rate'] == '18') ? 'selected' : ''; ?>>18%</option>
-                                                </select>
-                                                <div class="form-text">Select GST rate for record keeping</div>
-                                                <div class="invalid-feedback">Please select a GST rate.</div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row mb-3">
-                                            <div class="col-md-4">
-                                                <label for="stock_quantity" class="form-label">Stock Quantity *</label>
-                                                <input type="number" class="form-control" id="stock_quantity" name="stock_quantity" min="0" value="<?php echo htmlspecialchars($product['stock_quantity']); ?>" required>
-                                                <div class="invalid-feedback">Please provide stock quantity.</div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label for="max_quantity_per_order" class="form-label">Max Quantity Per Order</label>
-                                                <input type="number" class="form-control" id="max_quantity_per_order" name="max_quantity_per_order" min="1" value="<?php echo htmlspecialchars($product['max_quantity_per_order'] ?? ''); ?>" placeholder="Leave empty for no limit">
-                                                <div class="form-text">Maximum quantity a customer can order at once</div>
                                             </div>
                                             <div class="col-md-4">
                                                 <label class="form-label">Total with Shipping</label>
@@ -345,17 +640,30 @@ function uploadImage($file, $folder) {
                                             </div>
                                         </div>
 
-                                        <div class="row mb-3">
-                                            <div class="col-md-4">
-                                                <label for="sku" class="form-label">SKU *</label>
-                                                <input type="text" class="form-control" id="sku" name="sku" value="<?php echo htmlspecialchars($product['sku']); ?>" required>
-                                                <div class="invalid-feedback">Please provide a unique SKU.</div>
-                                            </div>
-                                        </div>
-
                                         <div class="mb-3">
                                             <label for="description" class="form-label">Description *</label>
-                                            <textarea class="form-control" id="description" name="description" rows="4" required><?php echo htmlspecialchars($product['description']); ?></textarea>
+                                            <div class="description-editor">
+                                                <div class="description-toolbar">
+                                                    <select tabindex="-1">
+                                                        <option>Normal</option>
+                                                    </select>
+                                                    <button type="button" data-format="bold"><i class="fas fa-bold"></i></button>
+                                                    <button type="button" data-format="italic"><i class="fas fa-italic"></i></button>
+                                                    <button type="button" data-format="underline"><i class="fas fa-underline"></i></button>
+                                                    <button type="button" data-format="strike"><i class="fas fa-strikethrough"></i></button>
+                                                    <button type="button" data-format="ordered-list"><i class="fas fa-list-ol"></i></button>
+                                                    <button type="button" data-format="unordered-list"><i class="fas fa-list-ul"></i></button>
+                                                    <button type="button" data-format="outdent"><i class="fas fa-outdent"></i></button>
+                                                    <button type="button" data-format="indent"><i class="fas fa-indent"></i></button>
+                                                    <button type="button" data-format="align-left"><i class="fas fa-align-left"></i></button>
+                                                    <button type="button" data-format="align-center"><i class="fas fa-align-center"></i></button>
+                                                    <button type="button" data-format="link"><i class="fas fa-link"></i></button>
+                                                    <button type="button" data-format="image"><i class="fas fa-image"></i></button>
+                                                    <button type="button" data-format="clear"><i class="fas fa-text-slash"></i></button>
+                                                </div>
+                                                <div class="description-content" contenteditable="true" data-placeholder="Write product description..."><?php echo $product['description']; ?></div>
+                                                <textarea class="description-source" id="description" name="description"><?php echo htmlspecialchars($product['description']); ?></textarea>
+                                            </div>
                                             <div class="invalid-feedback">Please provide a description.</div>
                                         </div>
 
@@ -383,68 +691,53 @@ function uploadImage($file, $folder) {
                                             </div>
                                         </div>
 
-                                        <div class="mb-3">
-                                            <label for="hsn" class="form-label">HSN Code</label>
-                                            <input type="text" class="form-control" id="hsn" name="hsn" maxlength="20" value="<?php echo htmlspecialchars($product['hsn'] ?? ''); ?>">
-                                        </div>
                                     </div>
 
                                     <!-- Images -->
                                     <div class="col-md-4">
                                         <h5 class="mb-3">Images</h5>
-                                        
-                                        <!-- Current Main Image -->
-                                        <?php if ($product['main_image']): ?>
-                                            <div class="mb-3">
-                                                <label class="form-label">Current Main Image</label>
-                                                <div class="mb-2">
-                                                    <img src="../<?php echo $product['main_image']; ?>" 
-                                                         alt="<?php echo htmlspecialchars($product['name']); ?>"
-                                                         class="img-preview">
-                                                </div>
-                                            </div>
-                                        <?php endif; ?>
-                                        
+
                                         <div class="mb-3">
-                                            <label for="main_image" class="form-label">Update Main Image</label>
-                                            <input type="file" class="form-control image-input" id="main_image" name="main_image" accept="image/*">
-                                            <div class="mt-2">
-                                                <img id="main_image_preview" class="img-preview" style="display: none;">
+                                            <label class="form-label">Feature Image</label>
+                                            <div class="form-text mb-2">Upload Feature Image</div>
+                                            <?php $mainImageSrc = $product['main_image'] ? '../' . $product['main_image'] : ''; ?>
+                                            <div class="feature-image-wrap <?php echo $mainImageSrc ? 'has-image' : ''; ?>" id="featureImageWrap">
+                                                <label for="main_image" class="image-upload-tile <?php echo $mainImageSrc ? 'has-image' : ''; ?>" id="featureImageTile">
+                                                    <i class="fas fa-cloud-upload-alt"></i>
+                                                    <span>Select an image</span>
+                                                    <img id="main_image_preview"
+                                                         alt="Feature preview"
+                                                         src="<?php echo htmlspecialchars($mainImageSrc); ?>"
+                                                         data-original-src="<?php echo htmlspecialchars($mainImageSrc); ?>">
+                                                </label>
+                                                <button type="button" class="remove-image-preview" id="removeFeatureImage" aria-label="Remove feature image">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
                                             </div>
+                                            <input type="file" class="image-input image-upload-input" id="main_image" name="main_image" accept="image/*">
                                         </div>
 
-                                        <!-- Current Additional Images -->
-                                        <?php if (!empty($product_images)): ?>
-                                            <div class="mb-3">
-                                                <label class="form-label">Current Additional Images</label>
-                                                <?php foreach ($product_images as $image): ?>
-                                                    <div class="d-flex align-items-center mb-2">
-                                                        <img src="../<?php echo $image['image_path']; ?>" 
-                                                             alt="Product Image" class="img-preview me-2">
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox" 
-                                                                   name="delete_images[]" value="<?php echo $image['id']; ?>" 
-                                                                   id="delete_<?php echo $image['id']; ?>">
-                                                            <label class="form-check-label" for="delete_<?php echo $image['id']; ?>">
-                                                                Delete
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                <?php endforeach; ?>
-                                            </div>
-                                        <?php endif; ?>
-
                                         <div class="mb-3">
-                                            <label class="form-label">Add More Images</label>
-                                            <div id="imageContainer">
-                                                <div class="image-field row mb-3">
-                                                    <div class="col-12">
-                                                        <input type="file" class="form-control image-input" name="images[]" accept="image/*">
-                                                    </div>
-                                                </div>
+                                            <label class="form-label">Gallery</label>
+                                            <div id="imageContainer" class="gallery-upload-grid">
+                                                <?php if (!empty($product_images)): ?>
+                                                    <?php foreach ($product_images as $image): ?>
+                                                        <div class="gallery-image-wrap has-image">
+                                                            <label class="image-upload-tile has-image">
+                                                                <img src="../<?php echo $image['image_path']; ?>" alt="Product Image">
+                                                            </label>
+                                                            <button type="button" class="remove-image-preview" onclick="markCurrentGalleryImageForDelete(this)" aria-label="Remove gallery image">
+                                                                <i class="fas fa-times"></i>
+                                                            </button>
+                                                            <input class="form-check-input d-none" type="checkbox"
+                                                                   name="delete_images[]" value="<?php echo $image['id']; ?>"
+                                                                   id="delete_<?php echo $image['id']; ?>">
+                                                        </div>
+                                                    <?php endforeach; ?>
+                                                <?php endif; ?>
                                             </div>
-                                            <button type="button" class="btn btn-outline-primary btn-sm" id="addImageBtn">
-                                                <i class="fas fa-plus"></i> Add Another Image
+                                            <button type="button" class="gallery-add-btn" id="addImageBtn">
+                                                <i class="fas fa-plus"></i> Add gallery images
                                             </button>
                                         </div>
                                     </div>
@@ -453,7 +746,7 @@ function uploadImage($file, $folder) {
                                 <hr>
 
                                 <div class="d-flex justify-content-end gap-2">
-                                    <a href="products.php" class="btn btn-secondary">Cancel</a>
+                                    <a href="<?php echo htmlspecialchars($return_to); ?>" class="btn btn-secondary">Cancel</a>
                                     <button type="submit" class="btn btn-primary">
                                         <i class="fas fa-save"></i> Update Product
                                     </button>
@@ -469,64 +762,175 @@ function uploadImage($file, $folder) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/admin.js"></script>
     <script>
+        function initDescriptionEditors() {
+            document.querySelectorAll('.description-editor').forEach(function(editor) {
+                const content = editor.querySelector('.description-content');
+                const source = editor.querySelector('.description-source');
+                const form = editor.closest('form');
+
+                function syncDescription() {
+                    source.value = content.innerHTML.trim();
+                }
+
+                function focusEditor() {
+                    content.focus();
+                }
+
+                editor.querySelectorAll('[data-format]').forEach(function(button) {
+                    button.addEventListener('mousedown', function(e) {
+                        e.preventDefault();
+                    });
+
+                    button.addEventListener('click', function() {
+                        focusEditor();
+                        const format = this.dataset.format;
+
+                        if (format === 'link') {
+                            const url = prompt('Enter link URL');
+                            if (url) document.execCommand('createLink', false, url);
+                        } else if (format === 'image') {
+                            const url = prompt('Enter image URL');
+                            if (url) document.execCommand('insertImage', false, url);
+                        } else if (format === 'clear') {
+                            document.execCommand('removeFormat', false, null);
+                        } else {
+                            const commands = {
+                                bold: 'bold',
+                                italic: 'italic',
+                                underline: 'underline',
+                                strike: 'strikeThrough',
+                                'ordered-list': 'insertOrderedList',
+                                'unordered-list': 'insertUnorderedList',
+                                outdent: 'outdent',
+                                indent: 'indent',
+                                'align-left': 'justifyLeft',
+                                'align-center': 'justifyCenter'
+                            };
+                            document.execCommand(commands[format], false, null);
+                        }
+
+                        syncDescription();
+                    });
+                });
+
+                content.addEventListener('input', syncDescription);
+                content.addEventListener('input', function() {
+                    content.classList.remove('is-invalid');
+                });
+                content.addEventListener('blur', syncDescription);
+
+                if (form) {
+                    form.addEventListener('submit', function(e) {
+                        syncDescription();
+                        if (!content.textContent.trim()) {
+                            e.preventDefault();
+                            content.focus();
+                            content.classList.add('is-invalid');
+                        }
+                    });
+                }
+            });
+        }
+
+        initDescriptionEditors();
+
         // Image preview functionality for main image
         document.getElementById('main_image').addEventListener('change', function() {
             const file = this.files[0];
             const preview = document.getElementById('main_image_preview');
+            const tile = document.getElementById('featureImageTile');
+            const wrap = document.getElementById('featureImageWrap');
             
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     preview.src = e.target.result;
-                    preview.style.display = 'block';
+                    tile.classList.add('has-image');
+                    wrap.classList.add('has-image');
                 };
                 reader.readAsDataURL(file);
+            } else if (preview.dataset.originalSrc) {
+                preview.src = preview.dataset.originalSrc;
+                tile.classList.add('has-image');
+                wrap.classList.add('has-image');
             } else {
-                preview.style.display = 'none';
+                preview.src = '';
+                tile.classList.remove('has-image');
+                wrap.classList.remove('has-image');
             }
         });
 
+        document.getElementById('removeFeatureImage').addEventListener('click', function() {
+            const input = document.getElementById('main_image');
+            const preview = document.getElementById('main_image_preview');
+            input.value = '';
+
+            if (preview.dataset.originalSrc) {
+                preview.src = preview.dataset.originalSrc;
+                document.getElementById('featureImageTile').classList.add('has-image');
+                document.getElementById('featureImageWrap').classList.add('has-image');
+                return;
+            }
+
+            preview.src = '';
+            document.getElementById('featureImageTile').classList.remove('has-image');
+            document.getElementById('featureImageWrap').classList.remove('has-image');
+        });
+
         // Add Another Image functionality
+        let galleryImageIndex = 0;
         document.getElementById('addImageBtn').addEventListener('click', function() {
             const container = document.getElementById('imageContainer');
             const newField = document.createElement('div');
-            newField.className = 'image-field row mb-3';
+            const inputId = 'gallery_image_' + galleryImageIndex++;
+            newField.className = 'image-field gallery-image-wrap';
             newField.innerHTML = `
-                <div class="col-11">
-                    <input type="file" class="form-control image-input" name="images[]" accept="image/*">
-                </div>
-                <div class="col-1">
-                    <button type="button" class="btn btn-danger btn-sm remove-image" onclick="removeImageField(this)">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
+                <label for="${inputId}" class="image-upload-tile">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>Select an image</span>
+                    <img alt="Gallery preview">
+                </label>
+                <button type="button" class="remove-image-preview" onclick="removeImageField(this)" aria-label="Remove gallery image">
+                    <i class="fas fa-times"></i>
+                </button>
+                <input type="file" class="image-input image-upload-input" id="${inputId}" name="images[]" accept="image/*">
             `;
             container.appendChild(newField);
         });
 
         // Remove image field functionality
         function removeImageField(button) {
-            button.closest('.image-field').remove();
+            const field = button.closest('.image-field');
+            const input = field.querySelector('input[type="file"]');
+            const tile = field.querySelector('.image-upload-tile');
+            const preview = field.querySelector('img');
+            input.value = '';
+            preview.src = '';
+            tile.classList.remove('has-image');
+            field.classList.remove('has-image');
+        }
+
+        function markCurrentGalleryImageForDelete(button) {
+            const field = button.closest('.gallery-image-wrap');
+            const checkbox = field.querySelector('input[type="checkbox"]');
+            checkbox.checked = true;
+            field.style.display = 'none';
         }
 
         // Image preview for additional images
         document.addEventListener('change', function(e) {
             if (e.target.classList.contains('image-input') && e.target.name === 'images[]') {
+                const input = e.target;
                 const file = e.target.files[0];
                 if (file) {
                     const reader = new FileReader();
                     reader.onload = function(e) {
-                        const preview = document.createElement('img');
+                        const parent = input.closest('.image-field');
+                        const preview = parent.querySelector('.image-upload-tile img');
+                        const tile = parent.querySelector('.image-upload-tile');
                         preview.src = e.target.result;
-                        preview.className = 'img-preview mt-2';
-                        preview.style.maxWidth = '100px';
-                        
-                        const parent = e.target.closest('.image-field');
-                        const existingPreview = parent.querySelector('.img-preview');
-                        if (existingPreview) {
-                            existingPreview.remove();
-                        }
-                        parent.appendChild(preview);
+                        tile.classList.add('has-image');
+                        parent.classList.add('has-image');
                     };
                     reader.readAsDataURL(file);
                 }
@@ -552,12 +956,12 @@ function uploadImage($file, $folder) {
         }
 
         // Calculate total with shipping
-        document.getElementById('shipping_charge').addEventListener('input', calculateTotalWithShipping);
         document.getElementById('selling_price').addEventListener('input', calculateTotalWithShipping);
 
         function calculateTotalWithShipping() {
             const sellingPrice = parseFloat(document.getElementById('selling_price').value) || 0;
-            const shippingCharge = parseFloat(document.getElementById('shipping_charge').value) || 0;
+            const shippingChargeInput = document.getElementById('shipping_charge');
+            const shippingCharge = shippingChargeInput ? (parseFloat(shippingChargeInput.value) || 0) : 0;
             
             const total = sellingPrice + shippingCharge;
             
