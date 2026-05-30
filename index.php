@@ -207,7 +207,7 @@ foreach ($discountedProducts as $product):
                 </div>
                 <div class="product-details">
                     <a href="product.php?slug=<?php echo $product['slug']; ?>" class="product-title-link">
-                        <h3><?php echo cleanProductName($product['name']); ?></h3>
+                        <h3><?php echo formatProductListName($product['name']); ?></h3>
                     </a>
                     <div class="price-buttons">
                         <div class="price-btn mrp">
@@ -298,7 +298,7 @@ foreach ($featuredProducts as $product):
                 </div>
                 <div class="product-details">
                     <a href="product.php?slug=<?php echo $product['slug']; ?>" class="product-title-link">
-                        <h3><?php echo cleanProductName($product['name']); ?></h3>
+                        <h3><?php echo formatProductListName($product['name']); ?></h3>
                     </a>
                     <div class="price-buttons">
                         <div class="price-btn mrp">

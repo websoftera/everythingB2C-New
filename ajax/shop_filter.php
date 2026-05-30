@@ -54,7 +54,7 @@ $sql = 'SELECT p.*, c.name as category_name FROM products p LEFT JOIN categories
 if ($where) {
     $sql .= ' WHERE ' . implode(' AND ', $where);
 }
-$sql .= ' ORDER BY p.created_at DESC';
+$sql .= ' ORDER BY CASE WHEN p.sort_order IS NULL OR p.sort_order = 0 THEN 1 ELSE 0 END, p.sort_order ASC, p.created_at DESC';
 $pdo = $GLOBALS['pdo'];
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
@@ -93,7 +93,7 @@ foreach ($products as $product):
         <?php endif; ?>
     </div>
     <div class="product-details">
-        <h3><?php echo strtoupper(cleanProductName($product['name'])); ?></h3>
+        <h3><?php echo formatProductListName($product['name'], true); ?></h3>
         <div class="price-buttons">
             <div class="price-btn mrp">
                 <span class="label">MRP</span>

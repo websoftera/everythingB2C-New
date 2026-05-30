@@ -132,7 +132,7 @@ switch ($sortBy) {
     $sql .= ' ORDER BY p.name DESC';
     break;
   default:
-    $sql .= ' ORDER BY p.created_at DESC';
+    $sql .= ' ORDER BY CASE WHEN p.sort_order IS NULL OR p.sort_order = 0 THEN 1 ELSE 0 END, p.sort_order ASC, p.created_at DESC';
 }
 
 global $pdo;
@@ -280,7 +280,7 @@ else: ?>
                   </div>
                   <div class="product-details">
                       <a href="product.php?slug=<?php echo $product['slug']; ?>" class="product-title-link">
-                          <h3><?php echo strtoupper(cleanProductName($product['name'])); ?></h3>
+                          <h3><?php echo formatProductListName($product['name'], true); ?></h3>
                       </a>
                       <div class="price-buttons">
                           <div class="price-btn mrp">

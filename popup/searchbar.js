@@ -19,8 +19,8 @@
             resultsPopup.innerHTML = data.results.map(product => `
               <div class="search-result-item d-flex align-items-center p-2 border-bottom" style="cursor:pointer; background:#fff;" data-slug="${product.slug}">
                 <img src="./${product.image}" alt="${product.name}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;margin-right:10px;">
-                <div>
-                  <div style="font-weight:600;">${product.name}</div>
+                <div style="min-width:0;flex:1;">
+                  <div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${product.name}</div>
                   <div style="font-size:12px;color:#888;">${product.category}</div>
                   <div style="font-size:13px;color:#16BAE4;">₹${product.price} <span style="text-decoration:line-through;color:#aaa;font-size:11px;">₹${product.mrp}</span> ${product.discount > 0 ? `<span style='color:#e74c3c;'>(${product.discount}% OFF)</span>` : ''}</div>
                 </div>

@@ -107,7 +107,7 @@ $totalPages = ceil($totalProducts / $productsPerPage);
 $offset = ($currentPage - 1) * $productsPerPage;
 
 // Build ORDER BY clause
-$orderBy = 'p.created_at DESC'; // Default: newest first
+$orderBy = 'CASE WHEN p.sort_order IS NULL OR p.sort_order = 0 THEN 1 ELSE 0 END, p.sort_order ASC, p.created_at DESC';
 switch ($sortBy) {
   case 'oldest':
     $orderBy = 'p.created_at ASC';
@@ -224,7 +224,7 @@ else: ?>
                   </div>
                   <div class="product-details">
                       <a href="product.php?slug=<?php echo $product['slug']; ?>" class="product-title-link">
-                          <h3><?php echo strtoupper(cleanProductName($product['name'])); ?></h3>
+                          <h3><?php echo formatProductListName($product['name'], true); ?></h3>
                       </a>
                       <div class="price-buttons">
                           <div class="price-btn mrp">

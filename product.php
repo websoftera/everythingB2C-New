@@ -57,6 +57,65 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
     <link rel="stylesheet" href="asset/style/product-detail.css">
     <style>
         /* Modern Card base fixes */
+        .product-page-container {
+            --product-detail-blue: #0c79e7;
+        }
+
+        .product-page-container .product-back-row {
+            max-width: 1460px;
+            margin: 12px auto 18px;
+            padding: 0 18px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .product-page-container .product-back-btn {
+            border: 0;
+            background: var(--product-detail-blue);
+            color: #fff;
+            padding: 8px 18px;
+            border-radius: 50px;
+            text-decoration: none !important;
+            font-weight: 700;
+            font-size: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(12, 121, 231, 0.16);
+            cursor: pointer;
+        }
+
+        .product-page-container .product-back-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.65);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 24px;
+        }
+
+        .product-page-container .product-back-icon svg {
+            width: 16px;
+            height: 16px;
+            display: block;
+            stroke: #fff;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+        }
+
+        .product-page-container .product-back-btn:hover,
+        .product-page-container .product-back-btn:focus {
+            background: var(--product-detail-blue);
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 12px 22px rgba(12, 121, 231, 0.22);
+        }
+
         .product-page-container .modern-card {
             padding: 0 !important;
             overflow: hidden !important;
@@ -96,6 +155,18 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
 
         /* Mobile specific adjustments */
         @media (max-width: 900px) {
+            .product-page-container .product-back-row {
+                margin: 10px auto 12px;
+                padding: 0 12px;
+                justify-content: flex-end;
+            }
+
+            .product-page-container .product-back-btn {
+                padding: 8px 18px;
+                border-radius: 50px;
+                font-size: 12px;
+            }
+
             .product-page-container .modern-card {
                 margin: 2px 0 !important;
                 padding: 4px 10px !important;
@@ -240,6 +311,23 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
             text-align: left !important;
         }
     </style>
+
+    <?php
+    $fallbackBackUrl = !empty($categoryPath)
+        ? 'category.php?slug=' . urlencode($categoryPath[count($categoryPath) - 1]['slug'])
+        : 'products.php';
+    ?>
+    <div class="product-back-row">
+        <button type="button" class="product-back-btn" id="productBackBtn" data-fallback="<?php echo htmlspecialchars($fallbackBackUrl); ?>">
+            <span>Back</span>
+            <span class="product-back-icon" aria-hidden="true">
+                <svg viewBox="0 0 20 20" focusable="false">
+                    <path d="M8.5 5 3.5 10l5 5"></path>
+                    <path d="M4 10h12"></path>
+                </svg>
+            </span>
+        </button>
+    </div>
 
     <!-- Product Detail Section -->
     <div class="product-detail-card modern-card" data-id="prod-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>">
@@ -421,6 +509,17 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    const productBackBtn = document.getElementById('productBackBtn');
+    if (productBackBtn) {
+        productBackBtn.addEventListener('click', function() {
+            if (window.history.length > 1 && document.referrer) {
+                window.history.back();
+            } else {
+                window.location.href = this.dataset.fallback || 'products.php';
+            }
+        });
+    }
+
     const thumbnails = document.querySelectorAll('.thumbnail');
     const mainImage = document.getElementById('mainImage');
     const mainImageContainer = document.getElementById('mainImageContainer');
