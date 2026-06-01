@@ -2,6 +2,7 @@
 session_start();
 require_once '../config/database.php';
 require_once '../includes/functions.php';
+require_once 'includes/product_variation_helpers.php';
 
 // Check if admin is logged in
 if (!isset($_SESSION['admin_id'])) {
@@ -12,6 +13,8 @@ if (!isset($_SESSION['admin_id'])) {
 $pageTitle = 'Edit Product';
 $success_message = '';
 $error_message = '';
+$variation_guidance_message = '';
+ensureProductVariationSchema($pdo);
 $return_to = $_GET['return_to'] ?? $_POST['return_to'] ?? 'products.php';
 if (strpos($return_to, 'products.php') !== 0) {
     $return_to = 'products.php';
@@ -62,10 +65,23 @@ $product = array_merge([
 $stmt = $pdo->prepare("SELECT * FROM product_images WHERE product_id = ? ORDER BY sort_order, is_main DESC");
 $stmt->execute([$product_id]);
 $product_images = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$attributeOptions = getProductAttributeOptions($pdo);
+$productVariations = getProductVariations($pdo, $product_id);
+$selectedProductAttributes = getSelectedAttributesFromVariations($productVariations);
 
 // Get all categories for dropdown with hierarchical structure
 $allCategories = getAllCategoriesWithProductCount();
 $categoryTree = buildCategoryTree($allCategories);
+
+if (isset($_SESSION['success_message'])) {
+    $success_message = $_SESSION['success_message'];
+    unset($_SESSION['success_message']);
+}
+
+if (isset($_SESSION['variation_guidance_message'])) {
+    $variation_guidance_message = $_SESSION['variation_guidance_message'];
+    unset($_SESSION['variation_guidance_message']);
+}
 
 // Get current category with parent info
 $currentCategory = getCategoryWithParent($product['category_id']);
@@ -164,8 +180,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
 
+            $variationsChanged = haveProductVariationsChanged($pdo, $product_id);
+            $savedVariationCount = saveProductVariations($pdo, $product_id);
+
             $pdo->commit();
-            $_SESSION['success_message'] = 'Product updated successfully!';
+            $_SESSION['success_message'] = ($variationsChanged && $savedVariationCount > 0)
+                ? 'Product updated successfully! Product variations saved successfully.'
+                : 'Product updated successfully!';
+            if ($variationsChanged && $savedVariationCount > 0) {
+                $_SESSION['variation_guidance_message'] = 'For products with 2 or more attributes, keep one variation row per exact combination like <strong>Black + Size 9</strong>.<br>Storefront price, stock and image use only exact combinations.';
+            }
             header('Location: edit_product.php?id=' . $product_id . '&return_to=' . $encoded_return_to);
             exit;
             
@@ -475,7 +499,18 @@ function uploadImage($file, $folder) {
             font-size: 15px;
             font-weight: 500;
         }
+
+        .product-form-page .was-validated .form-control:valid,
+        .product-form-page .was-validated .form-select:valid,
+        .product-form-page .form-control.is-valid,
+        .product-form-page .form-select.is-valid {
+            border-color: #cfd6df;
+            background-image: none;
+            padding-right: 12px;
+            box-shadow: none;
+        }
     </style>
+    <?php renderProductVariationAssets(); ?>
 </head>
 <body>
     <div class="everythingb2c-admin-container">
@@ -508,6 +543,13 @@ function uploadImage($file, $folder) {
 
                     <?php if ($success_message): ?>
                         <div class="alert alert-success"><?php echo htmlspecialchars($success_message); ?></div>
+                    <?php endif; ?>
+
+                    <?php if ($variation_guidance_message): ?>
+                        <div class="alert alert-info alert-dismissible fade show" role="alert">
+                            <?php echo $variation_guidance_message; ?>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
                     <?php endif; ?>
 
                     <?php if ($error_message): ?>
@@ -690,6 +732,8 @@ function uploadImage($file, $folder) {
                                                 </div>
                                             </div>
                                         </div>
+
+                                        <?php renderProductAttributesSection($attributeOptions, $selectedProductAttributes, $productVariations, $product); ?>
 
                                     </div>
 

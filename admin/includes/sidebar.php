@@ -36,7 +36,16 @@ require_once __DIR__ . '/../../includes/functions.php';
                 </a>
             </li>
             <?php endif; ?>
-            
+
+            <!-- Product Attributes -->
+            <?php if (canAccess('view_products')): ?>
+            <li class="everythingb2c-nav-item">
+                <a class="everythingb2c-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'product_attributes.php' ? 'active' : ''; ?>" href="product_attributes.php">
+                    <i class="fas fa-sliders-h everythingb2c-nav-icon"></i> Attributes
+                </a>
+            </li>
+            <?php endif; ?>
+
             <!-- Categories -->
             <?php if (canAccess('view_categories')): ?>
             <li class="everythingb2c-nav-item">
@@ -181,4 +190,4 @@ require_once __DIR__ . '/../../includes/functions.php';
             <i class="fas fa-sign-out-alt"></i> Logout
         </button>
     </div>
-</div> 
+</div>

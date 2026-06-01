@@ -1,6 +1,56 @@
 // Admin Dashboard JavaScript
 document.addEventListener('DOMContentLoaded', function() {
-    
+    function hasOpenBootstrapModal() {
+        return !!document.querySelector('.modal.show');
+    }
+
+    function cleanupAdminOverlays() {
+        if (hasOpenBootstrapModal()) {
+            return;
+        }
+
+        document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.remove());
+        document.body.classList.remove('modal-open');
+        document.body.style.removeProperty('overflow');
+        document.body.style.removeProperty('padding-right');
+
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.setAttribute('aria-hidden', 'true');
+            modal.removeAttribute('aria-modal');
+            modal.removeAttribute('role');
+            modal.style.display = '';
+        });
+
+        const sidebar = document.querySelector('.everythingb2c-sidebar');
+        const sidebarOverlay = document.querySelector('.everythingb2c-sidebar-overlay');
+        if (sidebarOverlay && (!sidebar || sidebar.classList.contains('hidden'))) {
+            sidebarOverlay.classList.remove('show');
+        }
+    }
+
+    function scheduleAdminOverlayCleanup() {
+        window.setTimeout(cleanupAdminOverlays, 350);
+    }
+
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('hidden.bs.modal', scheduleAdminOverlayCleanup);
+        modal.addEventListener('hidePrevented.bs.modal', scheduleAdminOverlayCleanup);
+    });
+
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('[data-bs-dismiss="modal"], .modal-backdrop')) {
+            scheduleAdminOverlayCleanup();
+        }
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            scheduleAdminOverlayCleanup();
+        }
+    });
+
+    scheduleAdminOverlayCleanup();
+
     // Sidebar toggle functionality
     const sidebarToggle = document.getElementById('sidebarToggle');
     const sidebar = document.querySelector('.everythingb2c-sidebar');
@@ -147,6 +197,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Auto-hide alerts after 5 seconds
     const alerts = document.querySelectorAll('.alert');
     alerts.forEach(alert => {
+        if (alert.classList.contains('alert-success')) {
+            return;
+        }
+
         setTimeout(() => {
             alert.style.transition = 'opacity 0.5s ease';
             alert.style.opacity = '0';
@@ -263,4 +317,4 @@ function formatDate(dateString) {
         month: 'short',
         day: 'numeric'
     });
-} 
+}
