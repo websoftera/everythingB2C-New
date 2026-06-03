@@ -18,7 +18,7 @@ if (!$input || !isset($input['cart_id']) || !isset($input['quantity'])) {
     exit;
 }
 
-$cartId = (int)$input['cart_id'];
+$cartId = isset($_SESSION['user_id']) ? (int)$input['cart_id'] : (string)$input['cart_id'];
 $quantity = (int)$input['quantity'];
 
 // Validate quantity
@@ -42,7 +42,8 @@ if (isset($_SESSION['user_id'])) {
     }
 } else {
     // For guests, cartId is productId
-    $productId = $cartId;
+    $parts = explode(':', (string)$cartId, 2);
+    $productId = (int)$parts[0];
 }
 if ($productId) {
     $product = getProductById($productId);
@@ -70,7 +71,7 @@ if (isset($_SESSION['user_id'])) {
 } else {
     // Guest: update session cart
     if (!isset($_SESSION['cart']) || !is_array($_SESSION['cart'])) {
-    
+
         session_write_close();
         echo json_encode(['success' => false, 'message' => 'Cart not found']);
         exit;
@@ -78,13 +79,13 @@ if (isset($_SESSION['user_id'])) {
 
     if (isset($_SESSION['cart'][$cartId])) {
         $_SESSION['cart'][$cartId] = $quantity;
-    
+
         session_write_close();
         echo json_encode(['success' => true, 'message' => 'Cart updated']);
     } else {
-    
+
         session_write_close();
         echo json_encode(['success' => false, 'message' => 'Cart item not found']);
     }
 }
-?> 
+?>

@@ -8,7 +8,7 @@ date_default_timezone_set('Asia/Kolkata');
 function getCartSummary() {
     $total_items = 0;
     $total_amount = 0;
-    
+
     if (isset($_SESSION['user_id'])) {
         // User is logged in, get cart from database
         $cartItems = getCartItems($_SESSION['user_id']);
@@ -24,7 +24,7 @@ function getCartSummary() {
             $total_amount += ($item['selling_price'] * $item['quantity']);
         }
     }
-    
+
     return [
         'total_items' => $total_items,
         'total_amount' => $total_amount
@@ -41,10 +41,10 @@ function getAllCategories() {
 // Function to get all categories with real-time product counts
 function getAllCategoriesWithProductCount() {
     global $pdo;
-    $stmt = $pdo->query("SELECT c.*, COUNT(p.id) as product_count 
-                         FROM categories c 
-                         LEFT JOIN products p ON c.id = p.category_id AND p.is_active = 1 
-                         GROUP BY c.id 
+    $stmt = $pdo->query("SELECT c.*, COUNT(p.id) as product_count
+                         FROM categories c
+                         LEFT JOIN products p ON c.id = p.category_id AND p.is_active = 1
+                         GROUP BY c.id
                          ORDER BY c.name");
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
@@ -52,50 +52,50 @@ function getAllCategoriesWithProductCount() {
 // Function to get all categories with recursive product counts (including subcategories)
 function getAllCategoriesWithRecursiveProductCount() {
     global $pdo;
-    
+
     // First, get all categories
     $stmt = $pdo->query("SELECT * FROM categories ORDER BY name");
     $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
+
     // Create a map of category IDs to their recursive product counts
     $categoryProductCounts = [];
-    
+
     foreach ($categories as $category) {
         $categoryProductCounts[$category['id']] = getRecursiveProductCount($category['id']);
     }
-    
+
     // Update the categories array with recursive counts
     foreach ($categories as &$category) {
         $category['product_count'] = $categoryProductCounts[$category['id']];
     }
-    
+
     return $categories;
 }
 
 // Alternative function using a more efficient approach with CTE (Common Table Expression)
 function getAllCategoriesWithRecursiveProductCountOptimized() {
     global $pdo;
-    
+
     // Use a recursive CTE to get all category hierarchies and their product counts
     $sql = "
         WITH RECURSIVE category_tree AS (
             -- Base case: get all categories
-            SELECT 
-                id, 
-                name, 
-                parent_id, 
+            SELECT
+                id,
+                name,
+                parent_id,
                 slug,
                 0 as level,
                 CAST(id AS CHAR(1000)) as path
-            FROM categories 
-            
+            FROM categories
+
             UNION ALL
-            
+
             -- Recursive case: get child categories
-            SELECT 
-                c.id, 
-                c.name, 
-                c.parent_id, 
+            SELECT
+                c.id,
+                c.name,
+                c.parent_id,
                 c.slug,
                 ct.level + 1,
                 CONCAT(ct.path, ',', c.id) as path
@@ -103,7 +103,7 @@ function getAllCategoriesWithRecursiveProductCountOptimized() {
             INNER JOIN category_tree ct ON c.parent_id = ct.id
         ),
         category_product_counts AS (
-            SELECT 
+            SELECT
                 ct.id,
                 ct.name,
                 ct.parent_id,
@@ -115,19 +115,19 @@ function getAllCategoriesWithRecursiveProductCountOptimized() {
             FROM category_tree ct
             LEFT JOIN (
                 SELECT category_id, COUNT(*) as product_count
-                FROM products 
+                FROM products
                 WHERE is_active = 1
                 GROUP BY category_id
             ) p ON ct.id = p.category_id
             LEFT JOIN (
-                SELECT 
+                SELECT
                     parent_cat.id,
                     SUM(p2.product_count) as total_child_products
                 FROM category_tree parent_cat
                 LEFT JOIN category_tree child_cat ON child_cat.path LIKE CONCAT(parent_cat.path, ',%')
                 LEFT JOIN (
                     SELECT category_id, COUNT(*) as product_count
-                    FROM products 
+                    FROM products
                     WHERE is_active = 1
                     GROUP BY category_id
                 ) p2 ON child_cat.id = p2.category_id
@@ -135,7 +135,7 @@ function getAllCategoriesWithRecursiveProductCountOptimized() {
                 GROUP BY parent_cat.id
             ) child_p ON ct.id = child_p.id
         )
-        SELECT 
+        SELECT
             id,
             name,
             parent_id,
@@ -145,7 +145,7 @@ function getAllCategoriesWithRecursiveProductCountOptimized() {
         FROM category_product_counts
         ORDER BY name
     ";
-    
+
     try {
         $stmt = $pdo->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -158,28 +158,28 @@ function getAllCategoriesWithRecursiveProductCountOptimized() {
 // Helper function to recursively count products in a category and all its subcategories
 function getRecursiveProductCount($categoryId) {
     global $pdo;
-    
+
     // Validate category ID
     if (!$categoryId || !is_numeric($categoryId)) {
         return 0;
     }
-    
+
     // Get direct products in this category
     $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM products WHERE category_id = ? AND is_active = 1");
     $stmt->execute([$categoryId]);
     $directCount = (int)$stmt->fetch(PDO::FETCH_ASSOC)['count'];
-    
+
     // Get all subcategories
     $stmt = $pdo->prepare("SELECT id FROM categories WHERE parent_id = ?");
     $stmt->execute([$categoryId]);
     $subcategories = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
+
     // Recursively count products in subcategories
     $subcategoryCount = 0;
     foreach ($subcategories as $subcategory) {
         $subcategoryCount += getRecursiveProductCount($subcategory['id']);
     }
-    
+
     return $directCount + $subcategoryCount;
 }
 
@@ -201,8 +201,8 @@ function getSubcategoriesByParentId($parentId) {
 // Function to get category with its parent information
 function getCategoryWithParent($categoryId) {
     global $pdo;
-    $stmt = $pdo->prepare("SELECT c.*, p.name as parent_name FROM categories c 
-                          LEFT JOIN categories p ON c.parent_id = p.id 
+    $stmt = $pdo->prepare("SELECT c.*, p.name as parent_name FROM categories c
+                          LEFT JOIN categories p ON c.parent_id = p.id
                           WHERE c.id = ?");
     $stmt->execute([$categoryId]);
     return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -211,20 +211,20 @@ function getCategoryWithParent($categoryId) {
 // Function to get category by slug
 function getCategoryBySlug($slug) {
     global $pdo;
-    
+
     $stmt = $pdo->prepare("SELECT * FROM categories WHERE slug = ?");
     $stmt->execute([$slug]);
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
     return $result;
 }
 
 // Function to get product by ID
 function getProductById($id) {
     global $pdo;
-    $stmt = $pdo->prepare("SELECT p.*, c.name as category_name, c.slug as category_slug 
-                          FROM products p 
-                          LEFT JOIN categories c ON p.category_id = c.id 
+    $stmt = $pdo->prepare("SELECT p.*, c.name as category_name, c.slug as category_slug
+                          FROM products p
+                          LEFT JOIN categories c ON p.category_id = c.id
                           WHERE p.id = ? AND p.is_active = 1");
     $stmt->execute([$id]);
     return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -233,29 +233,29 @@ function getProductById($id) {
 // Function to get products by category
 function getProductsByCategory($categoryId, $limit = null) {
     global $pdo;
-    
-    $sql = "SELECT p.*, c.name as category_name FROM products p 
-            LEFT JOIN categories c ON p.category_id = c.id 
-            WHERE p.category_id = ? AND p.is_active = 1 
+
+    $sql = "SELECT p.*, c.name as category_name FROM products p
+            LEFT JOIN categories c ON p.category_id = c.id
+            WHERE p.category_id = ? AND p.is_active = 1
             ORDER BY CASE WHEN p.sort_order IS NULL OR p.sort_order = 0 THEN 1 ELSE 0 END, p.sort_order ASC, p.created_at DESC";
-    
+
     if ($limit) {
         $sql .= " LIMIT " . (int)$limit;
     }
-    
+
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$categoryId]);
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
+
     return $result;
 }
 
 // Function to get featured products
 function getFeaturedProducts($limit = 8) {
     global $pdo;
-    $sql = "SELECT p.*, c.name as category_name FROM products p 
-            LEFT JOIN categories c ON p.category_id = c.id 
-            WHERE p.is_featured = 1 AND p.is_active = 1 
+    $sql = "SELECT p.*, c.name as category_name FROM products p
+            LEFT JOIN categories c ON p.category_id = c.id
+            WHERE p.is_featured = 1 AND p.is_active = 1
             ORDER BY p.created_at DESC LIMIT " . (int)$limit;
     $stmt = $pdo->query($sql);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -264,9 +264,9 @@ function getFeaturedProducts($limit = 8) {
 // Function to get discounted products
 function getDiscountedProducts($limit = 8) {
     global $pdo;
-    $sql = "SELECT p.*, c.name as category_name FROM products p 
-            LEFT JOIN categories c ON p.category_id = c.id 
-            WHERE p.is_discounted = 1 AND p.is_active = 1 
+    $sql = "SELECT p.*, c.name as category_name FROM products p
+            LEFT JOIN categories c ON p.category_id = c.id
+            WHERE p.is_discounted = 1 AND p.is_active = 1
             ORDER BY p.discount_percentage DESC LIMIT " . (int)$limit;
     $stmt = $pdo->query($sql);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -275,15 +275,15 @@ function getDiscountedProducts($limit = 8) {
 // Function to get all products
 function getAllProducts($limit = null) {
     global $pdo;
-    $sql = "SELECT p.*, c.name as category_name FROM products p 
-            LEFT JOIN categories c ON p.category_id = c.id 
-            WHERE p.is_active = 1 
+    $sql = "SELECT p.*, c.name as category_name FROM products p
+            LEFT JOIN categories c ON p.category_id = c.id
+            WHERE p.is_active = 1
             ORDER BY CASE WHEN p.sort_order IS NULL OR p.sort_order = 0 THEN 1 ELSE 0 END, p.sort_order ASC, p.created_at DESC";
-    
+
     if ($limit) {
         $sql .= " LIMIT " . (int)$limit;
     }
-    
+
     $stmt = $pdo->query($sql);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
@@ -291,9 +291,9 @@ function getAllProducts($limit = null) {
 // Function to get product by slug
 function getProductBySlug($slug) {
     global $pdo;
-    $stmt = $pdo->prepare("SELECT p.*, c.name as category_name, c.slug as category_slug 
-                          FROM products p 
-                          LEFT JOIN categories c ON p.category_id = c.id 
+    $stmt = $pdo->prepare("SELECT p.*, c.name as category_name, c.slug as category_slug
+                          FROM products p
+                          LEFT JOIN categories c ON p.category_id = c.id
                           WHERE p.slug = ? AND p.is_active = 1");
     $stmt->execute([$slug]);
     return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -310,9 +310,9 @@ function getProductImages($productId) {
 // Function to get related products
 function getRelatedProducts($productId, $categoryId, $limit = 4) {
     global $pdo;
-    $sql = "SELECT p.*, c.name as category_name FROM products p 
-            LEFT JOIN categories c ON p.category_id = c.id 
-            WHERE p.category_id = ? AND p.id != ? AND p.is_active = 1 
+    $sql = "SELECT p.*, c.name as category_name FROM products p
+            LEFT JOIN categories c ON p.category_id = c.id
+            WHERE p.category_id = ? AND p.id != ? AND p.is_active = 1
             ORDER BY RAND() LIMIT " . (int)$limit;
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$categoryId, $productId]);
@@ -323,20 +323,20 @@ function getRelatedProducts($productId, $categoryId, $limit = 4) {
 function searchProducts($query, $limit = 20) {
     global $pdo;
     $searchTerm = "%$query%";
-    
+
     // Enhanced search query that includes category names and their parent/grandparent categories
-    $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug FROM products p 
-            LEFT JOIN categories c ON p.category_id = c.id 
+    $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug FROM products p
+            LEFT JOIN categories c ON p.category_id = c.id
             WHERE (p.name LIKE ? OR p.description LIKE ? OR c.name LIKE ? OR EXISTS (
-                SELECT 1 FROM categories parent 
+                SELECT 1 FROM categories parent
                 WHERE parent.id = c.parent_id AND parent.name LIKE ?
             ) OR EXISTS (
-                SELECT 1 FROM categories grandparent 
-                JOIN categories parent ON parent.parent_id = grandparent.id 
+                SELECT 1 FROM categories grandparent
+                JOIN categories parent ON parent.parent_id = grandparent.id
                 WHERE parent.id = c.parent_id AND grandparent.name LIKE ?
-            )) AND p.is_active = 1 
+            )) AND p.is_active = 1
             ORDER BY p.name LIMIT " . (int)$limit;
-    
+
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -377,6 +377,190 @@ function formatPrice($price) {
     return '₹ ' . number_format($price, 0, '.', '');
 }
 
+function normalizeFrontendVariationAttributes($attributesJson) {
+    $attributes = json_decode($attributesJson ?: '[]', true);
+    if (!is_array($attributes)) {
+        return [];
+    }
+
+    $normalized = [];
+    foreach ($attributes as $attribute) {
+        $attributeId = (int)($attribute['attribute_id'] ?? 0);
+        $valueId = (int)($attribute['value_id'] ?? 0);
+        if ($attributeId <= 0 || $valueId <= 0) {
+            continue;
+        }
+
+        $normalized[] = [
+            'attribute_id' => $attributeId,
+            'attribute_name' => trim((string)($attribute['attribute_name'] ?? '')),
+            'value_id' => $valueId,
+            'value' => trim((string)($attribute['value'] ?? ''))
+        ];
+    }
+
+    return $normalized;
+}
+
+function getProductVariationData($productId) {
+    global $pdo;
+
+    try {
+        $stmt = $pdo->prepare("SELECT has_variations FROM products WHERE id = ? AND is_active = 1");
+        $stmt->execute([$productId]);
+        if (!(int)$stmt->fetchColumn()) {
+            return ['has_variations' => false, 'attributes' => [], 'variations' => []];
+        }
+
+        $stmt = $pdo->prepare("SELECT * FROM product_variations WHERE product_id = ? ORDER BY sort_order ASC, id ASC");
+        $stmt->execute([$productId]);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        return ['has_variations' => false, 'attributes' => [], 'variations' => []];
+    }
+
+    $attributeIds = [];
+    $valueIds = [];
+    foreach ($rows as $row) {
+        foreach (normalizeFrontendVariationAttributes($row['attributes_json'] ?? '[]') as $attribute) {
+            $attributeIds[] = $attribute['attribute_id'];
+            $valueIds[] = $attribute['value_id'];
+        }
+    }
+
+    if (!$attributeIds || !$valueIds) {
+        return ['has_variations' => false, 'attributes' => [], 'variations' => []];
+    }
+
+    $attributeIds = array_values(array_unique($attributeIds));
+    $valueIds = array_values(array_unique($valueIds));
+    $attributePlaceholders = implode(',', array_fill(0, count($attributeIds), '?'));
+    $valuePlaceholders = implode(',', array_fill(0, count($valueIds), '?'));
+
+    $stmt = $pdo->prepare("SELECT id, name FROM product_attributes WHERE is_active = 1 AND id IN ($attributePlaceholders)");
+    $stmt->execute($attributeIds);
+    $activeAttributes = [];
+    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $attribute) {
+        $activeAttributes[(int)$attribute['id']] = $attribute['name'];
+    }
+
+    $stmt = $pdo->prepare("SELECT id, attribute_id, value FROM product_attribute_values WHERE id IN ($valuePlaceholders)");
+    $stmt->execute($valueIds);
+    $activeValues = [];
+    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $value) {
+        $activeValues[(int)$value['id']] = [
+            'id' => (int)$value['id'],
+            'attribute_id' => (int)$value['attribute_id'],
+            'value' => $value['value']
+        ];
+    }
+
+    $groups = [];
+    $variations = [];
+    $seenKeys = [];
+
+    foreach ($rows as $row) {
+        $items = [];
+        foreach (normalizeFrontendVariationAttributes($row['attributes_json'] ?? '[]') as $item) {
+            if (!isset($activeAttributes[$item['attribute_id']], $activeValues[$item['value_id']])) {
+                $items = [];
+                break;
+            }
+
+            $value = $activeValues[$item['value_id']];
+            if ($value['attribute_id'] !== $item['attribute_id']) {
+                $items = [];
+                break;
+            }
+
+            $items[] = [
+                'attribute_id' => $item['attribute_id'],
+                'attribute_name' => $activeAttributes[$item['attribute_id']],
+                'value_id' => $item['value_id'],
+                'value' => $value['value']
+            ];
+        }
+
+        if (!$items) {
+            continue;
+        }
+
+        $keyParts = array_map(function ($item) {
+            return $item['attribute_id'] . ':' . $item['value_id'];
+        }, $items);
+        sort($keyParts);
+        $key = implode('|', $keyParts);
+        if (isset($seenKeys[$key])) {
+            continue;
+        }
+        $seenKeys[$key] = true;
+
+        foreach ($items as $item) {
+            if (!isset($groups[$item['attribute_id']])) {
+                $groups[$item['attribute_id']] = [
+                    'id' => $item['attribute_id'],
+                    'name' => $item['attribute_name'],
+                    'values' => []
+                ];
+            }
+            $groups[$item['attribute_id']]['values'][$item['value_id']] = [
+                'id' => $item['value_id'],
+                'value' => $item['value']
+            ];
+        }
+
+        $labelParts = array_map(function ($item) {
+            return $item['attribute_name'] . ': ' . $item['value'];
+        }, $items);
+
+        $variations[] = [
+            'id' => (int)$row['id'],
+            'label' => implode(' / ', $labelParts),
+            'attributes' => $items,
+            'mrp' => (float)$row['mrp'],
+            'selling_price' => (float)$row['selling_price'],
+            'stock_quantity' => (int)$row['stock_quantity'],
+            'image_path' => $row['image_path'] ?: null
+        ];
+    }
+
+    foreach ($groups as &$group) {
+        $group['values'] = array_values($group['values']);
+    }
+
+    return [
+        'has_variations' => !empty($variations),
+        'attributes' => array_values($groups),
+        'variations' => $variations
+    ];
+}
+
+function getProductVariationById($productId, $variationId) {
+    foreach (getProductVariationData($productId)['variations'] as $variation) {
+        if ((int)$variation['id'] === (int)$variationId) {
+            return $variation;
+        }
+    }
+
+    return null;
+}
+
+function ensureCartVariationSchema() {
+    global $pdo;
+
+    try {
+        $pdo->exec("ALTER TABLE cart ADD COLUMN variation_id INT NULL DEFAULT NULL");
+    } catch (PDOException $e) {
+        if (strpos($e->getMessage(), 'Duplicate column') === false && strpos($e->getMessage(), '1060') === false) {
+            throw $e;
+        }
+    }
+}
+
+function cartSessionKey($productId, $variationId = null) {
+    return $variationId ? ((int)$productId . ':' . (int)$variationId) : (string)(int)$productId;
+}
+
 // Function to check if user is logged in
 function isLoggedIn() {
     return isset($_SESSION['user_id']);
@@ -385,7 +569,7 @@ function isLoggedIn() {
 // Function to get current user
 function getCurrentUser() {
     if (!isLoggedIn()) return null;
-    
+
     global $pdo;
     $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
     $stmt->execute([$_SESSION['user_id']]);
@@ -393,35 +577,57 @@ function getCurrentUser() {
 }
 
 // Function to add to cart
-function addToCart($userId, $productId, $quantity = 1) {
+function addToCart($userId, $productId, $quantity = 1, $variationId = null) {
     global $pdo;
-    
+    ensureCartVariationSchema();
+
     // Check if product already in cart
-    $stmt = $pdo->prepare("SELECT * FROM cart WHERE user_id = ? AND product_id = ?");
-    $stmt->execute([$userId, $productId]);
+    if ($variationId) {
+        $stmt = $pdo->prepare("SELECT * FROM cart WHERE user_id = ? AND product_id = ? AND variation_id = ?");
+        $stmt->execute([$userId, $productId, $variationId]);
+    } else {
+        $stmt = $pdo->prepare("SELECT * FROM cart WHERE user_id = ? AND product_id = ? AND variation_id IS NULL");
+        $stmt->execute([$userId, $productId]);
+    }
     $existing = $stmt->fetch();
-    
+
     if ($existing) {
         // Update quantity (replace, don't add)
-        $stmt = $pdo->prepare("UPDATE cart SET quantity = ? WHERE user_id = ? AND product_id = ?");
-        return $stmt->execute([$quantity, $userId, $productId]);
+        $stmt = $pdo->prepare("UPDATE cart SET quantity = ? WHERE id = ?");
+        return $stmt->execute([$quantity, $existing['id']]);
     } else {
         // Add new item
-        $stmt = $pdo->prepare("INSERT INTO cart (user_id, product_id, quantity) VALUES (?, ?, ?)");
-        return $stmt->execute([$userId, $productId, $quantity]);
+        $stmt = $pdo->prepare("INSERT INTO cart (user_id, product_id, variation_id, quantity) VALUES (?, ?, ?, ?)");
+        return $stmt->execute([$userId, $productId, $variationId ?: null, $quantity]);
     }
 }
 
 // Function to get cart items
 function getCartItems($userId = null) {
+    ensureCartVariationSchema();
+
     if (isLoggedIn() && $userId) {
         // DB cart
         global $pdo;
-        $stmt = $pdo->prepare("SELECT c.*, p.name, p.selling_price, p.mrp, p.main_image, p.slug, p.stock_quantity, p.gst_type, p.gst_rate, p.shipping_charge, p.hsn FROM cart c JOIN products p ON c.product_id = p.id WHERE c.user_id = ?");
+        $stmt = $pdo->prepare("
+            SELECT c.*, p.name, p.slug, p.gst_type, p.gst_rate, p.shipping_charge, p.hsn,
+                   COALESCE(pv.selling_price, p.selling_price) AS selling_price,
+                   COALESCE(pv.mrp, p.mrp) AS mrp,
+                   COALESCE(pv.image_path, p.main_image) AS main_image,
+                   COALESCE(pv.stock_quantity, p.stock_quantity) AS stock_quantity,
+                   pv.variation_label
+            FROM cart c
+            JOIN products p ON c.product_id = p.id
+            LEFT JOIN product_variations pv ON c.variation_id = pv.id AND pv.product_id = p.id
+            WHERE c.user_id = ?
+        ");
         $stmt->execute([$userId]);
         $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
         foreach ($items as &$item) {
             $item['name'] = cleanProductName($item['name']);
+            if (!empty($item['variation_label'])) {
+                $item['name'] .= ' - ' . $item['variation_label'];
+            }
         }
         return $items;
     } else {
@@ -433,11 +639,11 @@ function getCartItems($userId = null) {
 // Function to add to wishlist
 function addToWishlist($userId, $productId) {
     global $pdo;
-    
+
     if (isInWishlist($userId, $productId)) {
         return false; // Already in wishlist
     }
-    
+
     $stmt = $pdo->prepare("INSERT INTO wishlist (user_id, product_id) VALUES (?, ?)");
     return $stmt->execute([$userId, $productId]);
 }
@@ -452,7 +658,7 @@ function removeFromWishlist($userId, $productId) {
 // Function to get wishlist items
 function getWishlistItems($userId = null, $limit = null, $offset = 0) {
     global $pdo;
-    
+
     // Support counting total items
     if ($limit === 'count') {
         if (isLoggedIn() && $userId) {
@@ -502,10 +708,10 @@ function generateRandomString($length = 10) {
 }
 
 // --- SESSION-BASED CART & WISHLIST FOR GUESTS ---
-function addToSessionCart($productId, $quantity = 1) {
+function addToSessionCart($productId, $quantity = 1, $variationId = null) {
     if (!isset($_SESSION['cart'])) $_SESSION['cart'] = [];
     // Always set the quantity (replace, don't add)
-    $_SESSION['cart'][$productId] = $quantity;
+    $_SESSION['cart'][cartSessionKey($productId, $variationId)] = $quantity;
     return true;
 }
 
@@ -521,14 +727,32 @@ function getSessionCartItems() {
     global $pdo;
     $items = [];
     if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) return $items;
-    foreach ($_SESSION['cart'] as $productId => $qty) {
-        $stmt = $pdo->prepare("SELECT id, name, selling_price, mrp, main_image, slug, gst_type, gst_rate, shipping_charge, hsn FROM products WHERE id = ?");
+    foreach ($_SESSION['cart'] as $cartKey => $qty) {
+        $parts = explode(':', (string)$cartKey, 2);
+        $productId = (int)$parts[0];
+        $variationId = isset($parts[1]) ? (int)$parts[1] : null;
+
+        $stmt = $pdo->prepare("SELECT id, name, selling_price, mrp, main_image, slug, gst_type, gst_rate, shipping_charge, hsn, stock_quantity FROM products WHERE id = ?");
         $stmt->execute([$productId]);
         $product = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($product) {
+            $variation = $variationId ? getProductVariationById($productId, $variationId) : null;
+            if ($variation) {
+                $product['selling_price'] = $variation['selling_price'];
+                $product['mrp'] = $variation['mrp'];
+                $product['main_image'] = $variation['image_path'] ?: $product['main_image'];
+                $product['stock_quantity'] = $variation['stock_quantity'];
+                $product['variation_id'] = $variation['id'];
+                $product['variation_label'] = $variation['label'];
+            }
             $product['name'] = cleanProductName($product['name']);
+            if (!empty($product['variation_label'])) {
+                $product['name'] .= ' - ' . $product['variation_label'];
+            }
             $product['quantity'] = $qty;
             $product['product_id'] = $product['id'];
+            $product['id'] = $cartKey;
+            $product['cart_key'] = $cartKey;
             $items[] = $product;
         }
     }
@@ -560,10 +784,10 @@ function getSessionWishlistItems($limit = null, $offset = 0) {
     global $pdo;
     $items = [];
     if (!isset($_SESSION['wishlist']) || empty($_SESSION['wishlist'])) return $items;
-    
+
     // Apply pagination to the session array
     $wishlistArray = $_SESSION['wishlist'];
-    
+
     if ($limit !== null && $limit !== 'count') {
         $wishlistArray = array_slice($wishlistArray, $offset, $limit);
     }
@@ -652,7 +876,7 @@ function calculateGSTAmount($price, $gstRate) {
 
 function getGSTBreakdown($price, $gstType, $gstRate) {
     $gstAmount = calculateGSTAmount($price, $gstRate);
-    
+
     if ($gstType === 'sgst_cgst') {
         $sgstRate = $cgstRate = $gstRate / 2;
         return [
@@ -682,26 +906,26 @@ function calculateCartTotals($cartItems) {
     $sgstTotal = 0;
     $cgstTotal = 0;
     $igstTotal = 0;
-    
+
     foreach ($cartItems as $item) {
         $itemTotal = $item['selling_price'] * $item['quantity'];
         $subtotal += $itemTotal;
-        
+
         // Calculate GST for this item
         $gstBreakdown = getGSTBreakdown($itemTotal, $item['gst_type'], $item['gst_rate']);
         $totalGST += $gstBreakdown['total_gst'];
         $sgstTotal += $gstBreakdown['sgst_amount'];
         $cgstTotal += $gstBreakdown['cgst_amount'];
         $igstTotal += $gstBreakdown['igst_amount'];
-        
+
         // Add shipping charge if exists
         if ($item['shipping_charge'] !== null) {
             $totalShipping += $item['shipping_charge'];
         }
     }
-    
+
     $grandTotal = $subtotal + $totalGST + $totalShipping;
-    
+
     return [
         'subtotal' => $subtotal,
         'total_gst' => $totalGST,
@@ -736,10 +960,10 @@ function generateOrderNumber() {
 
 function createOrder($userId, $addressId, $paymentMethod, $gstNumber = null, $companyName = null, $isBusinessPurchase = false, $upiTransactionId = null, $upiScreenshot = null) {
     global $pdo;
-    
+
     try {
         $pdo->beginTransaction();
-        
+
         // Get cart items and address
         $cartItems = getCartItems($userId);
         if (empty($cartItems)) {
@@ -762,9 +986,9 @@ function createOrder($userId, $addressId, $paymentMethod, $gstNumber = null, $co
         $trackingId = generateTrackingId();
         $orderNumber = generateOrderNumber();
         // --- Direct Payment: add UPI fields if provided ---
-        $shippingAddressText = $address['name'] . "\n" . 
-                               $address['address_line1'] . ($address['address_line2'] ? "\n" . $address['address_line2'] : "") . "\n" . 
-                               $address['city'] . ", " . $address['state'] . " - " . $address['pincode'] . "\n" . 
+        $shippingAddressText = $address['name'] . "\n" .
+                               $address['address_line1'] . ($address['address_line2'] ? "\n" . $address['address_line2'] : "") . "\n" .
+                               $address['city'] . ", " . $address['state'] . " - " . $address['pincode'] . "\n" .
                                "Phone: " . $address['phone'];
 
         $columns = "user_id, address_id, order_number, tracking_id, total_amount, subtotal, gst_amount, shipping_charge, payment_method, gst_number, company_name, is_business_purchase, order_status_id, payment_status, shipping_address, billing_city, billing_state, billing_pincode";
@@ -825,22 +1049,22 @@ function createOrder($userId, $addressId, $paymentMethod, $gstNumber = null, $co
         $stmt = $pdo->prepare("DELETE FROM cart WHERE user_id = ?");
         $stmt->execute([$userId]);
         $pdo->commit();
-        
+
         // Send email notifications (after successful order creation)
         try {
             require_once __DIR__ . '/email_functions.php';
-            
+
             // Send notification to user
             sendOrderPlacedUserNotification($userId, $orderId);
-            
+
             // Send notification to admin
             sendOrderPlacedAdminNotification($orderId);
-            
+
         } catch (Exception $emailError) {
             // Log email error but don't fail the order
             error_log("Email notification failed for order {$orderId}: " . $emailError->getMessage());
         }
-        
+
         return ['success' => true, 'order_id' => $orderId, 'tracking_id' => $trackingId, 'order_number' => $orderNumber];
     } catch (Exception $e) {
         $pdo->rollBack();
@@ -856,55 +1080,55 @@ function addOrderStatusHistory($orderId, $statusId, $description = null, $update
 
 function updateOrderStatus($orderId, $statusId, $description = null, $externalTrackingId = null, $externalTrackingLink = null, $estimatedDeliveryDate = null) {
     global $pdo;
-    
+
     try {
         $pdo->beginTransaction();
-        
+
         // Get current order status for comparison
         $stmt = $pdo->prepare("SELECT order_status_id, user_id FROM orders WHERE id = ?");
         $stmt->execute([$orderId]);
         $currentOrder = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+
         if (!$currentOrder) {
             throw new Exception('Order not found');
         }
-        
+
         $oldStatusId = $currentOrder['order_status_id'];
         $userId = $currentOrder['user_id'];
-        
+
         // Update order status
         $stmt = $pdo->prepare("UPDATE orders SET order_status_id = ?, status_description = ?, external_tracking_id = ?, external_tracking_link = ?, estimated_delivery_date = ? WHERE id = ?");
         $stmt->execute([$statusId, $description, $externalTrackingId, $externalTrackingLink, $estimatedDeliveryDate, $orderId]);
-        
+
         // Add to status history
         addOrderStatusHistory($orderId, $statusId, $description, 'admin');
-        
+
         $pdo->commit();
-        
+
         // Send email notification if status actually changed
         if ($oldStatusId != $statusId) {
             try {
                 require_once __DIR__ . '/email_functions.php';
-                
+
                 // Get status names for email
                 $stmt = $pdo->prepare("SELECT name FROM order_statuses WHERE id IN (?, ?)");
                 $stmt->execute([$oldStatusId, $statusId]);
                 $statuses = $stmt->fetchAll(PDO::FETCH_COLUMN);
-                
+
                 $oldStatusName = isset($statuses[0]) ? $statuses[0] : null;
                 $newStatusName = isset($statuses[1]) ? $statuses[1] : null;
-                
+
                 // Send notification to user
                 sendOrderStatusChangedNotification($userId, $orderId, $newStatusName, $oldStatusName);
-                
+
             } catch (Exception $emailError) {
                 // Log email error but don't fail the status update
                 error_log("Email notification failed for order status update {$orderId}: " . $emailError->getMessage());
             }
         }
-        
+
         return true;
-        
+
     } catch (Exception $e) {
         $pdo->rollBack();
         return false;
@@ -915,11 +1139,11 @@ function getOrderById($orderId, $userId = null) {
     global $pdo;
     $sql = "SELECT o.*, os.name as status_name, os.color as status_color, os.description as status_description,
                    a.name as address_name, a.phone as address_phone, a.address_line1, a.address_line2, a.city, a.state, a.pincode
-            FROM orders o 
+            FROM orders o
             LEFT JOIN order_statuses os ON o.order_status_id = os.id
             LEFT JOIN addresses a ON o.address_id = a.id
             WHERE o.id = ?";
-    
+
     if ($userId) {
         $sql .= " AND o.user_id = ?";
         $stmt = $pdo->prepare($sql);
@@ -928,15 +1152,15 @@ function getOrderById($orderId, $userId = null) {
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$orderId]);
     }
-    
+
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
 function getOrderItems($orderId) {
     global $pdo;
-    $stmt = $pdo->prepare("SELECT oi.*, p.name, p.main_image, p.slug, p.sku, oi.hsn 
-                          FROM order_items oi 
-                          JOIN products p ON oi.product_id = p.id 
+    $stmt = $pdo->prepare("SELECT oi.*, p.name, p.main_image, p.slug, p.sku, oi.hsn
+                          FROM order_items oi
+                          JOIN products p ON oi.product_id = p.id
                           WHERE oi.order_id = ?");
     $stmt->execute([$orderId]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -944,10 +1168,10 @@ function getOrderItems($orderId) {
 
 function getOrderStatusHistory($orderId) {
     global $pdo;
-    $stmt = $pdo->prepare("SELECT osh.*, os.name as status_name, os.color as status_color 
-                          FROM order_status_history osh 
-                          JOIN order_statuses os ON osh.order_status_id = os.id 
-                          WHERE osh.order_id = ? 
+    $stmt = $pdo->prepare("SELECT osh.*, os.name as status_name, os.color as status_color
+                          FROM order_status_history osh
+                          JOIN order_statuses os ON osh.order_status_id = os.id
+                          WHERE osh.order_id = ?
                           ORDER BY osh.created_at DESC");
     $stmt->execute([$orderId]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -955,10 +1179,10 @@ function getOrderStatusHistory($orderId) {
 
 function getUserOrders($userId, $limit = null) {
     global $pdo;
-    $sql = "SELECT o.*, os.name as status_name, os.color as status_color, a.state as state FROM orders o 
-            LEFT JOIN order_statuses os ON o.order_status_id = os.id 
-            LEFT JOIN addresses a ON o.address_id = a.id 
-            WHERE o.user_id = ? 
+    $sql = "SELECT o.*, os.name as status_name, os.color as status_color, a.state as state FROM orders o
+            LEFT JOIN order_statuses os ON o.order_status_id = os.id
+            LEFT JOIN addresses a ON o.address_id = a.id
+            WHERE o.user_id = ?
             ORDER BY o.created_at DESC";
     if ($limit) {
         $sql .= " LIMIT " . intval($limit);
@@ -994,7 +1218,7 @@ function deleteCustomOrderStatus($statusId) {
     if ($stmt->fetchColumn() > 0) {
         return false; // Status is in use
     }
-    
+
     $stmt = $pdo->prepare("DELETE FROM order_statuses WHERE id = ? AND is_system = FALSE");
     return $stmt->execute([$statusId]);
 }
@@ -1063,16 +1287,16 @@ function getCategoryPath($categoryId, $categories = null) {
 function generateBreadcrumb($pageTitle, $categoryPath = null, $productName = null) {
     global $base_url;
     $base = isset($base_url) ? $base_url : '';
-    
+
     $breadcrumbs = [];
-    
+
     // Always start with Home
     $breadcrumbs[] = [
         'title' => 'Home',
         'url' => $base . 'index.php',
         'active' => false
     ];
-    
+
     // Add category path if provided
     if ($categoryPath && is_array($categoryPath)) {
         foreach ($categoryPath as $category) {
@@ -1083,7 +1307,7 @@ function generateBreadcrumb($pageTitle, $categoryPath = null, $productName = nul
             ];
         }
     }
-    
+
     // Add current page/product - avoid repetition
     if ($productName) {
         // Check if the product name is already in the breadcrumb (from category path)
@@ -1091,7 +1315,7 @@ function generateBreadcrumb($pageTitle, $categoryPath = null, $productName = nul
         if ($categoryPath && !empty($categoryPath)) {
             $lastCategoryName = end($categoryPath)['name'];
         }
-        
+
         // Only add product name if it's different from the last category
         if ($productName !== $lastCategoryName) {
             $breadcrumbs[] = [
@@ -1111,7 +1335,7 @@ function generateBreadcrumb($pageTitle, $categoryPath = null, $productName = nul
         if ($categoryPath && !empty($categoryPath)) {
             $lastCategoryName = end($categoryPath)['name'];
         }
-        
+
         // Only add page title if it's different from the last category
         if ($pageTitle !== $lastCategoryName) {
             $breadcrumbs[] = [
@@ -1126,7 +1350,7 @@ function generateBreadcrumb($pageTitle, $categoryPath = null, $productName = nul
             }
         }
     }
-    
+
     return $breadcrumbs;
 }
 
@@ -1134,10 +1358,10 @@ function generateBreadcrumb($pageTitle, $categoryPath = null, $productName = nul
 function renderBreadcrumb($breadcrumbs) {
     $html = '<nav aria-label="breadcrumb" class="breadcrumb-nav" style="margin-bottom: 10px;">';
     $html .= '<ol class="breadcrumb">';
-    
+
     foreach ($breadcrumbs as $index => $crumb) {
         $isLast = $index === count($breadcrumbs) - 1;
-        
+
         if ($isLast || $crumb['active']) {
             $html .= '<li class="breadcrumb-item active" aria-current="page">';
             $html .= htmlspecialchars($crumb['title']);
@@ -1150,10 +1374,10 @@ function renderBreadcrumb($breadcrumbs) {
             $html .= '</li>';
         }
     }
-    
+
     $html .= '</ol>';
     $html .= '</nav>';
-    
+
     return $html;
 }
 
@@ -1183,7 +1407,7 @@ function clearUserCart($userId) {
 function buildPaginationUrl($pageType, $page, $params = []) {
     // Remove the page parameter from params if it exists
     unset($params['page']);
-    
+
     // Build the base URL
     if ($pageType === 'products') {
         $baseUrl = 'products.php';
@@ -1195,13 +1419,13 @@ function buildPaginationUrl($pageType, $page, $params = []) {
             unset($params['slug']);
         }
     }
-    
+
     // Add the page parameter
     $params['page'] = $page;
-    
+
     // Build query string
     $queryString = http_build_query($params);
-    
+
     // Construct the final URL
     if ($pageType === 'products') {
         return $baseUrl . ($queryString ? '?' . $queryString : '');
@@ -1216,25 +1440,25 @@ function buildPaginationUrl($pageType, $page, $params = []) {
 
 /**
  * Create DTDC order for shipping
- * 
+ *
  * @param int $orderId Our order ID
  * @param array $orderData Order details
  * @return array|false DTDC order data or false on failure
  */
 function createDTDCOrder($orderId, $orderData) {
     global $pdo;
-    
+
     try {
         require_once __DIR__ . '/dtdc_api_new.php';
         $dtdcApi = new DTDCAPINew();
-        
+
         if (!$dtdcApi->isEnabled()) {
             return false;
         }
-        
+
         // Upload order to DTDC
         $dtdcResponse = $dtdcApi->uploadOrder($orderData);
-        
+
         if ($dtdcResponse && isset($dtdcResponse['order_id'])) {
             // Store DTDC order information
             $stmt = $pdo->prepare("INSERT INTO dtdc_orders (order_id, dtdc_order_id, dtdc_tracking_id, dtdc_reference_number, status) VALUES (?, ?, ?, ?, ?)");
@@ -1245,7 +1469,7 @@ function createDTDCOrder($orderId, $orderData) {
                 $dtdcResponse['reference_number'] ?? '',
                 'CREATED'
             ]);
-            
+
             // Update main orders table
             $stmt = $pdo->prepare("UPDATE orders SET dtdc_tracking_id = ?, dtdc_order_id = ?, dtdc_enabled = 1 WHERE id = ?");
             $stmt->execute([
@@ -1253,18 +1477,18 @@ function createDTDCOrder($orderId, $orderData) {
                 $dtdcResponse['order_id'],
                 $orderId
             ]);
-            
+
             // Log the API call
             logDTDCAPICall($orderId, 'create_order', $orderData, $dtdcResponse, 'SUCCESS');
-            
+
             return $dtdcResponse;
         }
-        
+
         // Log failed API call
         logDTDCAPICall($orderId, 'create_order', $orderData, $dtdcResponse, 'FAILED', 'Failed to create DTDC order');
-        
+
         return false;
-        
+
     } catch (Exception $e) {
         error_log("DTDC Order Creation Error: " . $e->getMessage());
         logDTDCAPICall($orderId, 'create_order', $orderData, [], 'ERROR', $e->getMessage());
@@ -1274,7 +1498,7 @@ function createDTDCOrder($orderId, $orderData) {
 
 /**
  * Get DTDC tracking information
- * 
+ *
  * @param string $trackingId DTDC tracking ID
  * @return array|false Tracking data or false on failure
  */
@@ -1282,32 +1506,32 @@ function getDTDCTracking($trackingId) {
     try {
         require_once __DIR__ . '/dtdc_api_new.php';
         $dtdcApi = new DTDCAPINew();
-        
+
         if (!$dtdcApi->isEnabled()) {
             return false;
         }
-        
+
         // Check cache first
         $cachedData = getDTDCCache($trackingId);
         if ($cachedData) {
             return $cachedData;
         }
-        
+
         // Fetch from DTDC API
         $trackingData = $dtdcApi->trackShipment($trackingId);
-        
+
         if ($trackingData) {
             // Cache the data
             setDTDCCache($trackingId, $trackingData);
-            
+
             // Store tracking events in database
             storeDTDCTrackingEvents($trackingId, $trackingData);
-            
+
             return $trackingData;
         }
-        
+
         return false;
-        
+
     } catch (Exception $e) {
         error_log("DTDC Tracking Error: " . $e->getMessage());
         return false;
@@ -1316,13 +1540,13 @@ function getDTDCTracking($trackingId) {
 
 /**
  * Get DTDC order by our order ID
- * 
+ *
  * @param int $orderId Our order ID
  * @return array|false DTDC order data or false on failure
  */
 function getDTDCOrderByOrderId($orderId) {
     global $pdo;
-    
+
     $stmt = $pdo->prepare("SELECT * FROM dtdc_orders WHERE order_id = ?");
     $stmt->execute([$orderId]);
     return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -1330,32 +1554,32 @@ function getDTDCOrderByOrderId($orderId) {
 
 /**
  * Update DTDC tracking events in database
- * 
+ *
  * @param string $trackingId DTDC tracking ID
  * @param array $trackingData Tracking data from API
  * @return bool Success status
  */
 function storeDTDCTrackingEvents($trackingId, $trackingData) {
     global $pdo;
-    
+
     try {
         // Get DTDC order ID
         $stmt = $pdo->prepare("SELECT id FROM dtdc_orders WHERE dtdc_tracking_id = ?");
         $stmt->execute([$trackingId]);
         $dtdcOrder = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+
         if (!$dtdcOrder) {
             return false;
         }
-        
+
         // Clear existing events for this order
         $stmt = $pdo->prepare("DELETE FROM dtdc_tracking_events WHERE dtdc_order_id = ?");
         $stmt->execute([$dtdcOrder['id']]);
-        
+
         // Insert new events
         if (isset($trackingData['events']) && is_array($trackingData['events'])) {
             $stmt = $pdo->prepare("INSERT INTO dtdc_tracking_events (dtdc_order_id, event_date, event_location, event_status, event_description) VALUES (?, ?, ?, ?, ?)");
-            
+
             foreach ($trackingData['events'] as $event) {
                 $eventDateTime = $event['date'] . ' ' . $event['time'];
                 $stmt->execute([
@@ -1367,16 +1591,16 @@ function storeDTDCTrackingEvents($trackingId, $trackingData) {
                 ]);
             }
         }
-        
+
         // Update DTDC order status
         $stmt = $pdo->prepare("UPDATE dtdc_orders SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?");
         $stmt->execute([
             $trackingData['status'] ?? 'UNKNOWN',
             $dtdcOrder['id']
         ]);
-        
+
         return true;
-        
+
     } catch (Exception $e) {
         error_log("DTDC Events Storage Error: " . $e->getMessage());
         return false;
@@ -1385,18 +1609,18 @@ function storeDTDCTrackingEvents($trackingId, $trackingData) {
 
 /**
  * Get DTDC tracking events for an order
- * 
+ *
  * @param int $orderId Our order ID
  * @return array Tracking events
  */
 function getDTDCTrackingEvents($orderId) {
     global $pdo;
-    
+
     $stmt = $pdo->prepare("
-        SELECT te.*, do.dtdc_tracking_id 
-        FROM dtdc_tracking_events te 
-        JOIN dtdc_orders do ON te.dtdc_order_id = do.id 
-        WHERE do.order_id = ? 
+        SELECT te.*, do.dtdc_tracking_id
+        FROM dtdc_tracking_events te
+        JOIN dtdc_orders do ON te.dtdc_order_id = do.id
+        WHERE do.order_id = ?
         ORDER BY te.event_date DESC
     ");
     $stmt->execute([$orderId]);
@@ -1405,46 +1629,46 @@ function getDTDCTrackingEvents($orderId) {
 
 /**
  * Cancel DTDC order
- * 
+ *
  * @param int $orderId Our order ID
  * @return bool Success status
  */
 function cancelDTDCOrder($orderId) {
     global $pdo;
-    
+
     try {
         // Get DTDC order details
         $dtdcOrder = getDTDCOrderByOrderId($orderId);
         if (!$dtdcOrder) {
             return false;
         }
-        
+
         require_once __DIR__ . '/dtdc_api_new.php';
         $dtdcApi = new DTDCAPINew();
-        
+
         if (!$dtdcApi->isEnabled()) {
             return false;
         }
-        
+
         // Cancel order in DTDC system
         $response = $dtdcApi->cancelOrder($dtdcOrder['dtdc_order_id']);
-        
+
         if ($response) {
             // Update DTDC order status
             $stmt = $pdo->prepare("UPDATE dtdc_orders SET status = 'CANCELLED', updated_at = CURRENT_TIMESTAMP WHERE order_id = ?");
             $stmt->execute([$orderId]);
-            
+
             // Log the API call
             logDTDCAPICall($orderId, 'cancel_order', ['dtdc_order_id' => $dtdcOrder['dtdc_order_id']], $response, 'SUCCESS');
-            
+
             return true;
         }
-        
+
         // Log failed API call
         logDTDCAPICall($orderId, 'cancel_order', ['dtdc_order_id' => $dtdcOrder['dtdc_order_id']], $response, 'FAILED', 'Failed to cancel DTDC order');
-        
+
         return false;
-        
+
     } catch (Exception $e) {
         error_log("DTDC Order Cancellation Error: " . $e->getMessage());
         logDTDCAPICall($orderId, 'cancel_order', [], [], 'ERROR', $e->getMessage());
@@ -1454,42 +1678,42 @@ function cancelDTDCOrder($orderId) {
 
 /**
  * Generate DTDC shipping label
- * 
+ *
  * @param int $orderId Our order ID
  * @return array|false Label data or false on failure
  */
 function generateDTDCShippingLabel($orderId) {
     global $pdo;
-    
+
     try {
         // Get DTDC order details
         $dtdcOrder = getDTDCOrderByOrderId($orderId);
         if (!$dtdcOrder) {
             return false;
         }
-        
+
         require_once __DIR__ . '/dtdc_api_new.php';
         $dtdcApi = new DTDCAPINew();
-        
+
         if (!$dtdcApi->isEnabled()) {
             return false;
         }
-        
+
         // Generate shipping label
         $labelData = $dtdcApi->generateShippingLabel($dtdcOrder['dtdc_order_id']);
-        
+
         if ($labelData) {
             // Log the API call
             logDTDCAPICall($orderId, 'generate_label', ['dtdc_order_id' => $dtdcOrder['dtdc_order_id']], $labelData, 'SUCCESS');
-            
+
             return $labelData;
         }
-        
+
         // Log failed API call
         logDTDCAPICall($orderId, 'generate_label', ['dtdc_order_id' => $dtdcOrder['dtdc_order_id']], $labelData, 'FAILED', 'Failed to generate shipping label');
-        
+
         return false;
-        
+
     } catch (Exception $e) {
         error_log("DTDC Label Generation Error: " . $e->getMessage());
         logDTDCAPICall($orderId, 'generate_label', [], [], 'ERROR', $e->getMessage());
@@ -1499,7 +1723,7 @@ function generateDTDCShippingLabel($orderId) {
 
 /**
  * Log DTDC API calls for debugging and monitoring
- * 
+ *
  * @param int $orderId Order ID
  * @param string $action API action
  * @param array $requestData Request data
@@ -1510,7 +1734,7 @@ function generateDTDCShippingLabel($orderId) {
  */
 function logDTDCAPICall($orderId, $action, $requestData, $responseData, $status = 'SUCCESS', $errorMessage = '') {
     global $pdo;
-    
+
     try {
         $stmt = $pdo->prepare("INSERT INTO dtdc_api_logs (order_id, action, request_data, response_data, status, error_message) VALUES (?, ?, ?, ?, ?, ?)");
         return $stmt->execute([
@@ -1533,14 +1757,14 @@ function logDTDCAPICall($orderId, $action, $requestData, $responseData, $status 
 
 function getDTDCCache($trackingId) {
     $cacheFile = __DIR__ . '/../cache/dtdc_' . md5($trackingId) . '.json';
-    
+
     if (file_exists($cacheFile)) {
         $cacheData = json_decode(file_get_contents($cacheFile), true);
         if ($cacheData && (time() - $cacheData['timestamp']) < 300) { // 5 minutes cache
             return $cacheData['data'];
         }
     }
-    
+
     return false;
 }
 
@@ -1549,13 +1773,13 @@ function setDTDCCache($trackingId, $data) {
     if (!is_dir($cacheDir)) {
         mkdir($cacheDir, 0755, true);
     }
-    
+
     $cacheFile = $cacheDir . '/dtdc_' . md5($trackingId) . '.json';
     $cacheData = [
         'timestamp' => time(),
         'data' => $data
     ];
-    
+
     return file_put_contents($cacheFile, json_encode($cacheData)) !== false;
 }
 
@@ -1571,18 +1795,18 @@ function setDTDCCache($trackingId, $data) {
  */
 function hasPermission($permissionCode, $adminId = null) {
     global $pdo;
-    
+
     if (!$adminId && isset($_SESSION['admin_id'])) {
         $adminId = $_SESSION['admin_id'];
     }
-    
+
     if (!$adminId) {
         return false;
     }
-    
+
     try {
         $stmt = $pdo->prepare("
-            SELECT COUNT(*) as count 
+            SELECT COUNT(*) as count
             FROM admins a
             INNER JOIN roles r ON a.role_id = r.id
             INNER JOIN role_permissions rp ON r.id = rp.role_id
@@ -1637,12 +1861,12 @@ function canAccess($permissionCode) {
     if (!isset($_SESSION['admin_id'])) {
         return false;
     }
-    
+
     // First check if permissions are cached in session
     if (isset($_SESSION['admin_permissions']) && is_array($_SESSION['admin_permissions'])) {
         return in_array($permissionCode, $_SESSION['admin_permissions']);
     }
-    
+
     // Fallback to database check
     return hasPermission($permissionCode, $_SESSION['admin_id']);
 }
@@ -1654,10 +1878,10 @@ function canAccess($permissionCode) {
  */
 function getRolePermissions($roleId) {
     global $pdo;
-    
+
     try {
         $stmt = $pdo->prepare("
-            SELECT p.* 
+            SELECT p.*
             FROM permissions p
             INNER JOIN role_permissions rp ON p.id = rp.permission_id
             WHERE rp.role_id = ? AND p.is_active = 1
@@ -1677,10 +1901,10 @@ function getRolePermissions($roleId) {
  */
 function getAdminRole($adminId) {
     global $pdo;
-    
+
     try {
         $stmt = $pdo->prepare("
-            SELECT r.* 
+            SELECT r.*
             FROM roles r
             INNER JOIN admins a ON a.role_id = r.id
             WHERE a.id = ? AND a.is_active = 1
@@ -1698,10 +1922,10 @@ function getAdminRole($adminId) {
  */
 function getAllRoles() {
     global $pdo;
-    
+
     try {
         $stmt = $pdo->query("
-            SELECT r.*, COUNT(a.id) as admin_count 
+            SELECT r.*, COUNT(a.id) as admin_count
             FROM roles r
             LEFT JOIN admins a ON r.id = a.role_id
             WHERE r.is_active = 1
@@ -1720,15 +1944,15 @@ function getAllRoles() {
  */
 function getAllPermissionsGrouped() {
     global $pdo;
-    
+
     try {
         $stmt = $pdo->query("
-            SELECT * FROM permissions 
-            WHERE is_active = 1 
+            SELECT * FROM permissions
+            WHERE is_active = 1
             ORDER BY category, name
         ");
         $permissions = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
+
         $grouped = [];
         foreach ($permissions as $permission) {
             $category = $permission['category'] ?? 'Other';
@@ -1749,10 +1973,10 @@ function getAllPermissionsGrouped() {
  */
 function getAllAdmins() {
     global $pdo;
-    
+
     try {
         $stmt = $pdo->query("
-            SELECT a.*, r.name as role_name 
+            SELECT a.*, r.name as role_name
             FROM admins a
             LEFT JOIN roles r ON a.role_id = r.id
             ORDER BY a.created_at DESC
@@ -1771,10 +1995,10 @@ function getAllAdmins() {
  */
 function addRole($name, $description = '') {
     global $pdo;
-    
+
     try {
         $stmt = $pdo->prepare("
-            INSERT INTO roles (name, description) 
+            INSERT INTO roles (name, description)
             VALUES (?, ?)
         ");
         $stmt->execute([$name, $description]);
@@ -1793,10 +2017,10 @@ function addRole($name, $description = '') {
  */
 function updateRole($roleId, $name, $description = '') {
     global $pdo;
-    
+
     try {
         $stmt = $pdo->prepare("
-            UPDATE roles 
+            UPDATE roles
             SET name = ?, description = ?, updated_at = NOW()
             WHERE id = ? AND is_system_role = 0
         ");
@@ -1813,26 +2037,26 @@ function updateRole($roleId, $name, $description = '') {
  */
 function deleteRole($roleId) {
     global $pdo;
-    
+
     try {
         // Check if role is system role
         $stmt = $pdo->prepare("SELECT is_system_role FROM roles WHERE id = ?");
         $stmt->execute([$roleId]);
         $role = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+
         if ($role && $role['is_system_role']) {
             return false; // Cannot delete system roles
         }
-        
+
         // Check if any admin is using this role
         $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM admins WHERE role_id = ?");
         $stmt->execute([$roleId]);
         $count = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
-        
+
         if ($count > 0) {
             return false; // Cannot delete role if admins are assigned to it
         }
-        
+
         $stmt = $pdo->prepare("DELETE FROM roles WHERE id = ?");
         return $stmt->execute([$roleId]);
     } catch (Exception $e) {
@@ -1848,10 +2072,10 @@ function deleteRole($roleId) {
  */
 function addPermissionToRole($roleId, $permissionId) {
     global $pdo;
-    
+
     try {
         $stmt = $pdo->prepare("
-            INSERT INTO role_permissions (role_id, permission_id) 
+            INSERT INTO role_permissions (role_id, permission_id)
             VALUES (?, ?)
             ON DUPLICATE KEY UPDATE created_at = created_at
         ");
@@ -1869,10 +2093,10 @@ function addPermissionToRole($roleId, $permissionId) {
  */
 function removePermissionFromRole($roleId, $permissionId) {
     global $pdo;
-    
+
     try {
         $stmt = $pdo->prepare("
-            DELETE FROM role_permissions 
+            DELETE FROM role_permissions
             WHERE role_id = ? AND permission_id = ?
         ");
         return $stmt->execute([$roleId, $permissionId]);
@@ -1891,11 +2115,11 @@ function removePermissionFromRole($roleId, $permissionId) {
  */
 function addAdmin($name, $email, $password, $roleId) {
     global $pdo;
-    
+
     try {
         $hashed_password = password_hash($password, PASSWORD_BCRYPT);
         $stmt = $pdo->prepare("
-            INSERT INTO admins (name, email, password, role_id) 
+            INSERT INTO admins (name, email, password, role_id)
             VALUES (?, ?, ?, ?)
         ");
         $stmt->execute([$name, $email, $hashed_password, $roleId]);
@@ -1916,19 +2140,19 @@ function addAdmin($name, $email, $password, $roleId) {
  */
 function updateAdmin($adminId, $name, $email, $roleId, $password = null) {
     global $pdo;
-    
+
     try {
         if ($password) {
             $hashed_password = password_hash($password, PASSWORD_BCRYPT);
             $stmt = $pdo->prepare("
-                UPDATE admins 
+                UPDATE admins
                 SET name = ?, email = ?, password = ?, role_id = ?, updated_at = NOW()
                 WHERE id = ?
             ");
             return $stmt->execute([$name, $email, $hashed_password, $roleId, $adminId]);
         } else {
             $stmt = $pdo->prepare("
-                UPDATE admins 
+                UPDATE admins
                 SET name = ?, email = ?, role_id = ?, updated_at = NOW()
                 WHERE id = ?
             ");
@@ -1946,10 +2170,10 @@ function updateAdmin($adminId, $name, $email, $roleId, $password = null) {
  */
 function deactivateAdmin($adminId) {
     global $pdo;
-    
+
     try {
         $stmt = $pdo->prepare("
-            UPDATE admins 
+            UPDATE admins
             SET is_active = 0, updated_at = NOW()
             WHERE id = ?
         ");
@@ -1966,10 +2190,10 @@ function deactivateAdmin($adminId) {
  */
 function activateAdmin($adminId) {
     global $pdo;
-    
+
     try {
         $stmt = $pdo->prepare("
-            UPDATE admins 
+            UPDATE admins
             SET is_active = 1, updated_at = NOW()
             WHERE id = ?
         ");
@@ -1986,10 +2210,10 @@ function activateAdmin($adminId) {
  */
 function getAdminById($adminId) {
     global $pdo;
-    
+
     try {
         $stmt = $pdo->prepare("
-            SELECT a.*, r.name as role_name 
+            SELECT a.*, r.name as role_name
             FROM admins a
             LEFT JOIN roles r ON a.role_id = r.id
             WHERE a.id = ?
@@ -2000,4 +2224,4 @@ function getAdminById($adminId) {
         return null;
     }
 }
-?> 
+?>

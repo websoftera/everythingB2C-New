@@ -93,6 +93,467 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(error => console.error('Error updating cart count:', error));
     }
 
+    function numericPrice(value) {
+        return Number(String(value || '').replace(/[^\d.]/g, '')) || 0;
+    }
+
+    function money(value) {
+        return '₹ ' + Number(value || 0).toLocaleString('en-IN', {
+            maximumFractionDigits: 0
+        });
+    }
+
+    function getProductPricingRoot(input) {
+        return input.closest('.product-card, .card.product-card, .product-detail-card, .shop-page-product-card, .related-products-container .product-card');
+    }
+
+    window.updateDisplayedPriceForQuantity = function (input, unitOverride = null) {
+        if (!input || input.classList.contains('cart-qty-input')) {
+            return;
+        }
+
+        const root = getProductPricingRoot(input);
+        if (!root) {
+            return;
+        }
+
+        const mrpValue = root.querySelector('.price-btn.mrp .value');
+        const payValue = root.querySelector('.price-btn.pay .value');
+        if (!mrpValue || !payValue) {
+            return;
+        }
+
+        if (unitOverride) {
+            root.dataset.unitMrp = String(unitOverride.mrp || 0);
+            root.dataset.unitPay = String(unitOverride.selling_price || 0);
+        }
+
+        if (!root.dataset.unitMrp) {
+            root.dataset.unitMrp = String(numericPrice(mrpValue.textContent));
+        }
+        if (!root.dataset.unitPay) {
+            root.dataset.unitPay = String(numericPrice(payValue.textContent));
+        }
+
+        const quantity = Math.max(1, parseInt(input.value, 10) || 1);
+        const unitMrp = Number(root.dataset.unitMrp || 0);
+        const unitPay = Number(root.dataset.unitPay || 0);
+        const totalMrp = unitMrp * quantity;
+        const totalPay = unitPay * quantity;
+        const totalSave = Math.max(0, totalMrp - totalPay);
+        const discountPercent = totalMrp > 0 ? Math.round((totalSave / totalMrp) * 100) : 0;
+
+        mrpValue.textContent = money(totalMrp);
+        payValue.textContent = money(totalPay);
+
+        const saveBanner = root.querySelector('.discount-banner, .discount-banner-detail');
+        if (saveBanner && saveBanner.style.visibility !== 'hidden') {
+            saveBanner.textContent = totalSave > 0
+                ? `SAVE ₹${totalSave.toLocaleString('en-IN', { maximumFractionDigits: 0 })} (${discountPercent}% OFF)`
+                : 'SAVE ₹0 (0% OFF)';
+        }
+    };
+
+    const variantStyle = document.createElement('style');
+    variantStyle.textContent = `
+        .variant-drawer-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 12000;
+            display: none;
+            background: rgba(17, 24, 39, 0.62);
+        }
+        .variant-drawer-overlay.show {
+            display: block;
+        }
+        body.variant-drawer-open #floatingCartBtn {
+            display: none !important;
+        }
+        .variant-drawer {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: min(345px, 100%);
+            height: 100%;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -18px 0 40px rgba(15, 23, 42, 0.18);
+            font-family: 'Mulish', sans-serif !important;
+            border-top: 4px solid var(--site-blue, #0c79e7);
+        }
+        .variant-drawer-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px 10px;
+            border-bottom: 1px solid #edf0f5;
+        }
+        .variant-drawer-title {
+            margin: 0;
+            color: #243041;
+            font-size: 16px;
+            font-weight: 800;
+        }
+        .variant-drawer-close {
+            width: 34px;
+            height: 34px;
+            border: 0;
+            border-radius: 50%;
+            background: #f2f6fb;
+            color: #5d6978;
+            font-size: 22px;
+            line-height: 1;
+        }
+        .variant-drawer-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 14px 16px 18px;
+        }
+        .variant-product-summary {
+            display: grid;
+            grid-template-columns: 68px 1fr;
+            gap: 10px;
+            align-items: center;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #edf0f5;
+        }
+        .variant-product-summary img {
+            width: 68px;
+            height: 68px;
+            object-fit: contain;
+            border: 1px solid #e4e9f1;
+            border-radius: 10px;
+            background: #fff;
+        }
+        .variant-product-name {
+            margin: 0 0 6px;
+            color: #243041;
+            font-size: 13px;
+            font-weight: 800;
+            line-height: 1.35;
+        }
+        .variant-stock {
+            color: #6b7280;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .variant-price-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .variant-price-pill {
+            border: 0 !important;
+            border-radius: 4px;
+            padding: 8px 6px;
+            text-align: center;
+            color: #111827;
+            font-size: 12px;
+            font-weight: 800;
+            line-height: 1.15;
+        }
+        .variant-price-pill.mrp {
+            background: var(--mrp-light-blue, #cde3ef) !important;
+            color: var(--site-blue, #0c79e7) !important;
+            text-decoration: line-through;
+        }
+        .variant-price-pill.pay {
+            background: var(--pay-light-green, #E3F2AA) !important;
+            color: #000 !important;
+        }
+        .variant-group {
+            margin-top: 16px;
+        }
+        .variant-group-title {
+            color: #243041;
+            font-size: 13px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        .variant-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 9px;
+        }
+        .variant-option {
+            min-width: 54px;
+            min-height: 34px;
+            border: 1px solid #d8e0ea;
+            border-radius: 8px;
+            background: #fff;
+            color: #243041;
+            font-size: 13px;
+            font-weight: 800;
+            padding: 6px 12px;
+        }
+        .variant-option.active {
+            border-color: var(--site-blue, #0c79e7);
+            background: var(--site-blue, #0c79e7);
+            color: #fff;
+            box-shadow: 0 0 0 2px var(--pay-light-green, #E3F2AA);
+        }
+        .variant-option:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+        .variant-drawer-footer {
+            display: flex;
+            justify-content: flex-end;
+            padding: 10px 16px 14px;
+            border-top: 1px solid #edf0f5;
+            background: #fff;
+        }
+        .variant-continue-btn {
+            width: auto;
+            min-width: 148px;
+            min-height: 40px;
+            border: 0;
+            border-radius: 999px;
+            background: var(--site-blue, #0c79e7);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: 0.02em;
+            box-shadow: 0 10px 20px rgba(12, 121, 231, 0.18);
+        }
+        .variant-continue-btn:hover:not(:disabled) {
+            background: #0a67c6;
+        }
+        .variant-continue-btn:disabled {
+            background: #94a3b8;
+            box-shadow: none;
+        }
+        @media (max-width: 575px) {
+            .variant-drawer {
+                width: 100%;
+            }
+            .variant-drawer-header {
+                padding: 18px 16px 12px;
+            }
+            .variant-drawer-body {
+                padding: 14px 16px 20px;
+            }
+            .variant-product-summary {
+                grid-template-columns: 72px 1fr;
+            }
+            .variant-product-summary img {
+                width: 72px;
+                height: 72px;
+            }
+            .variant-drawer-title {
+                font-size: 18px;
+            }
+        }
+    `;
+    document.head.appendChild(variantStyle);
+
+    function formatVariantPrice(value) {
+        return '₹ ' + Number(value || 0).toLocaleString('en-IN', {
+            maximumFractionDigits: 0
+        });
+    }
+
+    function normalizeImagePath(path) {
+        if (!path) return 'uploads/products/blank-img.webp';
+        return path;
+    }
+
+    function performAddToCart(productId, quantity, target, cardRoot, variationId = null) {
+        const originalLabel = target ? target.innerHTML : '';
+        if (target) {
+            target.textContent = 'Adding...';
+            target.disabled = true;
+        }
+
+        const query = variationId ? `&variation_id=${encodeURIComponent(variationId)}` : '';
+        fetch(`ajax/check-product-in-cart.php?product_id=${productId}${query}`)
+            .then(res => res.json())
+            .then(data => {
+                const payload = { product_id: productId, quantity: quantity };
+                if (variationId) payload.variation_id = variationId;
+
+                if (data.success && data.in_cart) {
+                    return fetch('ajax/update-cart-quantity.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                }
+
+                return fetch('ajax/add-to-cart.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            })
+            .then(response => response.json())
+            .then(data => {
+                const statusType = data.success ? 'success' : 'error';
+                showToast(data.message, statusType);
+
+                if (target) {
+                    if (data.success) {
+                        target.innerHTML = '<i class="fas fa-shopping-cart"></i> ADDED TO CART';
+                        target.classList.add('cart-added-highlight');
+                        target.disabled = false;
+                    } else {
+                        target.innerHTML = originalLabel;
+                        target.disabled = false;
+                        target.classList.remove('cart-added-highlight');
+                    }
+                }
+
+                if (data.success) {
+                    updateCartCount();
+                    reinitQuantityControlsWithDebug();
+                    window.initializeQuantityInputs();
+                    window.dispatchEvent(new CustomEvent('cart-updated', {
+                        detail: { action: 'updated' }
+                    }));
+                }
+
+                if (cardRoot) {
+                    cardRoot.querySelectorAll('.quantity-input, .shop-page-quantity-input').forEach(el => el.disabled = false);
+                    cardRoot.querySelectorAll('.btn-qty-minus, .btn-qty-plus').forEach(el => el.disabled = false);
+                }
+            })
+            .catch(error => {
+                console.error('Error adding/updating cart:', error);
+                if (target) {
+                    target.innerHTML = originalLabel;
+                    target.disabled = false;
+                    target.classList.remove('cart-added-highlight');
+                }
+
+                if (cardRoot) {
+                    cardRoot.querySelectorAll('.quantity-input, .shop-page-quantity-input').forEach(el => el.disabled = false);
+                    cardRoot.querySelectorAll('.btn-qty-minus, .btn-qty-plus').forEach(el => el.disabled = false);
+                }
+            });
+    }
+
+    function openVariantDrawer(data, productId, quantity, sourceButton, cardRoot) {
+        let selected = data.variations.find(variation => variation.stock_quantity > 0) || data.variations[0];
+        const selectedValues = {};
+        (selected.attributes || []).forEach(item => {
+            selectedValues[item.attribute_id] = item.value_id;
+        });
+
+        const overlay = document.createElement('div');
+        overlay.className = 'variant-drawer-overlay show';
+        overlay.innerHTML = `
+            <aside class="variant-drawer" role="dialog" aria-modal="true">
+                <div class="variant-drawer-header">
+                    <h3 class="variant-drawer-title">Select Variant</h3>
+                    <button type="button" class="variant-drawer-close" aria-label="Close">&times;</button>
+                </div>
+                <div class="variant-drawer-body">
+                    <div class="variant-product-summary">
+                        <img class="variant-product-image" src="${normalizeImagePath(selected.image_path || data.product.image)}" alt="">
+                        <div>
+                            <h4 class="variant-product-name">${data.product.name}</h4>
+                            <div class="variant-stock">Available stock: <span>${selected.stock_quantity}</span></div>
+                            <div class="variant-price-row">
+                                <div class="variant-price-pill mrp">MRP ${formatVariantPrice(selected.mrp)}</div>
+                                <div class="variant-price-pill pay">PAY ${formatVariantPrice(selected.selling_price)}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="variant-groups"></div>
+                </div>
+                <div class="variant-drawer-footer">
+                    <button type="button" class="variant-continue-btn">CONTINUE <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </aside>
+        `;
+        document.body.appendChild(overlay);
+        document.body.style.overflow = 'hidden';
+        document.body.classList.add('variant-drawer-open');
+
+        const groupsWrap = overlay.querySelector('.variant-groups');
+        const imageEl = overlay.querySelector('.variant-product-image');
+        const stockEl = overlay.querySelector('.variant-stock span');
+        const mrpEl = overlay.querySelector('.variant-price-pill.mrp');
+        const payEl = overlay.querySelector('.variant-price-pill.pay');
+        const continueBtn = overlay.querySelector('.variant-continue-btn');
+
+        function closeDrawer() {
+            overlay.remove();
+            document.body.style.removeProperty('overflow');
+            document.body.classList.remove('variant-drawer-open');
+        }
+
+        function findVariationByValue(attributeId, valueId) {
+            return data.variations.find(variation => {
+                return variation.attributes.some(item => item.attribute_id == attributeId && item.value_id == valueId);
+            });
+        }
+
+        function findMatchingVariation() {
+            return data.variations.find(variation => {
+                return data.attributes.every(attribute => {
+                    const selectedValue = selectedValues[attribute.id];
+                    return variation.attributes.some(item => item.attribute_id == attribute.id && item.value_id == selectedValue);
+                });
+            });
+        }
+
+        function refreshSelected(nextVariation) {
+            selected = nextVariation || findMatchingVariation() || selected;
+            imageEl.src = normalizeImagePath(selected.image_path || data.product.image);
+            stockEl.textContent = selected.stock_quantity;
+            mrpEl.textContent = 'MRP ' + formatVariantPrice(selected.mrp);
+            payEl.textContent = 'PAY ' + formatVariantPrice(selected.selling_price);
+            continueBtn.disabled = selected.stock_quantity <= 0;
+            continueBtn.textContent = selected.stock_quantity > 0 ? 'CONTINUE' : 'OUT OF STOCK';
+            if (selected.stock_quantity > 0) {
+                continueBtn.innerHTML = 'CONTINUE <i class="fas fa-arrow-right"></i>';
+            }
+        }
+
+        data.attributes.forEach(attribute => {
+            const group = document.createElement('div');
+            group.className = 'variant-group';
+            group.innerHTML = `<div class="variant-group-title">Select ${attribute.name}</div><div class="variant-options"></div>`;
+            const optionsWrap = group.querySelector('.variant-options');
+
+            attribute.values.forEach(value => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'variant-option';
+                btn.textContent = value.value;
+                btn.dataset.attributeId = attribute.id;
+                btn.dataset.valueId = value.id;
+                if (selectedValues[attribute.id] == value.id) {
+                    btn.classList.add('active');
+                }
+                btn.addEventListener('click', function () {
+                    selectedValues[attribute.id] = value.id;
+                    optionsWrap.querySelectorAll('.variant-option').forEach(option => option.classList.remove('active'));
+                    btn.classList.add('active');
+                    refreshSelected(findVariationByValue(attribute.id, value.id));
+                });
+                optionsWrap.appendChild(btn);
+            });
+
+            groupsWrap.appendChild(group);
+        });
+
+        overlay.querySelector('.variant-drawer-close').addEventListener('click', closeDrawer);
+        overlay.addEventListener('click', function (event) {
+            if (event.target === overlay) closeDrawer();
+        });
+        continueBtn.addEventListener('click', function () {
+            if (!selected || selected.stock_quantity <= 0) return;
+            closeDrawer();
+            performAddToCart(productId, quantity, sourceButton, cardRoot, selected.id);
+        });
+
+        refreshSelected();
+    }
+
     // Update wishlist count and header icon state
     function updateWishlistCount() {
         const timeStamp = new Date().getTime();
@@ -139,6 +600,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     let val = parseInt(this.value, 10) || 1;
                     if (val < 1) val = 1;
                     this.value = val;
+                    window.updateDisplayedPriceForQuantity(this);
 
                 };
                 input.addEventListener('input', handler);
@@ -184,6 +646,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.log('Cart check response for product', productId, ':', data);
                 if (data.success && data.in_cart && data.quantity > 0) {
                     quantityInput.value = data.quantity;
+                    window.updateDisplayedPriceForQuantity(quantityInput);
                     console.log('Updated input value to:', data.quantity);
                 }
             })
@@ -280,10 +743,12 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     document.body.addEventListener('click', function (event) {
-        const target = event.target;
+        let target = event.target;
 
         // Add to Cart
-        if (target.matches('.add-to-cart-btn, .add-to-cart, .shop-page-add-to-cart-btn')) {
+        const addTarget = target.closest ? target.closest('.add-to-cart-btn, .add-to-cart, .shop-page-add-to-cart-btn') : null;
+        if (addTarget) {
+            target = addTarget;
             event.preventDefault();
             event.stopPropagation(); // Stop click from triggering card navigation
             const productId = target.dataset.productId;
@@ -307,75 +772,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
             console.log('Add to cart - Product ID:', productId, 'Quantity:', quantity);
 
-            const originalLabel = target.textContent;
-            target.textContent = 'Adding...';
-            target.disabled = true;
+            if (target.dataset.variationId) {
+                performAddToCart(productId, quantity, target, cardRoot, target.dataset.variationId);
+                return;
+            }
 
-            // First check if product is already in cart
-            fetch(`ajax/check-product-in-cart.php?product_id=${productId}`)
+            fetch(`ajax/get-product-variants.php?product_id=${productId}`)
                 .then(res => res.json())
                 .then(data => {
-                    if (data.success && data.in_cart) {
-                        // Product is already in cart, update quantity
-                        console.log('Product already in cart, updating quantity to:', quantity);
-                        return fetch('ajax/update-cart-quantity.php', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ product_id: productId, quantity: quantity })
-                        });
-                    } else {
-                        // Product not in cart, add it
-                        console.log('Product not in cart, adding with quantity:', quantity);
-                        return fetch('ajax/add-to-cart.php', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ product_id: productId, quantity: quantity })
-                        });
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    const statusType = data.success ? 'success' : 'error';
-                    showToast(data.message, statusType);
-
-                    if (data.success) {
-                        // Always show "Added to Cart" and keep button enabled for updates
-                        target.innerHTML = '<i class="fas fa-shopping-cart"></i> ADDED TO CART';
-                        target.classList.add('cart-added-highlight');
-                        target.disabled = false; // Keep enabled so user can update quantity
-
-                        updateCartCount();
-                        reinitQuantityControlsWithDebug();
-                        // Refresh quantity inputs to show updated cart quantities
-                        window.initializeQuantityInputs();
-
-                        // Dispatch cart-updated event
-                        window.dispatchEvent(new CustomEvent('cart-updated', {
-                            detail: { action: 'updated' }
-                        }));
-                    } else {
-                        // Error occurred, revert button state
-                        target.textContent = originalLabel;
-                        target.disabled = false;
-                        target.classList.remove('cart-added-highlight');
+                    if (data.success && data.has_variations && data.variations.length) {
+                        openVariantDrawer(data, productId, quantity, target, cardRoot);
+                        return;
                     }
 
-                    if (cardRoot) {
-                        cardRoot.querySelectorAll('.quantity-input, .shop-page-quantity-input').forEach(el => el.disabled = false);
-                        cardRoot.querySelectorAll('.btn-qty-minus, .btn-qty-plus').forEach(el => el.disabled = false);
-                    }
+                    performAddToCart(productId, quantity, target, cardRoot);
                 })
                 .catch(error => {
-                    console.error('Error adding/updating cart:', error);
-                    // Error occurred, revert button state
-                    target.textContent = originalLabel;
-                    target.disabled = false;
-                    target.classList.remove('cart-added-highlight');
-
-                    if (cardRoot) {
-                        cardRoot.querySelectorAll('.quantity-input, .shop-page-quantity-input').forEach(el => el.disabled = false);
-                        cardRoot.querySelectorAll('.btn-qty-minus, .btn-qty-plus').forEach(el => el.disabled = false);
-                    }
+                    console.error('Error loading variants:', error);
+                    performAddToCart(productId, quantity, target, cardRoot);
                 });
         }
 
@@ -706,6 +1120,7 @@ document.body.addEventListener('change', async function (e) {
         const result = await response.json();
         if (result.error && result.max_quantity) {
             input.value = result.max_quantity;
+            window.updateDisplayedPriceForQuantity(input);
             if (typeof Swal !== 'undefined') {
                 Swal.fire({
                     icon: 'error',
@@ -748,6 +1163,7 @@ document.body.addEventListener('change', async function (e) {
     // For product card quantity inputs, just update the input value (don't update cart yet)
     else if (input.classList.contains('quantity-input') || input.closest('.quantity-control')) {
         console.log('Direct input change for product:', productId, 'to:', value);
+        window.updateDisplayedPriceForQuantity(input);
         // Don't update cart automatically - wait for add-to-cart button click
     }
 });

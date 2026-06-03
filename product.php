@@ -22,6 +22,7 @@ require_once 'includes/header.php';
 
 // Get product images
 $productImages = getProductImages($product['id']);
+$variationData = getProductVariationData($product['id']);
 
 // Get related products
 $relatedProducts = getRelatedProducts($product['id'], $product['category_id'], 4);
@@ -114,6 +115,52 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
             color: #fff;
             transform: translateY(-1px);
             box-shadow: 0 12px 22px rgba(12, 121, 231, 0.22);
+        }
+
+        .product-page-container .detail-variant-section {
+            margin-top: 18px;
+        }
+
+        .product-page-container .detail-variant-group {
+            margin-bottom: 16px;
+        }
+
+        .product-page-container .detail-variant-group h5 {
+            margin: 0 0 10px;
+            color: #243041;
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .product-page-container .detail-variant-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 9px;
+        }
+
+        .product-page-container .detail-variant-option {
+            min-width: 50px;
+            min-height: 34px;
+            border: 1px solid #d8e0ea;
+            border-radius: 8px;
+            background: #fff;
+            color: #243041;
+            font-size: 13px;
+            font-weight: 800;
+            padding: 6px 12px;
+        }
+
+        .product-page-container .detail-variant-option.active {
+            border-color: var(--site-blue, #0c79e7);
+            background: var(--site-blue, #0c79e7);
+            color: #fff;
+            box-shadow: 0 0 0 2px var(--pay-light-green, #E3F2AA);
+        }
+
+        .product-page-container .detail-variant-note {
+            color: #7c86a0;
+            font-size: 14px;
+            font-weight: 600;
         }
 
         .product-page-container .modern-card {
@@ -252,6 +299,10 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                 color: #DE0085 !important;
             }
 
+            .product-page-container .detail-variant-group h5 {
+                font-size: 15px !important;
+            }
+
             /* Quantity Inner Buttons exact layout */
             .product-page-container .product-info-section .quantity-control .btn-qty {
                 height: 100% !important;
@@ -366,11 +417,11 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
             <div class="price-buttons1 modern-prices">
                 <div class="price-btn mrp">
                     <span class="label">MRP</span>
-                    <span class="value"><?php echo formatPrice($product['mrp']); ?></span>
+                    <span class="value" id="detailMrpValue"><?php echo formatPrice($product['mrp']); ?></span>
                 </div>
                 <div class="price-btn pay">
                     <span class="label">PAY</span>
-                    <span class="value"><?php echo formatPrice($product['selling_price']); ?></span>
+                    <span class="value" id="detailPayValue"><?php echo formatPrice($product['selling_price']); ?></span>
                 </div>
                 <div class="wishlist">
                     <input type="checkbox" class="heart-checkbox" id="wishlist-checkbox-main-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>" <?php echo $inWishlist ? 'checked' : ''; ?>>
@@ -386,7 +437,7 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                     <input type="number" class="quantity-input" value="1" min="1" max="99" data-product-id="<?php echo $product['id']; ?>">
                     <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
                 </div>
-                                            <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">
+                                            <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>" id="detailAddToCartBtn">
                                     <i class="fas fa-shopping-cart"></i>
                                     ADD TO CART
                                 </button>
@@ -406,9 +457,29 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                 <p><?php echo $product['description']; ?></p>
             </div>
             <?php if ($product['stock_quantity'] > 0): ?>
-                <p class="text-success"><strong>Stock:</strong> <?php echo $product['stock_quantity']; ?> units available</p>
+                <p class="text-success" id="detailStockText"><strong>Stock:</strong> <?php echo $product['stock_quantity']; ?> units available</p>
             <?php else: ?>
                 <p class="text-danger"><strong>Out of Stock</strong></p>
+            <?php endif; ?>
+            <?php if ($variationData['has_variations']): ?>
+                <div class="detail-variant-section" id="detailVariantSection">
+                    <?php foreach ($variationData['attributes'] as $attribute): ?>
+                        <div class="detail-variant-group" data-attribute-id="<?php echo (int)$attribute['id']; ?>">
+                            <h5>Select <?php echo htmlspecialchars($attribute['name']); ?></h5>
+                            <div class="detail-variant-options">
+                                <?php foreach ($attribute['values'] as $index => $value): ?>
+                                    <button type="button"
+                                            class="detail-variant-option <?php echo $index === 0 ? 'active' : ''; ?>"
+                                            data-attribute-id="<?php echo (int)$attribute['id']; ?>"
+                                            data-value-id="<?php echo (int)$value['id']; ?>">
+                                        <?php echo htmlspecialchars($value['value']); ?>
+                                    </button>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                    <p class="detail-variant-note">Showing details for selected options.</p>
+                </div>
             <?php endif; ?>
         </div>
     </div>
@@ -508,7 +579,87 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
 </div>
 
 <script>
+window.productDetailVariations = <?php echo json_encode($variationData); ?>;
+
 document.addEventListener('DOMContentLoaded', function() {
+    const detailVariationData = window.productDetailVariations || { has_variations: false, attributes: [], variations: [] };
+    if (detailVariationData.has_variations && detailVariationData.variations.length) {
+        const selectedValues = {};
+        const firstVariation = detailVariationData.variations.find(variation => variation.stock_quantity > 0) || detailVariationData.variations[0];
+        (firstVariation.attributes || []).forEach(item => {
+            selectedValues[item.attribute_id] = item.value_id;
+        });
+
+        const mrpValue = document.getElementById('detailMrpValue');
+        const payValue = document.getElementById('detailPayValue');
+        const stockText = document.getElementById('detailStockText');
+        const addToCartBtn = document.getElementById('detailAddToCartBtn');
+        const detailMainImage = document.getElementById('mainImage');
+
+        function formatPriceValue(value) {
+            return '₹ ' + Number(value || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 });
+        }
+
+        function findSelectedVariation() {
+            return detailVariationData.variations.find(variation => {
+                return detailVariationData.attributes.every(attribute => {
+                    return variation.attributes.some(item => item.attribute_id == attribute.id && item.value_id == selectedValues[attribute.id]);
+                });
+            });
+        }
+
+        function findVariationByValue(attributeId, valueId) {
+            return detailVariationData.variations.find(variation => {
+                return variation.attributes.some(item => item.attribute_id == attributeId && item.value_id == valueId);
+            });
+        }
+
+        function applySelectedVariation(nextVariation) {
+            const selectedVariation = nextVariation || findSelectedVariation() || firstVariation;
+            if (mrpValue) mrpValue.textContent = formatPriceValue(selectedVariation.mrp);
+            if (payValue) payValue.textContent = formatPriceValue(selectedVariation.selling_price);
+            if (stockText) {
+                stockText.className = selectedVariation.stock_quantity > 0 ? 'text-success' : 'text-danger';
+                stockText.innerHTML = selectedVariation.stock_quantity > 0
+                    ? '<strong>Stock:</strong> ' + selectedVariation.stock_quantity + ' units available'
+                    : '<strong>Out of Stock</strong>';
+            }
+            if (detailMainImage && selectedVariation.image_path) {
+                detailMainImage.src = selectedVariation.image_path;
+            }
+            if (addToCartBtn) {
+                addToCartBtn.dataset.variationId = selectedVariation.id;
+                addToCartBtn.disabled = selectedVariation.stock_quantity <= 0;
+            }
+
+            const quantityInput = document.querySelector('.product-detail-card .quantity-input');
+            if (window.updateDisplayedPriceForQuantity && quantityInput) {
+                window.updateDisplayedPriceForQuantity(quantityInput, selectedVariation);
+            }
+        }
+
+        document.querySelectorAll('.detail-variant-option').forEach(button => {
+            const attributeId = button.dataset.attributeId;
+            if (selectedValues[attributeId] == button.dataset.valueId) {
+                button.classList.add('active');
+            } else {
+                button.classList.remove('active');
+            }
+
+            button.addEventListener('click', function() {
+                selectedValues[attributeId] = this.dataset.valueId;
+                const group = this.closest('.detail-variant-group');
+                if (group) {
+                    group.querySelectorAll('.detail-variant-option').forEach(option => option.classList.remove('active'));
+                }
+                this.classList.add('active');
+                applySelectedVariation(findVariationByValue(attributeId, this.dataset.valueId));
+            });
+        });
+
+        applySelectedVariation();
+    }
+
     const productBackBtn = document.getElementById('productBackBtn');
     if (productBackBtn) {
         productBackBtn.addEventListener('click', function() {
