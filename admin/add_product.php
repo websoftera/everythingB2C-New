@@ -2,6 +2,7 @@
 session_start();
 require_once '../config/database.php';
 require_once '../includes/functions.php';
+require_once 'includes/product_variation_helpers.php';
 
 // Check if admin is logged in
 if (!isset($_SESSION['admin_id'])) {
@@ -12,10 +13,13 @@ if (!isset($_SESSION['admin_id'])) {
 $pageTitle = 'Add New Product';
 $success_message = '';
 $error_message = '';
+$variation_guidance_message = '';
 
 // Get all categories for dropdown with hierarchical structure
 $allCategories = getAllCategoriesWithProductCount();
 $categoryTree = buildCategoryTree($allCategories);
+ensureProductVariationSchema($pdo);
+$attributeOptions = getProductAttributeOptions($pdo);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name']);
@@ -94,8 +98,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
 
+            $savedVariationCount = saveProductVariations($pdo, $product_id);
+
             $pdo->commit();
-            $success_message = 'Product added successfully!';
+            $success_message = $savedVariationCount > 0
+                ? 'Product added successfully! Product variations saved successfully.'
+                : 'Product added successfully!';
+            if ($savedVariationCount > 0) {
+                $variation_guidance_message = 'For products with 2 or more attributes, keep one variation row per exact combination like <strong>Black + Size 9</strong>.<br>Storefront price, stock and image use only exact combinations.';
+            }
             
             // Redirect to products list after a short delay
             header("refresh:2;url=products.php");
@@ -406,7 +417,18 @@ function uploadImage($file, $folder) {
             font-size: 15px;
             font-weight: 500;
         }
+
+        .product-form-page .was-validated .form-control:valid,
+        .product-form-page .was-validated .form-select:valid,
+        .product-form-page .form-control.is-valid,
+        .product-form-page .form-select.is-valid {
+            border-color: #cfd6df;
+            background-image: none;
+            padding-right: 12px;
+            box-shadow: none;
+        }
     </style>
+    <?php renderProductVariationAssets(); ?>
 </head>
 <body>
     <div class="everythingb2c-admin-container">
@@ -439,6 +461,13 @@ function uploadImage($file, $folder) {
 
                     <?php if ($success_message): ?>
                         <div class="alert alert-success"><?php echo htmlspecialchars($success_message); ?></div>
+                    <?php endif; ?>
+
+                    <?php if ($variation_guidance_message): ?>
+                        <div class="alert alert-info alert-dismissible fade show" role="alert">
+                            <?php echo $variation_guidance_message; ?>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
                     <?php endif; ?>
 
                     <?php if ($error_message): ?>
@@ -613,6 +642,13 @@ function uploadImage($file, $folder) {
                                                 </div>
                                             </div>
                                         </div>
+
+                                        <?php renderProductAttributesSection($attributeOptions, [], [], [
+                                            'mrp' => $_POST['mrp'] ?? 0,
+                                            'selling_price' => $_POST['selling_price'] ?? 0,
+                                            'stock_quantity' => $_POST['stock_quantity'] ?? 0,
+                                            'has_variations' => isset($_POST['has_variations']) ? 1 : 0
+                                        ]); ?>
                                     </div>
 
                                     <!-- Images -->
