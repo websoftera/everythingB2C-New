@@ -655,6 +655,7 @@ function getCartItems($userId = null) {
         global $pdo;
         $stmt = $pdo->prepare("
             SELECT c.*, p.name, p.slug, p.gst_type, p.gst_rate, p.shipping_charge, p.hsn,
+                   p.pay_per_unit, p.unit_label,
                    COALESCE(pv.selling_price, p.selling_price) AS selling_price,
                    COALESCE(pv.mrp, p.mrp) AS mrp,
                    COALESCE(pv.image_path, p.main_image) AS main_image,
@@ -776,7 +777,7 @@ function getSessionCartItems() {
         $productId = (int)$parts[0];
         $variationId = isset($parts[1]) ? (int)$parts[1] : null;
 
-        $stmt = $pdo->prepare("SELECT id, name, selling_price, mrp, main_image, slug, gst_type, gst_rate, shipping_charge, hsn, stock_quantity FROM products WHERE id = ?");
+        $stmt = $pdo->prepare("SELECT id, name, selling_price, mrp, pay_per_unit, unit_label, main_image, slug, gst_type, gst_rate, shipping_charge, hsn, stock_quantity FROM products WHERE id = ?");
         $stmt->execute([$productId]);
         $product = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($product) {

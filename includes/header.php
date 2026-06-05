@@ -1487,13 +1487,23 @@ function renderFloatingCart() {
       }
       
       let itemsHtml = '';
+      function formatFloatingCartUnitLine(item) {
+        const rawUnitPrice = parseFloat(item.pay_per_unit || 0);
+        const unitPrice = rawUnitPrice > 0 ? rawUnitPrice : parseFloat(item.selling_price || 0);
+        const unitLabel = (item.unit_label || 'No.').toString().trim() || 'No.';
+        const formattedPrice = unitPrice.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        return `\u20b9${formattedPrice} / ${unitLabel}`;
+      }
+
       paginatedItems.forEach(item => {
         const cartId = item.id;
+        const unitLine = formatFloatingCartUnitLine(item);
         itemsHtml += `
           <div class="d-flex align-items-center gap-1 mb-2" style="min-width:0; border: 1px solid #e0e0e0; border-radius: 7px; padding: 7px 8px; background: #fff; gap: 8px;">
             <img src="${item.main_image ? './' + item.main_image : './uploads/products/blank-img.webp'}" onerror="this.onerror=null; this.src='./uploads/products/blank-img.webp';" alt="${item.name}" style="width:38px;height:38px;object-fit:cover;border-radius:6px;border:1px solid #eee;flex-shrink:0;">
             <div class="flex-grow-1" style="min-width:0;">
               <div style="font-weight:500;font-size:0.93rem;font-family:'Mulish', sans-serif !important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.name}</div>
+              <div style="color:#6f7a89;font-size:0.82rem;font-weight:500;font-family:'Mulish', sans-serif !important;line-height:1.15;margin-top:1px;margin-bottom:2px;white-space:nowrap;">${unitLine}</div>
               <div class="text-muted d-flex align-items-center gap-1" style="font-size:0.85rem;">
                 <div class="quantity-control d-inline-flex align-items-center">
                   <button type="button" class="btn-qty btn-qty-minus" data-cart-id="${cartId}" ${parseInt(item.quantity, 10) <= 1 ? 'disabled' : ''}>-</button>
