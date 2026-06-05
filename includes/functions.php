@@ -397,6 +397,28 @@ function ensureProductUnitSchema(PDO $pdo) {
     }
 }
 
+function hasProductUnitSchema(PDO $pdo) {
+    static $hasSchema = null;
+
+    if ($hasSchema !== null) {
+        return $hasSchema;
+    }
+
+    try {
+        $columns = [];
+        $stmt = $pdo->query("SHOW COLUMNS FROM products");
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $column) {
+            $columns[$column['Field']] = true;
+        }
+
+        $hasSchema = isset($columns['pay_per_unit'], $columns['unit_label']);
+    } catch (PDOException $e) {
+        $hasSchema = false;
+    }
+
+    return $hasSchema;
+}
+
 function getProductUnitLabel(array $product) {
     $label = trim((string)($product['unit_label'] ?? ''));
     if ($label !== '') {
@@ -649,13 +671,17 @@ function addToCart($userId, $productId, $quantity = 1, $variationId = null) {
 // Function to get cart items
 function getCartItems($userId = null) {
     ensureCartVariationSchema();
+    global $pdo;
+    $hasUnitSchema = hasProductUnitSchema($pdo);
+    $unitSelect = $hasUnitSchema
+        ? "p.pay_per_unit, p.unit_label,"
+        : "NULL AS pay_per_unit, 'No.' AS unit_label,";
 
     if (isLoggedIn() && $userId) {
         // DB cart
-        global $pdo;
         $stmt = $pdo->prepare("
             SELECT c.*, p.name, p.slug, p.gst_type, p.gst_rate, p.shipping_charge, p.hsn,
-                   p.pay_per_unit, p.unit_label,
+                   {$unitSelect}
                    COALESCE(pv.selling_price, p.selling_price) AS selling_price,
                    COALESCE(pv.mrp, p.mrp) AS mrp,
                    COALESCE(pv.image_path, p.main_image) AS main_image,
@@ -777,7 +803,10 @@ function getSessionCartItems() {
         $productId = (int)$parts[0];
         $variationId = isset($parts[1]) ? (int)$parts[1] : null;
 
-        $stmt = $pdo->prepare("SELECT id, name, selling_price, mrp, pay_per_unit, unit_label, main_image, slug, gst_type, gst_rate, shipping_charge, hsn, stock_quantity FROM products WHERE id = ?");
+        $unitSelect = hasProductUnitSchema($pdo)
+            ? "pay_per_unit, unit_label,"
+            : "NULL AS pay_per_unit, 'No.' AS unit_label,";
+        $stmt = $pdo->prepare("SELECT id, name, selling_price, mrp, {$unitSelect} main_image, slug, gst_type, gst_rate, shipping_charge, hsn, stock_quantity FROM products WHERE id = ?");
         $stmt->execute([$productId]);
         $product = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($product) {

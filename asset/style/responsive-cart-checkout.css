@@ -13,12 +13,13 @@
     /* Redesign main cart row to match sticky cart compact card */
     .cart-item-row {
         display: grid !important;
-        grid-template-columns: 45px 1fr 60px !important;
+        grid-template-columns: 45px minmax(0, 1fr) 66px !important;
         grid-template-areas:
             "img title total"
             "img qty delete" !important;
-        gap: 6px !important;
-        padding: 8px !important;
+        column-gap: 8px !important;
+        row-gap: 6px !important;
+        padding: 9px 8px !important;
         align-items: center !important;
         height: auto !important;
         position: relative !important;
@@ -33,33 +34,54 @@
 
     .cart-item-row>div:nth-child(2) {
         grid-area: title;
-        font-size: 0.93rem !important;
+        font-family: 'Mulish', sans-serif !important;
+        font-size: 0.92rem !important;
         font-weight: 600 !important;
-        white-space: nowrap !important;
+        line-height: 1.22 !important;
+        white-space: normal !important;
         overflow: hidden !important;
-        text-overflow: ellipsis !important;
         text-align: left !important;
         flex: unset !important;
         max-width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    .cart-item-row .cart-product-title {
+        display: block !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        max-width: 100% !important;
+    }
+
+    .cart-item-row .cart-mobile-unit-line {
+        display: block !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
     }
 
     .cart-item-row>div:nth-child(3) {
         display: none !important;
     }
 
-    /* MRP */
+    /* Per Unit desktop column */
     .cart-item-row>div:nth-child(4) {
         display: none !important;
     }
 
-    /* You Pay */
+    /* MRP */
     .cart-item-row>div:nth-child(5) {
         display: none !important;
     }
 
-    /* Savings */
-
+    /* You Pay */
     .cart-item-row>div:nth-child(6) {
+        display: none !important;
+    }
+
+    /* Savings */
+    .cart-item-row>div:nth-child(7) {
         grid-area: qty;
         display: flex !important;
         align-items: center !important;
@@ -67,7 +89,7 @@
         flex: unset !important;
     }
 
-    .cart-item-row>div:nth-child(7) {
+    .cart-item-row>div:nth-child(8) {
         grid-area: total;
         text-align: right !important;
         font-weight: 700 !important;
@@ -79,7 +101,7 @@
         /* make sure visible */
     }
 
-    .cart-item-row>div:nth-child(8) {
+    .cart-item-row>div:nth-child(9) {
         grid-area: delete;
         text-align: right !important;
         align-self: end !important;
