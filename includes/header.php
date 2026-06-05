@@ -38,14 +38,10 @@ $currentUser = getCurrentUser();
 $cartCount = 0;
 if (isLoggedIn()) {
     $headerCartItems = getCartItems($_SESSION['user_id']);
-    foreach ($headerCartItems as $item) {
-        $cartCount += (int)$item['quantity'];
-    }
+    $cartCount = count($headerCartItems);
 } else {
     $headerCartItems = getCartItems();
-    foreach ($headerCartItems as $item) {
-        $cartCount += (int)$item['quantity'];
-    }
+    $cartCount = count($headerCartItems);
 }
 
 ?>
@@ -1432,11 +1428,11 @@ function updateFloatingCartSummary() {
       const totals = data.totals;
       summary.innerHTML = `
         <div class="floating-cart-summary-box" style="border:1px solid #cfd8dc;border-radius:8px;padding:8px 10px 4px 10px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:6px;">
-          <div style="font-weight:500;font-size:0.93rem;font-family:'Mulish', sans-serif !important;margin-bottom:6px;">Price Summary</div>
-          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Total MRP</span><span style="font-weight:500;text-decoration:line-through;">₹${parseFloat(totals.total_mrp || totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-          <div class="d-flex justify-content-between mb-1"><span class="text-muted">You Pay</span><span style="font-weight:500;">₹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Savings</span><span style="font-weight:500;color:#2e7d32;">₹${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Delivery <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger" style="font-weight:500;">+ Extra</span></div>
+          <div style="font-weight:700;font-size:0.93rem;font-family:'Mulish', sans-serif !important;margin-bottom:6px;">Price Summary</div>
+          <div class="d-flex justify-content-between mb-1"><span class="text-dark fw-bold">Total MRP</span><span style="font-weight:500;text-decoration:line-through;">₹${parseFloat(totals.total_mrp || totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+          <div class="d-flex justify-content-between mb-1"><span class="text-dark fw-bold">You Pay</span><span style="font-weight:500;">₹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+          <div class="d-flex justify-content-between mb-1"><span class="text-dark fw-bold">Savings</span><span style="font-weight:500;color:#2e7d32;">₹${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+          <div class="d-flex justify-content-between mb-1"><span class="text-dark fw-bold">Delivery <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger" style="font-weight:500;">+ Extra</span></div>
           <div class="d-grid mt-2 mb-1">
             <a href='checkout.php' class='btn btn-success btn-sm fw-bold' style='font-size:0.98rem;'>PROCEED TO CHECKOUT</a>
           </div>
@@ -1498,11 +1494,14 @@ function renderFloatingCart() {
       paginatedItems.forEach(item => {
         const cartId = item.id;
         const unitLine = formatFloatingCartUnitLine(item);
+        const productUrl = item.slug ? `${window.BASE_URL || ''}product.php?slug=${encodeURIComponent(item.slug)}` : '#';
         itemsHtml += `
           <div class="d-flex align-items-center gap-1 mb-2" style="min-width:0; border: 1px solid #e0e0e0; border-radius: 7px; padding: 7px 8px; background: #fff; gap: 8px;">
-            <img src="${item.main_image ? './' + item.main_image : './uploads/products/blank-img.webp'}" onerror="this.onerror=null; this.src='./uploads/products/blank-img.webp';" alt="${item.name}" style="width:38px;height:38px;object-fit:cover;border-radius:6px;border:1px solid #eee;flex-shrink:0;">
+            <a href="${productUrl}" style="display:block;flex-shrink:0;text-decoration:none;">
+              <img src="${item.main_image ? './' + item.main_image : './uploads/products/blank-img.webp'}" onerror="this.onerror=null; this.src='./uploads/products/blank-img.webp';" alt="${item.name}" style="width:38px;height:38px;object-fit:cover;border-radius:6px;border:1px solid #eee;flex-shrink:0;">
+            </a>
             <div class="flex-grow-1" style="min-width:0;">
-              <div style="font-weight:500;font-size:0.93rem;font-family:'Mulish', sans-serif !important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.name}</div>
+              <a href="${productUrl}" title="${item.name}" style="display:block;color:inherit;text-decoration:none;cursor:pointer;font-weight:500;font-size:0.93rem;font-family:'Mulish', sans-serif !important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.name}</a>
               <div style="color:#6f7a89;font-size:0.82rem;font-weight:500;font-family:'Mulish', sans-serif !important;line-height:1.15;margin-top:1px;margin-bottom:2px;white-space:nowrap;">${unitLine}</div>
               <div class="text-muted d-flex align-items-center gap-1" style="font-size:0.85rem;">
                 <div class="quantity-control d-inline-flex align-items-center">
@@ -1534,11 +1533,11 @@ function renderFloatingCart() {
       const totals = data.totals;
       summary.innerHTML = `
         <div class="floating-cart-summary-box" style="border:1px solid #cfd8dc;border-radius:8px;padding:8px 10px 4px 10px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:6px;">
-          <div style="font-weight:500;font-size:0.93rem;font-family:'Mulish', sans-serif !important;margin-bottom:6px;">Price Summary</div>
-          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Total MRP</span><span style="font-weight:500;text-decoration:line-through;">₹${parseFloat(totals.total_mrp || totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-          <div class="d-flex justify-content-between mb-1"><span class="text-muted">You Pay</span><span style="font-weight:500;">₹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Savings</span><span style="font-weight:500;color:#2e7d32;">₹${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-          <div class="d-flex justify-content-between mb-1"><span class="text-muted">Delivery <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger" style="font-weight:500;">+ Extra</span></div>
+          <div style="font-weight:700;font-size:0.93rem;font-family:'Mulish', sans-serif !important;margin-bottom:6px;">Price Summary</div>
+          <div class="d-flex justify-content-between mb-1"><span class="text-dark fw-bold">Total MRP</span><span style="font-weight:500;text-decoration:line-through;">₹${parseFloat(totals.total_mrp || totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+          <div class="d-flex justify-content-between mb-1"><span class="text-dark fw-bold">You Pay</span><span style="font-weight:500;">₹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+          <div class="d-flex justify-content-between mb-1"><span class="text-dark fw-bold">Savings</span><span style="font-weight:500;color:#2e7d32;">₹${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+          <div class="d-flex justify-content-between mb-1"><span class="text-dark fw-bold">Delivery <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger" style="font-weight:500;">+ Extra</span></div>
           <div class="d-grid mt-2 mb-1">
             <a href='checkout.php' class='btn btn-success btn-sm fw-bold' style='font-size:0.98rem;'>PROCEED TO CHECKOUT</a>
           </div>
@@ -1988,10 +1987,10 @@ function updateFloatingCartSummary() {
       } else {
         summary.innerHTML = `
           <div class="floating-cart-summary-box" style="border:1px solid #cfd8dc;border-radius:8px;padding:16px 16px 8px 16px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:10px;">
-            <div style="font-weight:600;font-size:1.1rem;margin-bottom:12px;">Price Summary</div>
-            <div class="d-flex justify-content-between mb-2"><span class="text-muted">Total MRP</span><span style="font-weight:600;">₹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-            <div class="d-flex justify-content-between mb-2"><span class="text-muted">Savings</span><span class="fw-bold" style="color:#2e7d32;">₹${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-            <div class="d-flex justify-content-between mb-2"><span class="text-muted">Delivery Charge <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
+            <div style="font-weight:700;font-size:1.1rem;margin-bottom:12px;">Price Summary</div>
+            <div class="d-flex justify-content-between mb-2"><span class="text-dark fw-bold">Total MRP</span><span style="font-weight:600;">₹${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+            <div class="d-flex justify-content-between mb-2"><span class="text-dark fw-bold">Savings</span><span class="fw-bold" style="color:#2e7d32;">₹${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+            <div class="d-flex justify-content-between mb-2"><span class="text-dark fw-bold">Delivery Charge <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
             <div class="d-grid mt-3 mb-2"><a href='checkout.php' class='btn btn-success btn-lg fw-bold' style='font-size:1.08rem;'>PROCEED TO CHECKOUT</a></div>
           </div>
         `;

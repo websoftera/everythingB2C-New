@@ -52,12 +52,47 @@ echo renderBreadcrumb($breadcrumbs);
 
 /* Fix desktop cart quantity control collapsing from product-card.css overrides */
 @media (min-width: 768px) {
+    .cart-header-row,
+    .cart-item-row {
+        font-family: 'Mulish', sans-serif !important;
+    }
+
     .cart-item-row .quantity-control {
         flex: 0 0 80px !important;
         width: 80px !important;
         min-width: 80px !important;
         max-width: 80px !important;
     }
+
+    .cart-product-cell {
+        flex: 1 1 150px !important;
+        min-width: 120px !important;
+        max-width: 260px !important;
+    }
+
+    .cart-unit-cell {
+        flex: 0 0 92px !important;
+        min-width: 82px !important;
+        text-align: center !important;
+        white-space: nowrap !important;
+    }
+}
+
+.cart-product-title {
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    font-family: 'Mulish', sans-serif !important;
+}
+
+.cart-mobile-unit-line {
+    display: none;
+    color: #6f7a89;
+    font-family: 'Mulish', sans-serif !important;
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 1.2;
+    margin-top: 2px;
 }
 </style>
 <div class="container mt-4">
@@ -71,7 +106,7 @@ echo renderBreadcrumb($breadcrumbs);
         </div>
     <?php else: ?>
         <div class="row">
-            <div class="col-md-8">
+            <div class="col-xl-9 col-lg-12">
                 <div class="shopping-card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Cart Items (<?php echo count($cartItems); ?>)</h5>
@@ -81,9 +116,10 @@ echo renderBreadcrumb($breadcrumbs);
                     </div>
                     <div class="card-body">
                         <!-- Header Row for Cart Columns -->
-                        <div class="cart-header-row d-flex align-items-center flex-nowrap" style="font-weight:600; color:#444; font-size:0.98rem; background:#f7f7f7; border-radius:6px; padding:7px 0 7px 8px; margin-top:15px; margin-bottom:12px; gap:8px;">
+                        <div class="cart-header-row d-flex align-items-center flex-nowrap" style="font-weight:700; color:#000; font-size:0.98rem; background:#f7f7f7; border-radius:6px; padding:7px 0 7px 8px; margin-top:15px; margin-bottom:12px; gap:8px;">
                             <div style="flex:0 0 56px; max-width:56px; min-width:40px;"></div>
-                            <div style="flex:1 1 120px; min-width:60px; max-width:220px;">Product</div>
+                            <div class="cart-product-cell" style="flex:1 1 150px; min-width:120px; max-width:260px;">Product</div>
+                            <div class="cart-unit-cell" style="flex:0 0 92px; min-width:82px; text-align:center;">Per Unit</div>
                             <div style="flex:0 0 90px; min-width:60px; text-align:center;">MRP</div>
                             <div style="flex:0 0 90px; min-width:60px; text-align:center;">You Pay</div>
                             <div style="flex:0 0 90px; min-width:60px; text-align:center;">You Save</div>
@@ -101,23 +137,24 @@ echo renderBreadcrumb($breadcrumbs);
                                         <img src="<?php echo $imgSrc; ?>" onerror="this.onerror=null; this.src='./uploads/products/blank-img.webp';" alt="<?php echo htmlspecialchars($item['name']); ?>" class="img-fluid" style="width:44px;height:44px;object-fit:cover;border-radius:5px;">
                                     </a>
                                 </div>
-                                <div style="flex:1 1 120px; min-width:60px; max-width:220px; font-size:0.97em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                                    <a href="product.php?slug=<?php echo urlencode($item['slug']); ?>" title="<?php echo htmlspecialchars($item['name']); ?>" style="color:inherit; text-decoration:none; cursor:pointer;">
+                                <div class="cart-product-cell" style="flex:1 1 150px; min-width:120px; max-width:260px; font-size:0.97em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                    <a class="cart-product-title" href="product.php?slug=<?php echo urlencode($item['slug']); ?>" title="<?php echo htmlspecialchars($item['name']); ?>">
                                         <?php echo htmlspecialchars($item['name']); ?>
                                     </a>
+                                    <span class="cart-mobile-unit-line"><?php echo formatProductUnitLine($item); ?></span>
                                 </div>
-                                <div style="flex:0 0 90px; min-width:60px; font-size:0.93em; color:#888; text-align:center;"> <s><?php echo formatPrice($item['mrp'] * $item['quantity']); ?></s> </div>
-                                <div style="flex:0 0 90px; min-width:60px; font-size:0.97em; color:#007bff; font-weight:500; text-align:center;"> <?php echo formatPrice($item['selling_price'] * $item['quantity']); ?> </div>
-                                <div style="flex:0 0 90px; min-width:60px; font-size:0.93em; color:#23a036; text-align:center;"> <?php echo formatPrice(($item['mrp'] - $item['selling_price']) * $item['quantity']); ?> </div>
+                                <div class="cart-unit-cell" style="flex:0 0 92px; min-width:82px; font-size:0.93em; color:#444; font-weight:600; text-align:center; white-space:nowrap;"><?php echo formatProductUnitLine($item); ?></div>
+                                <div class="cart-mrp-cell" style="flex:0 0 90px; min-width:60px; font-size:0.93em; color:#888; text-align:center;"> <s><?php echo formatPrice($item['mrp'] * $item['quantity']); ?></s> </div>
+                                <div class="cart-you-pay-cell" style="flex:0 0 90px; min-width:60px; font-size:0.97em; color:#007bff; font-weight:500; text-align:center;"> <?php echo formatPrice($item['selling_price'] * $item['quantity']); ?> </div>
+                                <div class="cart-save-cell" style="flex:0 0 90px; min-width:60px; font-size:0.93em; color:#23a036; text-align:center;"> <?php echo formatPrice(($item['mrp'] - $item['selling_price']) * $item['quantity']); ?> </div>
                                 <div style="flex:0 0 80px; min-width:50px; text-align:center;">
                                     <div class="quantity-control d-inline-flex align-items-center justify-content-center">
                                         <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
                                         <input type="number" class="quantity-input" value="<?php echo $item['quantity']; ?>" min="1" max="99" data-cart-id="<?php echo $item['id']; ?>">
                                         <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
                                     </div>
-                                    <span class="unit-price-multiplier d-md-none ms-2" style="font-size:0.9em; color:#666; white-space:nowrap;">X <?php echo formatPrice($item['selling_price']); ?></span>
                                 </div>
-                                <div style="flex:0 0 70px; min-width:50px; text-align:center; font-weight:600; font-size:1.01em;"> <?php echo formatPrice($item['selling_price'] * $item['quantity']); ?> </div>
+                                <div class="cart-total-cell" style="flex:0 0 70px; min-width:50px; text-align:center; font-weight:600; font-size:1.01em;"> <?php echo formatPrice($item['selling_price'] * $item['quantity']); ?> </div>
                                 <div style="flex:0 0 36px; min-width:28px; text-align:center; flex-shrink:0;">
                                     <button class="btn btn-outline-danger btn-sm remove-item" data-cart-id="<?php echo $item['id']; ?>" title="Delete" style="padding: 4px 8px; font-size: 1.1rem;">
                                         <i class="fas fa-trash"></i>
@@ -130,7 +167,7 @@ echo renderBreadcrumb($breadcrumbs);
                 </div>
             </div>
             
-            <div class="col-md-4">
+            <div class="col-xl-3 col-lg-12">
                 <!-- Mobile Remove All Button placed before Price Summary -->
                 <div class="text-end d-md-none mb-2">
                     <button type="button" class="btn btn-outline-danger btn-sm" onclick="document.getElementById('removeAllItems').click()" title="Remove all items from cart">
@@ -139,20 +176,20 @@ echo renderBreadcrumb($breadcrumbs);
                 </div>
                 <div class="shopping-card">
                     <div class="card-header">
-                        <h5>Price Summary</h5>
+                        <h5 class="fw-bold">Price Summary</h5>
                     </div>
                     <div class="card-body">
                         <div class="floating-cart-summary-box" style="border:1px solid #cfd8dc;border-radius:8px;padding:16px 16px 8px 16px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:10px;">
-                                      <div class="d-flex justify-content-between mb-2"><span class="text-muted">Total MRP</span><span class="cart-summary-total-mrp" style="font-weight:600;text-decoration:line-through;">₹<?php echo number_format($orderTotals['total_mrp'], 0); ?></span></div>
-                                      <div class="d-flex justify-content-between mb-2"><span class="text-muted">You Pay</span><span class="cart-summary-you-pay" style="font-weight:600;">₹<?php echo number_format($orderTotals['subtotal'], 0); ?></span></div>
-                                                  <div class="d-flex justify-content-between mb-2"><span class="text-muted">Savings</span><span class="cart-summary-savings fw-bold" style="color:#2e7d32;">₹<?php
+                                      <div class="d-flex justify-content-between mb-2"><span class="text-dark fw-bold">Total MRP</span><span class="cart-summary-total-mrp" style="font-weight:600;text-decoration:line-through;">₹<?php echo number_format($orderTotals['total_mrp'], 0); ?></span></div>
+                                      <div class="d-flex justify-content-between mb-2"><span class="text-dark fw-bold">You Pay</span><span class="cart-summary-you-pay" style="font-weight:600;">₹<?php echo number_format($orderTotals['subtotal'], 0); ?></span></div>
+                                                  <div class="d-flex justify-content-between mb-2"><span class="text-dark fw-bold">Savings</span><span class="cart-summary-savings fw-bold" style="color:#2e7d32;">₹<?php
                                 $total_savings = 0;
                                 foreach ($cartItems as $item) {
                                     $total_savings += ($item['mrp'] - $item['selling_price']) * $item['quantity'];
                                 }
                                 echo number_format($total_savings, 0);
                             ?></span></div>
-            <div class="d-flex justify-content-between mb-2"><span class="text-muted">Delivery Charge <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
+            <div class="d-flex justify-content-between mb-2"><span class="text-dark fw-bold">Delivery Charge <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
             <div class="d-flex justify-content-between mb-2"></div>
                           <div class="d-grid mt-3 mb-2">
                             <a href='checkout.php' class='btn btn-success btn-lg fw-bold' style='font-size:1.08rem;'>PROCEED TO CHECKOUT</a>
@@ -255,22 +292,22 @@ document.addEventListener('DOMContentLoaded', function() {
                                     var row = document.querySelector('.cart-item-row input[data-cart-id="' + item.id + '"]').closest('.cart-item-row');
                                     if (row) {
                                         // Update MRP (total)
-                                        var mrpCell = row.children[2];
+                                        var mrpCell = row.querySelector('.cart-mrp-cell');
                                         if (mrpCell) {
                                             mrpCell.innerHTML = '<s>' + formatPrice(item.mrp * item.quantity) + '</s>';
                                         }
                                         // Update You Pay (total)
-                                        var youPayCell = row.children[3];
+                                        var youPayCell = row.querySelector('.cart-you-pay-cell');
                                         if (youPayCell) {
                                             youPayCell.textContent = formatPrice(item.selling_price * item.quantity);
                                         }
                                         // Update You Save
-                                        var youSaveCell = row.children[4];
+                                        var youSaveCell = row.querySelector('.cart-save-cell');
                                         if (youSaveCell) {
                                             youSaveCell.textContent = formatPrice((item.mrp - item.selling_price) * item.quantity);
                                         }
                                         // Update Total
-                                        var totalCell = row.children[6];
+                                        var totalCell = row.querySelector('.cart-total-cell');
                                         if (totalCell) {
                                             totalCell.textContent = formatPrice(item.selling_price * item.quantity);
                                         }
@@ -402,10 +439,10 @@ function updateCartPageSummary() {
             if (summary.success) {
                 const totals = summary.totals;
                 summaryBox.innerHTML = `
-                  <div class="d-flex justify-content-between mb-2"><span class="text-muted">Total MRP</span><span class="cart-summary-total-mrp" style="font-weight:600;text-decoration:line-through;">₹ ${parseFloat(totals.total_mrp || totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-                  <div class="d-flex justify-content-between mb-2"><span class="text-muted">You Pay</span><span class="cart-summary-you-pay" style="font-weight:600;">₹ ${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-                  <div class="d-flex justify-content-between mb-2"><span class="text-muted">Savings</span><span class="cart-summary-savings fw-bold" style="color:#2e7d32;">₹ ${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
-                  <div class="d-flex justify-content-between mb-2"><span class="text-muted">Delivery Charge <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
+                  <div class="d-flex justify-content-between mb-2"><span class="text-dark fw-bold">Total MRP</span><span class="cart-summary-total-mrp" style="font-weight:600;text-decoration:line-through;">₹ ${parseFloat(totals.total_mrp || totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+                  <div class="d-flex justify-content-between mb-2"><span class="text-dark fw-bold">You Pay</span><span class="cart-summary-you-pay" style="font-weight:600;">₹ ${parseFloat(totals.subtotal).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+                  <div class="d-flex justify-content-between mb-2"><span class="text-dark fw-bold">Savings</span><span class="cart-summary-savings fw-bold" style="color:#2e7d32;">₹ ${parseFloat(totals.total_savings).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span></div>
+                  <div class="d-flex justify-content-between mb-2"><span class="text-dark fw-bold">Delivery Charge <i class='bi bi-info-circle' title='Delivery charges may vary'></i></span><span class="text-danger fw-bold">+ Extra</span></div>
                   <div class="d-grid mt-3 mb-2">
                     <a href='checkout.php' class='btn btn-success btn-lg fw-bold' style='font-size:1.08rem;'>PROCEED TO CHECKOUT</a>
                   </div>
