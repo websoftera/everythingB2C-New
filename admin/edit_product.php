@@ -15,6 +15,7 @@ $success_message = '';
 $error_message = '';
 $variation_guidance_message = '';
 ensureProductVariationSchema($pdo);
+ensureProductUnitSchema($pdo);
 $return_to = $_GET['return_to'] ?? $_POST['return_to'] ?? 'products.php';
 if (strpos($return_to, 'products.php') !== 0) {
     $return_to = 'products.php';
@@ -58,7 +59,9 @@ $product = array_merge([
     'main_image' => '',
     'category_name' => '',
     'sku' => '',
-    'hsn' => ''
+    'hsn' => '',
+    'pay_per_unit' => null,
+    'unit_label' => 'No.'
 ], $product);
 
 // Get product images
@@ -100,6 +103,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $description = trim($_POST['description']);
     $mrp = floatval($_POST['mrp']);
     $selling_price = floatval($_POST['selling_price']);
+    $pay_per_unit = isset($_POST['pay_per_unit']) && $_POST['pay_per_unit'] !== '' ? floatval($_POST['pay_per_unit']) : $selling_price;
+    $unit_label = in_array($_POST['unit_label'] ?? 'No.', ['No.', 'Pair'], true) ? $_POST['unit_label'] : 'No.';
     
     // Handle category selection - use the selected category directly
     $category_id = intval($_POST['parent_category_id']);
@@ -134,8 +139,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $discount_percentage = calculateDiscountPercentage($mrp, $selling_price);
 
             // Update product
-            $stmt = $pdo->prepare("UPDATE products SET name = ?, slug = ?, description = ?, mrp = ?, selling_price = ?, discount_percentage = ?, gst_rate = ?, category_id = ?, stock_quantity = ?, max_quantity_per_order = ?, is_active = ?, is_featured = ?, is_discounted = ?, sku = ?, hsn = ? WHERE id = ?");
-            $stmt->execute([$name, $slug, $description, $mrp, $selling_price, $discount_percentage, $gst_rate, $category_id, $stock_quantity, $max_quantity_per_order, $is_active, $is_featured, $is_discounted, $sku, $hsn, $product_id]);
+            $stmt = $pdo->prepare("UPDATE products SET name = ?, slug = ?, description = ?, mrp = ?, selling_price = ?, pay_per_unit = ?, unit_label = ?, discount_percentage = ?, gst_rate = ?, category_id = ?, stock_quantity = ?, max_quantity_per_order = ?, is_active = ?, is_featured = ?, is_discounted = ?, sku = ?, hsn = ? WHERE id = ?");
+            $stmt->execute([$name, $slug, $description, $mrp, $selling_price, $pay_per_unit, $unit_label, $discount_percentage, $gst_rate, $category_id, $stock_quantity, $max_quantity_per_order, $is_active, $is_featured, $is_discounted, $sku, $hsn, $product_id]);
 
             // Handle main image upload
             if (isset($_FILES['main_image']) && $_FILES['main_image']['error'] === UPLOAD_ERR_OK) {
@@ -606,14 +611,15 @@ function uploadImage($file, $folder) {
                                             </div>
                                             <div class="col-md-3">
                                                 <label class="form-label">Pay / Unit (₹)</label>
-                                                <input type="number" class="form-control" placeholder="e.g. 49">
+                                                <input type="number" class="form-control" name="pay_per_unit" step="0.01" min="0" placeholder="e.g. 49" value="<?php echo htmlspecialchars($product['pay_per_unit'] ?? ''); ?>">
                                                 <div class="form-text unit-help-text">Shown as ₹ price / selected unit.</div>
                                             </div>
                                             <div class="col-md-3">
                                                 <label class="form-label">Unit</label>
-                                                <select class="form-control form-select">
-                                                    <option>No.</option>
-                                                    <option>Pair</option>
+                                                <select class="form-control form-select" name="unit_label">
+                                                    <?php $selectedUnitLabel = $product['unit_label'] ?? 'No.'; ?>
+                                                    <option value="No." <?php echo $selectedUnitLabel === 'No.' ? 'selected' : ''; ?>>No.</option>
+                                                    <option value="Pair" <?php echo $selectedUnitLabel === 'Pair' ? 'selected' : ''; ?>>Pair</option>
                                                 </select>
                                             </div>
                                         </div>

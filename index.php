@@ -209,6 +209,7 @@ foreach ($discountedProducts as $product):
                     <a href="product.php?slug=<?php echo $product['slug']; ?>" class="product-title-link">
                         <h3><?php echo formatProductListName($product['name']); ?></h3>
                     </a>
+                    <div class="product-unit-line"><?php echo formatProductUnitLine($product, true); ?></div>
                     <div class="price-buttons">
                         <div class="price-btn mrp">
                             <span class="label">MRP</span>
@@ -300,6 +301,7 @@ foreach ($featuredProducts as $product):
                     <a href="product.php?slug=<?php echo $product['slug']; ?>" class="product-title-link">
                         <h3><?php echo formatProductListName($product['name']); ?></h3>
                     </a>
+                    <div class="product-unit-line"><?php echo formatProductUnitLine($product, true); ?></div>
                     <div class="price-buttons">
                         <div class="price-btn mrp">
                             <span class="label">MRP</span>

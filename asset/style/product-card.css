@@ -186,6 +186,31 @@
     margin: 0 !important;
 }
 
+.product-unit-line {
+    width: 100% !important;
+    min-height: 18px !important;
+    margin: 4px 0 8px 0 !important;
+    color: #273444 !important;
+    font-family: 'Mulish', sans-serif !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    line-height: 18px !important;
+    letter-spacing: 0 !important;
+    text-align: right !important;
+    white-space: nowrap !important;
+}
+
+.product-detail-card .detail-unit-line,
+.modern-info .detail-unit-line {
+    width: auto !important;
+    min-height: 0 !important;
+    margin: 6px 0 10px 0 !important;
+    font-size: 13px !important;
+    line-height: 18px !important;
+    text-align: left !important;
+    color: #273444 !important;
+}
+
 /* --- Price Buttons: Pill, Horizontal --- */
 .price-buttons,
 .price-buttons1,
@@ -1184,4 +1209,20 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
 .wishlist-active .header-wishlist-icon,
 .heart-checkbox:checked+.wishlist-label .header-wishlist-icon {
     color: #DE0085 !important;
+}
+
+@media (max-width: 767px) {
+    .product-unit-line {
+        font-size: 11px !important;
+        line-height: 16px !important;
+        min-height: 16px !important;
+        margin: 3px 0 7px 0 !important;
+    }
+
+    .product-detail-card .detail-unit-line,
+    .modern-info .detail-unit-line {
+        font-size: 12px !important;
+        line-height: 17px !important;
+        margin: 5px 0 9px 0 !important;
+    }
 }

@@ -151,10 +151,10 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
         }
 
         .product-page-container .detail-variant-option.active {
-            border-color: var(--site-blue, #0c79e7);
+            border-color: #d8e0ea;
             background: var(--site-blue, #0c79e7);
             color: #fff;
-            box-shadow: 0 0 0 2px var(--pay-light-green, #E3F2AA);
+            box-shadow: none;
         }
 
         .product-page-container .detail-variant-note {
@@ -299,6 +299,14 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                 color: #DE0085 !important;
             }
 
+            .product-page-container .price-buttons1 .detail-unit-line {
+                flex: 0 0 auto !important;
+                width: auto !important;
+                margin: 0 0 0 8px !important;
+                align-self: center !important;
+                text-align: left !important;
+            }
+
             .product-page-container .detail-variant-group h5 {
                 font-size: 15px !important;
             }
@@ -342,6 +350,153 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
             }
         }
 
+        .product-page-container .price-buttons1 .detail-unit-line {
+            flex: 0 0 auto !important;
+            width: auto !important;
+            margin: 0 0 0 8px !important;
+            align-self: center !important;
+            text-align: left !important;
+        }
+
+        .product-page-container .mobile-detail-unit-line {
+            display: none !important;
+        }
+
+        .product-page-container .price-buttons1.modern-prices .price-btn .label,
+        .product-page-container .price-buttons1.modern-prices .price-btn .value {
+            color: #000 !important;
+            font-size: 13px !important;
+            font-weight: 800 !important;
+        }
+
+        @media (min-width: 901px) {
+            .product-page-container .price-buttons1.modern-prices {
+                display: inline-flex !important;
+                max-width: none !important;
+                width: fit-content !important;
+                gap: 10px !important;
+                align-items: center !important;
+                margin-bottom: 1px !important;
+            }
+
+            .product-page-container .price-buttons1.modern-prices .price-btn.mrp,
+            .product-page-container .price-buttons1.modern-prices .price-btn.pay {
+                flex: 0 0 112px !important;
+                width: 112px !important;
+                min-width: 112px !important;
+                max-width: 112px !important;
+                height: 32px !important;
+                min-height: 32px !important;
+                max-height: 32px !important;
+                padding: 0 12px !important;
+                margin: 0 !important;
+                border-radius: 4px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+
+            .product-page-container .price-buttons1.modern-prices .price-btn .label,
+            .product-page-container .price-buttons1.modern-prices .price-btn .value {
+                color: inherit !important;
+                font-size: 12px !important;
+                font-weight: 700 !important;
+            }
+
+            .product-page-container .price-buttons1.modern-prices .wishlist {
+                flex: 0 0 24px !important;
+                width: 24px !important;
+                min-width: 24px !important;
+                max-width: 24px !important;
+                margin: 0 !important;
+                justify-content: center !important;
+            }
+
+            .product-page-container .price-buttons1.modern-prices .detail-unit-line {
+                margin-left: 0 !important;
+                font-size: 16px !important;
+                line-height: 20px !important;
+            }
+
+            .product-page-container .price-buttons1 .product-detail-unit-price {
+                display: inline-flex !important;
+                align-items: center !important;
+                flex: 0 0 auto !important;
+                order: 4 !important;
+                color: #4f5b67 !important;
+                font-size: 13px !important;
+                font-weight: 400 !important;
+                line-height: 1 !important;
+                margin-left: -4px !important;
+                padding: 0 !important;
+                white-space: nowrap !important;
+            }
+
+            .product-page-container .product-info-section .cart-actions {
+                display: flex !important;
+                max-width: none !important;
+                width: fit-content !important;
+                gap: 10px !important;
+                align-items: center !important;
+                margin-bottom: 18px !important;
+                clear: both !important;
+            }
+
+            .product-page-container .product-info-section .cart-actions .quantity-control {
+                flex: 0 0 112px !important;
+                width: 112px !important;
+                min-width: 112px !important;
+                max-width: 112px !important;
+                height: 30px !important;
+                min-height: 30px !important;
+                max-height: 30px !important;
+                margin: 0 !important;
+            }
+
+            .product-page-container .product-info-section .cart-actions .add-to-cart-btn {
+                flex: 0 0 142px !important;
+                width: 142px !important;
+                min-width: 142px !important;
+                max-width: 142px !important;
+                height: 30px !important;
+                min-height: 30px !important;
+                max-height: 30px !important;
+                margin: 0 !important;
+                font-size: 11px !important;
+                letter-spacing: 0.5px !important;
+                border-radius: 3px !important;
+                gap: 5px !important;
+                padding: 0 8px !important;
+                box-sizing: border-box !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+            }
+
+            .product-page-container .product-info-section .quantity-control .quantity-input {
+                flex: 1 !important;
+                width: 100% !important;
+                min-width: 0 !important;
+                max-width: none !important;
+                height: 30px !important;
+                font-size: 14px !important;
+                font-weight: bold !important;
+                text-align: center !important;
+                border: none !important;
+                background: #fff !important;
+                color: #333 !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                -webkit-appearance: none !important;
+                -moz-appearance: textfield !important;
+            }
+
+            .product-page-container .product-info-section .quantity-control .btn-qty {
+                font-size: 13px !important;
+                font-weight: 400 !important;
+            }
+        }
+
         /* Typography Standardisation */
         .product-page-container .sku-row, 
         .product-page-container .product-hsn {
@@ -360,6 +515,55 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
             color: #333 !important;
             margin-bottom: 12px !important;
             text-align: left !important;
+        }
+
+        @media (max-width: 900px) {
+            .product-page-container .sku-row,
+            .product-page-container .product-hsn {
+                display: inline-block !important;
+                margin: 0 12px 4px 0 !important;
+                font-size: 14px !important;
+                color: #333 !important;
+                line-height: 18px !important;
+            }
+
+            .product-page-container .mobile-detail-unit-line {
+                display: block !important;
+                margin: 0 0 4px 0 !important;
+                color: #333 !important;
+                font-size: 13px !important;
+                font-weight: 400 !important;
+                line-height: 18px !important;
+                text-align: left !important;
+                white-space: nowrap !important;
+            }
+
+            .product-page-container .mobile-detail-unit-line strong {
+                font-weight: 700 !important;
+                color: #333 !important;
+            }
+
+            .product-page-container .price-buttons1.modern-prices .detail-unit-line {
+                display: none !important;
+            }
+
+            .product-page-container .price-buttons1.modern-prices .price-btn .label,
+            .product-page-container .price-buttons1.modern-prices .price-btn .value {
+                font-size: 12px !important;
+                font-weight: 700 !important;
+            }
+
+            .product-page-container .product-info-section .quantity-control .btn-qty {
+                flex: 0 0 30px !important;
+                width: 30px !important;
+                min-width: 30px !important;
+                max-width: 30px !important;
+                height: 32px !important;
+                min-height: 32px !important;
+                max-height: 32px !important;
+                font-size: 14px !important;
+                font-weight: 700 !important;
+            }
         }
     </style>
 
@@ -414,6 +618,7 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
             <?php if (!empty($product['hsn'])): ?>
                 <div class="product-hsn"><strong>HSN:</strong> <?php echo htmlspecialchars($product['hsn']); ?></div>
             <?php endif; ?>
+            <div class="mobile-detail-unit-line"><strong>Unit:</strong> <span id="mobileDetailUnitLine"><?php echo formatProductUnitLine($product, true); ?></span></div>
             <div class="price-buttons1 modern-prices">
                 <div class="price-btn mrp">
                     <span class="label">MRP</span>
@@ -429,6 +634,7 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                         <i class="bi <?php echo $inWishlist ? 'bi-heart-fill' : 'bi-heart'; ?> header-wishlist-icon"></i>
                     </label>
                 </div>
+                <div class="product-unit-line detail-unit-line product-detail-unit-price" id="detailUnitLine"><?php echo formatProductUnitLine($product, true); ?></div>
             </div>
             <?php if ($product['stock_quantity'] > 0): ?>
             <div class="cart-action-btns cart-actions d-flex align-items-center gap-2">
@@ -532,7 +738,8 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                                     <a href="product.php?slug=<?php echo $relatedProduct['slug']; ?>" class="product-title-link">
                                         <h3><?php echo cleanProductName($relatedProduct['name']); ?></h3>
                                     </a>
-                                    
+                                    <div class="product-unit-line"><?php echo formatProductUnitLine($relatedProduct, true); ?></div>
+
                                     <div class="price-buttons">
                                         <div class="price-btn mrp">
                                             <span class="label">MRP</span>
@@ -592,12 +799,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const mrpValue = document.getElementById('detailMrpValue');
         const payValue = document.getElementById('detailPayValue');
+        const detailUnitLine = document.getElementById('detailUnitLine');
+        const mobileDetailUnitLine = document.getElementById('mobileDetailUnitLine');
         const stockText = document.getElementById('detailStockText');
         const addToCartBtn = document.getElementById('detailAddToCartBtn');
         const detailMainImage = document.getElementById('mainImage');
+        const productUnitPrice = <?php echo json_encode(getProductUnitPrice($product)); ?>;
+        const hasProductUnitPrice = <?php echo json_encode((float)($product['pay_per_unit'] ?? 0) > 0); ?>;
 
         function formatPriceValue(value) {
             return '₹ ' + Number(value || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 });
+        }
+
+        function formatUnitLine(value) {
+            return '(' + formatPriceValue(value) + ' / <?php echo addslashes(getProductUnitLabel($product)); ?>)';
+        }
+
+        function getVariationUnitPrice(variation) {
+            return hasProductUnitPrice ? productUnitPrice : variation.selling_price;
         }
 
         function findSelectedVariation() {
@@ -618,6 +837,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const selectedVariation = nextVariation || findSelectedVariation() || firstVariation;
             if (mrpValue) mrpValue.textContent = formatPriceValue(selectedVariation.mrp);
             if (payValue) payValue.textContent = formatPriceValue(selectedVariation.selling_price);
+            if (detailUnitLine) detailUnitLine.textContent = formatUnitLine(getVariationUnitPrice(selectedVariation));
+            if (mobileDetailUnitLine) mobileDetailUnitLine.textContent = formatUnitLine(getVariationUnitPrice(selectedVariation));
             if (stockText) {
                 stockText.className = selectedVariation.stock_quantity > 0 ? 'text-success' : 'text-danger';
                 stockText.innerHTML = selectedVariation.stock_quantity > 0

@@ -377,6 +377,50 @@ function formatPrice($price) {
     return '₹ ' . number_format($price, 0, '.', '');
 }
 
+function ensureProductUnitSchema(PDO $pdo) {
+    try {
+        $columns = [];
+        $stmt = $pdo->query("SHOW COLUMNS FROM products");
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $column) {
+            $columns[$column['Field']] = true;
+        }
+
+        if (!isset($columns['pay_per_unit'])) {
+            $pdo->exec("ALTER TABLE products ADD COLUMN pay_per_unit DECIMAL(10,2) NULL AFTER selling_price");
+        }
+
+        if (!isset($columns['unit_label'])) {
+            $pdo->exec("ALTER TABLE products ADD COLUMN unit_label VARCHAR(20) NOT NULL DEFAULT 'No.' AFTER pay_per_unit");
+        }
+    } catch (PDOException $e) {
+        // Keep older installs working even if this lightweight migration cannot run here.
+    }
+}
+
+function getProductUnitLabel(array $product) {
+    $label = trim((string)($product['unit_label'] ?? ''));
+    if ($label !== '') {
+        return $label;
+    }
+
+    $name = strtolower(cleanProductName($product['name'] ?? ''));
+    if (preg_match('/\b(shoe|shoes|boot|boots|sandal|sandals|slipper|slippers)\b/', $name)) {
+        return 'Pair';
+    }
+
+    return 'No.';
+}
+
+function getProductUnitPrice(array $product) {
+    $payPerUnit = isset($product['pay_per_unit']) ? (float)$product['pay_per_unit'] : 0;
+    return $payPerUnit > 0 ? $payPerUnit : (float)($product['selling_price'] ?? 0);
+}
+
+function formatProductUnitLine(array $product, $withParentheses = false) {
+    $line = '&#8377; ' . number_format(getProductUnitPrice($product), 0, '.', '') . ' / ' . htmlspecialchars(getProductUnitLabel($product), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    return $withParentheses ? '(' . $line . ')' : $line;
+}
+
 function normalizeFrontendVariationAttributes($attributesJson) {
     $attributes = json_decode($attributesJson ?: '[]', true);
     if (!is_array($attributes)) {
