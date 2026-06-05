@@ -161,8 +161,20 @@ body {
 .desktop-footer {
   position: relative;
   color: white;
-  padding: 40px 30px 20px;
+  padding: 54px 30px 20px;
   overflow: hidden;
+}
+
+.desktop-footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: repeating-linear-gradient(45deg, #ffd400 0 16px, #000 16px 32px);
+  z-index: 4;
+  pointer-events: none;
 }
 
 .footer-background {
@@ -250,6 +262,39 @@ body {
   margin-top: 15px;
   font-size: 14px;
   color: #ccc;
+}
+
+/* Compact centered footer - desktop only */
+@media (min-width: 1025px) {
+  .desktop-footer {
+    padding: 24px 20px 8px !important;
+  }
+
+  .desktop-footer .footer-container {
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 90px !important;
+  }
+
+  .desktop-footer .footer-column {
+    flex: 0 1 auto !important;
+    min-width: 0 !important;
+  }
+
+  .desktop-footer .footer-column h3 {
+    margin: 0 0 8px 0 !important;
+  }
+
+  .desktop-footer .footer-links-inline,
+  .desktop-footer .footer-connect-inline {
+    justify-content: center !important;
+    gap: 6px !important;
+  }
+
+  .desktop-footer .footer-bottom {
+    margin-top: 8px !important;
+  }
 }
 
 /* RESPONSIVE STYLES */
@@ -2891,7 +2936,7 @@ input[type="checkbox"]:checked+.heart-icon,
 }
 
 .breadcrumb-item.active {
-  color: #495057 !important;
+  color: #9fbe1b !important;
   font-weight: 500 !important;
 }
 

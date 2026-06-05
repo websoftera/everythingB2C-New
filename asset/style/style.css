@@ -687,10 +687,22 @@ h3 {
 /* RESPONSIVE STYLES */
 /* Consolidated Professional Footer - Desktop */
 .desktop-footer {
-  padding: 40px 20px;
+  padding: 54px 20px 40px;
   background-color: var(--secondary-color);
   position: relative;
   overflow: hidden;
+}
+
+.desktop-footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: repeating-linear-gradient(45deg, #ffd400 0 16px, #000 16px 32px);
+  z-index: 4;
+  pointer-events: none;
 }
 
 .footer-container {
@@ -748,7 +760,7 @@ h3 {
 /* Consolidated Professional Footer - Mobile (< 1025px) */
 @media (max-width: 1024px) {
   .desktop-footer {
-    padding: 5px 15px !important;
+    padding: 13px 15px 5px !important;
   }
 
   .footer-container {
@@ -810,6 +822,39 @@ h3 {
   .desktop-footer {
     padding-left: 2px !important;
     padding-right: 2px !important;
+  }
+}
+
+/* Compact centered footer - desktop only */
+@media (min-width: 1025px) {
+  .desktop-footer {
+    padding: 24px 20px 8px !important;
+  }
+
+  .desktop-footer .footer-container {
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 90px !important;
+  }
+
+  .desktop-footer .footer-column {
+    flex: 0 1 auto !important;
+    min-width: 0 !important;
+  }
+
+  .desktop-footer .footer-column h3 {
+    margin: 0 0 8px 0 !important;
+  }
+
+  .desktop-footer .footer-links-inline,
+  .desktop-footer .footer-connect-inline {
+    justify-content: center !important;
+    gap: 6px !important;
+  }
+
+  .desktop-footer .footer-bottom {
+    margin-top: 8px !important;
   }
 }
 
@@ -2493,6 +2538,13 @@ input[type="submit"].cart-added-highlight,
   transform: scale(1.02) !important;
   position: relative !important;
   z-index: 10 !important;
+}
+
+.cart-added-highlight i.fa-shopping-cart,
+.add-to-cart.cart-added-highlight i.fa-shopping-cart,
+.add-to-cart-btn.cart-added-highlight i.fa-shopping-cart,
+.shop-page-add-to-cart-btn.cart-added-highlight i.fa-shopping-cart {
+  display: none !important;
 }
 
 .discount-banner {

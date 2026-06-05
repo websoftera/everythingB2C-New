@@ -130,6 +130,13 @@ html body [data-product-id].cart-added-highlight {
   z-index: 999 !important;
 }
 
+html body .cart-added-highlight i.fa-shopping-cart,
+html body .add-to-cart.cart-added-highlight i.fa-shopping-cart,
+html body .add-to-cart-btn.cart-added-highlight i.fa-shopping-cart,
+html body .shop-page-add-to-cart-btn.cart-added-highlight i.fa-shopping-cart {
+  display: none !important;
+}
+
 /* Center floating cart count label on top of icon */
 #floatingCartCount {
   left: 55% !important; /* Center over the icon */
@@ -164,7 +171,7 @@ html body [data-product-id].cart-added-highlight {
   font-weight: bold !important;
 }
 .breadcrumb-item.active {
-  color: #878787 !important;
+  color: #9fbe1b !important;
   font-weight: bold !important;
 }
 
@@ -219,13 +226,14 @@ html body #floatingCartPanel .quantity-control button.btn-qty:disabled:active {
 #floatingCartPanel.fixed-panel {
   display: flex;
   flex-direction: column;
-  position: absolute;
-  bottom: 20px;
-  right: 0;
+  position: fixed;
+  top: var(--floating-cart-panel-top, 110px);
+  right: var(--floating-cart-panel-right, 90px);
+  bottom: auto;
   width: 340px;
   max-width: 90vw;
   height: 540px;
-  max-height: 90vh;
+  max-height: calc(100vh - var(--floating-cart-panel-top, 110px) - 18px);
   background: #fff;
   border: 1px solid #ddd;
   box-shadow: 0 8px 24px rgba(0,0,0,0.15);
@@ -233,6 +241,16 @@ html body #floatingCartPanel .quantity-control button.btn-qty:disabled:active {
   border-radius: 12px;
   padding: 0;
   overflow: hidden;
+}
+@media (max-width: 1024px) {
+  #floatingCartPanel.fixed-panel {
+    right: var(--floating-cart-panel-right, 25px);
+  }
+}
+@media (max-width: 767px) {
+  #floatingCartPanel.fixed-panel {
+    right: var(--floating-cart-panel-right, 15px);
+  }
 }
 #floatingCartPanel.fixed-panel .floating-cart-header {
   display: flex;
@@ -1469,13 +1487,23 @@ function renderFloatingCart() {
       }
       
       let itemsHtml = '';
+      function formatFloatingCartUnitLine(item) {
+        const rawUnitPrice = parseFloat(item.pay_per_unit || 0);
+        const unitPrice = rawUnitPrice > 0 ? rawUnitPrice : parseFloat(item.selling_price || 0);
+        const unitLabel = (item.unit_label || 'No.').toString().trim() || 'No.';
+        const formattedPrice = unitPrice.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        return `\u20b9${formattedPrice} / ${unitLabel}`;
+      }
+
       paginatedItems.forEach(item => {
         const cartId = item.id;
+        const unitLine = formatFloatingCartUnitLine(item);
         itemsHtml += `
           <div class="d-flex align-items-center gap-1 mb-2" style="min-width:0; border: 1px solid #e0e0e0; border-radius: 7px; padding: 7px 8px; background: #fff; gap: 8px;">
             <img src="${item.main_image ? './' + item.main_image : './uploads/products/blank-img.webp'}" onerror="this.onerror=null; this.src='./uploads/products/blank-img.webp';" alt="${item.name}" style="width:38px;height:38px;object-fit:cover;border-radius:6px;border:1px solid #eee;flex-shrink:0;">
             <div class="flex-grow-1" style="min-width:0;">
               <div style="font-weight:500;font-size:0.93rem;font-family:'Mulish', sans-serif !important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.name}</div>
+              <div style="color:#6f7a89;font-size:0.82rem;font-weight:500;font-family:'Mulish', sans-serif !important;line-height:1.15;margin-top:1px;margin-bottom:2px;white-space:nowrap;">${unitLine}</div>
               <div class="text-muted d-flex align-items-center gap-1" style="font-size:0.85rem;">
                 <div class="quantity-control d-inline-flex align-items-center">
                   <button type="button" class="btn-qty btn-qty-minus" data-cart-id="${cartId}" ${parseInt(item.quantity, 10) <= 1 ? 'disabled' : ''}>-</button>
@@ -2202,6 +2230,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
   if (!btn || !panel) return;
 
+  function syncFloatingCartPanelPosition() {
+    const visibleBars = Array.from(document.querySelectorAll('nav.navbar.sticky-top, .second-navbar, .category-navbar, .mobile-search-row'))
+      .filter(function(el) {
+        const rect = el.getBoundingClientRect();
+        const style = window.getComputedStyle(el);
+        return style.display !== 'none' && style.visibility !== 'hidden' && rect.height > 0 && rect.bottom > 0 && rect.top < 180;
+      });
+
+    let headerBottom = 0;
+    visibleBars.forEach(function(el) {
+      const rect = el.getBoundingClientRect();
+      headerBottom = Math.max(headerBottom, rect.bottom);
+    });
+
+    const minTop = window.innerWidth >= 992 ? 108 : 76;
+    const top = Math.max(minTop, Math.ceil(headerBottom + 10));
+    const btnRect = btn.getBoundingClientRect();
+    const rightGap = Math.max(10, Math.ceil(window.innerWidth - btnRect.right));
+
+    panel.style.setProperty('--floating-cart-panel-top', top + 'px');
+    panel.style.setProperty('--floating-cart-panel-right', rightGap + 'px');
+    panel.style.maxHeight = 'calc(100vh - ' + (top + 18) + 'px)';
+  }
+
+  window.syncFloatingCartPanelPosition = syncFloatingCartPanelPosition;
+
   // Toggle panel visibility on button click
   btn.addEventListener('click', function(e) {
     e.preventDefault();
@@ -2215,10 +2269,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (panel.style.display === 'block') {
       panel.style.display = 'none';
     } else {
+      syncFloatingCartPanelPosition();
       panel.style.display = 'block';
       if (typeof renderFloatingCart === 'function') {
         renderFloatingCart();
       }
+      syncFloatingCartPanelPosition();
     }
   });
 
@@ -2241,6 +2297,18 @@ document.addEventListener('DOMContentLoaded', function() {
       panel.style.display = 'none';
     }
   });
+
+  window.addEventListener('resize', function() {
+    if (panel.style.display === 'block') {
+      syncFloatingCartPanelPosition();
+    }
+  });
+
+  window.addEventListener('scroll', function() {
+    if (panel.style.display === 'block') {
+      syncFloatingCartPanelPosition();
+    }
+  }, { passive: true });
 })();
 // Add this simple function to update per-item total
 function updateItemTotal(cartId, quantity, unitPrice) {
