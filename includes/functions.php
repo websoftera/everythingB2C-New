@@ -247,7 +247,7 @@ function getProductsByCategory($categoryId, $limit = null) {
     $stmt->execute([$categoryId]);
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    return $result;
+    return applyDisplayVariationPrices($result);
 }
 
 // Function to get featured products
@@ -258,7 +258,7 @@ function getFeaturedProducts($limit = 8) {
             WHERE p.is_featured = 1 AND p.is_active = 1
             ORDER BY p.created_at DESC LIMIT " . (int)$limit;
     $stmt = $pdo->query($sql);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return applyDisplayVariationPrices($stmt->fetchAll(PDO::FETCH_ASSOC));
 }
 
 // Function to get discounted products
@@ -269,7 +269,7 @@ function getDiscountedProducts($limit = 8) {
             WHERE p.is_discounted = 1 AND p.is_active = 1
             ORDER BY p.discount_percentage DESC LIMIT " . (int)$limit;
     $stmt = $pdo->query($sql);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return applyDisplayVariationPrices($stmt->fetchAll(PDO::FETCH_ASSOC));
 }
 
 // Function to get all products
@@ -285,7 +285,7 @@ function getAllProducts($limit = null) {
     }
 
     $stmt = $pdo->query($sql);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return applyDisplayVariationPrices($stmt->fetchAll(PDO::FETCH_ASSOC));
 }
 
 // Function to get product by slug
@@ -316,7 +316,7 @@ function getRelatedProducts($productId, $categoryId, $limit = 4) {
             ORDER BY RAND() LIMIT " . (int)$limit;
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$categoryId, $productId]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return applyDisplayVariationPrices($stmt->fetchAll(PDO::FETCH_ASSOC));
 }
 
 // Function to search products
@@ -339,13 +339,84 @@ function searchProducts($query, $limit = 20) {
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return applyDisplayVariationPrices($stmt->fetchAll(PDO::FETCH_ASSOC));
 }
 
 // Function to calculate discount percentage
 function calculateDiscountPercentage($mrp, $sellingPrice) {
     if ($mrp <= 0) return 0;
     return round((($mrp - $sellingPrice) / $mrp) * 100);
+}
+
+function getFirstDisplayVariationForProduct($productId) {
+    global $pdo;
+    static $cache = [];
+
+    $productId = (int)$productId;
+    if ($productId <= 0) {
+        return null;
+    }
+
+    if (array_key_exists($productId, $cache)) {
+        return $cache[$productId];
+    }
+
+    try {
+        $stmt = $pdo->prepare("SELECT id, mrp, selling_price, stock_quantity, image_path
+                               FROM product_variations
+                               WHERE product_id = ?
+                               ORDER BY CASE WHEN stock_quantity > 0 THEN 0 ELSE 1 END, sort_order ASC, id ASC
+                               LIMIT 1");
+        $stmt->execute([$productId]);
+        $variation = $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        $variation = false;
+    }
+
+    $cache[$productId] = $variation ?: null;
+    return $cache[$productId];
+}
+
+function applyDisplayVariationPrice(array $product) {
+    $hasVariations = isset($product['has_variations']) ? (int)$product['has_variations'] === 1 : false;
+    if (!$hasVariations) {
+        return $product;
+    }
+
+    $variation = getFirstDisplayVariationForProduct($product['id'] ?? 0);
+    if (!$variation) {
+        return $product;
+    }
+
+    $mrp = (float)$variation['mrp'];
+    $sellingPrice = (float)$variation['selling_price'];
+    if ($mrp <= 0 || $sellingPrice <= 0) {
+        return $product;
+    }
+
+    $product['display_variation_id'] = (int)$variation['id'];
+    $product['display_base_mrp'] = $product['mrp'] ?? null;
+    $product['display_base_selling_price'] = $product['selling_price'] ?? null;
+    $product['mrp'] = $mrp;
+    $product['selling_price'] = $sellingPrice;
+    $product['discount_percentage'] = calculateDiscountPercentage($mrp, $sellingPrice);
+
+    if (isset($variation['stock_quantity'])) {
+        $product['stock_quantity'] = (int)$variation['stock_quantity'];
+    }
+
+    return $product;
+}
+
+function applyDisplayVariationPrices(array $products) {
+    foreach ($products as &$product) {
+        if (is_array($product)) {
+            $product = applyDisplayVariationPrice($product);
+        }
+    }
+    unset($product);
+
+    return $products;
 }
 
 // Function to clean product name (remove HTML entities and tags)

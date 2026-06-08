@@ -13,6 +13,10 @@ if (!$product) {
     echo '<div style="color:#c00;">Product not found.</div>';
     exit;
 }
+$variationData = getProductVariationData($product['id']);
+if ($variationData['has_variations']) {
+    $product = applyDisplayVariationPrice($product);
+}
 $productImages = getProductImages($product['id']);
 $categoryPath = getCategoryPath($product['category_id']);
 $discount = ($product['mrp'] > $product['selling_price']) ? ($product['mrp'] - $product['selling_price']) : 0;

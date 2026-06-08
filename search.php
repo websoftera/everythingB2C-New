@@ -118,6 +118,7 @@ switch ($sortBy) {
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$products = applyDisplayVariationPrices($products);
 
 // Set page title for breadcrumb
 $pageTitle = 'Search Results';

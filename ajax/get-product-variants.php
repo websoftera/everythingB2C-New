@@ -17,6 +17,9 @@ if (!$product) {
 }
 
 $variationData = getProductVariationData($productId);
+if ($variationData['has_variations']) {
+    $product = applyDisplayVariationPrice($product);
+}
 
 echo json_encode([
     'success' => true,

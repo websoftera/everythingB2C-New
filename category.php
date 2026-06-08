@@ -140,6 +140,7 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 
 $allProducts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$allProducts = applyDisplayVariationPrices($allProducts);
 
 // Get total count BEFORE pagination
 $totalProducts = count($allProducts);
