@@ -1490,26 +1490,63 @@ function renderFloatingCart() {
         const formattedPrice = unitPrice.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
         return `\u20b9${formattedPrice} / ${unitLabel}`;
       }
+      function escapeFloatingCartHtml(value) {
+        return String(value || '').replace(/[&<>"']/g, function(char) {
+          return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'}[char];
+        });
+      }
+      function floatingCartDisplayName(item) {
+        const variationLabel = (item.variation_label || '').toString().trim();
+        let name = (item.name || '').toString();
+        if (variationLabel && name.endsWith(' - ' + variationLabel)) {
+          name = name.slice(0, -(' - ' + variationLabel).length);
+        }
+        return name;
+      }
+      function formatFloatingCartVariationLines(item) {
+        const variationLabel = (item.variation_label || '').toString().trim();
+        if (!variationLabel) return '';
+        const lines = variationLabel.split('/').map(function(part) {
+          const pieces = part.split(':');
+          if (pieces.length < 2) return null;
+          let label = pieces.shift().trim();
+          const value = pieces.join(':').trim();
+          if (!label || !value) return null;
+          if (/colou?r/i.test(label)) label = 'colour';
+          return { label: label, value: value };
+        }).filter(Boolean).sort(function(a, b) {
+          const aIsColour = /colou?r/i.test(a.label);
+          const bIsColour = /colou?r/i.test(b.label);
+          if (aIsColour === bIsColour) return 0;
+          return aIsColour ? -1 : 1;
+        });
+        return lines.map(function(line) {
+          return `<div style="color:#667085;font-size:0.78rem;font-weight:700;line-height:1.2;font-family:'Mulish', sans-serif !important;">${escapeFloatingCartHtml(line.label)}: <span style="font-weight:600;">${escapeFloatingCartHtml(line.value)}</span></div>`;
+        }).join('');
+      }
 
       paginatedItems.forEach(item => {
         const cartId = item.id;
         const unitLine = formatFloatingCartUnitLine(item);
+        const displayName = floatingCartDisplayName(item);
+        const variationLines = formatFloatingCartVariationLines(item);
         const productUrl = item.slug ? `${window.BASE_URL || ''}product.php?slug=${encodeURIComponent(item.slug)}` : '#';
         itemsHtml += `
           <div class="d-flex align-items-center gap-1 mb-2" style="min-width:0; border: 1px solid #e0e0e0; border-radius: 7px; padding: 7px 8px; background: #fff; gap: 8px;">
             <a href="${productUrl}" style="display:block;flex-shrink:0;text-decoration:none;">
-              <img src="${item.main_image ? './' + item.main_image : './uploads/products/blank-img.webp'}" onerror="this.onerror=null; this.src='./uploads/products/blank-img.webp';" alt="${item.name}" style="width:38px;height:38px;object-fit:cover;border-radius:6px;border:1px solid #eee;flex-shrink:0;">
+              <img src="${item.main_image ? './' + item.main_image : './uploads/products/blank-img.webp'}" onerror="this.onerror=null; this.src='./uploads/products/blank-img.webp';" alt="${escapeFloatingCartHtml(displayName)}" style="width:38px;height:38px;object-fit:cover;border-radius:6px;border:1px solid #eee;flex-shrink:0;">
             </a>
             <div class="flex-grow-1" style="min-width:0;">
-              <a href="${productUrl}" title="${item.name}" style="display:block;color:inherit;text-decoration:none;cursor:pointer;font-weight:500;font-size:0.93rem;font-family:'Mulish', sans-serif !important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.name}</a>
+              <a href="${productUrl}" title="${escapeFloatingCartHtml(displayName)}" style="display:block;color:inherit;text-decoration:none;cursor:pointer;font-weight:500;font-size:0.93rem;font-family:'Mulish', sans-serif !important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeFloatingCartHtml(displayName)}</a>
               <div style="color:#6f7a89;font-size:0.82rem;font-weight:500;font-family:'Mulish', sans-serif !important;line-height:1.15;margin-top:1px;margin-bottom:2px;white-space:nowrap;">${unitLine}</div>
+              ${variationLines}
               <div class="text-muted d-flex align-items-center gap-1" style="font-size:0.85rem;">
                 <div class="quantity-control d-inline-flex align-items-center">
                   <button type="button" class="btn-qty btn-qty-minus" data-cart-id="${cartId}" ${parseInt(item.quantity, 10) <= 1 ? 'disabled' : ''}>-</button>
                   <input type="number" class="quantity-input cart-qty-input" value="${item.quantity}" min="1" data-cart-id="${cartId}">
                   <button type="button" class="btn-qty btn-qty-plus" data-cart-id="${cartId}">+</button>
                 </div>
-                <span class="ms-1">x ₹${parseFloat(item.selling_price).toFixed(2).replace('.00', '')}</span>
+                <span class="ms-1 floating-cart-unit-price" style="display:none;">x ₹${parseFloat(item.selling_price).toFixed(2).replace('.00', '')}</span>
               </div>
             </div>
             <div class="text-end ms-1" style="min-width:54px;">
@@ -2503,10 +2540,21 @@ function smoothUpdatePerItemTotal(cartId, newTotal) {
 // Show/hide Go to Top button
 window.addEventListener('scroll', function() {
     const btn = document.getElementById('goToTopBtn');
+    if (!btn) return;
+    if (document.body.classList.contains('variant-drawer-open')) {
+        btn.style.setProperty('display', 'none', 'important');
+        btn.style.setProperty('opacity', '0', 'important');
+        btn.style.setProperty('visibility', 'hidden', 'important');
+        return;
+    }
     if (window.scrollY > 200) {
-        btn.style.display = 'block';
+        btn.style.setProperty('display', 'block', 'important');
+        btn.style.setProperty('opacity', '1', 'important');
+        btn.style.setProperty('visibility', 'visible', 'important');
     } else {
-        btn.style.display = 'none';
+        btn.style.setProperty('display', 'none', 'important');
+        btn.style.setProperty('opacity', '0', 'important');
+        btn.style.setProperty('visibility', 'hidden', 'important');
     }
 });
 // Smooth scroll to top

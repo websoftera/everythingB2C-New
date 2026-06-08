@@ -547,7 +547,7 @@ function uploadImage($file, $folder) {
                     </div>
 
                     <?php if ($success_message): ?>
-                        <div class="alert alert-success"><?php echo htmlspecialchars($success_message); ?></div>
+                        <div class="alert product-save-success-alert no-success-icon"><?php echo htmlspecialchars($success_message); ?></div>
                     <?php endif; ?>
 
                     <?php if ($variation_guidance_message): ?>

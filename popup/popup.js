@@ -166,7 +166,9 @@ document.addEventListener('DOMContentLoaded', function () {
         .variant-drawer-overlay.show {
             display: block;
         }
-        body.variant-drawer-open #floatingCartBtn {
+        body.variant-drawer-open #floatingCartBtn,
+        body.variant-drawer-open #goToTopBtn,
+        body.variant-drawer-open #backToTopBtn {
             display: none !important;
         }
         .variant-drawer {
@@ -292,7 +294,6 @@ document.addEventListener('DOMContentLoaded', function () {
             border-color: var(--site-blue, #0c79e7);
             background: var(--site-blue, #0c79e7);
             color: #fff;
-            box-shadow: 0 0 0 2px var(--pay-light-green, #E3F2AA);
         }
         .variant-option:disabled {
             opacity: 0.45;
@@ -441,6 +442,16 @@ document.addEventListener('DOMContentLoaded', function () {
             selectedValues[item.attribute_id] = item.value_id;
         });
 
+        function hidePageFloatingControls() {
+            ['goToTopBtn', 'backToTopBtn'].forEach(id => {
+                const button = document.getElementById(id);
+                if (!button) return;
+                button.style.setProperty('display', 'none', 'important');
+                button.style.setProperty('opacity', '0', 'important');
+                button.style.setProperty('visibility', 'hidden', 'important');
+            });
+        }
+
         const overlay = document.createElement('div');
         overlay.className = 'variant-drawer-overlay show';
         overlay.innerHTML = `
@@ -471,6 +482,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.body.appendChild(overlay);
         document.body.style.overflow = 'hidden';
         document.body.classList.add('variant-drawer-open');
+        hidePageFloatingControls();
 
         const groupsWrap = overlay.querySelector('.variant-groups');
         const imageEl = overlay.querySelector('.variant-product-image');
@@ -483,25 +495,31 @@ document.addEventListener('DOMContentLoaded', function () {
             overlay.remove();
             document.body.style.removeProperty('overflow');
             document.body.classList.remove('variant-drawer-open');
-        }
-
-        function findVariationByValue(attributeId, valueId) {
-            return data.variations.find(variation => {
-                return variation.attributes.some(item => item.attribute_id == attributeId && item.value_id == valueId);
-            });
+            window.dispatchEvent(new Event('scroll'));
         }
 
         function findMatchingVariation() {
             return data.variations.find(variation => {
                 return data.attributes.every(attribute => {
                     const selectedValue = selectedValues[attribute.id];
+                    if (variation.attribute_value_ids) {
+                        return String(variation.attribute_value_ids[attribute.id]) === String(selectedValue);
+                    }
+
                     return variation.attributes.some(item => item.attribute_id == attribute.id && item.value_id == selectedValue);
                 });
             });
         }
 
-        function refreshSelected(nextVariation) {
-            selected = nextVariation || findMatchingVariation() || selected;
+        function refreshSelected() {
+            selected = findMatchingVariation();
+            if (!selected) {
+                stockEl.textContent = '0';
+                continueBtn.disabled = true;
+                continueBtn.textContent = 'UNAVAILABLE';
+                return;
+            }
+
             imageEl.src = normalizeImagePath(selected.image_path || data.product.image);
             stockEl.textContent = selected.stock_quantity;
             mrpEl.textContent = 'MRP ' + formatVariantPrice(selected.mrp);
@@ -533,7 +551,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     selectedValues[attribute.id] = value.id;
                     optionsWrap.querySelectorAll('.variant-option').forEach(option => option.classList.remove('active'));
                     btn.classList.add('active');
-                    refreshSelected(findVariationByValue(attribute.id, value.id));
+                    refreshSelected();
                 });
                 optionsWrap.appendChild(btn);
             });

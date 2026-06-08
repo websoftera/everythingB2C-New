@@ -29,6 +29,60 @@ if (isLoggedIn()) {
 }
 $orderTotals = calculateOrderTotal($cartItems, $delivery_state, $delivery_city, $delivery_pincode);
 
+function cartDisplayName($item) {
+    $name = (string)($item['name'] ?? '');
+    $variationLabel = trim((string)($item['variation_label'] ?? ''));
+    if ($variationLabel !== '') {
+        $suffix = ' - ' . $variationLabel;
+        if (substr($name, -strlen($suffix)) === $suffix) {
+            $name = substr($name, 0, -strlen($suffix));
+        }
+    }
+    return $name;
+}
+
+function renderCartVariationDetails($item) {
+    $variationLabel = trim((string)($item['variation_label'] ?? ''));
+    if ($variationLabel === '') {
+        return '';
+    }
+
+    $lines = [];
+    foreach (explode('/', $variationLabel) as $part) {
+        $pieces = explode(':', $part, 2);
+        if (count($pieces) < 2) {
+            continue;
+        }
+
+        $label = trim($pieces[0]);
+        $value = trim($pieces[1]);
+        if ($label === '' || $value === '') {
+            continue;
+        }
+
+        if (preg_match('/colou?r/i', $label)) {
+            $label = 'colour';
+        }
+
+        $lines[] = [
+            'label' => $label,
+            'value' => $value,
+            'is_colour' => preg_match('/colou?r/i', $label) ? 1 : 0
+        ];
+    }
+
+    usort($lines, function ($a, $b) {
+        return $b['is_colour'] <=> $a['is_colour'];
+    });
+
+    $html = '';
+    foreach ($lines as $line) {
+        $html .= '<div class="cart-variation-line">' . htmlspecialchars($line['label']) . ': <span>' . htmlspecialchars($line['value']) . '</span></div>';
+    }
+
+    return $html;
+}
+
 require_once 'includes/header.php';
 
 // Breadcrumb Navigation
@@ -94,6 +148,20 @@ echo renderBreadcrumb($breadcrumbs);
     line-height: 1.2;
     margin-top: 2px;
 }
+
+.cart-variation-line {
+    color: #667085;
+    font-family: 'Mulish', sans-serif !important;
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1.25;
+    margin-top: 1px;
+    white-space: normal;
+}
+
+.cart-variation-line span {
+    font-weight: 600;
+}
 </style>
 <div class="container mt-4">
     <!-- <h1>Shopping Cart</h1> -->
@@ -128,19 +196,24 @@ echo renderBreadcrumb($breadcrumbs);
                             <div style="flex:0 0 36px; min-width:28px; text-align:center; flex-shrink:0;"></div>
                         </div>
                         <?php foreach ($cartItems as $item): ?>
+                            <?php
+                            $displayName = cartDisplayName($item);
+                            $variationDetails = renderCartVariationDetails($item);
+                            ?>
                             <div class="cart-item-row d-flex align-items-center flex-nowrap" style="border: 1px solid #e0e0e0; border-radius: 7px; padding: 7px 0 7px 8px; margin-bottom: 10px; background: #fff; gap: 8px;">
                                 <div style="flex:0 0 56px; max-width:56px; min-width:40px;">
                                     <a href="product.php?slug=<?php echo urlencode($item['slug']); ?>">
                                         <?php
                                         $imgSrc = !empty($item['main_image']) ? './' . $item['main_image'] : './uploads/products/blank-img.webp';
                                         ?>
-                                        <img src="<?php echo $imgSrc; ?>" onerror="this.onerror=null; this.src='./uploads/products/blank-img.webp';" alt="<?php echo htmlspecialchars($item['name']); ?>" class="img-fluid" style="width:44px;height:44px;object-fit:cover;border-radius:5px;">
+                                        <img src="<?php echo $imgSrc; ?>" onerror="this.onerror=null; this.src='./uploads/products/blank-img.webp';" alt="<?php echo htmlspecialchars($displayName); ?>" class="img-fluid" style="width:44px;height:44px;object-fit:cover;border-radius:5px;">
                                     </a>
                                 </div>
-                                <div class="cart-product-cell" style="flex:1 1 150px; min-width:120px; max-width:260px; font-size:0.97em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                                    <a class="cart-product-title" href="product.php?slug=<?php echo urlencode($item['slug']); ?>" title="<?php echo htmlspecialchars($item['name']); ?>">
-                                        <?php echo htmlspecialchars($item['name']); ?>
+                                <div class="cart-product-cell" style="flex:1 1 150px; min-width:120px; max-width:260px; font-size:0.97em; overflow:hidden;">
+                                    <a class="cart-product-title" href="product.php?slug=<?php echo urlencode($item['slug']); ?>" title="<?php echo htmlspecialchars($displayName); ?>" style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                                        <?php echo htmlspecialchars($displayName); ?>
                                     </a>
+                                    <?php echo $variationDetails; ?>
                                     <span class="cart-mobile-unit-line"><?php echo formatProductUnitLine($item); ?></span>
                                 </div>
                                 <div class="cart-unit-cell" style="flex:0 0 92px; min-width:82px; font-size:0.93em; color:#444; font-weight:600; text-align:center; white-space:nowrap;"><?php echo formatProductUnitLine($item); ?></div>

@@ -450,12 +450,19 @@ function normalizeFrontendVariationAttributes($attributesJson) {
     }
 
     $normalized = [];
+    $seen = [];
     foreach ($attributes as $attribute) {
         $attributeId = (int)($attribute['attribute_id'] ?? 0);
         $valueId = (int)($attribute['value_id'] ?? 0);
         if ($attributeId <= 0 || $valueId <= 0) {
             continue;
         }
+
+        $key = $attributeId . ':' . $valueId;
+        if (isset($seen[$key])) {
+            continue;
+        }
+        $seen[$key] = true;
 
         $normalized[] = [
             'attribute_id' => $attributeId,
@@ -464,6 +471,10 @@ function normalizeFrontendVariationAttributes($attributesJson) {
             'value' => trim((string)($attribute['value'] ?? ''))
         ];
     }
+
+    usort($normalized, function ($a, $b) {
+        return $a['attribute_id'] <=> $b['attribute_id'];
+    });
 
     return $normalized;
 }
@@ -551,6 +562,13 @@ function getProductVariationData($productId) {
             continue;
         }
 
+        $itemAttributeIds = array_values(array_unique(array_map(function ($item) {
+            return $item['attribute_id'];
+        }, $items)));
+        if (count($attributeIds) > 1 && count($itemAttributeIds) !== count($attributeIds)) {
+            continue;
+        }
+
         $keyParts = array_map(function ($item) {
             return $item['attribute_id'] . ':' . $item['value_id'];
         }, $items);
@@ -578,11 +596,17 @@ function getProductVariationData($productId) {
         $labelParts = array_map(function ($item) {
             return $item['attribute_name'] . ': ' . $item['value'];
         }, $items);
+        $attributeValueIds = [];
+        foreach ($items as $item) {
+            $attributeValueIds[(string)$item['attribute_id']] = (string)$item['value_id'];
+        }
+        ksort($attributeValueIds, SORT_NUMERIC);
 
         $variations[] = [
             'id' => (int)$row['id'],
             'label' => implode(' / ', $labelParts),
             'attributes' => $items,
+            'attribute_value_ids' => $attributeValueIds,
             'mrp' => (float)$row['mrp'],
             'selling_price' => (float)$row['selling_price'],
             'stock_quantity' => (int)$row['stock_quantity'],
