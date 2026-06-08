@@ -820,17 +820,21 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         function findSelectedVariation() {
-            return detailVariationData.variations.find(variation => {
-                return detailVariationData.attributes.every(attribute => {
-                    return variation.attributes.some(item => item.attribute_id == attribute.id && item.value_id == selectedValues[attribute.id]);
-                });
-            });
+            return detailVariationData.variations
+                .filter(variation => {
+                    return (variation.attributes || []).every(item => {
+                        return String(selectedValues[item.attribute_id]) === String(item.value_id);
+                    });
+                })
+                .sort((a, b) => (b.attributes || []).length - (a.attributes || []).length)[0] || null;
         }
 
         function findVariationByValue(attributeId, valueId) {
-            return detailVariationData.variations.find(variation => {
-                return variation.attributes.some(item => item.attribute_id == attributeId && item.value_id == valueId);
-            });
+            return detailVariationData.variations
+                .filter(variation => {
+                    return (variation.attributes || []).some(item => item.attribute_id == attributeId && item.value_id == valueId);
+                })
+                .sort((a, b) => (b.attributes || []).length - (a.attributes || []).length)[0] || null;
         }
 
         function applySelectedVariation(nextVariation) {

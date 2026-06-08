@@ -499,16 +499,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         function findMatchingVariation() {
-            return data.variations.find(variation => {
-                return data.attributes.every(attribute => {
-                    const selectedValue = selectedValues[attribute.id];
-                    if (variation.attribute_value_ids) {
-                        return String(variation.attribute_value_ids[attribute.id]) === String(selectedValue);
-                    }
-
-                    return variation.attributes.some(item => item.attribute_id == attribute.id && item.value_id == selectedValue);
-                });
-            });
+            return data.variations
+                .filter(variation => {
+                    const attributes = variation.attributes || [];
+                    return attributes.every(item => String(selectedValues[item.attribute_id]) === String(item.value_id));
+                })
+                .sort((a, b) => (b.attributes || []).length - (a.attributes || []).length)[0] || null;
         }
 
         function refreshSelected() {

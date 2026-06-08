@@ -13,7 +13,6 @@ if (!isset($_SESSION['admin_id'])) {
 $pageTitle = 'Edit Product';
 $success_message = '';
 $error_message = '';
-$variation_guidance_message = '';
 ensureProductVariationSchema($pdo);
 ensureProductUnitSchema($pdo);
 $return_to = $_GET['return_to'] ?? $_POST['return_to'] ?? 'products.php';
@@ -79,11 +78,6 @@ $categoryTree = buildCategoryTree($allCategories);
 if (isset($_SESSION['success_message'])) {
     $success_message = $_SESSION['success_message'];
     unset($_SESSION['success_message']);
-}
-
-if (isset($_SESSION['variation_guidance_message'])) {
-    $variation_guidance_message = $_SESSION['variation_guidance_message'];
-    unset($_SESSION['variation_guidance_message']);
 }
 
 // Get current category with parent info
@@ -192,9 +186,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['success_message'] = ($variationsChanged && $savedVariationCount > 0)
                 ? 'Product updated successfully! Product variations saved successfully.'
                 : 'Product updated successfully!';
-            if ($variationsChanged && $savedVariationCount > 0) {
-                $_SESSION['variation_guidance_message'] = 'For products with 2 or more attributes, keep one variation row per exact combination like <strong>Black + Size 9</strong>.<br>Storefront price, stock and image use only exact combinations.';
-            }
             header('Location: edit_product.php?id=' . $product_id . '&return_to=' . $encoded_return_to);
             exit;
             
@@ -548,13 +539,6 @@ function uploadImage($file, $folder) {
 
                     <?php if ($success_message): ?>
                         <div class="alert product-save-success-alert no-success-icon"><?php echo htmlspecialchars($success_message); ?></div>
-                    <?php endif; ?>
-
-                    <?php if ($variation_guidance_message): ?>
-                        <div class="alert alert-info alert-dismissible fade show" role="alert">
-                            <?php echo $variation_guidance_message; ?>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
                     <?php endif; ?>
 
                     <?php if ($error_message): ?>
