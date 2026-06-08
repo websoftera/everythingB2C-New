@@ -437,6 +437,11 @@ function renderProductAttributesSection($attributeOptions, $selectedAttributes =
                 </button>
             </div>
 
+            <div id="variationInfoMessage" class="variation-info-message d-none">
+                For products with 2 or more attributes, keep one variation row per exact combination like <strong>Black + Size 9</strong>.<br>
+                Storefront price, stock and image use only exact combinations.
+            </div>
+
             <div class="table-responsive product-variations-table-wrap">
                 <table class="table table-bordered align-middle product-variations-table">
                     <thead>
@@ -586,12 +591,14 @@ function renderProductVariationAssets() {
             font-weight: 600;
             vertical-align: middle;
             overflow-wrap: anywhere;
+            padding-top: 6px;
+            padding-bottom: 6px;
         }
 
         .product-form-page .product-variations-table td:first-child strong {
             display: inline-block;
-            font-size: 12px;
-            line-height: 1.35;
+            font-size: 11px;
+            line-height: 1.18;
         }
 
         .product-form-page .product-variations-table input[type="number"],
@@ -678,6 +685,24 @@ function renderProductVariationAssets() {
             font-weight: 500;
         }
 
+        .product-form-page .variation-info-message {
+            max-width: 960px;
+            margin: 10px 0 18px;
+            padding: 12px 20px;
+            border: 1px solid #b6effb;
+            border-radius: 6px;
+            background: #cff4fc;
+            color: #055160;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1.45;
+            transition: opacity 0.25s ease;
+        }
+
+        .product-form-page .variation-info-message.is-hiding {
+            opacity: 0;
+        }
+
     </style>
     <script>
         function initProductVariationManager() {
@@ -692,9 +717,11 @@ function renderProductVariationAssets() {
             const addBtn = document.getElementById('addProductAttributeBtn');
             const syncBtn = document.getElementById('syncVariationCombinationsBtn');
             const duplicateMsg = document.getElementById('variationDuplicateMessage');
+            const infoMsg = document.getElementById('variationInfoMessage');
             const tableWrap = document.querySelector('.product-variations-table-wrap');
+            let infoTimer = null;
 
-            if (!hasVariations || !selectorWrap || !rowsBody || !addBtn || !syncBtn || !duplicateMsg) {
+            if (!hasVariations || !selectorWrap || !rowsBody || !addBtn || !syncBtn || !duplicateMsg || !infoMsg) {
                 return;
             }
 
@@ -755,6 +782,18 @@ function renderProductVariationAssets() {
 
             function hideDuplicateMessage() {
                 duplicateMsg.classList.add('d-none');
+            }
+
+            function showVariationInfoMessage() {
+                clearTimeout(infoTimer);
+                infoMsg.classList.remove('d-none', 'is-hiding');
+                infoTimer = setTimeout(function () {
+                    infoMsg.classList.add('is-hiding');
+                    setTimeout(function () {
+                        infoMsg.classList.add('d-none');
+                        infoMsg.classList.remove('is-hiding');
+                    }, 250);
+                }, 4500);
             }
 
             function getAttributeById(attributeId) {
@@ -1058,9 +1097,9 @@ function renderProductVariationAssets() {
 
                 const existingData = collectExistingVariationData();
                 const combinations = cartesianProduct(groups);
-                const seenKeys = new Set();
-                rowsBody.innerHTML = '';
+                const seenKeys = new Set(existingData.keys());
 
+                let addedCount = 0;
                 let duplicateCount = 0;
                 combinations.forEach(function (items) {
                     const key = variationValueMapKey(items);
@@ -1071,6 +1110,7 @@ function renderProductVariationAssets() {
 
                     seenKeys.add(key);
                     addVariationRow(Object.assign({}, existingData.get(key) || {}, { attributes: items }));
+                    addedCount++;
                 });
 
                 if (duplicateCount > 0) {
@@ -1079,8 +1119,11 @@ function renderProductVariationAssets() {
                     hideDuplicateMessage();
                 }
 
-                selectorWrap.innerHTML = '';
-                selectorWrap.classList.add('d-none');
+                if (addedCount > 0 || duplicateCount > 0) {
+                    selectorWrap.innerHTML = '';
+                    selectorWrap.classList.add('d-none');
+                }
+                showVariationInfoMessage();
                 renderEmptyVariationRow();
             }
 
@@ -1119,6 +1162,9 @@ function renderProductVariationAssets() {
             hasVariations.addEventListener('change', function () {
                 hideDuplicateMessage();
                 updateEnabledState();
+                if (hasVariations.checked) {
+                    showVariationInfoMessage();
+                }
             });
             updateEnabledState();
         }

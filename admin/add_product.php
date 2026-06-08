@@ -13,7 +13,6 @@ if (!isset($_SESSION['admin_id'])) {
 $pageTitle = 'Add New Product';
 $success_message = '';
 $error_message = '';
-$variation_guidance_message = '';
 
 // Get all categories for dropdown with hierarchical structure
 $allCategories = getAllCategoriesWithProductCount();
@@ -107,9 +106,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $success_message = $savedVariationCount > 0
                 ? 'Product added successfully! Product variations saved successfully.'
                 : 'Product added successfully!';
-            if ($savedVariationCount > 0) {
-                $variation_guidance_message = 'For products with 2 or more attributes, keep one variation row per exact combination like <strong>Black + Size 9</strong>.<br>Storefront price, stock and image use only exact combinations.';
-            }
             
             // Redirect to products list after a short delay
             header("refresh:2;url=products.php");
@@ -464,13 +460,6 @@ function uploadImage($file, $folder) {
 
                     <?php if ($success_message): ?>
                         <div class="alert product-save-success-alert no-success-icon"><?php echo htmlspecialchars($success_message); ?></div>
-                    <?php endif; ?>
-
-                    <?php if ($variation_guidance_message): ?>
-                        <div class="alert alert-info alert-dismissible fade show" role="alert">
-                            <?php echo $variation_guidance_message; ?>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
                     <?php endif; ?>
 
                     <?php if ($error_message): ?>

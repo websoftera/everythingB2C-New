@@ -562,13 +562,6 @@ function getProductVariationData($productId) {
             continue;
         }
 
-        $itemAttributeIds = array_values(array_unique(array_map(function ($item) {
-            return $item['attribute_id'];
-        }, $items)));
-        if (count($attributeIds) > 1 && count($itemAttributeIds) !== count($attributeIds)) {
-            continue;
-        }
-
         $keyParts = array_map(function ($item) {
             return $item['attribute_id'] . ':' . $item['value_id'];
         }, $items);
