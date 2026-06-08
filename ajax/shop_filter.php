@@ -59,6 +59,7 @@ $pdo = $GLOBALS['pdo'];
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$products = applyDisplayVariationPrices($products);
 
 if (empty($products)) {
     echo '<div class="shop-page-no-products">No products found for selected filters.</div>';

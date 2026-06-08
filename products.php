@@ -137,6 +137,7 @@ $query = "SELECT p.*, c.name as category_name
 $stmt = $pdo->prepare($query);
 $stmt->execute($params);
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$products = applyDisplayVariationPrices($products);
 
 // Get user's wishlist for quick lookup
 $wishlist_ids = [];

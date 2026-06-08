@@ -23,6 +23,9 @@ require_once 'includes/header.php';
 // Get product images
 $productImages = getProductImages($product['id']);
 $variationData = getProductVariationData($product['id']);
+if ($variationData['has_variations']) {
+    $product = applyDisplayVariationPrice($product);
+}
 
 // Get related products
 $relatedProducts = getRelatedProducts($product['id'], $product['category_id'], 4);
