@@ -58,7 +58,7 @@
         </div>
     </div>
     <div class="footer-bottom">
-        <p>© 2026 everythingb2c - All Rights Reserved. <a href="https://www.websoftera.com" target="_blank">Websoftera</a></p>
+        <p>© 2026 everythingb2c - All Rights Reserved. <a href="https://everythingb2c.in" target="_blank">everythingb2c</a></p>
     </div>
 </footer>
 
@@ -76,6 +76,13 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Function to show/hide button based on scroll
     function toggleScrollButton() {
+        if (document.body.classList.contains('variant-drawer-open')) {
+            backToTopBtn.style.setProperty('display', 'none', 'important');
+            backToTopBtn.style.setProperty('opacity', '0', 'important');
+            backToTopBtn.style.setProperty('visibility', 'hidden', 'important');
+            return;
+        }
+
         const scrollTop1 = window.pageYOffset;
         const scrollTop2 = document.documentElement.scrollTop;
         const scrollTop3 = document.body.scrollTop;

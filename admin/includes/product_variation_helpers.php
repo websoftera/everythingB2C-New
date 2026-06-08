@@ -26,6 +26,26 @@ function ensureProductVariationSchema($pdo) {
             FOREIGN KEY (product_id) REFERENCES products(id)
             ON DELETE CASCADE
     )");
+
+    $pdo->exec("CREATE TABLE IF NOT EXISTS product_variation_attributes (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        variation_id INT NOT NULL,
+        attribute_id INT NOT NULL,
+        attribute_value_id INT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE KEY unique_variation_attribute (variation_id, attribute_id),
+        INDEX idx_variation_attributes_variation (variation_id),
+        INDEX idx_variation_attributes_lookup (attribute_id, attribute_value_id),
+        CONSTRAINT fk_variation_attributes_variation
+            FOREIGN KEY (variation_id) REFERENCES product_variations(id)
+            ON DELETE CASCADE,
+        CONSTRAINT fk_variation_attributes_attribute
+            FOREIGN KEY (attribute_id) REFERENCES product_attributes(id)
+            ON DELETE CASCADE,
+        CONSTRAINT fk_variation_attributes_value
+            FOREIGN KEY (attribute_value_id) REFERENCES product_attribute_values(id)
+            ON DELETE CASCADE
+    )");
 }
 
 function getProductAttributeOptions($pdo) {
@@ -130,14 +150,31 @@ function normalizeVariationAttributes($attributesJson) {
     }
 
     $normalized = [];
+    $seen = [];
     foreach ($attributes as $attribute) {
+        $attributeId = (int)($attribute['attribute_id'] ?? 0);
+        $valueId = (int)($attribute['value_id'] ?? 0);
+        if ($attributeId <= 0 || $valueId <= 0) {
+            continue;
+        }
+
+        $key = $attributeId . ':' . $valueId;
+        if (isset($seen[$key])) {
+            continue;
+        }
+        $seen[$key] = true;
+
         $normalized[] = [
-            'attribute_id' => (int)($attribute['attribute_id'] ?? 0),
+            'attribute_id' => $attributeId,
             'attribute_name' => trim((string)($attribute['attribute_name'] ?? '')),
-            'value_id' => (int)($attribute['value_id'] ?? 0),
+            'value_id' => $valueId,
             'value' => trim((string)($attribute['value'] ?? ''))
         ];
     }
+
+    usort($normalized, function ($a, $b) {
+        return $a['attribute_id'] <=> $b['attribute_id'];
+    });
 
     return json_encode($normalized);
 }
@@ -158,6 +195,25 @@ function getVariationLabelFromAttributesJson($attributesJson, $fallbackLabel = '
     }
 
     return $parts ? implode(' / ', $parts) : trim($fallbackLabel);
+}
+
+function getVariationValueMapJson($attributesJson) {
+    $attributes = json_decode(normalizeVariationAttributes($attributesJson), true);
+    if (!is_array($attributes)) {
+        return '{}';
+    }
+
+    $valueMap = [];
+    foreach ($attributes as $attribute) {
+        $attributeId = (int)($attribute['attribute_id'] ?? 0);
+        $valueId = (int)($attribute['value_id'] ?? 0);
+        if ($attributeId > 0 && $valueId > 0) {
+            $valueMap[(string)$attributeId] = (string)$valueId;
+        }
+    }
+
+    ksort($valueMap, SORT_NUMERIC);
+    return json_encode($valueMap);
 }
 
 function getPostedVariationSnapshot() {
@@ -242,9 +298,13 @@ function saveProductVariations($pdo, $productId) {
     $hasVariations = isset($_POST['has_variations']) ? 1 : 0;
     $pdo->prepare("UPDATE products SET has_variations = ? WHERE id = ?")->execute([$hasVariations, $productId]);
 
-    $pdo->prepare("DELETE FROM product_variations WHERE product_id = ?")->execute([$productId]);
+    if (!$hasVariations) {
+        $pdo->prepare("DELETE FROM product_variations WHERE product_id = ?")->execute([$productId]);
+        return 0;
+    }
 
-    if (!$hasVariations || empty($_POST['variation_label']) || !is_array($_POST['variation_label'])) {
+    if (empty($_POST['variation_label']) || !is_array($_POST['variation_label'])) {
+        $pdo->prepare("DELETE FROM product_variations WHERE product_id = ?")->execute([$productId]);
         return 0;
     }
 
@@ -262,7 +322,8 @@ function saveProductVariations($pdo, $productId) {
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     ");
 
-    $savedCount = 0;
+    $variationRows = [];
+    $seenCombinations = [];
 
     foreach ($labels as $index => $label) {
         $label = trim($label);
@@ -286,18 +347,58 @@ function saveProductVariations($pdo, $productId) {
         }
 
         $normalizedAttributes = normalizeVariationAttributes($attributesJson[$index] ?? '[]');
+        $combinationKey = getVariationValueMapJson($normalizedAttributes);
+        if ($combinationKey === '{}' || isset($seenCombinations[$combinationKey])) {
+            continue;
+        }
+        $seenCombinations[$combinationKey] = true;
         $label = getVariationLabelFromAttributesJson($normalizedAttributes, $label);
 
+        $variationRows[] = [
+            'label' => $label,
+            'attributes' => $normalizedAttributes,
+            'mrp' => (float)($mrps[$index] ?? 0),
+            'selling_price' => (float)($sellingPrices[$index] ?? 0),
+            'stock' => (int)($stocks[$index] ?? 0),
+            'image' => $imagePath ?: null,
+            'sort_order' => $index + 1
+        ];
+    }
+
+    if (!$variationRows) {
+        $pdo->prepare("DELETE FROM product_variations WHERE product_id = ?")->execute([$productId]);
+        return 0;
+    }
+
+    $pdo->prepare("DELETE FROM product_variations WHERE product_id = ?")->execute([$productId]);
+
+    $attributeStmt = $pdo->prepare("
+        INSERT INTO product_variation_attributes
+            (variation_id, attribute_id, attribute_value_id)
+        VALUES (?, ?, ?)
+    ");
+
+    $savedCount = 0;
+    foreach ($variationRows as $variationRow) {
         $stmt->execute([
             $productId,
-            $label,
-            $normalizedAttributes,
-            (float)($mrps[$index] ?? 0),
-            (float)($sellingPrices[$index] ?? 0),
-            (int)($stocks[$index] ?? 0),
-            $imagePath ?: null,
-            $index + 1
+            $variationRow['label'],
+            $variationRow['attributes'],
+            $variationRow['mrp'],
+            $variationRow['selling_price'],
+            $variationRow['stock'],
+            $variationRow['image'],
+            $variationRow['sort_order']
         ]);
+        $variationId = (int)$pdo->lastInsertId();
+        $normalizedItems = json_decode($variationRow['attributes'], true);
+        foreach ($normalizedItems as $item) {
+            $attributeStmt->execute([
+                $variationId,
+                (int)$item['attribute_id'],
+                (int)$item['value_id']
+            ]);
+        }
         $savedCount++;
     }
 
@@ -382,6 +483,20 @@ function renderProductVariationAssets() {
         .product-form-page .product-attributes-panel {
             border-top: 1px solid #d9dee7;
             padding-top: 22px;
+        }
+
+        .product-form-page .product-save-success-alert {
+            color: #243041;
+            background: #f8fafc;
+            border: 1px solid #d9dee7;
+            border-radius: 6px;
+        }
+
+        .product-form-page .no-success-icon::before,
+        .product-form-page .no-success-icon i,
+        .product-form-page .no-success-icon svg {
+            display: none !important;
+            content: none !important;
         }
 
         .product-form-page .product-attribute-row {
@@ -473,6 +588,12 @@ function renderProductVariationAssets() {
             overflow-wrap: anywhere;
         }
 
+        .product-form-page .product-variations-table td:first-child strong {
+            display: inline-block;
+            font-size: 12px;
+            line-height: 1.35;
+        }
+
         .product-form-page .product-variations-table input[type="number"],
         .product-form-page .product-variations-table input[type="text"] {
             height: 38px;
@@ -561,6 +682,7 @@ function renderProductVariationAssets() {
     <script>
         function initProductVariationManager() {
             const options = window.productAttributeOptions || [];
+            const selectedAttributes = window.productSelectedAttributes || {};
             const existingVariations = window.productExistingVariations || [];
             const defaults = window.productVariationDefaults || { mrp: '0', sellingPrice: '0', stock: '0' };
             const hasVariations = document.getElementById('hasVariations');
@@ -702,6 +824,18 @@ function renderProductVariationAssets() {
                 }).sort().join('|');
             }
 
+            function variationValueMapKey(items) {
+                const valueMap = {};
+                normalizeVariationItems(items).forEach(function (item) {
+                    valueMap[String(item.attribute_id)] = String(item.value_id);
+                });
+
+                return JSON.stringify(Object.keys(valueMap).sort().reduce(function (sorted, attributeId) {
+                    sorted[attributeId] = valueMap[attributeId];
+                    return sorted;
+                }, {}));
+            }
+
             function updateEnabledState() {
                 variationControls.classList.toggle('d-none', !hasVariations.checked);
                 renderEmptyVariationRow();
@@ -769,24 +903,85 @@ function renderProductVariationAssets() {
                 updateEnabledState();
             }
 
-            function selectedRows() {
-                return Array.from(selectorWrap.querySelectorAll('.product-attribute-row')).map(function (row) {
+            function selectedAttributeGroups() {
+                const groups = new Map();
+
+                Array.from(selectorWrap.querySelectorAll('.product-attribute-row')).forEach(function (row) {
                     const attributeId = row.querySelector('.product-attribute-select').value;
                     const valueId = row.querySelector('.product-attribute-value-select').value;
                     const attribute = getAttributeById(attributeId);
                     if (!attribute || !valueId) {
-                        return null;
+                        return;
                     }
 
                     const value = getValueById(attribute, valueId);
+                    if (!value) {
+                        return;
+                    }
 
-                    return value ? [{
+                    const normalizedValue = {
                         attribute_id: attribute.id,
                         attribute_name: attribute.name,
                         value_id: value.id,
                         value: value.value
-                    }] : null;
-                }).filter(Boolean);
+                    };
+
+                    if (!groups.has(String(attribute.id))) {
+                        groups.set(String(attribute.id), {
+                            attribute_id: attribute.id,
+                            attribute_name: attribute.name,
+                            values: []
+                        });
+                    }
+
+                    const group = groups.get(String(attribute.id));
+                    if (!group.values.some(function (existingValue) {
+                        return String(existingValue.value_id) === String(value.id);
+                    })) {
+                        group.values.push(normalizedValue);
+                    }
+                });
+
+                return Array.from(groups.values()).sort(function (a, b) {
+                    return Number(a.attribute_id) - Number(b.attribute_id);
+                });
+            }
+
+            function cartesianProduct(groups) {
+                if (!groups.length) {
+                    return [];
+                }
+
+                return groups.reduce(function (combinations, group) {
+                    const nextCombinations = [];
+                    combinations.forEach(function (combination) {
+                        group.values.forEach(function (value) {
+                            nextCombinations.push(combination.concat([value]));
+                        });
+                    });
+                    return nextCombinations;
+                }, [[]]);
+            }
+
+            function collectExistingVariationData() {
+                const map = new Map();
+                Array.from(rowsBody.querySelectorAll('tr:not(.variation-empty-row)')).forEach(function (row) {
+                    const attributesInput = row.querySelector('input[name="variation_attributes_json[]"]');
+                    const key = variationValueMapKey(parseAttributes(attributesInput ? attributesInput.value : '[]'));
+                    if (!key || key === '{}') {
+                        return;
+                    }
+
+                    map.set(key, {
+                        attributes_json: attributesInput ? attributesInput.value : '[]',
+                        mrp: (row.querySelector('input[name="variation_mrp[]"]') || {}).value || defaults.mrp,
+                        selling_price: (row.querySelector('input[name="variation_selling_price[]"]') || {}).value || defaults.sellingPrice,
+                        stock_quantity: (row.querySelector('input[name="variation_stock[]"]') || {}).value || defaults.stock,
+                        image_path: (row.querySelector('input[name="existing_variation_image[]"]') || {}).value || ''
+                    });
+                });
+
+                return map;
             }
 
             function variationLabel(items) {
@@ -811,10 +1006,13 @@ function renderProductVariationAssets() {
 
                 const attributes = normalizeVariationItems(data.attributes || parseAttributes(data.attributes_json));
                 const label = variationLabel(attributes) || data.label || '';
-                const attributesJson = JSON.stringify(attributes);
+                const attributesJson = JSON.stringify(attributes.sort(function (a, b) {
+                    return Number(a.attribute_id) - Number(b.attribute_id);
+                }));
                 const imagePath = data.image_path || '';
                 const row = document.createElement('tr');
                 row.dataset.variationKey = variationKey(attributes);
+                row.dataset.variationValueMap = variationValueMapKey(attributes);
 
                 row.innerHTML = `
                     <td>
@@ -850,29 +1048,29 @@ function renderProductVariationAssets() {
             }
 
             function syncCombinations() {
-                const rows = selectedRows();
+                const groups = selectedAttributeGroups();
 
-                if (!rows.length) {
+                if (!groups.length || groups.some(function (group) { return !group.values.length; })) {
                     hideDuplicateMessage();
                     renderEmptyVariationRow();
                     return;
                 }
 
-                const existingKeys = Array.from(rowsBody.querySelectorAll('tr:not(.variation-empty-row)')).map(function (row) {
-                    return row.dataset.variationKey || '';
-                });
+                const existingData = collectExistingVariationData();
+                const combinations = cartesianProduct(groups);
+                const seenKeys = new Set();
+                rowsBody.innerHTML = '';
 
-                let addedCount = 0;
                 let duplicateCount = 0;
-                rows.forEach(function (items) {
-                    const key = variationKey(items);
-                    if (key && !existingKeys.includes(key)) {
-                        addVariationRow({ attributes: items });
-                        existingKeys.push(key);
-                        addedCount++;
-                    } else if (key) {
+                combinations.forEach(function (items) {
+                    const key = variationValueMapKey(items);
+                    if (!key || seenKeys.has(key)) {
                         duplicateCount++;
+                        return;
                     }
+
+                    seenKeys.add(key);
+                    addVariationRow(Object.assign({}, existingData.get(key) || {}, { attributes: items }));
                 });
 
                 if (duplicateCount > 0) {
@@ -881,10 +1079,9 @@ function renderProductVariationAssets() {
                     hideDuplicateMessage();
                 }
 
-                if (addedCount > 0) {
-                    selectorWrap.innerHTML = '';
-                    selectorWrap.classList.add('d-none');
-                }
+                selectorWrap.innerHTML = '';
+                selectorWrap.classList.add('d-none');
+                renderEmptyVariationRow();
             }
 
             const renderedExistingKeys = [];
