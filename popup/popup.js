@@ -611,29 +611,51 @@ document.addEventListener('DOMContentLoaded', function () {
                 input.disabled = false;
                 input.removeEventListener('input', input._debugInputHandler || (() => { }));
                 const handler = function () {
-                    let val = parseInt(this.value, 10) || 1;
-                    if (val < 1) val = 1;
-                    this.value = val;
+                    if (typeof normalizeQuantityInputValue === 'function') {
+                        normalizeQuantityInputValue(this);
+                    } else {
+                        let val = parseInt(this.value, 10) || 1;
+                        if (val < 1) val = 1;
+                        this.value = val;
+                    }
                     window.updateDisplayedPriceForQuantity(this);
 
                 };
                 input.addEventListener('input', handler);
                 input._debugInputHandler = handler;
+                if (typeof normalizeQuantityInputValue === 'function') {
+                    normalizeQuantityInputValue(input);
+                }
             });
             card.querySelectorAll('.btn-qty-minus, .btn-qty-plus').forEach(btn => {
-                btn.disabled = false;
+                const currentInput = btn.closest('.quantity-control')?.querySelector('input[type="number"]');
+                if (currentInput && typeof normalizeQuantityInputValue === 'function') {
+                    normalizeQuantityInputValue(currentInput);
+                } else {
+                    btn.disabled = false;
+                }
                 btn.removeEventListener('click', btn._debugClickHandler || (() => { }));
                 const handler = function (e) {
                     e.stopPropagation();
                     const input = btn.closest('.quantity-control')?.querySelector('input[type="number"]');
                     if (!input) return;
-                    let value = parseInt(input.value, 10) || 1;
+                    let value = typeof normalizeQuantityInputValue === 'function' ? normalizeQuantityInputValue(input) : (parseInt(input.value, 10) || 1);
+                    const step = Math.max(1, parseInt(input.dataset.packageQuantity || input.getAttribute('step'), 10) || 1);
+                    const min = parseInt(input.getAttribute('min'), 10) || step;
+                    const max = parseInt(input.getAttribute('max'), 10) || 99;
                     if (btn.classList.contains('btn-qty-minus')) {
-                        value = Math.max(1, value - 1);
+                        value = Math.max(min, value - step);
                     } else if (btn.classList.contains('btn-qty-plus')) {
-                        value = value + 1;
+                        if (value < max) {
+                            value = Math.min(max, value + step);
+                        } else if (typeof showEverythingB2CMaxQuantityPopup === 'function') {
+                            showEverythingB2CMaxQuantityPopup('Maximum quantity allowed for this product is ' + max);
+                        }
                     }
                     input.value = value;
+                    if (typeof normalizeQuantityInputValue === 'function') {
+                        normalizeQuantityInputValue(input);
+                    }
                     input.dispatchEvent(new Event('input', { bubbles: true }));
                     input.dispatchEvent(new Event('change', { bubbles: true }));
 
@@ -775,6 +797,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 quantityInput = cardRoot.querySelector('.quantity-input, .shop-page-quantity-input');
                 console.log('Found quantity input:', quantityInput);
                 if (quantityInput) {
+                    if (typeof normalizeQuantityInputValue === 'function') {
+                        normalizeQuantityInputValue(quantityInput);
+                    }
                     quantity = parseInt(quantityInput.value, 10) || 1;
                     console.log('Quantity from input:', quantity);
                 } else {
@@ -1135,21 +1160,8 @@ document.body.addEventListener('change', async function (e) {
         if (result.error && result.max_quantity) {
             input.value = result.max_quantity;
             window.updateDisplayedPriceForQuantity(input);
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Maximum quantity reached',
-                    text: result.message,
-                    timer: 4000,
-                    showConfirmButton: false
-                });
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: result.message,
-                    confirmButtonText: 'OK'
-                });
+            if (typeof showEverythingB2CMaxQuantityPopup === 'function') {
+                showEverythingB2CMaxQuantityPopup(result.message);
             }
             return;
         }

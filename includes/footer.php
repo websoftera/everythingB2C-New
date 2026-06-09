@@ -267,8 +267,201 @@ function topFunction(e) {
 }
 </script>
 
+<style>
+.everythingb2c-quantity-limit-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 30000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.48);
+    font-family: 'Mulish', Arial, sans-serif;
+}
+
+.everythingb2c-quantity-limit-overlay.show {
+    display: flex;
+}
+
+.everythingb2c-quantity-limit-modal {
+    position: relative;
+    width: min(390px, calc(100vw - 28px));
+    min-height: 245px;
+    border-radius: 8px;
+    background: #fff;
+    color: #3a3a3a;
+    padding: 48px 28px 28px;
+    text-align: center;
+    box-shadow: 0 22px 60px rgba(0, 0, 0, 0.26);
+}
+
+.everythingb2c-quantity-limit-close {
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    width: 24px;
+    height: 24px;
+    border: 0;
+    background: transparent;
+    color: #444;
+    font-size: 28px;
+    line-height: 22px;
+    font-weight: 300;
+    cursor: pointer;
+}
+
+.everythingb2c-quantity-limit-logo-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.everythingb2c-quantity-limit-logo {
+    max-width: 175px;
+    max-height: 54px;
+    object-fit: contain;
+}
+
+.everythingb2c-quantity-limit-title {
+    margin: 0 0 12px;
+    color: #3a3a3a;
+    font-size: 21px;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: 0;
+}
+
+.everythingb2c-quantity-limit-message {
+    margin: 0 auto;
+    max-width: 315px;
+    color: #6c6c6c;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.35;
+}
+
+.quantity-control .btn-qty:disabled,
+.quantity-control .btn-qty[aria-disabled="true"] {
+    background: transparent !important;
+    color: #333 !important;
+    cursor: pointer !important;
+    opacity: 1 !important;
+}
+
+@media (max-width: 480px) {
+    .everythingb2c-quantity-limit-modal {
+        min-height: 225px;
+        padding: 44px 20px 26px;
+    }
+
+    .everythingb2c-quantity-limit-logo-wrap {
+        margin-bottom: 26px;
+    }
+
+    .everythingb2c-quantity-limit-logo {
+        max-width: 160px;
+    }
+
+    .everythingb2c-quantity-limit-title {
+        font-size: 19px;
+    }
+
+    .everythingb2c-quantity-limit-message {
+        font-size: 13px;
+    }
+}
+</style>
+
 <script>
 // Global Quantity Control Logic
+function getEverythingB2CLogoSrc() {
+    return (window.BASE_URL || '') + 'asset/images/logo.webp';
+}
+
+function showEverythingB2CMaxQuantityPopup(message, title = 'Maximum quantity reached') {
+    let overlay = document.getElementById('everythingb2cQuantityLimitOverlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'everythingb2cQuantityLimitOverlay';
+        overlay.className = 'everythingb2c-quantity-limit-overlay';
+        overlay.innerHTML = `
+            <div class="everythingb2c-quantity-limit-modal" role="dialog" aria-modal="true" aria-labelledby="everythingb2cQuantityLimitTitle">
+                <button type="button" class="everythingb2c-quantity-limit-close" aria-label="Close">&times;</button>
+                <div class="everythingb2c-quantity-limit-logo-wrap">
+                    <img class="everythingb2c-quantity-limit-logo" src="${getEverythingB2CLogoSrc()}" alt="everythingB2C">
+                </div>
+                <h2 id="everythingb2cQuantityLimitTitle" class="everythingb2c-quantity-limit-title"></h2>
+                <p class="everythingb2c-quantity-limit-message"></p>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        overlay.querySelector('.everythingb2c-quantity-limit-close').addEventListener('click', function() {
+            overlay.classList.remove('show');
+        });
+        overlay.addEventListener('click', function(e) {
+            if (e.target === overlay) {
+                overlay.classList.remove('show');
+            }
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                overlay.classList.remove('show');
+            }
+        });
+    }
+
+    overlay.querySelector('.everythingb2c-quantity-limit-title').textContent = title;
+    overlay.querySelector('.everythingb2c-quantity-limit-message').textContent = message || 'Maximum quantity allowed for this product has been reached.';
+    overlay.classList.add('show');
+}
+
+function isValidPackageQuantity(quantity, packageQuantity) {
+    packageQuantity = Math.max(1, parseInt(packageQuantity, 10) || 1);
+    quantity = parseInt(quantity, 10) || 0;
+    return quantity > 0 && quantity % packageQuantity === 0;
+}
+
+function roundToNearestPackage(quantity, packageQuantity) {
+    packageQuantity = Math.max(1, parseInt(packageQuantity, 10) || 1);
+    quantity = parseInt(quantity, 10) || 0;
+    return Math.floor(quantity / packageQuantity) * packageQuantity;
+}
+
+function normalizeQuantityInputValue(input) {
+    if (!input) return 1;
+    const packageQuantity = Math.max(1, parseInt(input.dataset.packageQuantity || input.getAttribute('step'), 10) || 1);
+    const min = Math.max(packageQuantity, parseInt(input.getAttribute('min'), 10) || packageQuantity);
+    const max = parseInt(input.getAttribute('max'), 10) || 99;
+    let value = parseInt(input.value, 10) || min;
+    value = Math.max(min, value);
+    value = Math.min(max, value);
+    value = roundToNearestPackage(value, packageQuantity);
+    if (value < min) value = min;
+    if (value > max) value = roundToNearestPackage(max, packageQuantity);
+    if (value < min) value = min;
+    input.value = value;
+    input.dataset.packageQuantity = packageQuantity;
+    input.setAttribute('step', packageQuantity);
+    input.setAttribute('min', min);
+    const control = input.closest('.quantity-control');
+    if (control) {
+        const minusButton = control.querySelector('.btn-qty-minus');
+        const plusButton = control.querySelector('.btn-qty-plus');
+        if (minusButton) {
+            minusButton.disabled = false;
+            minusButton.setAttribute('aria-disabled', value <= min ? 'true' : 'false');
+        }
+        if (plusButton) {
+            plusButton.disabled = false;
+            plusButton.setAttribute('aria-disabled', value >= max || max < min ? 'true' : 'false');
+        }
+    }
+    return value;
+}
+
 document.addEventListener('click', function(e) {
     if (e.target.matches('.btn-qty-minus, .btn-qty-plus') || e.target.closest('.btn-qty-minus, .btn-qty-plus')) {
         const btn = e.target.matches('.btn-qty-minus, .btn-qty-plus') ? e.target : e.target.closest('.btn-qty-minus, .btn-qty-plus');
@@ -278,24 +471,40 @@ document.addEventListener('click', function(e) {
         const input = container.querySelector('.quantity-input');
         if (!input) return;
         
-        let value = parseInt(input.value) || 1;
+        let value = normalizeQuantityInputValue(input);
         let min = parseInt(input.getAttribute('min')) || 1;
         let max = parseInt(input.getAttribute('max')) || 99;
-        
+        let step = Math.max(1, parseInt(input.dataset.packageQuantity || input.getAttribute('step'), 10) || 1);
+
         if (btn.classList.contains('btn-qty-minus')) {
             if (value > min) {
-                input.value = value - 1;
+                input.value = Math.max(min, value - step);
             }
         } else {
             if (value < max) {
-                input.value = value + 1;
+                input.value = Math.min(max, value + step);
+            } else if (typeof showEverythingB2CMaxQuantityPopup === 'function') {
+                showEverythingB2CMaxQuantityPopup('Maximum quantity allowed for this product is ' + max);
             }
         }
-        
+        normalizeQuantityInputValue(input);
+
         // Trigger change event for any other listeners
         input.dispatchEvent(new Event('change', { bubbles: true }));
     }
 });
+
+document.addEventListener('change', function(e) {
+    if (e.target && e.target.matches('.quantity-input, .shop-page-quantity-input, input[name="quantity"], .product-quantity-input')) {
+        normalizeQuantityInputValue(e.target);
+    }
+});
+
+document.addEventListener('blur', function(e) {
+    if (e.target && e.target.matches('.quantity-input, .shop-page-quantity-input, input[name="quantity"], .product-quantity-input')) {
+        normalizeQuantityInputValue(e.target);
+    }
+}, true);
 
 // Global product image fallback: swap in a sample image if any product img fails to load
 (function() {

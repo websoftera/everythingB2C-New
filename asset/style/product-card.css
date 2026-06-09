@@ -188,16 +188,26 @@
 
 .product-unit-line {
     width: 100% !important;
-    min-height: 18px !important;
-    margin: 4px 0 8px 0 !important;
+    min-height: 14px !important;
+    margin: 0 !important;
     color: #273444 !important;
     font-family: 'Mulish', sans-serif !important;
     font-size: 12px !important;
     font-weight: 500 !important;
-    line-height: 18px !important;
+    line-height: 14px !important;
     letter-spacing: 0 !important;
     text-align: right !important;
     white-space: nowrap !important;
+}
+
+.product-details .product-unit-line + .product-title-link {
+    margin-top: -8px !important;
+}
+
+@media (min-width: 768px) {
+    .product-details .product-unit-line {
+        margin: 0 0 9px 0 !important;
+    }
 }
 
 .product-detail-card .detail-unit-line,
@@ -399,9 +409,10 @@
 }
 
 .quantity-control .btn-qty:disabled {
-    background: #ccc !important;
-    cursor: not-allowed !important;
-    color: #999 !important;
+    background: transparent !important;
+    cursor: pointer !important;
+    color: #333 !important;
+    opacity: 1 !important;
 }
 
 /* Number input inside quantity control */
@@ -1212,11 +1223,39 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
 }
 
 @media (max-width: 767px) {
+    .product-details {
+        gap: 4px !important;
+    }
+
+    .product-details .product-title-link,
+    .product-details > h3 {
+        order: 1 !important;
+        margin: 0 !important;
+    }
+
+    .product-details .product-unit-line {
+        order: 2 !important;
+        width: 100% !important;
+        text-align: right !important;
+    }
+
+    .product-details .price-buttons {
+        order: 3 !important;
+    }
+
+    .product-details .cart-actions {
+        order: 4 !important;
+    }
+
     .product-unit-line {
         font-size: 11px !important;
-        line-height: 16px !important;
-        min-height: 16px !important;
-        margin: 3px 0 7px 0 !important;
+        line-height: 13px !important;
+        min-height: 13px !important;
+        margin: 1px 0 !important;
+    }
+
+    .product-details .product-unit-line + .product-title-link {
+        margin-top: 0 !important;
     }
 
     .product-detail-card .detail-unit-line,

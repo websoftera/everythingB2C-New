@@ -60,6 +60,7 @@ $error_message = '';
 // Get all categories
 $allCategories = getAllCategoriesWithProductCount();
 $categoryTree = buildCategoryTree($allCategories);
+ensureProductPackageQuantitySchema($pdo);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name']);
@@ -69,6 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $selling_price = floatval($_POST['selling_price']);
     $category_id = intval($_POST['parent_category_id']);
     $stock_quantity = intval($_POST['stock_quantity']);
+    $package_quantity = isset($_POST['package_quantity']) ? intval($_POST['package_quantity']) : 1;
     $max_quantity_per_order = !empty($_POST['max_quantity_per_order']) ? intval($_POST['max_quantity_per_order']) : null;
     $gst_type = 'sgst_cgst';
     $gst_rate = floatval($_POST['gst_rate']);
@@ -87,6 +89,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error_message = 'Selling price cannot be greater than MRP.';
     } elseif ($gst_rate < 0 || $gst_rate > 100) {
         $error_message = 'GST rate must be between 0 and 100.';
+    } elseif ($package_quantity < 1) {
+        $error_message = 'Package quantity must be at least 1.';
     } else {
         try {
             $pdo->beginTransaction();
@@ -94,8 +98,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $discount_percentage = calculateDiscountPercentage($mrp, $selling_price);
 
             // Insert product with seller_id and is_approved=0 (requires approval)
-            $stmt = $pdo->prepare("INSERT INTO products (seller_id, name, slug, description, mrp, selling_price, discount_percentage, gst_type, gst_rate, category_id, stock_quantity, max_quantity_per_order, is_active, is_featured, is_discounted, is_approved, sku, hsn) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?)");
-            $stmt->execute([$sellerId, $name, $slug, $description, $mrp, $selling_price, $discount_percentage, $gst_type, $gst_rate, $category_id, $stock_quantity, $max_quantity_per_order, $is_active, $is_featured, $is_discounted, $sku, $hsn]);
+            $stmt = $pdo->prepare("INSERT INTO products (seller_id, name, slug, description, mrp, selling_price, discount_percentage, gst_type, gst_rate, category_id, stock_quantity, package_quantity, max_quantity_per_order, is_active, is_featured, is_discounted, is_approved, sku, hsn) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?)");
+            $stmt->execute([$sellerId, $name, $slug, $description, $mrp, $selling_price, $discount_percentage, $gst_type, $gst_rate, $category_id, $stock_quantity, $package_quantity, $max_quantity_per_order, $is_active, $is_featured, $is_discounted, $sku, $hsn]);
             
             $product_id = $pdo->lastInsertId();
 
@@ -252,11 +256,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     </div>
                                     <div class="col-md-3 mb-3">
                                         <label class="form-label">Stock Quantity *</label>
-                                        <input type="number" name="stock_quantity" class="form-control" required value="<?php echo htmlspecialchars($_POST['stock_quantity'] ?? ''); ?>">
+                                        <input type="number" name="stock_quantity" class="form-control" min="0" required value="<?php echo htmlspecialchars($_POST['stock_quantity'] ?? ''); ?>">
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label class="form-label">Package Quantity</label>
+                                        <input type="number" name="package_quantity" class="form-control" min="1" value="<?php echo htmlspecialchars($_POST['package_quantity'] ?? '1'); ?>">
                                     </div>
                                     <div class="col-md-3 mb-3">
                                         <label class="form-label">Max Qty Per Order</label>
-                                        <input type="number" name="max_quantity_per_order" class="form-control" value="<?php echo htmlspecialchars($_POST['max_quantity_per_order'] ?? ''); ?>">
+                                        <input type="number" name="max_quantity_per_order" class="form-control" min="1" value="<?php echo htmlspecialchars($_POST['max_quantity_per_order'] ?? ''); ?>">
                                     </div>
                                 </div>
 

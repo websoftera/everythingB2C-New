@@ -4,6 +4,89 @@ require_once __DIR__ . '/../config/database.php';
 // Set default timezone for India
 date_default_timezone_set('Asia/Kolkata');
 
+function ensureProductPackageQuantitySchema($pdo = null) {
+    if ($pdo === null) {
+        global $pdo;
+    }
+
+    static $checked = false;
+    if ($checked || !$pdo) {
+        return;
+    }
+
+    try {
+        $stmt = $pdo->query("SHOW COLUMNS FROM products LIKE 'package_quantity'");
+        if (!$stmt->fetch(PDO::FETCH_ASSOC)) {
+            $pdo->exec("ALTER TABLE products ADD COLUMN package_quantity INT DEFAULT 1 AFTER stock_quantity");
+        }
+    } catch (Exception $e) {
+        error_log('Unable to ensure package_quantity column: ' . $e->getMessage());
+    }
+
+    $checked = true;
+}
+
+function normalizePackageQuantity($packageQuantity) {
+    return max(1, (int)$packageQuantity);
+}
+
+function isValidPackageQuantity($quantity, $packageQuantity) {
+    $packageQuantity = normalizePackageQuantity($packageQuantity);
+    $quantity = (int)$quantity;
+    return $quantity > 0 && $quantity % $packageQuantity === 0;
+}
+
+function roundToNearestPackage($quantity, $packageQuantity) {
+    $packageQuantity = normalizePackageQuantity($packageQuantity);
+    $quantity = max(0, (int)$quantity);
+    return (int)(floor($quantity / $packageQuantity) * $packageQuantity);
+}
+
+function packageQuantityErrorResponse($quantity, $packageQuantity) {
+    $packageQuantity = normalizePackageQuantity($packageQuantity);
+    $suggestedQuantity = roundToNearestPackage($quantity, $packageQuantity);
+    if ($suggestedQuantity < $packageQuantity) {
+        $suggestedQuantity = $packageQuantity;
+    }
+
+    return [
+        'success' => false,
+        'message' => "Quantity must be a multiple of {$packageQuantity}. Valid quantities: {$packageQuantity}, " . ($packageQuantity * 2) . ", " . ($packageQuantity * 3) . ", etc.",
+        'package_quantity' => $packageQuantity,
+        'suggested_quantity' => $suggestedQuantity
+    ];
+}
+
+function validateCartItemQuantityRules($cartItems) {
+    foreach ($cartItems as $item) {
+        $quantity = (int)($item['quantity'] ?? 0);
+        $packageQuantity = normalizePackageQuantity($item['package_quantity'] ?? 1);
+
+        if (!isValidPackageQuantity($quantity, $packageQuantity)) {
+            return packageQuantityErrorResponse($quantity, $packageQuantity);
+        }
+
+        $stockQuantity = isset($item['product_stock_quantity'])
+            ? (int)$item['product_stock_quantity']
+            : (isset($item['stock_quantity']) ? (int)$item['stock_quantity'] : null);
+        if ($stockQuantity !== null && $quantity > $stockQuantity) {
+            return [
+                'success' => false,
+                'message' => 'Quantity exceeds available stock'
+            ];
+        }
+
+        if (isset($item['max_quantity_per_order']) && $item['max_quantity_per_order'] !== null && $quantity > (int)$item['max_quantity_per_order']) {
+            return [
+                'success' => false,
+                'message' => "Maximum quantity allowed for this product is {$item['max_quantity_per_order']}"
+            ];
+        }
+    }
+
+    return ['success' => true];
+}
+
 // Function to get cart summary for header display
 function getCartSummary() {
     $total_items = 0;
@@ -222,6 +305,7 @@ function getCategoryBySlug($slug) {
 // Function to get product by ID
 function getProductById($id) {
     global $pdo;
+    ensureProductPackageQuantitySchema($pdo);
     $stmt = $pdo->prepare("SELECT p.*, c.name as category_name, c.slug as category_slug
                           FROM products p
                           LEFT JOIN categories c ON p.category_id = c.id
@@ -233,6 +317,7 @@ function getProductById($id) {
 // Function to get products by category
 function getProductsByCategory($categoryId, $limit = null) {
     global $pdo;
+    ensureProductPackageQuantitySchema($pdo);
 
     $sql = "SELECT p.*, c.name as category_name FROM products p
             LEFT JOIN categories c ON p.category_id = c.id
@@ -253,6 +338,7 @@ function getProductsByCategory($categoryId, $limit = null) {
 // Function to get featured products
 function getFeaturedProducts($limit = 8) {
     global $pdo;
+    ensureProductPackageQuantitySchema($pdo);
     $sql = "SELECT p.*, c.name as category_name FROM products p
             LEFT JOIN categories c ON p.category_id = c.id
             WHERE p.is_featured = 1 AND p.is_active = 1
@@ -264,10 +350,11 @@ function getFeaturedProducts($limit = 8) {
 // Function to get discounted products
 function getDiscountedProducts($limit = 8) {
     global $pdo;
+    ensureProductPackageQuantitySchema($pdo);
     $sql = "SELECT p.*, c.name as category_name FROM products p
             LEFT JOIN categories c ON p.category_id = c.id
-            WHERE p.is_discounted = 1 AND p.is_active = 1
-            ORDER BY p.discount_percentage DESC LIMIT " . (int)$limit;
+            WHERE (p.is_discounted = 1 OR (p.mrp > 0 AND p.selling_price > 0 AND p.mrp > p.selling_price)) AND p.is_active = 1
+            ORDER BY CASE WHEN p.mrp > 0 AND p.selling_price > 0 AND p.mrp > p.selling_price THEN ((p.mrp - p.selling_price) / p.mrp) ELSE p.discount_percentage END DESC LIMIT " . (int)$limit;
     $stmt = $pdo->query($sql);
     return applyDisplayVariationPrices($stmt->fetchAll(PDO::FETCH_ASSOC));
 }
@@ -275,6 +362,7 @@ function getDiscountedProducts($limit = 8) {
 // Function to get all products
 function getAllProducts($limit = null) {
     global $pdo;
+    ensureProductPackageQuantitySchema($pdo);
     $sql = "SELECT p.*, c.name as category_name FROM products p
             LEFT JOIN categories c ON p.category_id = c.id
             WHERE p.is_active = 1
@@ -291,6 +379,7 @@ function getAllProducts($limit = null) {
 // Function to get product by slug
 function getProductBySlug($slug) {
     global $pdo;
+    ensureProductPackageQuantitySchema($pdo);
     $stmt = $pdo->prepare("SELECT p.*, c.name as category_name, c.slug as category_slug
                           FROM products p
                           LEFT JOIN categories c ON p.category_id = c.id
@@ -310,6 +399,7 @@ function getProductImages($productId) {
 // Function to get related products
 function getRelatedProducts($productId, $categoryId, $limit = 4) {
     global $pdo;
+    ensureProductPackageQuantitySchema($pdo);
     $sql = "SELECT p.*, c.name as category_name FROM products p
             LEFT JOIN categories c ON p.category_id = c.id
             WHERE p.category_id = ? AND p.id != ? AND p.is_active = 1
@@ -345,7 +435,24 @@ function searchProducts($query, $limit = 20) {
 // Function to calculate discount percentage
 function calculateDiscountPercentage($mrp, $sellingPrice) {
     if ($mrp <= 0) return 0;
+    if ($sellingPrice >= $mrp) return 0;
     return round((($mrp - $sellingPrice) / $mrp) * 100);
+}
+
+function hydrateProductDiscountFields(array $product) {
+    $mrp = (float)($product['mrp'] ?? 0);
+    $sellingPrice = (float)($product['selling_price'] ?? 0);
+    $hasPriceDiscount = $mrp > 0 && $sellingPrice > 0 && $mrp > $sellingPrice;
+
+    if ($hasPriceDiscount) {
+        $product['is_discounted'] = 1;
+        $product['discount_percentage'] = calculateDiscountPercentage($mrp, $sellingPrice);
+    } else {
+        $product['is_discounted'] = 0;
+        $product['discount_percentage'] = 0;
+    }
+
+    return $product;
 }
 
 function getFirstDisplayVariationForProduct($productId) {
@@ -380,32 +487,32 @@ function getFirstDisplayVariationForProduct($productId) {
 function applyDisplayVariationPrice(array $product) {
     $hasVariations = isset($product['has_variations']) ? (int)$product['has_variations'] === 1 : false;
     if (!$hasVariations) {
-        return $product;
+        return hydrateProductDiscountFields($product);
     }
 
     $variation = getFirstDisplayVariationForProduct($product['id'] ?? 0);
     if (!$variation) {
-        return $product;
+        return hydrateProductDiscountFields($product);
     }
 
     $mrp = (float)$variation['mrp'];
     $sellingPrice = (float)$variation['selling_price'];
     if ($mrp <= 0 || $sellingPrice <= 0) {
-        return $product;
+        return hydrateProductDiscountFields($product);
     }
 
     $product['display_variation_id'] = (int)$variation['id'];
     $product['display_base_mrp'] = $product['mrp'] ?? null;
     $product['display_base_selling_price'] = $product['selling_price'] ?? null;
+    $product['display_base_stock_quantity'] = $product['stock_quantity'] ?? null;
     $product['mrp'] = $mrp;
     $product['selling_price'] = $sellingPrice;
-    $product['discount_percentage'] = calculateDiscountPercentage($mrp, $sellingPrice);
 
     if (isset($variation['stock_quantity'])) {
         $product['stock_quantity'] = (int)$variation['stock_quantity'];
     }
 
-    return $product;
+    return hydrateProductDiscountFields($product);
 }
 
 function applyDisplayVariationPrices(array $products) {
@@ -760,6 +867,7 @@ function addToCart($userId, $productId, $quantity = 1, $variationId = null) {
 function getCartItems($userId = null) {
     ensureCartVariationSchema();
     global $pdo;
+    ensureProductPackageQuantitySchema($pdo);
     $hasUnitSchema = hasProductUnitSchema($pdo);
     $unitSelect = $hasUnitSchema
         ? "p.pay_per_unit, p.unit_label,"
@@ -768,7 +876,7 @@ function getCartItems($userId = null) {
     if (isLoggedIn() && $userId) {
         // DB cart
         $stmt = $pdo->prepare("
-            SELECT c.*, p.name, p.slug, p.gst_type, p.gst_rate, p.shipping_charge, p.hsn,
+            SELECT c.*, p.name, p.slug, p.gst_type, p.gst_rate, p.shipping_charge, p.hsn, p.package_quantity, p.max_quantity_per_order, p.stock_quantity AS product_stock_quantity,
                    {$unitSelect}
                    COALESCE(pv.selling_price, p.selling_price) AS selling_price,
                    COALESCE(pv.mrp, p.mrp) AS mrp,
@@ -831,7 +939,10 @@ function getWishlistItems($userId = null, $limit = null, $offset = 0) {
 
     if (isLoggedIn() && $userId) {
         // DB wishlist
-        $sql = "SELECT w.*, p.name, p.selling_price, p.mrp, p.main_image, p.slug, p.stock_quantity, p.is_discounted, p.discount_percentage FROM wishlist w JOIN products p ON w.product_id = p.id WHERE w.user_id = ? ORDER BY p.id DESC";
+        $unitSelect = hasProductUnitSchema($pdo)
+            ? "p.pay_per_unit, p.unit_label,"
+            : "NULL AS pay_per_unit, 'No.' AS unit_label,";
+        $sql = "SELECT w.*, p.name, p.selling_price, p.mrp, {$unitSelect} p.main_image, p.slug, p.stock_quantity, p.package_quantity, p.max_quantity_per_order, p.is_discounted, p.discount_percentage FROM wishlist w JOIN products p ON w.product_id = p.id WHERE w.user_id = ? ORDER BY p.id DESC";
         if ($limit !== null) {
             $sql .= " LIMIT " . (int)$limit . " OFFSET " . (int)$offset;
         }
@@ -884,6 +995,7 @@ function removeFromSessionCart($productId) {
 
 function getSessionCartItems() {
     global $pdo;
+    ensureProductPackageQuantitySchema($pdo);
     $items = [];
     if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) return $items;
     foreach ($_SESSION['cart'] as $cartKey => $qty) {
@@ -894,7 +1006,7 @@ function getSessionCartItems() {
         $unitSelect = hasProductUnitSchema($pdo)
             ? "pay_per_unit, unit_label,"
             : "NULL AS pay_per_unit, 'No.' AS unit_label,";
-        $stmt = $pdo->prepare("SELECT id, name, selling_price, mrp, {$unitSelect} main_image, slug, gst_type, gst_rate, shipping_charge, hsn, stock_quantity FROM products WHERE id = ?");
+        $stmt = $pdo->prepare("SELECT id, name, selling_price, mrp, {$unitSelect} main_image, slug, gst_type, gst_rate, shipping_charge, hsn, stock_quantity, stock_quantity AS product_stock_quantity, package_quantity, max_quantity_per_order FROM products WHERE id = ?");
         $stmt->execute([$productId]);
         $product = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($product) {
@@ -955,7 +1067,10 @@ function getSessionWishlistItems($limit = null, $offset = 0) {
     }
 
     foreach ($wishlistArray as $productId) {
-        $stmt = $pdo->prepare("SELECT * FROM products WHERE id = ?");
+        $unitSelect = hasProductUnitSchema($pdo)
+            ? "pay_per_unit, unit_label,"
+            : "NULL AS pay_per_unit, 'No.' AS unit_label,";
+        $stmt = $pdo->prepare("SELECT id, name, selling_price, mrp, {$unitSelect} main_image, slug, stock_quantity, package_quantity, max_quantity_per_order, is_discounted, discount_percentage FROM products WHERE id = ?");
         $stmt->execute([$productId]);
         $product = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($product) {
@@ -1130,6 +1245,10 @@ function createOrder($userId, $addressId, $paymentMethod, $gstNumber = null, $co
         $cartItems = getCartItems($userId);
         if (empty($cartItems)) {
             throw new Exception('Cart is empty');
+        }
+        $cartValidation = validateCartItemQuantityRules($cartItems);
+        if (empty($cartValidation['success'])) {
+            throw new Exception($cartValidation['message']);
         }
         $stmt = $pdo->prepare("SELECT * FROM addresses WHERE id = ? AND user_id = ?");
         $stmt->execute([$addressId, $userId]);

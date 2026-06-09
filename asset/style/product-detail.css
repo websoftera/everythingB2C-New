@@ -453,6 +453,72 @@
     right: -20px;
 }
 
+@media (min-width: 992px) {
+    .related-products-section {
+        padding: 20px 0 42px;
+    }
+
+    .related-products-slider-wrapper {
+        max-width: calc((240px * 4.5) + (10px * 4) + 68px);
+        margin: 0 auto;
+        padding: 0 34px;
+        justify-content: center;
+    }
+
+    .related-products-container {
+        gap: 10px;
+        overflow-x: auto;
+        scroll-snap-type: x proximity;
+        padding: 10px 0 18px;
+        width: min(100%, calc((240px * 4.5) + (10px * 4)));
+        max-width: calc((240px * 4.5) + (10px * 4));
+        justify-content: flex-start !important;
+    }
+
+    .related-products-container .product-card {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        flex: 0 0 240px !important;
+        width: 100% !important;
+        min-width: 20px !important;
+        max-width: 240px !important;
+        border: 1px solid #ddd;
+        text-align: center;
+        border-radius: 8px !important;
+        background: #fff;
+        cursor: pointer;
+        margin: 0 0 15px 0 !important;
+        overflow: hidden !important;
+        position: relative;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        scroll-snap-align: start;
+    }
+
+    .related-nav-btn {
+        border-radius: 4px;
+        width: 30px;
+        height: 30px;
+    }
+
+    .related-nav-btn.prev-btn {
+        left: 8px;
+    }
+
+    .related-nav-btn.next-btn {
+        right: 8px;
+    }
+
+    .related-nav-btn img {
+        width: 14px;
+        height: 14px;
+        object-fit: contain;
+    }
+}
+
 /* Zoom Modal Styles */
 .zoom-modal {
     display: none;

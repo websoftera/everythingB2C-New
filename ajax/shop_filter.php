@@ -94,6 +94,7 @@ foreach ($products as $product):
         <?php endif; ?>
     </div>
     <div class="product-details">
+        <div class="product-unit-line"><?php echo formatProductUnitLine($product, true); ?></div>
         <h3><?php echo formatProductListName($product['name'], true); ?></h3>
         <div class="price-buttons">
             <div class="price-btn mrp">

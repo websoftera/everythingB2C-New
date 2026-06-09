@@ -31,6 +31,11 @@ if (empty($cartItems)) {
     echo json_encode(['success' => false, 'message' => 'Your cart is empty.']);
     exit;
 }
+$cartValidation = validateCartItemQuantityRules($cartItems);
+if (empty($cartValidation['success'])) {
+    echo json_encode($cartValidation);
+    exit;
+}
 
 $addresses = getUserAddresses($userId);
 $selectedAddress = null;
@@ -137,4 +142,4 @@ try {
     ]);
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'message' => 'Error creating payment order: ' . $e->getMessage()]);
-} 
+}

@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../config/database.php';
+require_once '../includes/functions.php';
 require_once '../includes/seller_functions.php';
 
 if (!isset($_SESSION['seller_id'])) {
@@ -11,6 +12,7 @@ if (!isset($_SESSION['seller_id'])) {
 $sellerId = $_SESSION['seller_id'];
 $productId = isset($_GET['id']) ? intval($_GET['id']) : 0;
 $pageTitle = 'Edit Product';
+ensureProductPackageQuantitySchema($pdo);
 
 // Get product - make sure it belongs to this seller
 $stmt = $pdo->prepare("SELECT p.*, c.name as category_name FROM products p 
@@ -92,6 +94,7 @@ if (!$product) {
                                         <tr><th>MRP:</th><td>₹<?php echo number_format($product['mrp'], 2); ?></td></tr>
                                         <tr><th>Selling Price:</th><td>₹<?php echo number_format($product['selling_price'], 2); ?></td></tr>
                                         <tr><th>Stock:</th><td><?php echo $product['stock_quantity']; ?></td></tr>
+                                        <tr><th>Package Quantity:</th><td><?php echo normalizePackageQuantity($product['package_quantity'] ?? 1); ?></td></tr>
                                         <tr><th>GST:</th><td><?php echo $product['gst_rate']; ?>%</td></tr>
                                         <tr>
                                             <th>Status:</th>
