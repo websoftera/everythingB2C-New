@@ -402,6 +402,21 @@ echo renderBreadcrumb($breadcrumbs);
   color: #000;
 }
 
+.account-wishlist-unit-line {
+  margin: 0 0 2px;
+  color: #2d3748;
+  font-family: 'Mulish', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.1;
+  text-align: right;
+  width: 100%;
+}
+
+.account-wishlist-unit-line + h6 {
+  margin-top: 0;
+}
+
 /* === Profile === */
 .account-profile {
   display: grid;
@@ -905,6 +920,7 @@ endif; ?>
                                         <img src="<?php echo(!empty($item['main_image']) ? htmlspecialchars($item['main_image']) : 'uploads/products/blank-img.webp'); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" onerror="this.onerror=null; this.src='./uploads/products/blank-img.webp';">
                                     </a>
                                     <div>
+                                        <div class="account-wishlist-unit-line"><?php echo formatProductUnitLine($item, true); ?></div>
                                         <h6><a href="product.php?slug=<?php echo $item['slug']; ?>" style="color:inherit; text-decoration:none;"><?php echo strtoupper(htmlspecialchars($item['name'])); ?></a></h6>
                                         <p>₹<?php echo number_format($item['selling_price'], 0); ?></p>
                                         <div style="display: flex; gap: 8px; justify-content: center;">

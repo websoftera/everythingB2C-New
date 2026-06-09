@@ -114,6 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     'discount_percentage' => calculateDiscountPercentage($mrp, $selling_price),
                                     'category_id' => $category_id,
                                     'stock_quantity' => isset($row_data['Stock Quantity']) ? intval($row_data['Stock Quantity']) : 0,
+                                    'package_quantity' => isset($row_data['Package Quantity']) ? max(1, intval($row_data['Package Quantity'])) : 1,
                                     'max_quantity_per_order' => isset($row_data['Max Quantity Per Order']) ? intval($row_data['Max Quantity Per Order']) : null,
                                     'gst_type' => 'sgst_cgst',
                                     'gst_rate' => isset($row_data['GST Rate']) ? floatval($row_data['GST Rate']) : 18,
@@ -124,7 +125,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 ];
                                 
                                 // Insert product
-                                $stmt = $pdo->prepare("INSERT INTO products (name, slug, sku, hsn, description, mrp, selling_price, discount_percentage, category_id, stock_quantity, max_quantity_per_order, gst_type, gst_rate, is_active, is_featured, is_discounted, main_image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                                ensureProductPackageQuantitySchema($pdo);
+                                $stmt = $pdo->prepare("INSERT INTO products (name, slug, sku, hsn, description, mrp, selling_price, discount_percentage, category_id, stock_quantity, package_quantity, max_quantity_per_order, gst_type, gst_rate, is_active, is_featured, is_discounted, main_image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                                 $stmt->execute([
                                     $product_data['name'],
                                     $product_data['slug'],
@@ -136,6 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     $product_data['discount_percentage'],
                                     $product_data['category_id'],
                                     $product_data['stock_quantity'],
+                                    $product_data['package_quantity'],
                                     $product_data['max_quantity_per_order'],
                                     $product_data['gst_type'],
                                     $product_data['gst_rate'],

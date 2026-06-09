@@ -27,7 +27,8 @@ try {
         $userId = $_SESSION['user_id'];
 
         // Check if product exists and get stock info
-        $stmt = $pdo->prepare("SELECT stock_quantity FROM products WHERE id = ? AND is_active = 1");
+        ensureProductPackageQuantitySchema($pdo);
+        $stmt = $pdo->prepare("SELECT stock_quantity, package_quantity, max_quantity_per_order FROM products WHERE id = ? AND is_active = 1");
         $stmt->execute([$productId]);
         $product = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -35,12 +36,22 @@ try {
             throw new Exception('Product not found');
         }
 
-        $variation = $variationId ? getProductVariationById($productId, $variationId) : null;
-        $availableStock = $variation ? $variation['stock_quantity'] : $product['stock_quantity'];
+        $availableStock = $product['stock_quantity'];
+        $packageQuantity = normalizePackageQuantity($product['package_quantity'] ?? 1);
+
+        if (!isValidPackageQuantity($quantity, $packageQuantity)) {
+            http_response_code(400);
+            echo json_encode(packageQuantityErrorResponse($quantity, $packageQuantity));
+            exit;
+        }
 
         // Check if quantity exceeds stock
         if ($quantity > $availableStock) {
             throw new Exception('Quantity exceeds available stock');
+        }
+
+        if ($product['max_quantity_per_order'] !== null && $quantity > $product['max_quantity_per_order']) {
+            throw new Exception("Maximum quantity allowed for this product is {$product['max_quantity_per_order']}");
         }
 
         // Check if product is already in cart
@@ -82,7 +93,8 @@ try {
         }
 
         // Check if product exists and get stock info
-        $stmt = $pdo->prepare("SELECT stock_quantity FROM products WHERE id = ? AND is_active = 1");
+        ensureProductPackageQuantitySchema($pdo);
+        $stmt = $pdo->prepare("SELECT stock_quantity, package_quantity, max_quantity_per_order FROM products WHERE id = ? AND is_active = 1");
         $stmt->execute([$productId]);
         $product = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -90,12 +102,22 @@ try {
             throw new Exception('Product not found');
         }
 
-        $variation = $variationId ? getProductVariationById($productId, $variationId) : null;
-        $availableStock = $variation ? $variation['stock_quantity'] : $product['stock_quantity'];
+        $availableStock = $product['stock_quantity'];
+        $packageQuantity = normalizePackageQuantity($product['package_quantity'] ?? 1);
+
+        if (!isValidPackageQuantity($quantity, $packageQuantity)) {
+            http_response_code(400);
+            echo json_encode(packageQuantityErrorResponse($quantity, $packageQuantity));
+            exit;
+        }
 
         // Check if quantity exceeds stock
         if ($quantity > $availableStock) {
             throw new Exception('Quantity exceeds available stock');
+        }
+
+        if ($product['max_quantity_per_order'] !== null && $quantity > $product['max_quantity_per_order']) {
+            throw new Exception("Maximum quantity allowed for this product is {$product['max_quantity_per_order']}");
         }
 
         // Update session cart

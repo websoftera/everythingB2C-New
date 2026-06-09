@@ -9,6 +9,7 @@ if (!empty($wishlistItems)) {
         echo '<li class="account-wishlist-item col-md-4 mb-3">';
         echo '<div class="account-wishlist-info">';
         echo '<img src="' . htmlspecialchars($item['main_image']) . '" alt="' . htmlspecialchars($item['name']) . '" style="width:100%;height:180px;object-fit:cover;border-radius:8px;">';
+        echo '<div class="account-wishlist-unit-line">' . formatProductUnitLine($item, true) . '</div>';
         echo '<h6 class="mt-2">' . htmlspecialchars($item['name']) . '</h6>';
         echo '<p>₹' . number_format($item['selling_price'], 2) . '</p>';
         echo '<a href="product.php?slug=' . $item['slug'] . '" class="account-btn">View Product</a>';

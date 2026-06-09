@@ -54,6 +54,11 @@ echo renderBreadcrumb($breadcrumbs);
                 <div class="card product-card" data-id="prod-<?php echo $item['product_id']; ?>">
                         <?php 
                         $isOutOfStock = ($item['stock_quantity'] <= 0);
+                        $packageQuantity = normalizePackageQuantity($item['package_quantity'] ?? 1);
+                        $maxQuantity = (int)($item['stock_quantity'] ?? 99);
+                        if (isset($item['max_quantity_per_order']) && $item['max_quantity_per_order'] !== null) {
+                            $maxQuantity = min($maxQuantity, (int)$item['max_quantity_per_order']);
+                        }
                         if ($item['is_discounted']): ?>
                             <div class="discount-banner">SAVE ₹<?php echo $item['mrp'] - $item['selling_price']; ?> (<?php echo $item['discount_percentage']; ?>% OFF)</div>
                         <?php else: ?>
@@ -73,6 +78,7 @@ echo renderBreadcrumb($breadcrumbs);
                                 <?php endif; ?>
                             </div>
                             <div class="product-details">
+                                <div class="product-unit-line"><?php echo formatProductUnitLine($item, true); ?></div>
                                 <a href="product.php?slug=<?php echo $item['slug']; ?>" class="product-title-link">
                                     <h3><?php echo strtoupper(cleanProductName($item['name'])); ?></h3>
                                 </a>
@@ -98,7 +104,7 @@ echo renderBreadcrumb($breadcrumbs);
                                     <div class="cart-actions d-flex align-items-center gap-2">
                                         <div class="quantity-control d-inline-flex align-items-center">
                                             <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
-                                            <input type="number" class="quantity-input" value="1" min="1" max="99" data-product-id="<?php echo $item['product_id']; ?>">
+                                            <input type="number" class="quantity-input" value="<?php echo $packageQuantity; ?>" min="<?php echo $packageQuantity; ?>" step="<?php echo $packageQuantity; ?>" max="<?php echo $maxQuantity; ?>" data-product-id="<?php echo $item['product_id']; ?>" data-package-quantity="<?php echo $packageQuantity; ?>">
                                             <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
                                         </div>
                                         <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $item['product_id']; ?>">

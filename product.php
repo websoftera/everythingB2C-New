@@ -18,17 +18,16 @@ if (!$product) {
 }
 
 $pageTitle = strip_tags($product['name']);
+$pageStyles = ['asset/style/product-detail.css'];
 require_once 'includes/header.php';
 
 // Get product images
 $productImages = getProductImages($product['id']);
 $variationData = getProductVariationData($product['id']);
-if ($variationData['has_variations']) {
-    $product = applyDisplayVariationPrice($product);
-}
+$product = applyDisplayVariationPrice($product);
 
 // Get related products
-$relatedProducts = getRelatedProducts($product['id'], $product['category_id'], 4);
+$relatedProducts = getRelatedProducts($product['id'], $product['category_id'], 20);
 
 // Get full category path
 $categoryPath = getCategoryPath($product['category_id']);
@@ -58,7 +57,6 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
 </div>
 
 <div class="product-page-container">
-    <link rel="stylesheet" href="asset/style/product-detail.css">
     <style>
         /* Modern Card base fixes */
         .product-page-container {
@@ -412,13 +410,40 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                 min-width: 24px !important;
                 max-width: 24px !important;
                 margin: 0 !important;
+                height: 32px !important;
+                display: inline-flex !important;
+                align-items: center !important;
                 justify-content: center !important;
+            }
+
+            .product-page-container .price-buttons1.modern-prices .wishlist-label {
+                height: 14px !important;
+                line-height: 14px !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .product-page-container .price-buttons1.modern-prices .wishlist-label .header-wishlist-icon {
+                display: block !important;
+                line-height: 14px !important;
+                height: 14px !important;
+                margin: 0 !important;
+                padding: 0 !important;
             }
 
             .product-page-container .price-buttons1.modern-prices .detail-unit-line {
                 margin-left: 0 !important;
-                font-size: 16px !important;
-                line-height: 20px !important;
+                font-family: 'Mulish', sans-serif !important;
+                color: #273444 !important;
+                font-size: 12px !important;
+                font-weight: 500 !important;
+                line-height: 14px !important;
+                height: 32px !important;
+                display: inline-flex !important;
+                align-items: center !important;
             }
 
             .product-page-container .price-buttons1 .product-detail-unit-price {
@@ -426,12 +451,15 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                 align-items: center !important;
                 flex: 0 0 auto !important;
                 order: 4 !important;
-                color: #4f5b67 !important;
-                font-size: 13px !important;
-                font-weight: 400 !important;
-                line-height: 1 !important;
+                color: #273444 !important;
+                font-family: 'Mulish', sans-serif !important;
+                font-size: 12px !important;
+                font-weight: 500 !important;
+                line-height: 14px !important;
                 margin-left: -4px !important;
                 padding: 0 !important;
+                height: 32px !important;
+                align-self: center !important;
                 white-space: nowrap !important;
             }
 
@@ -568,6 +596,47 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                 font-weight: 700 !important;
             }
         }
+
+        @media (min-width: 992px) {
+            .product-page-container .related-products-slider-wrapper {
+                max-width: 1188px !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+                padding-left: 34px !important;
+                padding-right: 34px !important;
+                justify-content: center !important;
+            }
+
+            .product-page-container .related-products-container {
+                width: 1120px !important;
+                max-width: 1120px !important;
+                gap: 10px !important;
+                justify-content: flex-start !important;
+                overflow-x: auto !important;
+            }
+
+            .product-page-container .related-products-container .card.product-card {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: stretch !important;
+                flex: 0 0 240px !important;
+                width: 100% !important;
+                min-width: 20px !important;
+                max-width: 240px !important;
+                border: 1px solid #ddd !important;
+                text-align: center !important;
+                border-radius: 8px !important;
+                background: #fff !important;
+                cursor: pointer !important;
+                margin: 0 0 15px 0 !important;
+                overflow: hidden !important;
+                position: relative !important;
+                padding: 0 !important;
+                box-sizing: border-box !important;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
+                transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+            }
+        }
     </style>
 
     <?php
@@ -643,7 +712,14 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
             <div class="cart-action-btns cart-actions d-flex align-items-center gap-2">
                 <div class="quantity-control d-inline-flex align-items-center">
                     <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
-                    <input type="number" class="quantity-input" value="1" min="1" max="99" data-product-id="<?php echo $product['id']; ?>">
+                    <?php
+                    $packageQuantity = normalizePackageQuantity($product['package_quantity'] ?? 1);
+                    $maxQuantity = (int)($product['display_base_stock_quantity'] ?? $product['stock_quantity']);
+                    if (isset($product['max_quantity_per_order']) && $product['max_quantity_per_order'] !== null) {
+                        $maxQuantity = min($maxQuantity, (int)$product['max_quantity_per_order']);
+                    }
+                    ?>
+                    <input type="number" class="quantity-input" value="<?php echo $packageQuantity; ?>" min="<?php echo $packageQuantity; ?>" step="<?php echo $packageQuantity; ?>" max="<?php echo $maxQuantity; ?>" data-product-id="<?php echo $product['id']; ?>" data-package-quantity="<?php echo $packageQuantity; ?>">
                     <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
                 </div>
                                             <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>" id="detailAddToCartBtn">
@@ -666,7 +742,7 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                 <p><?php echo $product['description']; ?></p>
             </div>
             <?php if ($product['stock_quantity'] > 0): ?>
-                <p class="text-success" id="detailStockText"><strong>Stock:</strong> <?php echo $product['stock_quantity']; ?> units available</p>
+                <p class="text-success" id="detailStockText"><strong>Stock:</strong> <?php echo (int)($product['display_base_stock_quantity'] ?? $product['stock_quantity']); ?> units available</p>
             <?php else: ?>
                 <p class="text-danger"><strong>Out of Stock</strong></p>
             <?php endif; ?>
@@ -738,10 +814,10 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                                 </div>
                                 
                                 <div class="product-details">
+                                    <div class="product-unit-line"><?php echo formatProductUnitLine($relatedProduct, true); ?></div>
                                     <a href="product.php?slug=<?php echo $relatedProduct['slug']; ?>" class="product-title-link">
                                         <h3><?php echo cleanProductName($relatedProduct['name']); ?></h3>
                                     </a>
-                                    <div class="product-unit-line"><?php echo formatProductUnitLine($relatedProduct, true); ?></div>
 
                                     <div class="price-buttons">
                                         <div class="price-btn mrp">
@@ -766,7 +842,14 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                                         <div class="cart-actions d-flex align-items-center">
                                             <div class="quantity-control d-inline-flex align-items-center">
                                                 <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
-                                                <input type="number" class="quantity-input" value="1" min="1" max="99" data-product-id="<?php echo $relatedProduct['id']; ?>">
+                                                <?php
+                                                $relatedPackageQuantity = normalizePackageQuantity($relatedProduct['package_quantity'] ?? 1);
+                                                $relatedMaxQuantity = (int)($relatedProduct['display_base_stock_quantity'] ?? $relatedProduct['stock_quantity']);
+                                                if (isset($relatedProduct['max_quantity_per_order']) && $relatedProduct['max_quantity_per_order'] !== null) {
+                                                    $relatedMaxQuantity = min($relatedMaxQuantity, (int)$relatedProduct['max_quantity_per_order']);
+                                                }
+                                                ?>
+                                                <input type="number" class="quantity-input" value="<?php echo $relatedPackageQuantity; ?>" min="<?php echo $relatedPackageQuantity; ?>" step="<?php echo $relatedPackageQuantity; ?>" max="<?php echo $relatedMaxQuantity; ?>" data-product-id="<?php echo $relatedProduct['id']; ?>" data-package-quantity="<?php echo $relatedPackageQuantity; ?>">
                                                 <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
                                             </div>
                                             <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $relatedProduct['id']; ?>">
@@ -807,6 +890,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const stockText = document.getElementById('detailStockText');
         const addToCartBtn = document.getElementById('detailAddToCartBtn');
         const detailMainImage = document.getElementById('mainImage');
+        const detailDiscountBanner = document.querySelector('.discount-banner-detail');
         const productUnitPrice = <?php echo json_encode(getProductUnitPrice($product)); ?>;
         const hasProductUnitPrice = <?php echo json_encode((float)($product['pay_per_unit'] ?? 0) > 0); ?>;
 
@@ -820,6 +904,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
         function getVariationUnitPrice(variation) {
             return hasProductUnitPrice ? productUnitPrice : variation.selling_price;
+        }
+
+        function updateDetailDiscountBanner(variation) {
+            if (!detailDiscountBanner) return;
+
+            const mrp = Number(variation.mrp || 0);
+            const sellingPrice = Number(variation.selling_price || 0);
+            if (mrp > 0 && sellingPrice > 0 && mrp > sellingPrice) {
+                const saveAmount = Math.round(mrp - sellingPrice);
+                const discountPercent = Math.round(((mrp - sellingPrice) / mrp) * 100);
+                detailDiscountBanner.textContent = 'SAVE \u20b9' + saveAmount.toLocaleString('en-IN') + ' (' + discountPercent + '% OFF)';
+                detailDiscountBanner.style.display = '';
+            } else {
+                detailDiscountBanner.style.display = 'none';
+            }
         }
 
         function findSelectedVariation() {
@@ -844,12 +943,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const selectedVariation = nextVariation || findSelectedVariation() || firstVariation;
             if (mrpValue) mrpValue.textContent = formatPriceValue(selectedVariation.mrp);
             if (payValue) payValue.textContent = formatPriceValue(selectedVariation.selling_price);
+            updateDetailDiscountBanner(selectedVariation);
             if (detailUnitLine) detailUnitLine.textContent = formatUnitLine(getVariationUnitPrice(selectedVariation));
             if (mobileDetailUnitLine) mobileDetailUnitLine.textContent = formatUnitLine(getVariationUnitPrice(selectedVariation));
             if (stockText) {
-                stockText.className = selectedVariation.stock_quantity > 0 ? 'text-success' : 'text-danger';
-                stockText.innerHTML = selectedVariation.stock_quantity > 0
-                    ? '<strong>Stock:</strong> ' + selectedVariation.stock_quantity + ' units available'
+                const productStockQuantity = <?php echo (int)($product['display_base_stock_quantity'] ?? $product['stock_quantity']); ?>;
+                stockText.className = productStockQuantity > 0 ? 'text-success' : 'text-danger';
+                stockText.innerHTML = productStockQuantity > 0
+                    ? '<strong>Stock:</strong> ' + productStockQuantity + ' units available'
                     : '<strong>Out of Stock</strong>';
             }
             if (detailMainImage && selectedVariation.image_path) {
@@ -861,6 +962,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             const quantityInput = document.querySelector('.product-detail-card .quantity-input');
+            if (quantityInput) {
+                const productMaxQuantity = <?php echo (int)$maxQuantity; ?>;
+                quantityInput.max = productMaxQuantity;
+                if (typeof normalizeQuantityInputValue === 'function') {
+                    normalizeQuantityInputValue(quantityInput);
+                }
+            }
             if (window.updateDisplayedPriceForQuantity && quantityInput) {
                 window.updateDisplayedPriceForQuantity(quantityInput, selectedVariation);
             }
@@ -1032,19 +1140,30 @@ document.addEventListener('DOMContentLoaded', function() {
     const nextBtn = document.querySelector('.related-nav-btn.next-btn');
     
     if (relatedSlider && prevBtn && nextBtn) {
-        let scrollAmount = 0;
-        const cardWidth = 220;
-        const gap = 16;
-        const scrollStep = cardWidth + gap;
+        let scrollAmount = relatedSlider.scrollLeft;
+
+        function getScrollStep() {
+            const firstCard = relatedSlider.querySelector('.product-card');
+            if (!firstCard) {
+                return relatedSlider.clientWidth;
+            }
+
+            const cardRect = firstCard.getBoundingClientRect();
+            const styles = window.getComputedStyle(relatedSlider);
+            const gap = parseFloat(styles.columnGap || styles.gap || 0) || 0;
+            return Math.max(1, Math.round(cardRect.width + gap));
+        }
         
         function updateScrollButtons() {
             const maxScroll = relatedSlider.scrollWidth - relatedSlider.clientWidth;
-            prevBtn.style.display = scrollAmount <= 0 ? 'none' : 'flex';
-            nextBtn.style.display = scrollAmount >= maxScroll ? 'none' : 'flex';
+            scrollAmount = relatedSlider.scrollLeft;
+            const hasOverflow = maxScroll > 1;
+            prevBtn.style.display = hasOverflow ? 'flex' : 'none';
+            nextBtn.style.display = hasOverflow ? 'flex' : 'none';
         }
         
         prevBtn.addEventListener('click', function() {
-            scrollAmount = Math.max(0, scrollAmount - scrollStep);
+            scrollAmount = Math.max(0, relatedSlider.scrollLeft - getScrollStep());
             relatedSlider.scrollTo({
                 left: scrollAmount,
                 behavior: 'smooth'
@@ -1053,7 +1172,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         nextBtn.addEventListener('click', function() {
             const maxScroll = relatedSlider.scrollWidth - relatedSlider.clientWidth;
-            scrollAmount = Math.min(maxScroll, scrollAmount + scrollStep);
+            scrollAmount = Math.min(maxScroll, relatedSlider.scrollLeft + getScrollStep());
             relatedSlider.scrollTo({
                 left: scrollAmount,
                 behavior: 'smooth'

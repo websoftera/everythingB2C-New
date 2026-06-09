@@ -112,10 +112,10 @@ echo renderBreadcrumb($breadcrumbs);
     }
 
     .cart-item-row .quantity-control {
-        flex: 0 0 80px !important;
-        width: 80px !important;
-        min-width: 80px !important;
-        max-width: 80px !important;
+        flex: 0 0 92px !important;
+        width: 92px !important;
+        min-width: 92px !important;
+        max-width: 92px !important;
     }
 
     .cart-product-cell {
@@ -162,6 +162,57 @@ echo renderBreadcrumb($breadcrumbs);
 .cart-variation-line span {
     font-weight: 600;
 }
+
+.cart-item-row .cart-unit-cell,
+.cart-item-row .cart-mrp-cell,
+.cart-item-row .cart-you-pay-cell,
+.cart-item-row .cart-save-cell,
+.cart-item-row .cart-total-cell,
+.cart-item-row .quantity-control,
+.cart-item-row .quantity-control .btn-qty,
+.cart-item-row .quantity-control .quantity-input {
+    font-family: 'Mulish', sans-serif !important;
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+    line-height: 1.2 !important;
+}
+
+.cart-item-row .cart-mrp-cell {
+    color: #888 !important;
+}
+
+.cart-item-row .cart-you-pay-cell {
+    color: #007bff !important;
+}
+
+.cart-item-row .cart-save-cell {
+    color: #23a036 !important;
+}
+
+.cart-item-row .cart-total-cell {
+    color: #111 !important;
+}
+
+.cart-item-row .quantity-control .quantity-input {
+    width: 38px !important;
+    min-width: 38px !important;
+    padding-left: 2px !important;
+    padding-right: 2px !important;
+}
+
+.cart-item-row .quantity-control .btn-qty {
+    width: 27px !important;
+    min-width: 27px !important;
+    max-width: 27px !important;
+}
+
+.cart-item-row .cart-total-cell {
+    flex: 0 0 88px !important;
+    min-width: 88px !important;
+    text-align: right !important;
+    padding-right: 8px !important;
+    white-space: nowrap !important;
+}
 </style>
 <div class="container mt-4">
     <!-- <h1>Shopping Cart</h1> -->
@@ -174,7 +225,7 @@ echo renderBreadcrumb($breadcrumbs);
         </div>
     <?php else: ?>
         <div class="row">
-            <div class="col-xl-9 col-lg-12">
+            <div class="col-xl-8 col-lg-12">
                 <div class="shopping-card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Cart Items (<?php echo count($cartItems); ?>)</h5>
@@ -199,6 +250,11 @@ echo renderBreadcrumb($breadcrumbs);
                             <?php
                             $displayName = cartDisplayName($item);
                             $variationDetails = renderCartVariationDetails($item);
+                            $packageQuantity = normalizePackageQuantity($item['package_quantity'] ?? 1);
+                            $cartMaxQuantity = (int)($item['product_stock_quantity'] ?? $item['stock_quantity'] ?? 99);
+                            if (isset($item['max_quantity_per_order']) && $item['max_quantity_per_order'] !== null) {
+                                $cartMaxQuantity = min($cartMaxQuantity, (int)$item['max_quantity_per_order']);
+                            }
                             ?>
                             <div class="cart-item-row d-flex align-items-center flex-nowrap" style="border: 1px solid #e0e0e0; border-radius: 7px; padding: 7px 0 7px 8px; margin-bottom: 10px; background: #fff; gap: 8px;">
                                 <div style="flex:0 0 56px; max-width:56px; min-width:40px;">
@@ -223,7 +279,7 @@ echo renderBreadcrumb($breadcrumbs);
                                 <div style="flex:0 0 80px; min-width:50px; text-align:center;">
                                     <div class="quantity-control d-inline-flex align-items-center justify-content-center">
                                         <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
-                                        <input type="number" class="quantity-input" value="<?php echo $item['quantity']; ?>" min="1" max="99" data-cart-id="<?php echo $item['id']; ?>">
+                                        <input type="number" class="quantity-input" value="<?php echo $item['quantity']; ?>" min="<?php echo $packageQuantity; ?>" step="<?php echo $packageQuantity; ?>" max="<?php echo $cartMaxQuantity; ?>" data-cart-id="<?php echo $item['id']; ?>" data-package-quantity="<?php echo $packageQuantity; ?>">
                                         <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
                                     </div>
                                 </div>
@@ -240,7 +296,7 @@ echo renderBreadcrumb($breadcrumbs);
                 </div>
             </div>
             
-            <div class="col-xl-3 col-lg-12">
+            <div class="col-xl-4 col-lg-12">
                 <!-- Mobile Remove All Button placed before Price Summary -->
                 <div class="text-end d-md-none mb-2">
                     <button type="button" class="btn btn-outline-danger btn-sm" onclick="document.getElementById('removeAllItems').click()" title="Remove all items from cart">
@@ -311,6 +367,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         input.addEventListener('change', function() {
+            if (typeof normalizeQuantityInputValue === 'function') {
+                normalizeQuantityInputValue(this);
+            }
             if (!/^[1-9][0-9]*$/.test(this.value)) {
                 if (typeof Swal !== 'undefined') {
                     Swal.fire({
@@ -404,11 +463,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     //         }
                     //     });
                 } else {
-                    if (typeof Swal !== 'undefined') {
+                    const limitMessage = data.message || '';
+                    if (/maximum quantity|multiple of|available in stock|exceeds available stock/i.test(limitMessage) && typeof showEverythingB2CMaxQuantityPopup === 'function') {
+                        showEverythingB2CMaxQuantityPopup(limitMessage);
+                    } else if (typeof Swal !== 'undefined') {
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: 'Error: ' + data.message,
+                            text: 'Error: ' + limitMessage,
                             timer: 4000,
                             showConfirmButton: false
                         });

@@ -33,6 +33,7 @@ CREATE TABLE products (
     category_id INT,
     main_image VARCHAR(255),
     stock_quantity INT DEFAULT 0,
+    package_quantity INT DEFAULT 1,
     is_active BOOLEAN DEFAULT TRUE,
     is_featured BOOLEAN DEFAULT FALSE,
     is_discounted BOOLEAN DEFAULT FALSE,
@@ -165,4 +166,4 @@ INSERT INTO product_images (product_id, image_path, is_main, sort_order) VALUES
 -- Update category product counts
 UPDATE categories c SET product_count = (
     SELECT COUNT(*) FROM products p WHERE p.category_id = c.id
-); 
+);

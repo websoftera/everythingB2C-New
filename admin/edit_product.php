@@ -15,6 +15,7 @@ $success_message = '';
 $error_message = '';
 ensureProductVariationSchema($pdo);
 ensureProductUnitSchema($pdo);
+ensureProductPackageQuantitySchema($pdo);
 $return_to = $_GET['return_to'] ?? $_POST['return_to'] ?? 'products.php';
 if (strpos($return_to, 'products.php') !== 0) {
     $return_to = 'products.php';
@@ -49,6 +50,7 @@ $product = array_merge([
     'selling_price' => 0,
     'category_id' => '',
     'stock_quantity' => 0,
+    'package_quantity' => 1,
     'max_quantity_per_order' => null,
     'gst_rate' => 18.00,
     'shipping_charge' => null,
@@ -104,6 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $category_id = intval($_POST['parent_category_id']);
     
     $stock_quantity = intval($_POST['stock_quantity']);
+    $package_quantity = isset($_POST['package_quantity']) ? intval($_POST['package_quantity']) : 1;
     $max_quantity_per_order = !empty($_POST['max_quantity_per_order']) ? intval($_POST['max_quantity_per_order']) : null;
     $gst_type = 'sgst_cgst'; // Default GST type
     $gst_rate = floatval($_POST['gst_rate']);
@@ -125,6 +128,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error_message = 'Selling price cannot be greater than MRP.';
     } elseif ($gst_rate < 0 || $gst_rate > 100) {
         $error_message = 'GST rate must be between 0 and 100.';
+    } elseif ($package_quantity < 1) {
+        $error_message = 'Package quantity must be at least 1.';
     } else {
         try {
             $pdo->beginTransaction();
@@ -133,8 +138,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $discount_percentage = calculateDiscountPercentage($mrp, $selling_price);
 
             // Update product
-            $stmt = $pdo->prepare("UPDATE products SET name = ?, slug = ?, description = ?, mrp = ?, selling_price = ?, pay_per_unit = ?, unit_label = ?, discount_percentage = ?, gst_rate = ?, category_id = ?, stock_quantity = ?, max_quantity_per_order = ?, is_active = ?, is_featured = ?, is_discounted = ?, sku = ?, hsn = ? WHERE id = ?");
-            $stmt->execute([$name, $slug, $description, $mrp, $selling_price, $pay_per_unit, $unit_label, $discount_percentage, $gst_rate, $category_id, $stock_quantity, $max_quantity_per_order, $is_active, $is_featured, $is_discounted, $sku, $hsn, $product_id]);
+            $stmt = $pdo->prepare("UPDATE products SET name = ?, slug = ?, description = ?, mrp = ?, selling_price = ?, pay_per_unit = ?, unit_label = ?, discount_percentage = ?, gst_rate = ?, category_id = ?, stock_quantity = ?, package_quantity = ?, max_quantity_per_order = ?, is_active = ?, is_featured = ?, is_discounted = ?, sku = ?, hsn = ? WHERE id = ?");
+            $stmt->execute([$name, $slug, $description, $mrp, $selling_price, $pay_per_unit, $unit_label, $discount_percentage, $gst_rate, $category_id, $stock_quantity, $package_quantity, $max_quantity_per_order, $is_active, $is_featured, $is_discounted, $sku, $hsn, $product_id]);
 
             // Handle main image upload
             if (isset($_FILES['main_image']) && $_FILES['main_image']['error'] === UPLOAD_ERR_OK) {
@@ -638,9 +643,9 @@ function uploadImage($file, $folder) {
                                                 <div class="invalid-feedback">Please provide stock quantity.</div>
                                             </div>
                                             <div class="col-md-4">
-                                                <label class="form-label">Package Quantity</label>
-                                                <input type="number" class="form-control" value="1">
-                                                <div class="form-text">Units per package (e.g., 50)</div>
+                                                <label for="package_quantity" class="form-label">Package Quantity</label>
+                                                <input type="number" class="form-control" id="package_quantity" name="package_quantity" min="1" value="<?php echo htmlspecialchars($product['package_quantity'] ?? 1); ?>">
+                                                <div class="form-text">Customers can buy only multiples of this quantity</div>
                                             </div>
                                             <div class="col-md-5">
                                                 <label for="max_quantity_per_order" class="form-label">Max Quantity Per Order</label>

@@ -180,6 +180,11 @@ endforeach; ?>
 foreach ($discountedProducts as $product):
   $inWishlist = in_array($product['id'], $wishlist_ids);
   $isOutOfStock = ($product['stock_quantity'] <= 0);
+  $packageQuantity = normalizePackageQuantity($product['package_quantity'] ?? 1);
+  $maxQuantity = (int)($product['display_base_stock_quantity'] ?? $product['stock_quantity']);
+  if (isset($product['max_quantity_per_order']) && $product['max_quantity_per_order'] !== null) {
+    $maxQuantity = min($maxQuantity, (int)$product['max_quantity_per_order']);
+  }
 ?>
             <div class="card product-card" data-id="prod-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>">
                 <?php if ($product['is_discounted']): ?>
@@ -206,10 +211,10 @@ foreach ($discountedProducts as $product):
   endif; ?>
                 </div>
                 <div class="product-details">
+                    <div class="product-unit-line"><?php echo formatProductUnitLine($product, true); ?></div>
                     <a href="product.php?slug=<?php echo $product['slug']; ?>" class="product-title-link">
                         <h3><?php echo formatProductListName($product['name']); ?></h3>
                     </a>
-                    <div class="product-unit-line"><?php echo formatProductUnitLine($product, true); ?></div>
                     <div class="price-buttons">
                         <div class="price-btn mrp">
                             <span class="label">MRP</span>
@@ -234,7 +239,7 @@ foreach ($discountedProducts as $product):
                         <div class="cart-actions d-flex align-items-center">
                             <div class="quantity-control d-inline-flex align-items-center">
                                 <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
-                                <input type="number" class="quantity-input" value="1" min="1" max="99" data-product-id="<?php echo $product['id']; ?>">
+                                <input type="number" class="quantity-input" value="<?php echo $packageQuantity; ?>" min="<?php echo $packageQuantity; ?>" step="<?php echo $packageQuantity; ?>" max="<?php echo $maxQuantity; ?>" data-product-id="<?php echo $product['id']; ?>" data-package-quantity="<?php echo $packageQuantity; ?>">
                                 <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
                             </div>
                             <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">
@@ -275,6 +280,11 @@ endforeach; ?>
 foreach ($featuredProducts as $product):
   $inWishlist = in_array($product['id'], $wishlist_ids);
   $isOutOfStock = ($product['stock_quantity'] <= 0);
+  $packageQuantity = normalizePackageQuantity($product['package_quantity'] ?? 1);
+  $maxQuantity = (int)($product['display_base_stock_quantity'] ?? $product['stock_quantity']);
+  if (isset($product['max_quantity_per_order']) && $product['max_quantity_per_order'] !== null) {
+    $maxQuantity = min($maxQuantity, (int)$product['max_quantity_per_order']);
+  }
 ?>
             <div class="card product-card" data-id="prod-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>">
                 <?php if ($product['is_discounted']): ?>
@@ -298,10 +308,10 @@ foreach ($featuredProducts as $product):
   endif; ?>
                 </div>
                 <div class="product-details">
+                    <div class="product-unit-line"><?php echo formatProductUnitLine($product, true); ?></div>
                     <a href="product.php?slug=<?php echo $product['slug']; ?>" class="product-title-link">
                         <h3><?php echo formatProductListName($product['name']); ?></h3>
                     </a>
-                    <div class="product-unit-line"><?php echo formatProductUnitLine($product, true); ?></div>
                     <div class="price-buttons">
                         <div class="price-btn mrp">
                             <span class="label">MRP</span>
@@ -326,7 +336,7 @@ foreach ($featuredProducts as $product):
                         <div class="cart-actions d-flex align-items-center">
                             <div class="quantity-control d-inline-flex align-items-center">
                                 <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
-                                <input type="number" class="quantity-input" value="1" min="1" max="99" data-product-id="<?php echo $product['id']; ?>">
+                                <input type="number" class="quantity-input" value="<?php echo $packageQuantity; ?>" min="<?php echo $packageQuantity; ?>" step="<?php echo $packageQuantity; ?>" max="<?php echo $maxQuantity; ?>" data-product-id="<?php echo $product['id']; ?>" data-package-quantity="<?php echo $packageQuantity; ?>">
                                 <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
                             </div>
                             <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">

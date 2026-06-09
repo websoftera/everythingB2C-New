@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../config/database.php';
+require_once '../includes/functions.php';
 
 header('Content-Type: application/json');
 
@@ -19,8 +19,8 @@ if ($product_id <= 0) {
 }
 
 try {
-    // Get product details including max_quantity_per_order
-    $stmt = $pdo->prepare("SELECT id, name, stock_quantity, max_quantity_per_order FROM products WHERE id = ? AND is_active = 1");
+    ensureProductPackageQuantitySchema($pdo);
+    $stmt = $pdo->prepare("SELECT id, name, stock_quantity, package_quantity, max_quantity_per_order FROM products WHERE id = ? AND is_active = 1");
     $stmt->execute([$product_id]);
     $product = $stmt->fetch(PDO::FETCH_ASSOC);
     
@@ -31,6 +31,12 @@ try {
     
     $max_quantity = $product['max_quantity_per_order'];
     $stock_quantity = $product['stock_quantity'];
+    $package_quantity = normalizePackageQuantity($product['package_quantity'] ?? 1);
+
+    if (!isValidPackageQuantity($quantity, $package_quantity)) {
+        echo json_encode(packageQuantityErrorResponse($quantity, $package_quantity));
+        exit;
+    }
     
     // Check if quantity exceeds max_quantity_per_order
     if ($max_quantity !== null && $quantity > $max_quantity) {
@@ -46,7 +52,8 @@ try {
     $response = [
         'success' => true,
         'max_quantity' => $max_quantity,
-        'stock_quantity' => $stock_quantity
+        'stock_quantity' => $stock_quantity,
+        'package_quantity' => $package_quantity
     ];
     
     // Check if quantity exceeds stock
@@ -91,4 +98,4 @@ try {
     http_response_code(500);
     echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
 }
-?> 
+?>

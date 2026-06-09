@@ -74,6 +74,11 @@ if (isLoggedIn()) {
     <link rel="stylesheet" href="<?php echo $base_url; ?>asset/style/popup.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="<?php echo $base_url; ?>asset/style/style.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="<?php echo $base_url; ?>asset/style/product-card.css?v=<?php echo time(); ?>">
+    <?php if (!empty($pageStyles) && is_array($pageStyles)): ?>
+        <?php foreach ($pageStyles as $pageStyle): ?>
+            <link rel="stylesheet" href="<?php echo $base_url . htmlspecialchars($pageStyle); ?>?v=<?php echo time(); ?>">
+        <?php endforeach; ?>
+    <?php endif; ?>
     <script src="<?php echo $base_url; ?>asset/js/sliders.js?v=<?php echo time(); ?>" defer></script>
     <style>
 html, body {
@@ -187,8 +192,9 @@ html body .shop-page-add-to-cart-btn.cart-added-highlight i.fa-shopping-cart {
 
 #floatingCartPanel .quantity-control .btn-qty:disabled {
   background: transparent !important;
-  color: #ccc !important;
-  opacity: 0.8;
+  color: #333 !important;
+  opacity: 1;
+  cursor: pointer !important;
 }
 
 html body #floatingCartPanel .quantity-control button.btn-qty-minus:hover,
@@ -1525,9 +1531,13 @@ function renderFloatingCart() {
         }).join('');
       }
 
-      paginatedItems.forEach(item => {
-        const cartId = item.id;
-        const unitLine = formatFloatingCartUnitLine(item);
+        paginatedItems.forEach(item => {
+          const cartId = item.id;
+          const packageQuantity = Math.max(1, parseInt(item.package_quantity || 1, 10) || 1);
+          const stockQuantity = parseInt(item.product_stock_quantity || item.stock_quantity || 99, 10) || 99;
+          const maxOrderQuantity = item.max_quantity_per_order ? parseInt(item.max_quantity_per_order, 10) : stockQuantity;
+          const maxQuantity = Math.min(stockQuantity, maxOrderQuantity);
+          const unitLine = formatFloatingCartUnitLine(item);
         const displayName = floatingCartDisplayName(item);
         const variationLines = formatFloatingCartVariationLines(item);
         const productUrl = item.slug ? `${window.BASE_URL || ''}product.php?slug=${encodeURIComponent(item.slug)}` : '#';
@@ -1542,8 +1552,8 @@ function renderFloatingCart() {
               ${variationLines}
               <div class="text-muted d-flex align-items-center gap-1" style="font-size:0.85rem;">
                 <div class="quantity-control d-inline-flex align-items-center">
-                  <button type="button" class="btn-qty btn-qty-minus" data-cart-id="${cartId}" ${parseInt(item.quantity, 10) <= 1 ? 'disabled' : ''}>-</button>
-                  <input type="number" class="quantity-input cart-qty-input" value="${item.quantity}" min="1" data-cart-id="${cartId}">
+                  <button type="button" class="btn-qty btn-qty-minus" data-cart-id="${cartId}" aria-disabled="${parseInt(item.quantity, 10) <= packageQuantity ? 'true' : 'false'}">-</button>
+                  <input type="number" class="quantity-input cart-qty-input" value="${item.quantity}" min="${packageQuantity}" step="${packageQuantity}" max="${maxQuantity}" data-package-quantity="${packageQuantity}" data-cart-id="${cartId}">
                   <button type="button" class="btn-qty btn-qty-plus" data-cart-id="${cartId}">+</button>
                 </div>
                 <span class="ms-1 floating-cart-unit-price" style="display:none;">x ₹${parseFloat(item.selling_price).toFixed(2).replace('.00', '')}</span>
@@ -1587,20 +1597,23 @@ function renderFloatingCart() {
           const cartId = btn.getAttribute('data-cart-id');
           const row = btn.closest('.d-flex.align-items-center');
           const input = content.querySelector('.cart-qty-input[data-cart-id="' + cartId + '"]');
-          let qty = parseInt(input.value, 10) || 1;
-          if (qty > 1) {
+          let qty = typeof normalizeQuantityInputValue === 'function' ? normalizeQuantityInputValue(input) : (parseInt(input.value, 10) || 1);
+          const step = Math.max(1, parseInt(input.dataset.packageQuantity || input.getAttribute('step'), 10) || 1);
+          const min = parseInt(input.getAttribute('min'), 10) || step;
+          if (qty > min) {
             const prevQty = qty;
-            input.value = qty - 1;
+            const nextQty = Math.max(min, qty - step);
+            input.value = nextQty;
             // Update total in DOM
             const priceSpan = row.querySelector('.ms-1');
             const unitPriceText = priceSpan ? priceSpan.textContent : '';
             const unitPrice = parseFloat(unitPriceText.match(/₹(\d+\.?\d*)/)?.[1] || 0);
             const totalDiv = row.querySelector('div[data-cart-total-id]');
             if (totalDiv && unitPrice) {
-              totalDiv.textContent = '₹' + ((qty - 1) * unitPrice).toFixed(2).replace('.00', '');
+              totalDiv.textContent = '₹' + (nextQty * unitPrice).toFixed(2).replace('.00', '');
             }
             updateFloatingCartSummary(); // Real-time update
-            updateCartQuantity(cartId, qty - 1, input, btn, function(success, updatedItem) {
+            updateCartQuantity(cartId, nextQty, input, btn, function(success, updatedItem) {
               if (!success) {
                 input.value = prevQty;
                 if (totalDiv && unitPrice) {
@@ -1631,10 +1644,10 @@ function renderFloatingCart() {
                 // Update the per-item total directly
                 const unitPrice = parseFloat(priceSpan.textContent.match(/₹(\d+\.?\d*)/)?.[1] || 0);
                 if (unitPrice > 0) {
-                  updateItemTotal(cartId, qty - 1, unitPrice);
+                  updateItemTotal(cartId, nextQty, unitPrice);
                 }
-                if (qty - 1 <= 1) {
-                  btn.disabled = true;
+                if (nextQty <= min) {
+                  btn.setAttribute('aria-disabled', 'true');
                 }
               }
             });
@@ -1647,7 +1660,9 @@ function renderFloatingCart() {
           const cartId = btn.getAttribute('data-cart-id');
           const row = btn.closest('.d-flex.align-items-center');
           const input = content.querySelector('.cart-qty-input[data-cart-id="' + cartId + '"]');
-          let qty = parseInt(input.value, 10) || 1;
+          let qty = typeof normalizeQuantityInputValue === 'function' ? normalizeQuantityInputValue(input) : (parseInt(input.value, 10) || 1);
+          const step = Math.max(1, parseInt(input.dataset.packageQuantity || input.getAttribute('step'), 10) || 1);
+          const max = parseInt(input.getAttribute('max'), 10) || 99;
           const prevQty = qty;
           
           // Get product ID from cart item
@@ -1663,7 +1678,7 @@ function renderFloatingCart() {
           }
           
           // Check max quantity if we have product ID
-          let newQty = qty + 1;
+          let newQty = Math.min(max, qty + step);
           if (productId) {
             try {
               const maxResponse = await fetch('ajax/check_max_quantity.php', {
@@ -1673,32 +1688,15 @@ function renderFloatingCart() {
                 },
                 body: `product_id=${productId}&quantity=${newQty}`
               });
-              const allowedQuantity = 99; // Default max if not set
+              const allowedQuantity = max; // Default max if not set
               const result = await maxResponse.json();
               if (result.error && result.max_quantity || newQty > allowedQuantity) {
                 // Show SweetAlert but don't change the input value
                 if(!result.max_quantity && newQty > allowedQuantity) {
                   result.message = `Maximum quantity is ${allowedQuantity}.`;
                 }
-                if (typeof Swal !== 'undefined') {
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Maximum quantity reached',
-                    html: result.message,
-                    timer: 4000,
-                    showConfirmButton: false,
-                    showCloseButton: true,
-                    customClass: { popup: 'custom-swal-popup' }
-                  });
-                } else {
-                  Swal.fire({
-                      icon: 'error',
-                      title: 'Error',
-                      html: result.message,
-                      confirmButtonText: 'OK',
-                      showCloseButton: true,
-                      customClass: { popup: 'custom-swal-popup' }
-                  });
+                if (typeof showEverythingB2CMaxQuantityPopup === 'function') {
+                  showEverythingB2CMaxQuantityPopup(result.message);
                 }
                 return; // Don't proceed with the update
               }
@@ -1751,7 +1749,7 @@ function renderFloatingCart() {
                 updateItemTotal(cartId, newQty, unitPrice);
               }
               const minusBtn = row.querySelector('.btn-qty-minus');
-              if (minusBtn) minusBtn.disabled = false;
+              if (minusBtn) minusBtn.setAttribute('aria-disabled', 'false');
             }
           });
         };
@@ -1829,8 +1827,11 @@ function renderFloatingCart() {
         input.onchange = async function(e) {
           // Store the actual user input value before any parsing
           const originalUserInput = this.value;
-          let qty = parseInt(this.value, 10) || 1;
-          if (qty < 1) qty = 1;
+          let qty = typeof normalizeQuantityInputValue === 'function' ? normalizeQuantityInputValue(this) : (parseInt(this.value, 10) || 1);
+          const step = Math.max(1, parseInt(this.dataset.packageQuantity || this.getAttribute('step'), 10) || 1);
+          const min = parseInt(this.getAttribute('min'), 10) || step;
+          const max = parseInt(this.getAttribute('max'), 10) || 99;
+          if (qty < min) qty = min;
           
           // Get product ID from cart item
           const cartId = this.getAttribute('data-cart-id');
@@ -1858,32 +1859,15 @@ function renderFloatingCart() {
                 },
                 body: `product_id=${productId}&quantity=${qty}`
               });
-              const allowedQuantity = 99; // Default max if not set
+              const allowedQuantity = max; // Default max if not set
               const result = await maxResponse.json();
               if (result.error && result.max_quantity || qty > allowedQuantity) {
                 // Show SweetAlert but don't change the input value
                 if(!result.max_quantity && qty > allowedQuantity) {
                   result.message = `Maximum quantity is ${allowedQuantity}.`;
                 }
-                if (typeof Swal !== 'undefined') {
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Maximum quantity reached',
-                    html: result.message,
-                    timer: 4000,
-                    showConfirmButton: false,
-                    showCloseButton: true,
-                    customClass: { popup: 'custom-swal-popup' }
-                  });
-                } else {
-                  Swal.fire({
-                      icon: 'error',
-                      title: 'Error',
-                      html: result.message,
-                      confirmButtonText: 'OK',
-                      showCloseButton: true,
-                      customClass: { popup: 'custom-swal-popup' }
-                  });
+                if (typeof showEverythingB2CMaxQuantityPopup === 'function') {
+                  showEverythingB2CMaxQuantityPopup(result.message);
                 }
                 // Reset to original user input and don't proceed with update
                 console.log('Validation failed, resetting to:', originalUserInput);
@@ -1900,7 +1884,11 @@ function renderFloatingCart() {
             return;
           }
           
-          if (qty > 99) qty = 99; // Enforce max quantity
+          if (qty > max) qty = max; // Enforce max quantity
+          if (typeof roundToNearestPackage === 'function') {
+            qty = roundToNearestPackage(qty, step);
+            if (qty < min) qty = min;
+          }
           this.value = qty; // Update input value to reflect limits
           const row = this.closest('.d-flex.align-items-center');
           
@@ -1918,7 +1906,7 @@ function renderFloatingCart() {
               updatePerItemTotal(updatedItem.id, updatedItem.selling_price * updatedItem.quantity);
             }
             const minusBtn = row.querySelector('.btn-qty-minus');
-            if (minusBtn) minusBtn.disabled = (qty <= 1);
+            if (minusBtn) minusBtn.setAttribute('aria-disabled', qty <= min ? 'true' : 'false');
           });
           // Update the per-item total directly after backend update
           setTimeout(() => {
@@ -1932,8 +1920,15 @@ function renderFloatingCart() {
         // Real-time price update on input
         input.oninput = function(e) {
           let qty = parseInt(this.value, 10) || 1;
-          if (qty < 1) qty = 1;
-          if (qty > 99) qty = 99; // Enforce max quantity
+          const step = Math.max(1, parseInt(this.dataset.packageQuantity || this.getAttribute('step'), 10) || 1);
+          const min = parseInt(this.getAttribute('min'), 10) || step;
+          const max = parseInt(this.getAttribute('max'), 10) || 99;
+          if (qty < min) qty = min;
+          if (qty > max) qty = max; // Enforce max quantity
+          if (typeof roundToNearestPackage === 'function') {
+            qty = roundToNearestPackage(qty, step);
+            if (qty < min) qty = min;
+          }
           const cartId = this.getAttribute('data-cart-id');
           const row = this.closest('.d-flex.align-items-center');
           

@@ -44,7 +44,13 @@ if ($variationData['has_variations']) {
     }
 }
 
-$availableStock = $variation ? (int)$variation['stock_quantity'] : (int)$product['stock_quantity'];
+$availableStock = (int)$product['stock_quantity'];
+$packageQuantity = normalizePackageQuantity($product['package_quantity'] ?? 1);
+
+if (!isValidPackageQuantity($quantity, $packageQuantity)) {
+    echo json_encode(packageQuantityErrorResponse($quantity, $packageQuantity));
+    exit;
+}
 
 // Check stock
 if ($availableStock < $quantity) {

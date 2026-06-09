@@ -1,6 +1,7 @@
 <?php
 require_once 'config/database.php';
 require_once 'includes/functions.php';
+ensureProductPackageQuantitySchema($pdo);
 require_once 'includes/header.php';
 
 // Function to get all descendant category IDs recursively
@@ -178,6 +179,7 @@ echo renderBreadcrumb($breadcrumbs);
                       <?php endif; ?>
                   </div>
                   <div class="product-details">
+                      <div class="product-unit-line"><?php echo formatProductUnitLine($product, true); ?></div>
                       <a href="product.php?slug=<?php echo $product['slug']; ?>" class="product-title-link">
                           <h3><?php echo formatProductListName($product['name'], true); ?></h3>
                       </a>
@@ -203,7 +205,14 @@ echo renderBreadcrumb($breadcrumbs);
                         <div class="cart-actions d-flex align-items-center gap-2">
                             <div class="quantity-control d-inline-flex align-items-center">
                                 <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
-                                <input type="number" class="quantity-input" value="1" min="1" max="99" data-product-id="<?php echo $product['id']; ?>">
+                                <?php
+                                $packageQuantity = normalizePackageQuantity($product['package_quantity'] ?? 1);
+                                $maxQuantity = (int)($product['display_base_stock_quantity'] ?? $product['stock_quantity']);
+                                if (isset($product['max_quantity_per_order']) && $product['max_quantity_per_order'] !== null) {
+                                    $maxQuantity = min($maxQuantity, (int)$product['max_quantity_per_order']);
+                                }
+                                ?>
+                                <input type="number" class="quantity-input" value="<?php echo $packageQuantity; ?>" min="<?php echo $packageQuantity; ?>" step="<?php echo $packageQuantity; ?>" max="<?php echo $maxQuantity; ?>" data-product-id="<?php echo $product['id']; ?>" data-package-quantity="<?php echo $packageQuantity; ?>">
                                 <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
                             </div>
                             <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">
