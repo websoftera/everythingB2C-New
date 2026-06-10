@@ -2467,8 +2467,15 @@ function smoothUpdatePerItemTotal(cartId, newTotal) {
                 if (data.success && data.in_cart && data.quantity > 0) {
                     input.value = data.quantity;
                 }
+                if (typeof window.updateDisplayedPriceForQuantity === 'function') {
+                    window.updateDisplayedPriceForQuantity(input);
+                }
             })
-            .catch(err => {});
+            .catch(err => {
+                if (typeof window.updateDisplayedPriceForQuantity === 'function') {
+                    window.updateDisplayedPriceForQuantity(input);
+                }
+            });
     }
     
     // Function to initialize all quantity inputs
@@ -2517,6 +2524,8 @@ function smoothUpdatePerItemTotal(cartId, newTotal) {
             
             if (productId && input.value == "1") {
                 loadCartQuantity(productId, input);
+            } else if (typeof window.updateDisplayedPriceForQuantity === 'function') {
+                window.updateDisplayedPriceForQuantity(input);
             }
         });
     }

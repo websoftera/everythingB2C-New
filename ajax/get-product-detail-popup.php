@@ -19,8 +19,9 @@ if ($variationData['has_variations']) {
 }
 $productImages = getProductImages($product['id']);
 $categoryPath = getCategoryPath($product['category_id']);
-$discount = ($product['mrp'] > $product['selling_price']) ? ($product['mrp'] - $product['selling_price']) : 0;
-$discountPercent = $product['mrp'] > 0 ? round((($product['mrp'] - $product['selling_price']) / $product['mrp']) * 100) : 0;
+$discountDisplay = getProductDiscountDisplay($product);
+$discount = $discountDisplay['save_amount'];
+$discountPercent = $discountDisplay['discount_percentage'];
 // Get current cart quantity for this product
 $cartQty = 1;
 if (isset($_SESSION['cart'][$product['id']])) {

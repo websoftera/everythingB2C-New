@@ -659,9 +659,7 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
     <!-- Product Detail Section -->
     <div class="product-detail-card modern-card" data-id="prod-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>">
         <div class="product-image-section position-relative">
-            <?php if ($product['is_discounted']): ?>
-                <div class="discount-banner-detail">SAVE ₹<?php echo $product['mrp'] - $product['selling_price']; ?> (<?php echo $product['discount_percentage']; ?>% OFF)</div>
-            <?php endif; ?>
+            <?php echo renderProductDiscountBanner($product, 'discount-banner-detail', false); ?>
             <button class="zoom-icon-btn modern-zoom" id="zoomBtn" title="Zoom"><i class="fas fa-search-plus"></i></button>
             <div class="img-magnifier-container" id="mainImageContainer" style="position:relative;">
                 <?php if (!empty($product['main_image'])): ?>
@@ -793,11 +791,7 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                         $isOutOfStock = ($relatedProduct['stock_quantity'] <= 0);
                     ?>
                         <div class="card product-card" data-id="prod-<?php echo $relatedProduct['id']; ?>">
-                            <?php if ($relatedProduct['is_discounted']): ?>
-                                <div class="discount-banner">SAVE ₹<?php echo $relatedProduct['mrp'] - $relatedProduct['selling_price']; ?> (<?php echo $relatedProduct['discount_percentage']; ?>% OFF)</div>
-                            <?php else: ?>
-                                <div class="discount-banner" style="visibility: hidden;">&nbsp;</div>
-                            <?php endif; ?>
+                            <?php echo renderProductDiscountBanner($relatedProduct); ?>
                             
                             <div class="product-info">
                                 <div class="product-image">

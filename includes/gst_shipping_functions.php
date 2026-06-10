@@ -170,7 +170,7 @@ function calculateOrderTotal($cart_items, $delivery_state, $delivery_city = null
         ];
         // Calculate savings for this item
         if (isset($item['mrp'])) {
-            $total_savings += ($item['mrp'] - $item_price) * $item['quantity'];
+            $total_savings += max(0, ($item['mrp'] - $item_price)) * $item['quantity'];
         }
     }
     // Calculate shipping charge ONCE for the whole order
@@ -195,7 +195,7 @@ function calculateOrderTotal($cart_items, $delivery_state, $delivery_city = null
         'sgst_total' => $sgst_total,
         'cgst_total' => $cgst_total,
         'igst_total' => $igst_total,
-        'total_savings' => $total_savings
+        'total_savings' => max(0, $total_savings)
     ];
 }
 

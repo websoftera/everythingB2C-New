@@ -163,7 +163,7 @@ $savings = 0;
 $count = 0;
 foreach ($cartItems as $item) {
   $mrp += $item['mrp'] * $item['quantity'];
-  $savings += ($item['mrp'] - $item['selling_price']) * $item['quantity'];
+  $savings += max(0, $item['mrp'] - $item['selling_price']) * $item['quantity'];
   $count += $item['quantity'];
 }
 ?>

@@ -275,7 +275,7 @@ echo renderBreadcrumb($breadcrumbs);
                                 <div class="cart-unit-cell" style="flex:0 0 92px; min-width:82px; font-size:0.93em; color:#444; font-weight:600; text-align:center; white-space:nowrap;"><?php echo formatProductUnitLine($item); ?></div>
                                 <div class="cart-mrp-cell" style="flex:0 0 90px; min-width:60px; font-size:0.93em; color:#888; text-align:center;"> <s><?php echo formatPrice($item['mrp'] * $item['quantity']); ?></s> </div>
                                 <div class="cart-you-pay-cell" style="flex:0 0 90px; min-width:60px; font-size:0.97em; color:#007bff; font-weight:500; text-align:center;"> <?php echo formatPrice($item['selling_price'] * $item['quantity']); ?> </div>
-                                <div class="cart-save-cell" style="flex:0 0 90px; min-width:60px; font-size:0.93em; color:#23a036; text-align:center;"> <?php echo formatPrice(($item['mrp'] - $item['selling_price']) * $item['quantity']); ?> </div>
+                                <div class="cart-save-cell" style="flex:0 0 90px; min-width:60px; font-size:0.93em; color:#23a036; text-align:center;"> <?php echo formatPrice(max(0, $item['mrp'] - $item['selling_price']) * $item['quantity']); ?> </div>
                                 <div style="flex:0 0 80px; min-width:50px; text-align:center;">
                                     <div class="quantity-control d-inline-flex align-items-center justify-content-center">
                                         <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
@@ -314,7 +314,7 @@ echo renderBreadcrumb($breadcrumbs);
                                                   <div class="d-flex justify-content-between mb-2"><span class="text-dark fw-bold">Savings</span><span class="cart-summary-savings fw-bold" style="color:#2e7d32;">₹<?php
                                 $total_savings = 0;
                                 foreach ($cartItems as $item) {
-                                    $total_savings += ($item['mrp'] - $item['selling_price']) * $item['quantity'];
+                                    $total_savings += max(0, $item['mrp'] - $item['selling_price']) * $item['quantity'];
                                 }
                                 echo number_format($total_savings, 0);
                             ?></span></div>
@@ -436,7 +436,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                         // Update You Save
                                         var youSaveCell = row.querySelector('.cart-save-cell');
                                         if (youSaveCell) {
-                                            youSaveCell.textContent = formatPrice((item.mrp - item.selling_price) * item.quantity);
+                                            youSaveCell.textContent = formatPrice(Math.max(0, item.mrp - item.selling_price) * item.quantity);
                                         }
                                         // Update Total
                                         var totalCell = row.querySelector('.cart-total-cell');
