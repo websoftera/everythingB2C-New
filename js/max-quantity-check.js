@@ -81,7 +81,7 @@ class MaxQuantityChecker {
 
     async checkMaxQuantityBeforeAdd(productId, quantity) {
         try {
-            const response = await fetch('ajax/check_max_quantity.php', {
+            const response = await fetch(this.ajaxUrl('ajax/check_max_quantity.php'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -99,7 +99,7 @@ class MaxQuantityChecker {
 
     async addToCart(productId, quantity) {
         try {
-            const response = await fetch('ajax/add-to-cart.php', {
+            const response = await fetch(this.ajaxUrl('ajax/add-to-cart.php'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -257,14 +257,16 @@ class MaxQuantityChecker {
     }
 
     updateCartCount() {
-        // Update cart count in header if it exists
-        const cartCountElement = document.querySelector('.cart-count');
-        if (cartCountElement) {
-            // You can implement AJAX call to get updated cart count
-            // For now, just increment the current count
-            const currentCount = parseInt(cartCountElement.textContent) || 0;
-            cartCountElement.textContent = currentCount + 1;
+        window.dispatchEvent(new CustomEvent('cart-updated', {
+            detail: { action: 'added' }
+        }));
+    }
+
+    ajaxUrl(path) {
+        if (typeof window.b2cAjaxUrl === 'function') {
+            return window.b2cAjaxUrl(path);
         }
+        return (window.BASE_URL || '') + String(path || '').replace(/^\/+/, '');
     }
 
     highlightProductCard(button) {

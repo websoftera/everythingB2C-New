@@ -76,7 +76,7 @@ class RealTimeMaxQuantityChecker {
 
     async getProductIdFromCartItem(cartId) {
         try {
-            const response = await fetch('ajax/get_cart_item_product.php', {
+            const response = await fetch(this.ajaxUrl('ajax/get_cart_item_product.php'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -123,7 +123,7 @@ class RealTimeMaxQuantityChecker {
         }
         
         try {
-            const response = await fetch('ajax/check_max_quantity.php', {
+            const response = await fetch(this.ajaxUrl('ajax/check_max_quantity.php'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -190,6 +190,13 @@ class RealTimeMaxQuantityChecker {
             childList: true,
             subtree: true
         });
+    }
+
+    ajaxUrl(path) {
+        if (typeof window.b2cAjaxUrl === 'function') {
+            return window.b2cAjaxUrl(path);
+        }
+        return (window.BASE_URL || '') + String(path || '').replace(/^\/+/, '');
     }
 }
 
