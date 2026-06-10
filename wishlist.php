@@ -59,11 +59,8 @@ echo renderBreadcrumb($breadcrumbs);
                         if (isset($item['max_quantity_per_order']) && $item['max_quantity_per_order'] !== null) {
                             $maxQuantity = min($maxQuantity, (int)$item['max_quantity_per_order']);
                         }
-                        if ($item['is_discounted']): ?>
-                            <div class="discount-banner">SAVE ₹<?php echo $item['mrp'] - $item['selling_price']; ?> (<?php echo $item['discount_percentage']; ?>% OFF)</div>
-                        <?php else: ?>
-                            <div class="discount-banner" style="visibility: hidden;">&nbsp;</div>
-                        <?php endif; ?>
+                        echo renderProductDiscountBanner($item);
+                        ?>
                         <div class="product-info">
                             <div class="product-image">
                                 <a href="product.php?slug=<?php echo $item['slug']; ?>">

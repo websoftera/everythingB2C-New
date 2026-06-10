@@ -351,12 +351,26 @@ function getFeaturedProducts($limit = 8) {
 function getDiscountedProducts($limit = 8) {
     global $pdo;
     ensureProductPackageQuantitySchema($pdo);
+    $fetchLimit = max((int)$limit * 4, (int)$limit);
     $sql = "SELECT p.*, c.name as category_name FROM products p
             LEFT JOIN categories c ON p.category_id = c.id
             WHERE (p.is_discounted = 1 OR (p.mrp > 0 AND p.selling_price > 0 AND p.mrp > p.selling_price)) AND p.is_active = 1
-            ORDER BY CASE WHEN p.mrp > 0 AND p.selling_price > 0 AND p.mrp > p.selling_price THEN ((p.mrp - p.selling_price) / p.mrp) ELSE p.discount_percentage END DESC LIMIT " . (int)$limit;
+            ORDER BY CASE WHEN p.mrp > 0 AND p.selling_price > 0 AND p.mrp > p.selling_price THEN ((p.mrp - p.selling_price) / p.mrp) ELSE p.discount_percentage END DESC LIMIT " . $fetchLimit;
     $stmt = $pdo->query($sql);
-    return applyDisplayVariationPrices($stmt->fetchAll(PDO::FETCH_ASSOC));
+    $products = applyDisplayVariationPrices($stmt->fetchAll(PDO::FETCH_ASSOC));
+    $discountedProducts = [];
+
+    foreach ($products as $product) {
+        if (getProductDiscountDisplay($product)['has_discount']) {
+            $discountedProducts[] = $product;
+        }
+
+        if (count($discountedProducts) >= (int)$limit) {
+            break;
+        }
+    }
+
+    return $discountedProducts;
 }
 
 // Function to get all products

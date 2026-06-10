@@ -796,7 +796,7 @@ renderCategoryMenu($categoryTree);
     return (window.BASE_URL || '') + String(path || '').replace(/^\/+/, '');
   };
 </script>
-<script src="<?php echo $base_url; ?>popup/popup.js"></script>
+<script src="<?php echo $base_url; ?>popup/popup.js?v=<?php echo time(); ?>"></script>
 <script src="<?php echo $base_url; ?>popup/searchbar.js"></script>
 <script src="<?php echo $base_url; ?>js/real-time-max-quantity.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

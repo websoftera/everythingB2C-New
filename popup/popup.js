@@ -6,6 +6,148 @@ function b2cPopupAjaxUrl(path) {
     return (window.BASE_URL || '') + String(path || '').replace(/^\/+/, '');
 }
 
+function ensureEverythingB2CQuantityLimitStyles() {
+    if (document.getElementById('everythingb2cQuantityLimitStyles')) {
+        return;
+    }
+
+    const style = document.createElement('style');
+    style.id = 'everythingb2cQuantityLimitStyles';
+    style.textContent = `
+        .everythingb2c-quantity-limit-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 30000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            background: rgba(0, 0, 0, 0.48);
+            font-family: 'Mulish', Arial, sans-serif;
+        }
+        .everythingb2c-quantity-limit-overlay.show {
+            display: flex;
+        }
+        .everythingb2c-quantity-limit-modal {
+            position: relative;
+            width: min(390px, calc(100vw - 28px));
+            min-height: 245px;
+            border-radius: 8px;
+            background: #fff;
+            color: #3a3a3a;
+            padding: 48px 28px 28px;
+            text-align: center;
+            box-shadow: 0 22px 60px rgba(0, 0, 0, 0.26);
+        }
+        .everythingb2c-quantity-limit-close {
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            width: 24px;
+            height: 24px;
+            border: 0;
+            background: transparent;
+            color: #444;
+            font-size: 28px;
+            line-height: 22px;
+            font-weight: 300;
+            cursor: pointer;
+        }
+        .everythingb2c-quantity-limit-logo-wrap {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .everythingb2c-quantity-limit-logo {
+            max-width: 175px;
+            max-height: 54px;
+            object-fit: contain;
+        }
+        .everythingb2c-quantity-limit-title {
+            margin: 0 0 12px;
+            color: #3a3a3a;
+            font-size: 21px;
+            font-weight: 800;
+            line-height: 1.2;
+            letter-spacing: 0;
+        }
+        .everythingb2c-quantity-limit-message {
+            margin: 0 auto;
+            max-width: 315px;
+            color: #6c6c6c;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1.35;
+        }
+        @media (max-width: 480px) {
+            .everythingb2c-quantity-limit-modal {
+                min-height: 225px;
+                padding: 44px 20px 26px;
+            }
+            .everythingb2c-quantity-limit-logo-wrap {
+                margin-bottom: 26px;
+            }
+            .everythingb2c-quantity-limit-logo {
+                max-width: 160px;
+            }
+            .everythingb2c-quantity-limit-title {
+                font-size: 19px;
+            }
+            .everythingb2c-quantity-limit-message {
+                font-size: 13px;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+function getEverythingB2CLogoSrc() {
+    return b2cPopupAjaxUrl('asset/images/logo.webp');
+}
+
+if (typeof window.showEverythingB2CMaxQuantityPopup !== 'function') {
+    window.showEverythingB2CMaxQuantityPopup = function (message, title = 'Maximum quantity reached') {
+        ensureEverythingB2CQuantityLimitStyles();
+
+        let overlay = document.getElementById('everythingb2cQuantityLimitOverlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'everythingb2cQuantityLimitOverlay';
+            overlay.className = 'everythingb2c-quantity-limit-overlay';
+            overlay.innerHTML = `
+                <div class="everythingb2c-quantity-limit-modal" role="dialog" aria-modal="true" aria-labelledby="everythingb2cQuantityLimitTitle">
+                    <button type="button" class="everythingb2c-quantity-limit-close" aria-label="Close">&times;</button>
+                    <div class="everythingb2c-quantity-limit-logo-wrap">
+                        <img class="everythingb2c-quantity-limit-logo" src="${getEverythingB2CLogoSrc()}" alt="everythingB2C">
+                    </div>
+                    <h2 id="everythingb2cQuantityLimitTitle" class="everythingb2c-quantity-limit-title"></h2>
+                    <p class="everythingb2c-quantity-limit-message"></p>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+
+            overlay.querySelector('.everythingb2c-quantity-limit-close').addEventListener('click', function () {
+                overlay.classList.remove('show');
+            });
+            overlay.addEventListener('click', function (event) {
+                if (event.target === overlay) {
+                    overlay.classList.remove('show');
+                }
+            });
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape') {
+                    overlay.classList.remove('show');
+                }
+            });
+        }
+
+        overlay.querySelector('.everythingb2c-quantity-limit-title').textContent = title;
+        overlay.querySelector('.everythingb2c-quantity-limit-message').textContent = message || 'Maximum quantity allowed for this product has been reached.';
+        overlay.classList.add('show');
+    };
+}
+
 function showPopup() {
     var overlay = document.getElementById("popupOverlay");
     var form = document.getElementById("popupForm");
@@ -149,6 +291,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const root = getProductPricingRoot(input);
         if (!root) {
+            return;
+        }
+        if (root.classList.contains('product-detail-card')) {
             return;
         }
 
