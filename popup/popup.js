@@ -293,10 +293,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!root) {
             return;
         }
-        if (root.classList.contains('product-detail-card')) {
-            return;
-        }
-
         const mrpValue = root.querySelector('.price-btn.mrp .value');
         const payValue = root.querySelector('.price-btn.pay .value');
         if (!mrpValue || !payValue) {
@@ -309,17 +305,19 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (!root.dataset.unitMrp) {
-            root.dataset.unitMrp = String(numericPrice(mrpValue.textContent));
+            root.dataset.unitMrp = String(root.dataset.baseMrp || numericPrice(mrpValue.textContent));
         }
         if (!root.dataset.unitPay) {
-            root.dataset.unitPay = String(numericPrice(payValue.textContent));
+            root.dataset.unitPay = String(root.dataset.basePay || numericPrice(payValue.textContent));
         }
 
         const quantity = Math.max(1, parseInt(input.value, 10) || 1);
+        const packageQuantity = Math.max(1, parseInt(input.dataset.packageQuantity || input.getAttribute('step'), 10) || 1);
+        const packageMultiplier = Math.max(1, quantity / packageQuantity);
         const unitMrp = Number(root.dataset.unitMrp || 0);
         const unitPay = Number(root.dataset.unitPay || 0);
-        const totalMrp = unitMrp * quantity;
-        const totalPay = unitPay * quantity;
+        const totalMrp = unitMrp * packageMultiplier;
+        const totalPay = unitPay * packageMultiplier;
         const totalSave = Math.max(0, totalMrp - totalPay);
         const discountPercent = totalMrp > 0 ? Math.round((totalSave / totalMrp) * 100) : 0;
 
