@@ -54,12 +54,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $full_name = trim($first_name . ' ' . $last_name);
 
-        if (empty($full_name) || empty($email) || empty($password)) {
+        if (empty($first_name) || empty($last_name) || empty($email) || empty($phone) || empty($password) || empty($confirm_password)) {
             $register_error = 'Please fill in all required fields';
+        } elseif (!preg_match('/^[A-Za-z][A-Za-z ]{1,49}$/', $first_name)) {
+            $register_error = 'First name should contain only letters and spaces';
+        } elseif (!preg_match('/^[A-Za-z][A-Za-z ]{1,49}$/', $last_name)) {
+            $register_error = 'Last name should contain only letters and spaces';
+        } elseif (!preg_match('/^[6-9][0-9]{9}$/', $phone)) {
+            $register_error = 'Please enter a valid 10 digit mobile number';
         } elseif ($password !== $confirm_password) {
             $register_error = 'Passwords do not match';
-        } elseif (strlen($password) < 6) {
-            $register_error = 'Password must be at least 6 characters long';
+        } elseif (!preg_match('/^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/', $password)) {
+            $register_error = 'Password must be at least 8 characters and include a letter, number, and special character';
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $register_error = 'Invalid email format';
         }
@@ -153,13 +159,13 @@ echo renderBreadcrumb($breadcrumbs);
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="first_name">First Name <span class="required">*</span></label>
-                                        <input type="text" class="login-form-control" name="first_name" placeholder="First Name" required>
+                                        <input type="text" class="login-form-control" name="first_name" placeholder="First Name" pattern="[A-Za-z][A-Za-z ]{1,49}" title="Only letters and spaces are allowed" maxlength="50" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="last_name">Last Name <span class="required">*</span></label>
-                                        <input type="text" class="login-form-control" name="last_name" placeholder="Last Name" required>
+                                        <input type="text" class="login-form-control" name="last_name" placeholder="Last Name" pattern="[A-Za-z][A-Za-z ]{1,49}" title="Only letters and spaces are allowed" maxlength="50" required>
                                     </div>
                                 </div>
                             </div>
@@ -167,7 +173,7 @@ echo renderBreadcrumb($breadcrumbs);
                                 <label for="phone">Mobile Number <span class="required">*</span></label>
                                 <div class="mobile-number-group">
                                     <input type="text" class="login-form-control country-code" value="+91" readonly>
-                                    <input type="tel" class="login-form-control" name="phone" placeholder="Mobile Number" required>
+                                    <input type="tel" class="login-form-control" name="phone" placeholder="Mobile Number" pattern="[6-9][0-9]{9}" title="Enter a valid 10 digit mobile number" maxlength="10" inputmode="numeric" required>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -177,7 +183,7 @@ echo renderBreadcrumb($breadcrumbs);
                             <div class="form-group">
                                 <label for="password">Password <span class="required">*</span></label>
                                 <div class="position-relative">
-                                    <input type="password" class="login-form-control" name="password" placeholder="Password" required style="padding-right: 40px;">
+                                    <input type="password" class="login-form-control" name="password" placeholder="Password" pattern="(?=.*[A-Za-z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}" title="Minimum 8 characters with at least one letter, one number, and one special character" minlength="8" required style="padding-right: 40px;">
                                     <span class="toggle-password" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer;">
                                         <i class="far fa-eye text-primary"></i>
                                     </span>
@@ -186,7 +192,7 @@ echo renderBreadcrumb($breadcrumbs);
                             <div class="form-group">
                                 <label for="confirm_password">Confirm Password <span class="required">*</span></label>
                                 <div class="position-relative">
-                                    <input type="password" class="login-form-control" name="confirm_password" placeholder="Confirm Password" required style="padding-right: 40px;">
+                                    <input type="password" class="login-form-control" name="confirm_password" placeholder="Confirm Password" minlength="8" required style="padding-right: 40px;">
                                     <span class="toggle-password" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer;">
                                         <i class="far fa-eye text-primary"></i>
                                     </span>
@@ -220,6 +226,40 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    const registerForm = document.querySelector('.register-form form');
+    if (registerForm) {
+        const firstName = registerForm.querySelector('input[name="first_name"]');
+        const lastName = registerForm.querySelector('input[name="last_name"]');
+        const phone = registerForm.querySelector('input[name="phone"]');
+        const password = registerForm.querySelector('input[name="password"]');
+        const confirmPassword = registerForm.querySelector('input[name="confirm_password"]');
+
+        [firstName, lastName].forEach(input => {
+            if (!input) return;
+            input.addEventListener('input', function() {
+                this.value = this.value.replace(/[^A-Za-z ]/g, '').replace(/\s{2,}/g, ' ');
+            });
+        });
+
+        if (phone) {
+            phone.addEventListener('input', function() {
+                this.value = this.value.replace(/\D/g, '').slice(0, 10);
+            });
+        }
+
+        function validateConfirmPassword() {
+            if (!password || !confirmPassword) return;
+            confirmPassword.setCustomValidity(
+                confirmPassword.value && password.value !== confirmPassword.value
+                    ? 'Passwords do not match'
+                    : ''
+            );
+        }
+
+        if (password) password.addEventListener('input', validateConfirmPassword);
+        if (confirmPassword) confirmPassword.addEventListener('input', validateConfirmPassword);
+    }
 });
 </script>
 <?php include 'includes/footer.php'; ?> 

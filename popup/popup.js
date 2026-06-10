@@ -664,6 +664,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (typeof normalizeQuantityInputValue === 'function') {
                     normalizeQuantityInputValue(input);
                 }
+                window.updateDisplayedPriceForQuantity(input);
             });
             card.querySelectorAll('.btn-qty-minus, .btn-qty-plus').forEach(btn => {
                 const currentInput = btn.closest('.quantity-control')?.querySelector('input[type="number"]');
@@ -720,12 +721,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.log('Cart check response for product', productId, ':', data);
                 if (data.success && data.in_cart && data.quantity > 0) {
                     quantityInput.value = data.quantity;
-                    window.updateDisplayedPriceForQuantity(quantityInput);
                     console.log('Updated input value to:', data.quantity);
                 }
+                window.updateDisplayedPriceForQuantity(quantityInput);
             })
             .catch(err => {
                 console.error('Error loading cart quantity:', err);
+                window.updateDisplayedPriceForQuantity(quantityInput);
             });
     }
 
@@ -1069,6 +1071,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (productId) {
                 loadCurrentCartQuantity(productId, input);
+            } else {
+                window.updateDisplayedPriceForQuantity(input);
             }
         });
 

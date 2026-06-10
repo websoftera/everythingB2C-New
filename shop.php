@@ -160,11 +160,7 @@ echo renderBreadcrumb($breadcrumbs);
               }
             ?>
               <div class="card product-card" data-id="prod-<?php echo $product['id']; ?>">
-                  <?php if ($product['is_discounted']): ?>
-                      <div class="discount-banner">SAVE ₹<?php echo $product['mrp'] - $product['selling_price']; ?> (<?php echo $product['discount_percentage']; ?>% OFF)</div>
-                  <?php else: ?>
-                      <div class="discount-banner" style="visibility: hidden;">&nbsp;</div>
-                  <?php endif; ?>
+                  <?php echo renderProductDiscountBanner($product); ?>
                 <div class="product-info">
                   <div class="product-image">
                       <a href="product.php?slug=<?php echo $product['slug']; ?>">

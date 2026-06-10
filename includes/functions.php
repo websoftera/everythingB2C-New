@@ -455,6 +455,41 @@ function hydrateProductDiscountFields(array $product) {
     return $product;
 }
 
+function getProductDiscountDisplay(array $product) {
+    $mrp = (float)($product['mrp'] ?? 0);
+    $sellingPrice = (float)($product['selling_price'] ?? 0);
+
+    if ($mrp <= 0 || $sellingPrice <= 0 || $mrp <= $sellingPrice) {
+        return [
+            'has_discount' => false,
+            'save_amount' => 0,
+            'discount_percentage' => 0
+        ];
+    }
+
+    return [
+        'has_discount' => true,
+        'save_amount' => (int)round($mrp - $sellingPrice),
+        'discount_percentage' => calculateDiscountPercentage($mrp, $sellingPrice)
+    ];
+}
+
+function renderProductDiscountBanner(array $product, $className = 'discount-banner', $showPlaceholder = true) {
+    $discount = getProductDiscountDisplay($product);
+
+    if ($discount['has_discount']) {
+        return '<div class="' . htmlspecialchars($className, ENT_QUOTES, 'UTF-8') . '">SAVE &#8377;' .
+            number_format($discount['save_amount'], 0, '.', ',') .
+            ' (' . (int)$discount['discount_percentage'] . '% OFF)</div>';
+    }
+
+    if ($showPlaceholder) {
+        return '<div class="' . htmlspecialchars($className, ENT_QUOTES, 'UTF-8') . '" style="visibility: hidden;">&nbsp;</div>';
+    }
+
+    return '';
+}
+
 function getFirstDisplayVariationForProduct($productId) {
     global $pdo;
     static $cache = [];
