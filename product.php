@@ -657,7 +657,7 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
     </div>
 
     <!-- Product Detail Section -->
-    <div class="product-detail-card modern-card" data-id="prod-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>">
+    <div class="product-detail-card modern-card" data-id="prod-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>" data-base-mrp="<?php echo htmlspecialchars((string)$product['mrp']); ?>" data-base-pay="<?php echo htmlspecialchars((string)$product['selling_price']); ?>">
         <div class="product-image-section position-relative">
             <?php echo renderProductDiscountBanner($product, 'discount-banner-detail', false); ?>
             <button class="zoom-icon-btn modern-zoom" id="zoomBtn" title="Zoom"><i class="fas fa-search-plus"></i></button>
@@ -868,7 +868,61 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
 <script>
 window.productDetailVariations = <?php echo json_encode($variationData); ?>;
 
+window.updateDisplayedPriceForQuantity = function(input, priceSource) {
+    if (!input) return;
+
+    const card = input.closest('.product-detail-card.modern-card');
+    if (!card) return;
+
+    const mrpValue = document.getElementById('detailMrpValue');
+    const payValue = document.getElementById('detailPayValue');
+    const detailDiscountBanner = document.querySelector('.discount-banner-detail');
+
+    if (priceSource) {
+        card.dataset.baseMrp = Number(priceSource.mrp || 0);
+        card.dataset.basePay = Number(priceSource.selling_price || 0);
+    }
+
+    const qty = typeof normalizeQuantityInputValue === 'function'
+        ? normalizeQuantityInputValue(input)
+        : Math.max(1, parseInt(input.value, 10) || 1);
+    const packageQuantity = Math.max(1, parseInt(input.dataset.packageQuantity || input.getAttribute('step'), 10) || 1);
+    const packageMultiplier = Math.max(1, qty / packageQuantity);
+    const unitMrp = Number(card.dataset.baseMrp || 0);
+    const unitPay = Number(card.dataset.basePay || 0);
+    const totalMrp = unitMrp * packageMultiplier;
+    const totalPay = unitPay * packageMultiplier;
+
+    function formatDetailPrice(value) {
+        return '\u20b9 ' + Math.round(Number(value || 0)).toLocaleString('en-IN');
+    }
+
+    if (mrpValue) mrpValue.textContent = formatDetailPrice(totalMrp);
+    if (payValue) payValue.textContent = formatDetailPrice(totalPay);
+
+    if (!detailDiscountBanner) return;
+
+    if (unitMrp > 0 && unitPay > 0 && unitMrp > unitPay) {
+        const saveAmount = Math.round((unitMrp - unitPay) * packageMultiplier);
+        const discountPercent = Math.round(((unitMrp - unitPay) / unitMrp) * 100);
+        detailDiscountBanner.textContent = 'SAVE \u20b9' + saveAmount.toLocaleString('en-IN') + ' (' + discountPercent + '% OFF)';
+        detailDiscountBanner.style.display = '';
+    } else {
+        detailDiscountBanner.style.display = 'none';
+    }
+};
+
 document.addEventListener('DOMContentLoaded', function() {
+    const detailQuantityInput = document.querySelector('.product-detail-card.modern-card .quantity-input');
+    if (detailQuantityInput) {
+        const refreshDetailPrices = function() {
+            window.updateDisplayedPriceForQuantity(detailQuantityInput);
+        };
+        detailQuantityInput.addEventListener('input', refreshDetailPrices);
+        detailQuantityInput.addEventListener('change', refreshDetailPrices);
+        refreshDetailPrices();
+    }
+
     const detailVariationData = window.productDetailVariations || { has_variations: false, attributes: [], variations: [] };
     if (detailVariationData.has_variations && detailVariationData.variations.length) {
         const selectedValues = {};
@@ -941,10 +995,10 @@ document.addEventListener('DOMContentLoaded', function() {
             if (detailUnitLine) detailUnitLine.textContent = formatUnitLine(getVariationUnitPrice(selectedVariation));
             if (mobileDetailUnitLine) mobileDetailUnitLine.textContent = formatUnitLine(getVariationUnitPrice(selectedVariation));
             if (stockText) {
-                const productStockQuantity = <?php echo (int)($product['display_base_stock_quantity'] ?? $product['stock_quantity']); ?>;
-                stockText.className = productStockQuantity > 0 ? 'text-success' : 'text-danger';
-                stockText.innerHTML = productStockQuantity > 0
-                    ? '<strong>Stock:</strong> ' + productStockQuantity + ' units available'
+                const variationStockQuantity = Math.max(0, parseInt(selectedVariation.stock_quantity, 10) || 0);
+                stockText.className = variationStockQuantity > 0 ? 'text-success' : 'text-danger';
+                stockText.innerHTML = variationStockQuantity > 0
+                    ? '<strong>Stock:</strong> ' + variationStockQuantity + ' units available'
                     : '<strong>Out of Stock</strong>';
             }
             if (detailMainImage && selectedVariation.image_path) {
@@ -957,8 +1011,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const quantityInput = document.querySelector('.product-detail-card .quantity-input');
             if (quantityInput) {
-                const productMaxQuantity = <?php echo (int)$maxQuantity; ?>;
-                quantityInput.max = productMaxQuantity;
+                const productMaxOrderQuantity = <?php echo isset($product['max_quantity_per_order']) && $product['max_quantity_per_order'] !== null ? (int)$product['max_quantity_per_order'] : 'null'; ?>;
+                const variationStockQuantity = Math.max(0, parseInt(selectedVariation.stock_quantity, 10) || 0);
+                const variationMaxQuantity = productMaxOrderQuantity !== null
+                    ? Math.min(variationStockQuantity, productMaxOrderQuantity)
+                    : variationStockQuantity;
+                quantityInput.max = variationMaxQuantity;
                 if (typeof normalizeQuantityInputValue === 'function') {
                     normalizeQuantityInputValue(quantityInput);
                 }

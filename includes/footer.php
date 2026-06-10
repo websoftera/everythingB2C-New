@@ -462,6 +462,82 @@ function normalizeQuantityInputValue(input) {
     return value;
 }
 
+function parseDisplayedPrice(value) {
+    const number = String(value || '').replace(/,/g, '').match(/[\d]+(?:\.\d+)?/);
+    return number ? Number(number[0]) : 0;
+}
+
+function formatDisplayedPrice(value) {
+    return '\u20b9 ' + Math.round(Number(value || 0)).toLocaleString('en-IN');
+}
+
+function findQuantityProductCard(input) {
+    if (!input || input.classList.contains('cart-qty-input')) return null;
+    return input.closest('.product-detail-card.modern-card, .product-card, .shop-page-product-card');
+}
+
+function getCardPriceElements(card) {
+    return {
+        mrpValue: card.querySelector('#detailMrpValue, .price-btn.mrp .value'),
+        payValue: card.querySelector('#detailPayValue, .price-btn.pay .value'),
+        discountBanner: card.querySelector('.discount-banner-detail, .discount-banner')
+    };
+}
+
+function ensureCardUnitPrices(card, priceSource) {
+    const priceElements = getCardPriceElements(card);
+
+    if (priceSource) {
+        card.dataset.baseMrp = Number(priceSource.mrp || 0);
+        card.dataset.basePay = Number(priceSource.selling_price || 0);
+    }
+
+    if (!card.dataset.baseMrp && priceElements.mrpValue) {
+        card.dataset.baseMrp = parseDisplayedPrice(priceElements.mrpValue.textContent);
+    }
+
+    if (!card.dataset.basePay && priceElements.payValue) {
+        card.dataset.basePay = parseDisplayedPrice(priceElements.payValue.textContent);
+    }
+
+    return priceElements;
+}
+
+window.updateDisplayedPriceForQuantity = function(input, priceSource) {
+    const card = findQuantityProductCard(input);
+    if (!card) return;
+
+    const priceElements = ensureCardUnitPrices(card, priceSource);
+    if (!priceElements.mrpValue || !priceElements.payValue) return;
+
+    const qty = Math.max(1, parseInt(input.value, 10) || 1);
+    const packageQuantity = Math.max(1, parseInt(input.dataset.packageQuantity || input.getAttribute('step'), 10) || 1);
+    const packageMultiplier = Math.max(1, qty / packageQuantity);
+    const unitMrp = Number(card.dataset.baseMrp || 0);
+    const unitPay = Number(card.dataset.basePay || 0);
+
+    priceElements.mrpValue.textContent = formatDisplayedPrice(unitMrp * packageMultiplier);
+    priceElements.payValue.textContent = formatDisplayedPrice(unitPay * packageMultiplier);
+
+    if (!priceElements.discountBanner) return;
+
+    if (unitMrp > 0 && unitPay > 0 && unitMrp > unitPay) {
+        const saveAmount = Math.round((unitMrp - unitPay) * packageMultiplier);
+        const discountPercent = Math.round(((unitMrp - unitPay) / unitMrp) * 100);
+        priceElements.discountBanner.textContent = 'SAVE \u20b9' + saveAmount.toLocaleString('en-IN') + ' (' + discountPercent + '% OFF)';
+        priceElements.discountBanner.style.display = '';
+        priceElements.discountBanner.style.visibility = '';
+    } else {
+        priceElements.discountBanner.style.display = 'none';
+    }
+};
+
+function refreshDisplayedPriceForQuantity(input) {
+    if (typeof window.updateDisplayedPriceForQuantity === 'function') {
+        window.updateDisplayedPriceForQuantity(input);
+    }
+}
+
 document.addEventListener('click', function(e) {
     if (e.target.matches('.btn-qty-minus, .btn-qty-plus') || e.target.closest('.btn-qty-minus, .btn-qty-plus')) {
         const btn = e.target.matches('.btn-qty-minus, .btn-qty-plus') ? e.target : e.target.closest('.btn-qty-minus, .btn-qty-plus');
@@ -488,23 +564,34 @@ document.addEventListener('click', function(e) {
             }
         }
         normalizeQuantityInputValue(input);
+        refreshDisplayedPriceForQuantity(input);
 
         // Trigger change event for any other listeners
         input.dispatchEvent(new Event('change', { bubbles: true }));
     }
 });
 
+document.addEventListener('input', function(e) {
+    if (e.target && e.target.matches('.quantity-input, .shop-page-quantity-input, input[name="quantity"], .product-quantity-input')) {
+        refreshDisplayedPriceForQuantity(e.target);
+    }
+});
+
 document.addEventListener('change', function(e) {
     if (e.target && e.target.matches('.quantity-input, .shop-page-quantity-input, input[name="quantity"], .product-quantity-input')) {
         normalizeQuantityInputValue(e.target);
+        refreshDisplayedPriceForQuantity(e.target);
     }
 });
 
 document.addEventListener('blur', function(e) {
     if (e.target && e.target.matches('.quantity-input, .shop-page-quantity-input, input[name="quantity"], .product-quantity-input')) {
         normalizeQuantityInputValue(e.target);
+        refreshDisplayedPriceForQuantity(e.target);
     }
 }, true);
+
+document.querySelectorAll('.product-detail-card.modern-card .quantity-input, .product-card .quantity-input, .shop-page-product-card .quantity-input').forEach(refreshDisplayedPriceForQuantity);
 
 // Global product image fallback: swap in a sample image if any product img fails to load
 (function() {
