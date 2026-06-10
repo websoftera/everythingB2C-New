@@ -1,5 +1,16 @@
 <?php
 
+if (!function_exists('formatAdminNumberInput')) {
+    function formatAdminNumberInput($value) {
+        if ($value === null || $value === '') {
+            return '';
+        }
+
+        $formatted = rtrim(rtrim(number_format((float)$value, 2, '.', ''), '0'), '.');
+        return $formatted === '-0' ? '0' : $formatted;
+    }
+}
+
 function ensureProductVariationSchema($pdo) {
     try {
         $pdo->exec("ALTER TABLE products ADD COLUMN has_variations TINYINT(1) DEFAULT 0");
@@ -407,8 +418,8 @@ function saveProductVariations($pdo, $productId) {
 
 function renderProductAttributesSection($attributeOptions, $selectedAttributes = [], $variations = [], $product = []) {
     $hasVariations = !empty($product['has_variations']) || !empty($variations);
-    $baseMrp = isset($product['mrp']) ? (float)$product['mrp'] : 0;
-    $baseSellingPrice = isset($product['selling_price']) ? (float)$product['selling_price'] : 0;
+    $baseMrp = formatAdminNumberInput($product['mrp'] ?? 0);
+    $baseSellingPrice = formatAdminNumberInput($product['selling_price'] ?? 0);
     $baseStock = isset($product['stock_quantity']) ? (int)$product['stock_quantity'] : 0;
     ?>
     <div class="product-attributes-panel mt-4">
@@ -467,15 +478,15 @@ function renderProductAttributesSection($attributeOptions, $selectedAttributes =
             return [
                 'label' => $variation['variation_label'],
                 'attributes_json' => $variation['attributes_json'],
-                'mrp' => $variation['mrp'],
-                'selling_price' => $variation['selling_price'],
+                'mrp' => formatAdminNumberInput($variation['mrp']),
+                'selling_price' => formatAdminNumberInput($variation['selling_price']),
                 'stock_quantity' => $variation['stock_quantity'],
                 'image_path' => $variation['image_path']
             ];
         }, $variations)); ?>;
         window.productVariationDefaults = {
-            mrp: <?php echo json_encode(rtrim(rtrim(number_format($baseMrp, 2, '.', ''), '0'), '.')); ?>,
-            sellingPrice: <?php echo json_encode(rtrim(rtrim(number_format($baseSellingPrice, 2, '.', ''), '0'), '.')); ?>,
+            mrp: <?php echo json_encode($baseMrp); ?>,
+            sellingPrice: <?php echo json_encode($baseSellingPrice); ?>,
             stock: <?php echo json_encode((string)$baseStock); ?>
         };
     </script>
@@ -573,12 +584,12 @@ function renderProductVariationAssets() {
 
         .product-form-page .product-variations-table th:nth-child(4),
         .product-form-page .product-variations-table td:nth-child(4) {
-            width: 10%;
+            width: 12%;
         }
 
         .product-form-page .product-variations-table th:nth-child(5),
         .product-form-page .product-variations-table td:nth-child(5) {
-            width: 32%;
+            width: 30%;
         }
 
         .product-form-page .product-variations-table th:nth-child(6),
@@ -1059,8 +1070,8 @@ function renderProductVariationAssets() {
                         <input type="hidden" name="variation_label[]" value="${escapeHtml(label)}">
                         <input type="hidden" name="variation_attributes_json[]" value="${escapeHtml(attributesJson)}">
                     </td>
-                    <td><input type="number" class="form-control" name="variation_mrp[]" step="0.01" min="0" value="${escapeHtml(priceValue(data.mrp, defaults.mrp))}"></td>
-                    <td><input type="number" class="form-control" name="variation_selling_price[]" step="0.01" min="0" value="${escapeHtml(priceValue(data.selling_price, defaults.sellingPrice))}"></td>
+                    <td><input type="number" class="form-control" name="variation_mrp[]" step="1" min="0" value="${escapeHtml(priceValue(data.mrp, defaults.mrp))}"></td>
+                    <td><input type="number" class="form-control" name="variation_selling_price[]" step="1" min="0" value="${escapeHtml(priceValue(data.selling_price, defaults.sellingPrice))}"></td>
                     <td><input type="number" class="form-control" name="variation_stock[]" min="0" value="${escapeHtml(data.stock_quantity || defaults.stock)}"></td>
                     <td>
                         <div class="variation-image-field">

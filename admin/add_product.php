@@ -515,17 +515,17 @@ function uploadImage($file, $folder) {
                                         <div class="row mb-3">
                                             <div class="col-md-3">
                                                 <label for="mrp" class="form-label">MRP (₹) *</label>
-                                                <input type="number" class="form-control" id="mrp" name="mrp" step="0.01" min="0" required>
+                                                <input type="number" class="form-control" id="mrp" name="mrp" step="1" min="0" required>
                                                 <div class="invalid-feedback">Please provide a valid MRP.</div>
                                             </div>
                                             <div class="col-md-3">
                                                 <label for="selling_price" class="form-label">Selling Price (₹) *</label>
-                                                <input type="number" class="form-control" id="selling_price" name="selling_price" step="0.01" min="0" required>
+                                                <input type="number" class="form-control" id="selling_price" name="selling_price" step="1" min="0" required>
                                                 <div class="invalid-feedback">Please provide a valid selling price.</div>
                                             </div>
                                             <div class="col-md-3">
                                                 <label class="form-label">Pay / Unit (₹)</label>
-                                                <input type="number" class="form-control" name="pay_per_unit" step="0.01" min="0" placeholder="e.g. 49" value="<?php echo htmlspecialchars($_POST['pay_per_unit'] ?? ''); ?>">
+                                                <input type="number" class="form-control" name="pay_per_unit" step="1" min="0" placeholder="e.g. 49" value="<?php echo htmlspecialchars(formatAdminNumberInput($_POST['pay_per_unit'] ?? '')); ?>">
                                                 <div class="form-text unit-help-text">Shown as ₹ price / selected unit.</div>
                                             </div>
                                             <div class="col-md-3">
@@ -587,7 +587,7 @@ function uploadImage($file, $folder) {
                                             </div>
                                             <div class="col-md-4">
                                                 <label class="form-label">Total with Shipping</label>
-                                                <div class="form-control-plaintext" id="total_with_shipping_display">₹0.00</div>
+                                                <div class="form-control-plaintext" id="total_with_shipping_display">₹0</div>
                                                 <div class="form-text">Price + GST + Shipping</div>
                                             </div>
                                         </div>
@@ -873,6 +873,10 @@ function uploadImage($file, $folder) {
         }
             
 
+        function formatAdminDisplayNumber(value) {
+            return (Number(value) || 0).toFixed(2).replace(/\.?0+$/, '');
+        }
+
 
         // Calculate total with shipping
         document.getElementById('selling_price').addEventListener('input', calculateTotalWithShipping);
@@ -881,7 +885,7 @@ function uploadImage($file, $folder) {
         function calculateTotalWithShipping() {
             const sellingPrice = parseFloat(document.getElementById('selling_price').value) || 0;
             
-            document.getElementById('total_with_shipping_display').textContent = '₹' + sellingPrice.toFixed(2);
+            document.getElementById('total_with_shipping_display').textContent = '₹' + formatAdminDisplayNumber(sellingPrice);
         }
 
 
