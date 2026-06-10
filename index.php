@@ -3632,6 +3632,19 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
+
+    document.addEventListener('click', function(event) {
+        const addButton = event.target.closest('.add-to-cart-btn, .add-to-cart');
+        if (!addButton) return;
+
+        setTimeout(function() {
+            if (document.querySelector('.variant-drawer-overlay.show')) return;
+            if (typeof updateFloatingCartCount === 'function') {
+                document.body.classList.remove('variant-drawer-open');
+                updateFloatingCartCount('added');
+            }
+        }, 700);
+    }, true);
 });
 </script>
 
