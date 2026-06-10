@@ -93,13 +93,31 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch(ajaxUrl('ajax/get_cart_count.php'))
             .then(response => response.json())
             .then(data => {
+                const cartCount = parseInt(data.cart_count, 10) || 0;
                 const cartCountElement = document.getElementById('cart-count');
                 if (cartCountElement) {
-                    if (data.cart_count > 0) {
-                        cartCountElement.textContent = data.cart_count;
+                    if (cartCount > 0) {
+                        cartCountElement.textContent = cartCount;
                         cartCountElement.style.display = 'block';
                     } else {
                         cartCountElement.style.display = 'none';
+                    }
+                }
+
+                const floatingCartBtn = document.getElementById('floatingCartBtn');
+                const floatingCartCount = document.getElementById('floatingCartCount');
+                if (floatingCartCount) {
+                    floatingCartCount.textContent = cartCount;
+                }
+                if (floatingCartBtn && !window.location.pathname.endsWith('checkout.php') && !window.location.pathname.endsWith('cart.php')) {
+                    const shouldShow = cartCount > 0;
+                    floatingCartBtn.style.setProperty('display', shouldShow ? 'flex' : 'none', 'important');
+                    floatingCartBtn.style.setProperty('visibility', shouldShow ? 'visible' : 'hidden', 'important');
+                    floatingCartBtn.style.setProperty('opacity', shouldShow ? '1' : '0', 'important');
+
+                    const floatingCartPanel = document.getElementById('floatingCartPanel');
+                    if (floatingCartPanel) {
+                        floatingCartPanel.style.display = 'none';
                     }
                 }
             })
