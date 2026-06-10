@@ -213,6 +213,146 @@ echo renderBreadcrumb($breadcrumbs);
     padding-right: 8px !important;
     white-space: nowrap !important;
 }
+
+@media (max-width: 767.98px) {
+    .container.mt-4 {
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+    }
+
+    .container.mt-4 > .row {
+        --bs-gutter-x: 0 !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    .container.mt-4 > .row > [class*="col-"] {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    .shopping-card {
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    .shopping-card .card-header,
+    .shopping-card .card-body {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    .text-end.d-md-none {
+        width: 100% !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    .floating-cart-summary-box {
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    .cart-item-row {
+        grid-template-columns: 48px minmax(0, 1fr) minmax(74px, auto) !important;
+        grid-template-areas:
+            "img title total"
+            "img qty delete" !important;
+        column-gap: 7px !important;
+        row-gap: 3px !important;
+        padding: 7px 8px !important;
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    .cart-item-row > div:nth-child(1) {
+        min-width: 0 !important;
+        max-width: none !important;
+    }
+
+    .cart-item-row > div:nth-child(2),
+    .cart-item-row .cart-product-cell {
+        min-width: 0 !important;
+        max-width: none !important;
+    }
+
+    .cart-item-row > div:nth-child(7) {
+        min-width: 0 !important;
+        justify-self: start !important;
+        align-self: start !important;
+        width: auto !important;
+    }
+
+    .cart-item-row .cart-total-cell,
+    .cart-item-row > div:nth-child(8) {
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        padding-right: 0 !important;
+        justify-self: end !important;
+        text-align: right !important;
+    }
+
+    .cart-item-row > div:nth-child(9) {
+        width: auto !important;
+        min-width: 0 !important;
+        justify-self: end !important;
+        text-align: right !important;
+    }
+
+    .cart-item-row .quantity-control {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 82px !important;
+        min-width: 82px !important;
+        max-width: 82px !important;
+        height: 28px !important;
+        border: 1px solid #b8c0ca !important;
+        border-radius: 4px !important;
+        overflow: hidden !important;
+        background: #fff !important;
+    }
+
+    .cart-item-row .quantity-control .btn-qty {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex: 0 0 25px !important;
+        width: 25px !important;
+        min-width: 25px !important;
+        max-width: 25px !important;
+        height: 26px !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: #fff !important;
+        color: #111 !important;
+        font-size: 0.9rem !important;
+        padding: 0 !important;
+    }
+
+    .cart-item-row .quantity-control .quantity-input {
+        display: block !important;
+        flex: 0 0 30px !important;
+        width: 30px !important;
+        min-width: 30px !important;
+        max-width: 30px !important;
+        height: 26px !important;
+        border: 0 !important;
+        border-left: 1px solid #b8c0ca !important;
+        border-right: 1px solid #b8c0ca !important;
+        border-radius: 0 !important;
+        background: #fff !important;
+        color: #111 !important;
+        text-align: center !important;
+        padding: 0 !important;
+    }
+}
 </style>
 <div class="container mt-4">
     <!-- <h1>Shopping Cart</h1> -->

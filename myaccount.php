@@ -18,6 +18,44 @@ if (!isLoggedIn()) {
 
 $userId = $_SESSION['user_id'];
 $user = getCurrentUser();
+$address_validation_errors = [];
+$address_form_values = [];
+$open_address_section = false;
+
+function validateAccountAddressData($data) {
+    $errors = [];
+
+    if ($data['name'] === '' || strlen($data['name']) < 2 || strlen($data['name']) > 60 || !preg_match("/^[A-Za-z][A-Za-z .'-]*$/", $data['name'])) {
+        $errors[] = 'Please enter a valid full name.';
+    }
+
+    if (!preg_match('/^(?:\+91|0)?[6-9][0-9]{9}$/', $data['phone'])) {
+        $errors[] = 'Please enter a valid phone number.';
+    }
+
+    if (!preg_match('/^[0-9]{6}$/', $data['pincode'])) {
+        $errors[] = 'Please enter a valid 6 digit PIN code.';
+    }
+
+    if (strlen($data['address_line1']) < 5 || strlen($data['address_line1']) > 150) {
+        $errors[] = 'Address Line 1 must be between 5 and 150 characters.';
+    }
+
+    if ($data['address_line2'] !== '' && strlen($data['address_line2']) > 150) {
+        $errors[] = 'Address Line 2 must be 150 characters or less.';
+    }
+
+    if ($data['city'] === '' || strlen($data['city']) < 2 || strlen($data['city']) > 60 || !preg_match("/^[A-Za-z][A-Za-z .'-]*$/", $data['city'])) {
+        $errors[] = 'Please enter a valid city.';
+    }
+
+    if ($data['state'] === '' || strlen($data['state']) < 2 || strlen($data['state']) > 60 || !preg_match("/^[A-Za-z][A-Za-z .'-]*$/", $data['state'])) {
+        $errors[] = 'Please enter a valid state.';
+    }
+
+    return $errors;
+}
+
 // Handle all POST requests before outputting HTML
 if (isset($_POST['change_password'])) {
     $currentPassword = $_POST['current_password'];
@@ -68,11 +106,16 @@ if (isset($_POST['add_address'])) {
         'state' => sanitizeInput($_POST['state']),
         'is_default' => isset($_POST['is_default']) ? 1 : 0
     ];
-    addUserAddress($userId, $data);
-    if ($data['is_default'])
-        setDefaultAddress($userId, $pdo->lastInsertId());
-    header('Location: myaccount.php#addresses');
-    exit;
+    $address_form_values = $data;
+    $address_validation_errors = validateAccountAddressData($data);
+    if (empty($address_validation_errors)) {
+        addUserAddress($userId, $data);
+        if ($data['is_default'])
+            setDefaultAddress($userId, $pdo->lastInsertId());
+        header('Location: myaccount.php#addresses');
+        exit;
+    }
+    $open_address_section = true;
 }
 
 if (isset($_POST['edit_address'])) {
@@ -87,11 +130,15 @@ if (isset($_POST['edit_address'])) {
         'state' => sanitizeInput($_POST['state']),
         'is_default' => isset($_POST['is_default']) ? 1 : 0
     ];
-    updateUserAddress($userId, $addressId, $data);
-    if ($data['is_default'])
-        setDefaultAddress($userId, $addressId);
-    header('Location: myaccount.php#addresses');
-    exit;
+    $address_validation_errors = validateAccountAddressData($data);
+    if (empty($address_validation_errors)) {
+        updateUserAddress($userId, $addressId, $data);
+        if ($data['is_default'])
+            setDefaultAddress($userId, $addressId);
+        header('Location: myaccount.php#addresses');
+        exit;
+    }
+    $open_address_section = true;
 }
 if (isset($_POST['delete_address'])) {
     $addressId = intval($_POST['address_id']);
@@ -816,34 +863,41 @@ endif; ?>
         <div id="addresses" class="account-section" style="display: none;">
             <div class="account-card">
                 <h3>My Addresses</h3>
+                <?php if (!empty($address_validation_errors)): ?>
+                    <div class="alert alert-danger" role="alert">
+                        <?php foreach ($address_validation_errors as $error): ?>
+                            <div><?php echo htmlspecialchars($error); ?></div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
                 <!-- Add New Address Form -->
-                <form method="post" style="margin-bottom: 24px;">
+                <form method="post" action="myaccount.php#addresses" style="margin-bottom: 24px;">
                     <input type="hidden" name="add_address" value="1">
                     <div class="row g-2">
                         <div class="col-md-6">
-                            <input type="text" name="name" class="form-control" placeholder="Full Name" required>
+                            <input type="text" name="name" class="form-control" placeholder="Full Name" minlength="2" maxlength="60" pattern="[A-Za-z][A-Za-z .'-]*" title="Enter a valid full name" value="<?php echo htmlspecialchars($address_form_values['name'] ?? ''); ?>" required>
                         </div>
                         <div class="col-md-6">
-                            <input type="text" name="phone" class="form-control" placeholder="Phone Number" required>
+                            <input type="text" name="phone" class="form-control" placeholder="Phone Number" inputmode="tel" maxlength="13" pattern="(?:\+91|0)?[6-9][0-9]{9}" title="Enter a valid Indian mobile number" value="<?php echo htmlspecialchars($address_form_values['phone'] ?? ''); ?>" required>
                         </div>
                         <div class="col-md-4">
-                            <input type="text" name="pincode" class="form-control" placeholder="PIN Code" required>
+                            <input type="text" name="pincode" class="form-control" placeholder="PIN Code" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" title="Enter a 6 digit PIN code" value="<?php echo htmlspecialchars($address_form_values['pincode'] ?? ''); ?>" required>
                         </div>
                         <div class="col-md-8">
-                            <input type="text" name="address_line1" class="form-control" placeholder="Address Line 1" required>
+                            <input type="text" name="address_line1" class="form-control" placeholder="Address Line 1" minlength="5" maxlength="150" value="<?php echo htmlspecialchars($address_form_values['address_line1'] ?? ''); ?>" required>
                         </div>
                         <div class="col-md-12">
-                            <input type="text" name="address_line2" class="form-control" placeholder="Address Line 2 (optional)">
+                            <input type="text" name="address_line2" class="form-control" placeholder="Address Line 2 (optional)" maxlength="150" value="<?php echo htmlspecialchars($address_form_values['address_line2'] ?? ''); ?>">
                         </div>
                         <div class="col-md-6">
-                            <input type="text" name="city" class="form-control" placeholder="City" required>
+                            <input type="text" name="city" class="form-control" placeholder="City" minlength="2" maxlength="60" pattern="[A-Za-z][A-Za-z .'-]*" title="Enter a valid city" value="<?php echo htmlspecialchars($address_form_values['city'] ?? ''); ?>" required>
                         </div>
                         <div class="col-md-6">
-                            <input type="text" name="state" class="form-control" placeholder="State" required>
+                            <input type="text" name="state" class="form-control" placeholder="State" minlength="2" maxlength="60" pattern="[A-Za-z][A-Za-z .'-]*" title="Enter a valid state" value="<?php echo htmlspecialchars($address_form_values['state'] ?? ''); ?>" required>
                         </div>
                         <div class="col-12">
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="is_default" id="is_default">
+                                <input class="form-check-input" type="checkbox" name="is_default" id="is_default" <?php echo !empty($address_form_values['is_default']) ? 'checked' : ''; ?>>
                                 <label class="form-check-label" for="is_default">Set as default address</label>
                             </div>
                         </div>
@@ -1084,16 +1138,16 @@ document.addEventListener('DOMContentLoaded', function() {
   <div style="background:#fff;padding:24px;border-radius:8px;max-width:500px;width:100%;position:relative;">
     <button type="button" onclick="closeEditAddressModal()" style="position:absolute;top:8px;right:8px;font-size:1.2rem;background:none;border:none;">&times;</button>
     <h5>Edit Address</h5>
-    <form method="post" id="editAddressForm">
+    <form method="post" action="myaccount.php#addresses" id="editAddressForm">
       <input type="hidden" name="edit_address" value="1">
       <input type="hidden" name="address_id" id="edit_address_id">
-      <div class="mb-2"><input type="text" name="name" id="edit_name" class="form-control" placeholder="Full Name" required></div>
-      <div class="mb-2"><input type="text" name="phone" id="edit_phone" class="form-control" placeholder="Phone Number" required></div>
-      <div class="mb-2"><input type="text" name="pincode" id="edit_pincode" class="form-control" placeholder="PIN Code" required></div>
-      <div class="mb-2"><input type="text" name="address_line1" id="edit_address_line1" class="form-control" placeholder="Address Line 1" required></div>
-      <div class="mb-2"><input type="text" name="address_line2" id="edit_address_line2" class="form-control" placeholder="Address Line 2 (optional)"></div>
-      <div class="mb-2"><input type="text" name="city" id="edit_city" class="form-control" placeholder="City" required></div>
-      <div class="mb-2"><input type="text" name="state" id="edit_state" class="form-control" placeholder="State" required></div>
+      <div class="mb-2"><input type="text" name="name" id="edit_name" class="form-control" placeholder="Full Name" minlength="2" maxlength="60" pattern="[A-Za-z][A-Za-z .'-]*" title="Enter a valid full name" required></div>
+      <div class="mb-2"><input type="text" name="phone" id="edit_phone" class="form-control" placeholder="Phone Number" inputmode="tel" maxlength="13" pattern="(?:\+91|0)?[6-9][0-9]{9}" title="Enter a valid Indian mobile number" required></div>
+      <div class="mb-2"><input type="text" name="pincode" id="edit_pincode" class="form-control" placeholder="PIN Code" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" title="Enter a 6 digit PIN code" required></div>
+      <div class="mb-2"><input type="text" name="address_line1" id="edit_address_line1" class="form-control" placeholder="Address Line 1" minlength="5" maxlength="150" required></div>
+      <div class="mb-2"><input type="text" name="address_line2" id="edit_address_line2" class="form-control" placeholder="Address Line 2 (optional)" maxlength="150"></div>
+      <div class="mb-2"><input type="text" name="city" id="edit_city" class="form-control" placeholder="City" minlength="2" maxlength="60" pattern="[A-Za-z][A-Za-z .'-]*" title="Enter a valid city" required></div>
+      <div class="mb-2"><input type="text" name="state" id="edit_state" class="form-control" placeholder="State" minlength="2" maxlength="60" pattern="[A-Za-z][A-Za-z .'-]*" title="Enter a valid state" required></div>
       <div class="form-check mb-2">
         <input class="form-check-input" type="checkbox" name="is_default" id="edit_is_default">
         <label class="form-check-label" for="edit_is_default">Set as default address</label>
@@ -1111,7 +1165,12 @@ function showSection(id) {
 }
 document.addEventListener('DOMContentLoaded', () => {
     const hash = window.location.hash.substring(1);
-    if (hash) showSection(hash);
+    const forcedSection = <?php echo json_encode($open_address_section ? 'addresses' : ''); ?>;
+    if (forcedSection) {
+        showSection(forcedSection);
+    } else if (hash) {
+        showSection(hash);
+    }
 });
 
 function openEditAddressModal(address) {

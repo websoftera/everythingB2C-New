@@ -590,17 +590,17 @@ function uploadImage($file, $folder) {
                                         <div class="row mb-3">
                                             <div class="col-md-3">
                                                 <label for="mrp" class="form-label">MRP (₹) *</label>
-                                                <input type="number" class="form-control" id="mrp" name="mrp" step="0.01" min="0" value="<?php echo htmlspecialchars($product['mrp']); ?>" required>
+                                                <input type="number" class="form-control" id="mrp" name="mrp" step="1" min="0" value="<?php echo htmlspecialchars(formatAdminNumberInput($product['mrp'])); ?>" required>
                                                 <div class="invalid-feedback">Please provide a valid MRP.</div>
                                             </div>
                                             <div class="col-md-3">
                                                 <label for="selling_price" class="form-label">Selling Price (₹) *</label>
-                                                <input type="number" class="form-control" id="selling_price" name="selling_price" step="0.01" min="0" value="<?php echo htmlspecialchars($product['selling_price']); ?>" required>
+                                                <input type="number" class="form-control" id="selling_price" name="selling_price" step="1" min="0" value="<?php echo htmlspecialchars(formatAdminNumberInput($product['selling_price'])); ?>" required>
                                                 <div class="invalid-feedback">Please provide a valid selling price.</div>
                                             </div>
                                             <div class="col-md-3">
                                                 <label class="form-label">Pay / Unit (₹)</label>
-                                                <input type="number" class="form-control" name="pay_per_unit" step="0.01" min="0" placeholder="e.g. 49" value="<?php echo htmlspecialchars($product['pay_per_unit'] ?? ''); ?>">
+                                                <input type="number" class="form-control" name="pay_per_unit" step="1" min="0" placeholder="e.g. 49" value="<?php echo htmlspecialchars(formatAdminNumberInput($product['pay_per_unit'] ?? '')); ?>">
                                                 <div class="form-text unit-help-text">Shown as ₹ price / selected unit.</div>
                                             </div>
                                             <div class="col-md-3">
@@ -670,7 +670,7 @@ function uploadImage($file, $folder) {
                                                 <div class="form-control-plaintext" id="total_with_shipping_display">
                                                     ₹<?php 
                                                         $shipping = $product['shipping_charge'] ?? 0;
-                                                        echo number_format($product['selling_price'] + $shipping, 2); 
+                                                        echo formatAdminNumberInput($product['selling_price'] + $shipping); 
                                                     ?>
                                                 </div>
                                                 <div class="form-text">Price + GST + Shipping</div>
@@ -994,6 +994,10 @@ function uploadImage($file, $folder) {
             }
         }
 
+        function formatAdminDisplayNumber(value) {
+            return (Number(value) || 0).toFixed(2).replace(/\.?0+$/, '');
+        }
+
         // Calculate total with shipping
         document.getElementById('selling_price').addEventListener('input', calculateTotalWithShipping);
 
@@ -1004,7 +1008,7 @@ function uploadImage($file, $folder) {
             
             const total = sellingPrice + shippingCharge;
             
-            document.getElementById('total_with_shipping_display').textContent = '₹' + total.toFixed(2);
+            document.getElementById('total_with_shipping_display').textContent = '₹' + formatAdminDisplayNumber(total);
         }
 
 
