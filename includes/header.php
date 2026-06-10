@@ -1374,10 +1374,13 @@ function updateFloatingCartCount(animationType = null) {
   fetch(window.b2cAjaxUrl('ajax/get_cart_count.php'))
     .then(res => res.json())
     .then(data => {
-      const oldCount = parseInt(document.getElementById('floatingCartCount').textContent) || 0;
+      const floatingCartCount = document.getElementById('floatingCartCount');
+      const oldCount = parseInt(floatingCartCount ? floatingCartCount.textContent : 0) || 0;
       const newCount = data.cart_count || 0;
       
-      document.getElementById('floatingCartCount').textContent = newCount;
+      if (floatingCartCount) {
+        floatingCartCount.textContent = newCount;
+      }
       var headerCartCount = document.getElementById('cart-count');
       if (headerCartCount) {
         headerCartCount.textContent = newCount > 0 ? newCount : '';
@@ -1397,13 +1400,17 @@ function updateFloatingCartCount(animationType = null) {
       if (floatingCartBtn) {
         // Always hide on checkout page and cart page, regardless of cart count
         if (window.location.pathname.endsWith('checkout.php') || window.location.pathname.endsWith('cart.php')) {
-          floatingCartBtn.style.display = 'none';
+          floatingCartBtn.style.setProperty('display', 'none', 'important');
+          floatingCartBtn.style.setProperty('visibility', 'hidden', 'important');
+          floatingCartBtn.style.setProperty('opacity', '0', 'important');
         } else {
           // On other pages, show/hide based on cart count
           const shouldShow = newCount > 0;
           const wasVisible = floatingCartBtn.style.display !== 'none';
           
-          floatingCartBtn.style.display = shouldShow ? 'flex' : 'none';
+          floatingCartBtn.style.setProperty('display', shouldShow ? 'flex' : 'none', 'important');
+          floatingCartBtn.style.setProperty('visibility', shouldShow ? 'visible' : 'hidden', 'important');
+          floatingCartBtn.style.setProperty('opacity', shouldShow ? '1' : '0', 'important');
           
           // Trigger animation if cart count changed and cart is visible
           if (shouldShow && (oldCount !== newCount)) {
