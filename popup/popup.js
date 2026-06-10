@@ -111,9 +111,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 if (floatingCartBtn && !window.location.pathname.endsWith('checkout.php') && !window.location.pathname.endsWith('cart.php')) {
                     const shouldShow = cartCount > 0;
-                    floatingCartBtn.style.setProperty('display', shouldShow ? 'flex' : 'none', 'important');
-                    floatingCartBtn.style.setProperty('visibility', shouldShow ? 'visible' : 'hidden', 'important');
-                    floatingCartBtn.style.setProperty('opacity', shouldShow ? '1' : '0', 'important');
+                    const variantDrawerOpen = !!document.querySelector('.variant-drawer-overlay.show');
+                    if (shouldShow && !variantDrawerOpen) {
+                        document.body.classList.remove('variant-drawer-open');
+                    }
+                    floatingCartBtn.style.setProperty('display', shouldShow && !variantDrawerOpen ? 'flex' : 'none', 'important');
+                    floatingCartBtn.style.setProperty('visibility', shouldShow && !variantDrawerOpen ? 'visible' : 'hidden', 'important');
+                    floatingCartBtn.style.setProperty('opacity', shouldShow && !variantDrawerOpen ? '1' : '0', 'important');
 
                     const floatingCartPanel = document.getElementById('floatingCartPanel');
                     if (floatingCartPanel) {
@@ -474,7 +478,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         function hidePageFloatingControls() {
-            ['goToTopBtn', 'backToTopBtn'].forEach(id => {
+            ['floatingCartBtn', 'goToTopBtn', 'backToTopBtn'].forEach(id => {
                 const button = document.getElementById(id);
                 if (!button) return;
                 button.style.setProperty('display', 'none', 'important');
@@ -526,6 +530,9 @@ document.addEventListener('DOMContentLoaded', function () {
             overlay.remove();
             document.body.style.removeProperty('overflow');
             document.body.classList.remove('variant-drawer-open');
+            if (typeof updateFloatingCartCount === 'function') {
+                updateFloatingCartCount();
+            }
             window.dispatchEvent(new Event('scroll'));
         }
 
