@@ -792,6 +792,9 @@ renderCategoryMenu($categoryTree);
 <script>
   // Global base URL for JavaScript
   window.BASE_URL = '<?php echo $base_url; ?>';
+  window.b2cAjaxUrl = window.b2cAjaxUrl || function(path) {
+    return (window.BASE_URL || '') + String(path || '').replace(/^\/+/, '');
+  };
 </script>
 <script src="<?php echo $base_url; ?>popup/popup.js"></script>
 <script src="<?php echo $base_url; ?>popup/searchbar.js"></script>
@@ -1301,7 +1304,7 @@ function updateCartQuantity(cartId, qty, inputElem, btnElem, callback) {
   if (qty < 1) qty = 1;
   if (inputElem) inputElem.disabled = true;
   if (btnElem) btnElem.disabled = true;
-  fetch('ajax/update-cart.php', {
+  fetch(window.b2cAjaxUrl('ajax/update-cart.php'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ cart_id: cartId, quantity: qty })
@@ -1368,7 +1371,7 @@ function animateFloatingCart(animationType = 'updated') {
 }
 
 function updateFloatingCartCount(animationType = null) {
-  fetch('ajax/get_cart_count.php')
+  fetch(window.b2cAjaxUrl('ajax/get_cart_count.php'))
     .then(res => res.json())
     .then(data => {
       const oldCount = parseInt(document.getElementById('floatingCartCount').textContent) || 0;
@@ -1426,7 +1429,7 @@ function updateFloatingCartSummary() {
   const summary = document.getElementById('floatingCartSummary');
   if (!summary) return;
   
-  fetch('ajax/get-cart-summary.php?details=1&t=' + Date.now())
+  fetch(window.b2cAjaxUrl('ajax/get-cart-summary.php?details=1&t=' + Date.now()))
     .then(res => res.json())
     .then(data => {
       if (!data || !data.totals) return;
@@ -1454,7 +1457,7 @@ function renderFloatingCart() {
   const summary = document.getElementById('floatingCartSummary');
   content.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-success" role="status"><span class="visually-hidden">Loading...</span></div></div>';
   summary.innerHTML = '';
-  fetch('ajax/get-cart-summary.php?details=1&t=' + Date.now())
+  fetch(window.b2cAjaxUrl('ajax/get-cart-summary.php?details=1&t=' + Date.now()))
     .then(res => res.json())
     .then(data => {
       if (!data || !data.cartItems) {
@@ -1668,7 +1671,7 @@ function renderFloatingCart() {
           // Get product ID from cart item
           let productId = null;
           try {
-            const response = await fetch(`ajax/get_product_id_from_cart.php?cart_id=${cartId}`);
+            const response = await fetch(window.b2cAjaxUrl(`ajax/get_product_id_from_cart.php?cart_id=${cartId}`));
             const data = await response.json();
             if (data.success) {
               productId = data.product_id;
@@ -1681,7 +1684,7 @@ function renderFloatingCart() {
           let newQty = Math.min(max, qty + step);
           if (productId) {
             try {
-              const maxResponse = await fetch('ajax/check_max_quantity.php', {
+              const maxResponse = await fetch(window.b2cAjaxUrl('ajax/check_max_quantity.php'), {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded',
@@ -1761,7 +1764,7 @@ function renderFloatingCart() {
           const row = btn.closest('.d-flex.align-items-center');
           const rowClone = row.cloneNode(true);
           row.parentNode.removeChild(row);
-          fetch('ajax/remove-from-cart.php', {
+          fetch(window.b2cAjaxUrl('ajax/remove-from-cart.php'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ cart_id: cartId })
@@ -1839,7 +1842,7 @@ function renderFloatingCart() {
           
           // Try to get product ID from the cart item
           try {
-            const response = await fetch(`ajax/get_product_id_from_cart.php?cart_id=${cartId}`);
+            const response = await fetch(window.b2cAjaxUrl(`ajax/get_product_id_from_cart.php?cart_id=${cartId}`));
             const data = await response.json();
             if (data.success) {
               productId = data.product_id;
@@ -1852,7 +1855,7 @@ function renderFloatingCart() {
           let validationFailed = false;
           if (productId) {
             try {
-              const maxResponse = await fetch('ajax/check_max_quantity.php', {
+              const maxResponse = await fetch(window.b2cAjaxUrl('ajax/check_max_quantity.php'), {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded',
@@ -2001,7 +2004,7 @@ function renderFloatingCartPagination(totalItems, itemsPerPage, currentPage) {
 // Add this helper function to update only the floating cart summary
 function updateFloatingCartSummary() {
   const summary = document.getElementById('floatingCartSummary');
-  fetch('ajax/get-cart-summary.php?t=' + Date.now())
+  fetch(window.b2cAjaxUrl('ajax/get-cart-summary.php?t=' + Date.now()))
     .then(res => res.json())
     .then(data => {
       if (!data || !data.totals) return;
@@ -2114,9 +2117,18 @@ function updateMobileNavIcons() {
 
 // Listen for global cart updates (from add-to-cart or other actions)
 window.addEventListener('cart-updated', function(event) {
-  renderFloatingCart();
   // Use animation type from event detail if provided
   const animationType = event.detail && event.detail.action ? event.detail.action : 'updated';
+  const floatingCartPanel = document.getElementById('floatingCartPanel');
+
+  if (animationType === 'added') {
+    if (floatingCartPanel) {
+      floatingCartPanel.style.display = 'none';
+    }
+  } else if (floatingCartPanel && floatingCartPanel.style.display === 'block') {
+    renderFloatingCart();
+  }
+
   updateFloatingCartCount(animationType);
 });
 
@@ -2154,7 +2166,7 @@ document.addEventListener('DOMContentLoaded', function() {
         button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Removing...';
         button.disabled = true;
         
-        fetch('ajax/remove-all-cart.php', {
+        fetch(window.b2cAjaxUrl('ajax/remove-all-cart.php'), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -2442,7 +2454,7 @@ function smoothUpdatePerItemTotal(cartId, newTotal) {
     function loadCartQuantity(productId, input) {
         if (!productId || !input) return;
         
-        fetch(`ajax/check-product-in-cart.php?product_id=${productId}`)
+        fetch(window.b2cAjaxUrl(`ajax/check-product-in-cart.php?product_id=${productId}`))
             .then(res => res.json())
             .then(data => {
                 if (data.success && data.in_cart && data.quantity > 0) {

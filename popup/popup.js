@@ -1,4 +1,11 @@
 // popup.js
+function b2cPopupAjaxUrl(path) {
+    if (typeof window.b2cAjaxUrl === 'function') {
+        return window.b2cAjaxUrl(path);
+    }
+    return (window.BASE_URL || '') + String(path || '').replace(/^\/+/, '');
+}
+
 function showPopup() {
     var overlay = document.getElementById("popupOverlay");
     var form = document.getElementById("popupForm");
@@ -60,6 +67,12 @@ window.addEventListener("load", () => {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
+    function ajaxUrl(path) {
+        if (typeof window.b2cAjaxUrl === 'function') {
+            return window.b2cAjaxUrl(path);
+        }
+        return (window.BASE_URL || '') + String(path || '').replace(/^\/+/, '');
+    }
 
     // Create and append the toast element to the body
     const toast = document.createElement('div');
@@ -77,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function updateCartCount() {
-        fetch('ajax/get_cart_count.php')
+        fetch(ajaxUrl('ajax/get_cart_count.php'))
             .then(response => response.json())
             .then(data => {
                 const cartCountElement = document.getElementById('cart-count');
@@ -369,21 +382,21 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         const query = variationId ? `&variation_id=${encodeURIComponent(variationId)}` : '';
-        fetch(`ajax/check-product-in-cart.php?product_id=${productId}${query}`)
+        fetch(ajaxUrl(`ajax/check-product-in-cart.php?product_id=${productId}${query}`))
             .then(res => res.json())
             .then(data => {
                 const payload = { product_id: productId, quantity: quantity };
                 if (variationId) payload.variation_id = variationId;
 
                 if (data.success && data.in_cart) {
-                    return fetch('ajax/update-cart-quantity.php', {
+                    return fetch(ajaxUrl('ajax/update-cart-quantity.php'), {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
                     });
                 }
 
-                return fetch('ajax/add-to-cart.php', {
+                return fetch(ajaxUrl('ajax/add-to-cart.php'), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -411,7 +424,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     reinitQuantityControlsWithDebug();
                     window.initializeQuantityInputs();
                     window.dispatchEvent(new CustomEvent('cart-updated', {
-                        detail: { action: 'updated' }
+                        detail: { action: 'added' }
                     }));
                 }
 
@@ -1151,7 +1164,7 @@ document.body.addEventListener('change', async function (e) {
         const formData = new URLSearchParams();
         formData.append('product_id', productId);
         formData.append('quantity', value);
-        const response = await fetch('ajax/check_max_quantity.php', {
+        const response = await fetch(b2cPopupAjaxUrl('ajax/check_max_quantity.php'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: formData.toString()
@@ -1173,7 +1186,7 @@ document.body.addEventListener('change', async function (e) {
     if (input.classList.contains('cart-qty-input')) {
         const cartId = input.dataset.cartId;
         if (cartId) {
-            fetch('ajax/update-cart.php', {
+            fetch(b2cPopupAjaxUrl('ajax/update-cart.php'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ cart_id: cartId, quantity: value })
@@ -1219,7 +1232,7 @@ document.body.addEventListener('click', function (e) {
         if (!productId) return;
         btn.disabled = true;
         btn.textContent = 'UPDATING...';
-        fetch('ajax/add-to-cart.php', {
+        fetch(b2cPopupAjaxUrl('ajax/add-to-cart.php'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ product_id: productId, quantity: qty })

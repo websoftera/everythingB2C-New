@@ -76,7 +76,16 @@ if (isLoggedIn()) {
 }
 
 if ($result) {
-    echo json_encode(['success' => true, 'message' => 'Product added to cart']);
+    if (isLoggedIn()) {
+        $cartCount = count(getCartItems($_SESSION['user_id']));
+    } else {
+        $cartCount = count(getCartItems());
+    }
+    echo json_encode([
+        'success' => true,
+        'message' => 'Product added to cart',
+        'cart_count' => $cartCount
+    ]);
 } else {
     echo json_encode(['success' => false, 'message' => 'Failed to add product to cart']);
 }
