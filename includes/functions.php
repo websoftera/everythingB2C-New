@@ -66,6 +66,21 @@ function packageQuantityErrorResponse($quantity, $packageQuantity) {
     ];
 }
 
+function getProductOrderMaxQuantity(array $product) {
+    $packageQuantity = normalizePackageQuantity($product['package_quantity'] ?? 1);
+    $stockQuantity = isset($product['display_base_stock_quantity'])
+        ? (int)$product['display_base_stock_quantity']
+        : (int)($product['stock_quantity'] ?? 0);
+    $maxQuantity = $stockQuantity;
+
+    if (isset($product['max_quantity_per_order']) && $product['max_quantity_per_order'] !== null && $product['max_quantity_per_order'] !== '') {
+        $maxQuantity = min($maxQuantity, (int)$product['max_quantity_per_order']);
+    }
+
+    $maxQuantity = roundToNearestPackage($maxQuantity, $packageQuantity);
+    return max($packageQuantity, $maxQuantity);
+}
+
 function validateCartItemQuantityRules($cartItems) {
     foreach ($cartItems as $item) {
         $quantity = (int)($item['quantity'] ?? 0);

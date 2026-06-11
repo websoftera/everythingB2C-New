@@ -111,10 +111,14 @@ foreach ($products as $product):
         <?php if ($isOutOfStock): ?>
             <a href="product.php?slug=<?php echo $product['slug']; ?>" class="read-more">READ MORE</a>
         <?php else: ?>
+          <?php
+          $packageQuantity = normalizePackageQuantity($product['package_quantity'] ?? 1);
+          $maxQuantity = getProductOrderMaxQuantity($product);
+          ?>
           <div class="cart-actions d-flex align-items-center gap-2">
               <div class="quantity-control d-inline-flex align-items-center">
                   <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
-                  <input type="number" class="quantity-input" value="1" min="1" max="99" data-product-id="<?php echo $product['id']; ?>">
+                  <input type="number" class="quantity-input" value="<?php echo $packageQuantity; ?>" min="<?php echo $packageQuantity; ?>" step="<?php echo $packageQuantity; ?>" max="<?php echo $maxQuantity; ?>" data-product-id="<?php echo $product['id']; ?>" data-package-quantity="<?php echo $packageQuantity; ?>">
                   <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
               </div>
               <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">

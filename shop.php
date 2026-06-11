@@ -203,10 +203,7 @@ echo renderBreadcrumb($breadcrumbs);
                                 <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
                                 <?php
                                 $packageQuantity = normalizePackageQuantity($product['package_quantity'] ?? 1);
-                                $maxQuantity = (int)($product['display_base_stock_quantity'] ?? $product['stock_quantity']);
-                                if (isset($product['max_quantity_per_order']) && $product['max_quantity_per_order'] !== null) {
-                                    $maxQuantity = min($maxQuantity, (int)$product['max_quantity_per_order']);
-                                }
+                                $maxQuantity = getProductOrderMaxQuantity($product);
                                 ?>
                                 <input type="number" class="quantity-input" value="<?php echo $packageQuantity; ?>" min="<?php echo $packageQuantity; ?>" step="<?php echo $packageQuantity; ?>" max="<?php echo $maxQuantity; ?>" data-product-id="<?php echo $product['id']; ?>" data-package-quantity="<?php echo $packageQuantity; ?>">
                                 <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>

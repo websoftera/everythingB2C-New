@@ -105,9 +105,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Handle category selection - use the selected category directly
     $category_id = intval($_POST['parent_category_id']);
     
-    $stock_quantity = intval($_POST['stock_quantity']);
-    $package_quantity = isset($_POST['package_quantity']) ? intval($_POST['package_quantity']) : 1;
-    $max_quantity_per_order = !empty($_POST['max_quantity_per_order']) ? intval($_POST['max_quantity_per_order']) : null;
+    $stock_quantity = isset($_POST['stock_quantity']) ? (int)round((float)$_POST['stock_quantity']) : 0;
+    $package_quantity = isset($_POST['package_quantity']) ? (int)round((float)$_POST['package_quantity']) : 1;
+    $max_quantity_per_order = !empty($_POST['max_quantity_per_order']) ? (int)round((float)$_POST['max_quantity_per_order']) : null;
     $gst_type = 'sgst_cgst'; // Default GST type
     $gst_rate = floatval($_POST['gst_rate']);
     $sku = trim($_POST['sku']);
@@ -639,17 +639,17 @@ function uploadImage($file, $folder) {
                                         <div class="row mb-3">
                                             <div class="col-md-3">
                                                 <label for="stock_quantity" class="form-label">Stock Quantity *</label>
-                                                <input type="number" class="form-control" id="stock_quantity" name="stock_quantity" min="0" value="<?php echo htmlspecialchars($product['stock_quantity']); ?>" required>
+                                                <input type="number" class="form-control" id="stock_quantity" name="stock_quantity" min="0" step="1" value="<?php echo htmlspecialchars($product['stock_quantity']); ?>" required>
                                                 <div class="invalid-feedback">Please provide stock quantity.</div>
                                             </div>
                                             <div class="col-md-4">
                                                 <label for="package_quantity" class="form-label">Package Quantity</label>
-                                                <input type="number" class="form-control" id="package_quantity" name="package_quantity" min="1" value="<?php echo htmlspecialchars($product['package_quantity'] ?? 1); ?>">
-                                                <div class="form-text">Customers can buy only multiples of this quantity</div>
+                                                <input type="number" class="form-control" id="package_quantity" name="package_quantity" min="1" step="1" value="<?php echo htmlspecialchars($product['package_quantity'] ?? 1); ?>">
+                                                <div class="form-text">Buy in multiples of this quantity</div>
                                             </div>
                                             <div class="col-md-5">
                                                 <label for="max_quantity_per_order" class="form-label">Max Quantity Per Order</label>
-                                                <input type="number" class="form-control" id="max_quantity_per_order" name="max_quantity_per_order" min="1" value="<?php echo htmlspecialchars($product['max_quantity_per_order'] ?? ''); ?>" placeholder="Leave empty for no limit">
+                                                <input type="number" class="form-control" id="max_quantity_per_order" name="max_quantity_per_order" min="1" step="1" value="<?php echo htmlspecialchars($product['max_quantity_per_order'] ?? ''); ?>" placeholder="Leave empty for no limit">
                                                 <div class="form-text">Maximum quantity a customer can order at once</div>
                                             </div>
                                         </div>
@@ -1012,6 +1012,14 @@ function uploadImage($file, $folder) {
         }
 
 
+
+        document.querySelectorAll('input[type="number"]').forEach(function(input) {
+            input.addEventListener('wheel', function(event) {
+                if (document.activeElement === input) {
+                    event.preventDefault();
+                }
+            }, { passive: false });
+        });
 
         // Form validation
         (function() {
