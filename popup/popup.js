@@ -110,7 +110,22 @@ if (typeof window.showEverythingB2CMaxQuantityPopup !== 'function') {
     window.showEverythingB2CMaxQuantityPopup = function (message, title = 'Maximum quantity reached') {
         ensureEverythingB2CQuantityLimitStyles();
 
+        const popupKey = `${title}|${message || ''}`;
+        const now = Date.now();
+        if (window.everythingB2CQuantityLimitLastPopup &&
+            window.everythingB2CQuantityLimitLastPopup.key === popupKey &&
+            now - window.everythingB2CQuantityLimitLastPopup.time < 500) {
+            return;
+        }
+        window.everythingB2CQuantityLimitLastPopup = { key: popupKey, time: now };
+
         let overlay = document.getElementById('everythingb2cQuantityLimitOverlay');
+        document.querySelectorAll('.everythingb2c-quantity-limit-overlay').forEach(function (existingOverlay) {
+            if (existingOverlay !== overlay) {
+                existingOverlay.remove();
+            }
+        });
+
         if (!overlay) {
             overlay = document.createElement('div');
             overlay.id = 'everythingb2cQuantityLimitOverlay';

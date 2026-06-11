@@ -1688,8 +1688,10 @@ function renderFloatingCart() {
             console.error('Error getting product ID:', error);
           }
           
-          // Check max quantity if we have product ID
-          let newQty = Math.min(max, qty + step);
+          // Check the attempted quantity before clamping, so the floating cart
+          // still shows the max-quantity popup when the user presses + at max.
+          const attemptedQty = qty + step;
+          let newQty = Math.min(max, attemptedQty);
           if (productId) {
             try {
               const maxResponse = await fetch(window.b2cAjaxUrl('ajax/check_max_quantity.php'), {
@@ -1697,14 +1699,14 @@ function renderFloatingCart() {
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: `product_id=${productId}&quantity=${newQty}`
+                body: `product_id=${productId}&quantity=${attemptedQty}`
               });
               const allowedQuantity = max; // Default max if not set
               const result = await maxResponse.json();
-              if (result.error && result.max_quantity || newQty > allowedQuantity) {
+              if (result.error && result.max_quantity || attemptedQty > allowedQuantity) {
                 // Show SweetAlert but don't change the input value
-                if(!result.max_quantity && newQty > allowedQuantity) {
-                  result.message = `Maximum quantity is ${allowedQuantity}.`;
+                if(!result.max_quantity && attemptedQty > allowedQuantity) {
+                  result.message = `Maximum quantity allowed for this product is ${allowedQuantity}`;
                 }
                 if (typeof showEverythingB2CMaxQuantityPopup === 'function') {
                   showEverythingB2CMaxQuantityPopup(result.message);
@@ -1714,6 +1716,13 @@ function renderFloatingCart() {
             } catch (error) {
               console.error('Error checking max quantity:', error);
             }
+          }
+
+          if (attemptedQty > max) {
+            if (typeof showEverythingB2CMaxQuantityPopup === 'function') {
+              showEverythingB2CMaxQuantityPopup('Maximum quantity allowed for this product is ' + max);
+            }
+            return;
           }
           
           input.value = newQty;
