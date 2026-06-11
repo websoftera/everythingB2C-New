@@ -29,7 +29,7 @@ function validateAjaxAddressData($data) {
     if (!preg_match('/^(?:\+91|0)?[6-9][0-9]{9}$/', $data['phone'])) {
         $errors[] = 'Please enter a valid phone number.';
     }
-    if (!preg_match('/^[0-9]{6}$/', $data['pincode'])) {
+    if (!preg_match('/^[1-9][0-9]{5}$/', $data['pincode'])) {
         $errors[] = 'Please enter a valid 6 digit PIN code.';
     }
     if (strlen($data['address_line1']) < 5 || strlen($data['address_line1']) > 150) {

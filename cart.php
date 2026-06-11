@@ -391,6 +391,7 @@ echo renderBreadcrumb($breadcrumbs);
                             $displayName = cartDisplayName($item);
                             $variationDetails = renderCartVariationDetails($item);
                             $packageQuantity = normalizePackageQuantity($item['package_quantity'] ?? 1);
+                            $priceMultiplier = getCartItemPriceMultiplier($item);
                             $cartMaxQuantity = (int)($item['product_stock_quantity'] ?? $item['stock_quantity'] ?? 99);
                             if (isset($item['max_quantity_per_order']) && $item['max_quantity_per_order'] !== null) {
                                 $cartMaxQuantity = min($cartMaxQuantity, (int)$item['max_quantity_per_order']);
@@ -413,9 +414,9 @@ echo renderBreadcrumb($breadcrumbs);
                                     <span class="cart-mobile-unit-line"><?php echo formatProductUnitLine($item); ?></span>
                                 </div>
                                 <div class="cart-unit-cell" style="flex:0 0 92px; min-width:82px; font-size:0.93em; color:#444; font-weight:600; text-align:center; white-space:nowrap;"><?php echo formatProductUnitLine($item); ?></div>
-                                <div class="cart-mrp-cell" style="flex:0 0 90px; min-width:60px; font-size:0.93em; color:#888; text-align:center;"> <s><?php echo formatPrice($item['mrp'] * $item['quantity']); ?></s> </div>
-                                <div class="cart-you-pay-cell" style="flex:0 0 90px; min-width:60px; font-size:0.97em; color:#007bff; font-weight:500; text-align:center;"> <?php echo formatPrice($item['selling_price'] * $item['quantity']); ?> </div>
-                                <div class="cart-save-cell" style="flex:0 0 90px; min-width:60px; font-size:0.93em; color:#23a036; text-align:center;"> <?php echo formatPrice(max(0, $item['mrp'] - $item['selling_price']) * $item['quantity']); ?> </div>
+                                <div class="cart-mrp-cell" style="flex:0 0 90px; min-width:60px; font-size:0.93em; color:#888; text-align:center;"> <s><?php echo formatPrice($item['mrp'] * $priceMultiplier); ?></s> </div>
+                                <div class="cart-you-pay-cell" style="flex:0 0 90px; min-width:60px; font-size:0.97em; color:#007bff; font-weight:500; text-align:center;"> <?php echo formatPrice($item['selling_price'] * $priceMultiplier); ?> </div>
+                                <div class="cart-save-cell" style="flex:0 0 90px; min-width:60px; font-size:0.93em; color:#23a036; text-align:center;"> <?php echo formatPrice(max(0, $item['mrp'] - $item['selling_price']) * $priceMultiplier); ?> </div>
                                 <div style="flex:0 0 80px; min-width:50px; text-align:center;">
                                     <div class="quantity-control d-inline-flex align-items-center justify-content-center">
                                         <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
@@ -423,7 +424,7 @@ echo renderBreadcrumb($breadcrumbs);
                                         <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
                                     </div>
                                 </div>
-                                <div class="cart-total-cell" style="flex:0 0 70px; min-width:50px; text-align:center; font-weight:600; font-size:1.01em;"> <?php echo formatPrice($item['selling_price'] * $item['quantity']); ?> </div>
+                                <div class="cart-total-cell" style="flex:0 0 70px; min-width:50px; text-align:center; font-weight:600; font-size:1.01em;"> <?php echo formatPrice($item['selling_price'] * $priceMultiplier); ?> </div>
                                 <div style="flex:0 0 36px; min-width:28px; text-align:center; flex-shrink:0;">
                                     <button class="btn btn-outline-danger btn-sm remove-item" data-cart-id="<?php echo $item['id']; ?>" title="Delete" style="padding: 4px 8px; font-size: 1.1rem;">
                                         <i class="fas fa-trash"></i>
@@ -454,7 +455,7 @@ echo renderBreadcrumb($breadcrumbs);
                                                   <div class="d-flex justify-content-between mb-2"><span class="text-dark fw-bold">Savings</span><span class="cart-summary-savings fw-bold" style="color:#2e7d32;">₹<?php
                                 $total_savings = 0;
                                 foreach ($cartItems as $item) {
-                                    $total_savings += max(0, $item['mrp'] - $item['selling_price']) * $item['quantity'];
+                                    $total_savings += max(0, $item['mrp'] - $item['selling_price']) * getCartItemPriceMultiplier($item);
                                 }
                                 echo number_format($total_savings, 0);
                             ?></span></div>
@@ -560,28 +561,29 @@ document.addEventListener('DOMContentLoaded', function() {
                         .then(summary => {
                             if (summary.success && summary.cartItems) {
                                 summary.cartItems.forEach(function(item) {
+                                    var priceMultiplier = getCartItemPriceMultiplier(item);
                                     // Find the cart row by cart id
                                     var row = document.querySelector('.cart-item-row input[data-cart-id="' + item.id + '"]').closest('.cart-item-row');
                                     if (row) {
                                         // Update MRP (total)
                                         var mrpCell = row.querySelector('.cart-mrp-cell');
                                         if (mrpCell) {
-                                            mrpCell.innerHTML = '<s>' + formatPrice(item.mrp * item.quantity) + '</s>';
+                                            mrpCell.innerHTML = '<s>' + formatPrice(item.mrp * priceMultiplier) + '</s>';
                                         }
                                         // Update You Pay (total)
                                         var youPayCell = row.querySelector('.cart-you-pay-cell');
                                         if (youPayCell) {
-                                            youPayCell.textContent = formatPrice(item.selling_price * item.quantity);
+                                            youPayCell.textContent = formatPrice(item.selling_price * priceMultiplier);
                                         }
                                         // Update You Save
                                         var youSaveCell = row.querySelector('.cart-save-cell');
                                         if (youSaveCell) {
-                                            youSaveCell.textContent = formatPrice(Math.max(0, item.mrp - item.selling_price) * item.quantity);
+                                            youSaveCell.textContent = formatPrice(Math.max(0, item.mrp - item.selling_price) * priceMultiplier);
                                         }
                                         // Update Total
                                         var totalCell = row.querySelector('.cart-total-cell');
                                         if (totalCell) {
-                                            totalCell.textContent = formatPrice(item.selling_price * item.quantity);
+                                            totalCell.textContent = formatPrice(item.selling_price * priceMultiplier);
                                         }
                                     }
                                 });
@@ -698,6 +700,12 @@ document.addEventListener('DOMContentLoaded', function() {
 function formatPrice(amount) {
     if (isNaN(amount) || amount === null || amount === undefined) return '₹ 0';
     return '₹ ' + parseFloat(amount).toLocaleString('en-IN', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+}
+
+function getCartItemPriceMultiplier(item) {
+    const quantity = parseFloat(item && item.quantity) || 0;
+    const packageQuantity = Math.max(1, parseInt(item && item.package_quantity, 10) || 1);
+    return quantity / packageQuantity;
 }
 
 // Add this helper function to update the price summary on the cart page

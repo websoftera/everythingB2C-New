@@ -30,6 +30,15 @@ function normalizePackageQuantity($packageQuantity) {
     return max(1, (int)$packageQuantity);
 }
 
+function getPackagePriceMultiplier($quantity, $packageQuantity = 1) {
+    $quantity = max(0, (float)$quantity);
+    return $quantity / normalizePackageQuantity($packageQuantity);
+}
+
+function getCartItemPriceMultiplier($item) {
+    return getPackagePriceMultiplier($item['quantity'] ?? 0, $item['package_quantity'] ?? 1);
+}
+
 function isValidPackageQuantity($quantity, $packageQuantity) {
     $packageQuantity = normalizePackageQuantity($packageQuantity);
     $quantity = (int)$quantity;
@@ -97,14 +106,14 @@ function getCartSummary() {
         $cartItems = getCartItems($_SESSION['user_id']);
         foreach ($cartItems as $item) {
             $total_items += $item['quantity'];
-            $total_amount += ($item['selling_price'] * $item['quantity']);
+            $total_amount += ($item['selling_price'] * getCartItemPriceMultiplier($item));
         }
     } else {
         // User is not logged in, get cart from session
         $sessionCart = getSessionCartItems();
         foreach ($sessionCart as $item) {
             $total_items += $item['quantity'];
-            $total_amount += ($item['selling_price'] * $item['quantity']);
+            $total_amount += ($item['selling_price'] * getCartItemPriceMultiplier($item));
         }
     }
 
@@ -1234,7 +1243,8 @@ function calculateCartTotals($cartItems) {
     $igstTotal = 0;
 
     foreach ($cartItems as $item) {
-        $itemTotal = $item['selling_price'] * $item['quantity'];
+        $priceMultiplier = getCartItemPriceMultiplier($item);
+        $itemTotal = $item['selling_price'] * $priceMultiplier;
         $subtotal += $itemTotal;
 
         // Calculate GST for this item
@@ -1288,9 +1298,8 @@ function createOrder($userId, $addressId, $paymentMethod, $gstNumber = null, $co
     global $pdo;
 
     try {
-        $pdo->beginTransaction();
-
-        // Get cart items and address
+        // Prepare cart, address, totals and unique IDs before the transaction.
+        // getCartItems() may run schema maintenance, and MySQL DDL can implicitly end a transaction.
         $cartItems = getCartItems($userId);
         if (empty($cartItems)) {
             throw new Exception('Cart is empty');
@@ -1315,12 +1324,18 @@ function createOrder($userId, $addressId, $paymentMethod, $gstNumber = null, $co
         );
         $trackingId = generateTrackingId();
         $orderNumber = generateOrderNumber();
-        // --- Direct Payment: add UPI fields if provided ---
+        $itemCount = 0;
+        foreach ($cartItems as $item) {
+            $itemCount += getCartItemPriceMultiplier($item);
+        }
         $shippingAddressText = $address['name'] . "\n" .
                                $address['address_line1'] . ($address['address_line2'] ? "\n" . $address['address_line2'] : "") . "\n" .
                                $address['city'] . ", " . $address['state'] . " - " . $address['pincode'] . "\n" .
                                "Phone: " . $address['phone'];
 
+        $pdo->beginTransaction();
+
+        // --- Direct Payment: add UPI fields if provided ---
         $columns = "user_id, address_id, order_number, tracking_id, total_amount, subtotal, gst_amount, shipping_charge, payment_method, gst_number, company_name, is_business_purchase, order_status_id, payment_status, shipping_address, billing_city, billing_state, billing_pincode";
         $placeholders = "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 'pending', ?, ?, ?, ?";
         $values = [
@@ -1354,11 +1369,12 @@ function createOrder($userId, $addressId, $paymentMethod, $gstNumber = null, $co
         $seller_state = 'Maharashtra';
         foreach ($cartItems as $item) {
             $item_price = isset($item['selling_price']) ? $item['selling_price'] : 0;
-            $item_total = $item_price * $item['quantity'];
+            $priceMultiplier = getCartItemPriceMultiplier($item);
+            $item_total = $item_price * $priceMultiplier;
             $gst_calc = function_exists('calculateGST')
                 ? calculateGST($item_price, $item['gst_rate'], $item['gst_type'], $address['state'], $seller_state)
                 : getGSTBreakdown($item_total, $item['gst_type'], $item['gst_rate']);
-            $item_gst = $gst_calc['total_gst'] * $item['quantity'];
+            $item_gst = $gst_calc['total_gst'] * $priceMultiplier;
             $stmt = $pdo->prepare("INSERT INTO order_items (order_id, product_id, hsn, quantity, price, unit_price, gst_rate, gst_amount, mrp, selling_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $stmt->execute([
                 $orderId,
@@ -1395,9 +1411,22 @@ function createOrder($userId, $addressId, $paymentMethod, $gstNumber = null, $co
             error_log("Email notification failed for order {$orderId}: " . $emailError->getMessage());
         }
 
-        return ['success' => true, 'order_id' => $orderId, 'tracking_id' => $trackingId, 'order_number' => $orderNumber];
+        return [
+            'success' => true,
+            'order_id' => $orderId,
+            'tracking_id' => $trackingId,
+            'order_number' => $orderNumber,
+            'summary' => [
+                'totals' => $totals,
+                'item_count' => $itemCount,
+                'total_mrp' => $totals['total_mrp'] ?? 0,
+                'savings' => $totals['total_savings'] ?? 0
+            ]
+        ];
     } catch (Exception $e) {
-        $pdo->rollBack();
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
         return ['success' => false, 'message' => $e->getMessage()];
     }
 }
@@ -1460,7 +1489,9 @@ function updateOrderStatus($orderId, $statusId, $description = null, $externalTr
         return true;
 
     } catch (Exception $e) {
-        $pdo->rollBack();
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
         return false;
     }
 }

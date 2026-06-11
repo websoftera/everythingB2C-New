@@ -108,6 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($result && !empty($result['success'])) {
           $orderPlaced = true;
           $placedOrderId = $result['order_id'];
+          $placedOrderSummary = $result['summary'] ?? null;
           if ($payment_method === 'razorpay') {
             header('Location: process_payment.php?order_id=' . $placedOrderId);
             exit;
@@ -162,9 +163,16 @@ $mrp = 0;
 $savings = 0;
 $count = 0;
 foreach ($cartItems as $item) {
-  $mrp += $item['mrp'] * $item['quantity'];
-  $savings += max(0, $item['mrp'] - $item['selling_price']) * $item['quantity'];
-  $count += $item['quantity'];
+  $priceMultiplier = getCartItemPriceMultiplier($item);
+  $mrp += $item['mrp'] * $priceMultiplier;
+  $savings += max(0, $item['mrp'] - $item['selling_price']) * $priceMultiplier;
+  $count += $priceMultiplier;
+}
+if (!empty($orderPlaced) && !empty($placedOrderSummary)) {
+  $orderTotals = $placedOrderSummary['totals'];
+  $mrp = $placedOrderSummary['total_mrp'];
+  $savings = $placedOrderSummary['savings'];
+  $count = $placedOrderSummary['item_count'];
 }
 ?>
 
@@ -229,18 +237,13 @@ foreach ($cartItems as $item) {
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
         <i class="fas fa-exclamation-triangle me-2"></i>
         <?php echo htmlspecialchars($error_message); ?>
-        <?php if (isset($result)): ?>
-            <br><strong>Order Result Debug:</strong>
-            <pre style="max-height:200px;overflow:auto;font-size:0.95em;"><?php echo htmlspecialchars(print_r($result, true)); ?></pre>
-        <?php
-  endif; ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 </div>
 <?php
 endif; ?>
 
-<?php if ($orderTotals['total'] < 150): ?>
+<?php if (empty($orderPlaced) && $orderTotals['subtotal'] < 150): ?>
   <div class="alert alert-danger text-center" id="minOrderAlert">
     Minimum order amount is ₹150. Please add more items to your cart to proceed.
   </div>
@@ -419,7 +422,7 @@ endif; ?>
                 </div>
                 <div id="directPaymentInfoMsg" class="text-success text-center mb-2" style="display:none;"></div>
                 <div class="d-grid mb-3 place-order-wrapper">
-                  <button type="submit" name="place_order" id="placeOrderBtn" class="place-order-btn btn btn-primary w-100 mt-3" <?php if ($orderTotals['total'] < 150)
+                  <button type="submit" name="place_order" id="placeOrderBtn" class="place-order-btn btn btn-primary w-100 mt-3" <?php if ($orderTotals['subtotal'] < 150)
   echo 'disabled'; ?>>
                     <i class="fas fa-shopping-cart"></i> PLACE ORDER
                   </button>
@@ -683,6 +686,10 @@ document.querySelectorAll('input[name="selected_address_left"]').forEach(functio
         if (youPayElement) {
           youPayElement.textContent = '₹' + parseFloat(resp.totals.subtotal).toFixed(2);
         }
+        const updatedSubtotal = parseFloat(resp.totals.subtotal || 0);
+        if (placeOrderBtn && !document.getElementById('direct_payment').checked) {
+          placeOrderBtn.disabled = updatedSubtotal < minimumOrderSubtotal;
+        }
         // GST is already included in the selling prices, no need to display separately
         // Update total amount
         document.getElementById('order-total-amount').innerHTML = '<b>₹' + parseFloat(resp.totals.grand_total).toFixed(2) + '</b>';
@@ -710,6 +717,8 @@ const upiTransactionIdInput = checkoutForm.querySelector('#upi_transaction_id');
 const upiScreenshotInput = checkoutForm.querySelector('#upi_screenshot');
 const placeOrderBtn = checkoutForm.querySelector('#placeOrderBtn');
 const orderTotal = <?php echo json_encode($orderTotals['total']); ?>;
+const minimumOrderSubtotal = 150;
+const initialOrderSubtotal = <?php echo json_encode($orderTotals['subtotal']); ?>;
 const upiId = 'samir.bvm@okicici';
 
 let directPaymentStepCompleted = false;
@@ -729,7 +738,7 @@ function showDirectPaymentDetails() {
 function resetDirectPaymentStep() {
   directPaymentSection.style.display = 'none';
   directPaymentDetailsSection.style.display = 'none';
-  placeOrderBtn.disabled = false;
+  placeOrderBtn.disabled = initialOrderSubtotal < minimumOrderSubtotal;
   directPaymentStepCompleted = false;
   const infoMsg = checkoutForm.querySelector('#directPaymentInfoMsg');
   if (infoMsg) infoMsg.style.display = 'none';
@@ -915,7 +924,7 @@ function attachUpiEventHandlers() {
         upiTransactionIdInput.classList.remove('is-invalid');
       }
       directPaymentStepCompleted = true;
-      placeOrderBtn.disabled = false;
+      placeOrderBtn.disabled = initialOrderSubtotal < minimumOrderSubtotal;
       const infoMsg = checkoutForm.querySelector('#directPaymentInfoMsg');
       if (infoMsg) {
         infoMsg.textContent = 'Now you can click on Place Order to complete your order.';
