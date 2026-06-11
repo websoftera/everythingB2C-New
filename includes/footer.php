@@ -381,7 +381,22 @@ function getEverythingB2CLogoSrc() {
 }
 
 function showEverythingB2CMaxQuantityPopup(message, title = 'Maximum quantity reached') {
+    const popupKey = `${title}|${message || ''}`;
+    const now = Date.now();
+    if (window.everythingB2CQuantityLimitLastPopup &&
+        window.everythingB2CQuantityLimitLastPopup.key === popupKey &&
+        now - window.everythingB2CQuantityLimitLastPopup.time < 500) {
+        return;
+    }
+    window.everythingB2CQuantityLimitLastPopup = { key: popupKey, time: now };
+
     let overlay = document.getElementById('everythingb2cQuantityLimitOverlay');
+    document.querySelectorAll('.everythingb2c-quantity-limit-overlay').forEach(function(existingOverlay) {
+        if (existingOverlay !== overlay) {
+            existingOverlay.remove();
+        }
+    });
+
     if (!overlay) {
         overlay = document.createElement('div');
         overlay.id = 'everythingb2cQuantityLimitOverlay';
@@ -541,6 +556,8 @@ function refreshDisplayedPriceForQuantity(input) {
 document.addEventListener('click', function(e) {
     if (e.target.matches('.btn-qty-minus, .btn-qty-plus') || e.target.closest('.btn-qty-minus, .btn-qty-plus')) {
         const btn = e.target.matches('.btn-qty-minus, .btn-qty-plus') ? e.target : e.target.closest('.btn-qty-minus, .btn-qty-plus');
+        if (btn.closest('#floatingCartPanel')) return;
+
         const container = btn.closest('.quantity-control');
         if (!container) return;
         

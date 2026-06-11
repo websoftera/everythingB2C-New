@@ -66,34 +66,21 @@ try {
         exit;
     }
     
-    // If user is logged in, check current cart quantity
+    // If user is logged in, include current cart quantity for callers that need it.
+    // The submitted quantity is the final desired order quantity, not an extra
+    // amount to add on top of what is already in cart.
     if (isset($_SESSION['user_id'])) {
         $user_id = $_SESSION['user_id'];
         $stmt = $pdo->prepare("SELECT quantity FROM cart WHERE user_id = ? AND product_id = ?");
         $stmt->execute([$user_id, $product_id]);
         $cart_item = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+
         $current_cart_quantity = $cart_item ? $cart_item['quantity'] : 0;
-        $total_quantity = $current_cart_quantity + $quantity;
-        
-        // Check if total quantity exceeds max_quantity_per_order
-        if ($max_quantity !== null && $total_quantity > $max_quantity) {
-            $remaining = $max_quantity - $current_cart_quantity;
-            echo json_encode([
-                'error' => 'Cart quantity limit exceeded',
-                'max_quantity' => $max_quantity,
-                'current_cart_quantity' => $current_cart_quantity,
-                'remaining' => $remaining > 0 ? $remaining : 0,
-                'message' => $remaining > 0 ? 
-                    "You can add {$remaining} more items to cart" : 
-                    "Maximum quantity already in cart"
-            ]);
-            exit;
-        }
+        $response['current_cart_quantity'] = (int)$current_cart_quantity;
     }
     
     echo json_encode($response);
-    
+
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);

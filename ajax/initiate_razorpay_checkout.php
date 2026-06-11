@@ -94,13 +94,15 @@ try {
     $tempOrderId = $pdo->lastInsertId();
     // Insert order items (use correct columns)
     foreach ($cartItems as $item) {
+        $priceMultiplier = getCartItemPriceMultiplier($item);
+        $itemTotal = $item['selling_price'] * $priceMultiplier;
         $stmt2 = $pdo->prepare("INSERT INTO order_items (order_id, product_id, quantity, price, unit_price, gst_rate, gst_amount) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $gstBreakdown = getGSTBreakdown($item['selling_price'] * $item['quantity'], $item['gst_type'] ?? 'IGST', $item['gst_rate'] ?? 18);
+        $gstBreakdown = getGSTBreakdown($itemTotal, $item['gst_type'] ?? 'IGST', $item['gst_rate'] ?? 18);
         $stmt2->execute([
             $tempOrderId,
             $item['product_id'],
             $item['quantity'],
-            $item['selling_price'] * $item['quantity'],
+            $itemTotal,
             $item['selling_price'],
             $item['gst_rate'] ?? 18,
             $gstBreakdown['total_gst']
@@ -108,7 +110,9 @@ try {
     }
     $pdo->commit();
 } catch (Exception $e) {
-    $pdo->rollBack();
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
     echo json_encode(['success' => false, 'message' => 'Could not create order: ' . $e->getMessage()]);
     exit;
 }

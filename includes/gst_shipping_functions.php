@@ -1,6 +1,19 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
 
+if (!function_exists('getPackagePriceMultiplier')) {
+    function getPackagePriceMultiplier($quantity, $packageQuantity = 1) {
+        $packageQuantity = max(1, (int)$packageQuantity);
+        return max(0, (float)$quantity) / $packageQuantity;
+    }
+}
+
+if (!function_exists('getCartItemPriceMultiplier')) {
+    function getCartItemPriceMultiplier($item) {
+        return getPackagePriceMultiplier($item['quantity'] ?? 0, $item['package_quantity'] ?? 1);
+    }
+}
+
 /**
  * Calculate GST amount based on product details and delivery location
  * Note: GST calculation happens at checkout time based on delivery location vs billing location
@@ -151,26 +164,27 @@ function calculateOrderTotal($cart_items, $delivery_state, $delivery_city = null
     foreach ($cart_items as $item) {
         $item_price = isset($item['selling_price']) ? $item['selling_price'] : 0;
         $item_mrp = isset($item['mrp']) ? $item['mrp'] : $item_price;
-        $item_total = $item_price * $item['quantity'];
-        $item_mrp_total = $item_mrp * $item['quantity'];
+        $price_multiplier = getCartItemPriceMultiplier($item);
+        $item_total = $item_price * $price_multiplier;
+        $item_mrp_total = $item_mrp * $price_multiplier;
         $subtotal += $item_total;
         $total_mrp += $item_mrp_total;
         // Calculate GST for this item using seller_state as billing_state
         $gst_calc = calculateGST($item_price, $item['gst_rate'], $item['gst_type'], $delivery_state, $seller_state);
-        $item_gst = $gst_calc['total_gst'] * $item['quantity'];
+        $item_gst = $gst_calc['total_gst'] * $price_multiplier;
         $total_gst += $item_gst;
         // Store GST breakdown
         $gst_breakdown[] = [
             'product_id' => $item['product_id'],
             'gst_amount' => $item_gst,
-            'sgst' => $gst_calc['sgst'] * $item['quantity'],
-            'cgst' => $gst_calc['cgst'] * $item['quantity'],
-            'igst' => $gst_calc['igst'] * $item['quantity'],
+            'sgst' => $gst_calc['sgst'] * $price_multiplier,
+            'cgst' => $gst_calc['cgst'] * $price_multiplier,
+            'igst' => $gst_calc['igst'] * $price_multiplier,
             'gst_type' => $gst_calc['gst_type']
         ];
         // Calculate savings for this item
         if (isset($item['mrp'])) {
-            $total_savings += max(0, ($item['mrp'] - $item_price)) * $item['quantity'];
+            $total_savings += max(0, ($item['mrp'] - $item_price)) * $price_multiplier;
         }
     }
     // Calculate shipping charge ONCE for the whole order

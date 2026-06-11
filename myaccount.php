@@ -33,7 +33,7 @@ function validateAccountAddressData($data) {
         $errors[] = 'Please enter a valid phone number.';
     }
 
-    if (!preg_match('/^[0-9]{6}$/', $data['pincode'])) {
+    if (!preg_match('/^[1-9][0-9]{5}$/', $data['pincode'])) {
         $errors[] = 'Please enter a valid 6 digit PIN code.';
     }
 
@@ -881,7 +881,7 @@ endif; ?>
                             <input type="text" name="phone" class="form-control" placeholder="Phone Number" inputmode="tel" maxlength="13" pattern="(?:\+91|0)?[6-9][0-9]{9}" title="Enter a valid Indian mobile number" value="<?php echo htmlspecialchars($address_form_values['phone'] ?? ''); ?>" required>
                         </div>
                         <div class="col-md-4">
-                            <input type="text" name="pincode" class="form-control" placeholder="PIN Code" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" title="Enter a 6 digit PIN code" value="<?php echo htmlspecialchars($address_form_values['pincode'] ?? ''); ?>" required>
+                            <input type="text" name="pincode" class="form-control" placeholder="PIN Code" inputmode="numeric" maxlength="6" pattern="[1-9][0-9]{5}" title="Enter a valid 6 digit PIN code" value="<?php echo htmlspecialchars($address_form_values['pincode'] ?? ''); ?>" required>
                         </div>
                         <div class="col-md-8">
                             <input type="text" name="address_line1" class="form-control" placeholder="Address Line 1" minlength="5" maxlength="150" value="<?php echo htmlspecialchars($address_form_values['address_line1'] ?? ''); ?>" required>
@@ -1143,7 +1143,7 @@ document.addEventListener('DOMContentLoaded', function() {
       <input type="hidden" name="address_id" id="edit_address_id">
       <div class="mb-2"><input type="text" name="name" id="edit_name" class="form-control" placeholder="Full Name" minlength="2" maxlength="60" pattern="[A-Za-z][A-Za-z .'-]*" title="Enter a valid full name" required></div>
       <div class="mb-2"><input type="text" name="phone" id="edit_phone" class="form-control" placeholder="Phone Number" inputmode="tel" maxlength="13" pattern="(?:\+91|0)?[6-9][0-9]{9}" title="Enter a valid Indian mobile number" required></div>
-      <div class="mb-2"><input type="text" name="pincode" id="edit_pincode" class="form-control" placeholder="PIN Code" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" title="Enter a 6 digit PIN code" required></div>
+      <div class="mb-2"><input type="text" name="pincode" id="edit_pincode" class="form-control" placeholder="PIN Code" inputmode="numeric" maxlength="6" pattern="[1-9][0-9]{5}" title="Enter a valid 6 digit PIN code" required></div>
       <div class="mb-2"><input type="text" name="address_line1" id="edit_address_line1" class="form-control" placeholder="Address Line 1" minlength="5" maxlength="150" required></div>
       <div class="mb-2"><input type="text" name="address_line2" id="edit_address_line2" class="form-control" placeholder="Address Line 2 (optional)" maxlength="150"></div>
       <div class="mb-2"><input type="text" name="city" id="edit_city" class="form-control" placeholder="City" minlength="2" maxlength="60" pattern="[A-Za-z][A-Za-z .'-]*" title="Enter a valid city" required></div>
