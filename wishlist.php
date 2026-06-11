@@ -52,13 +52,10 @@ echo renderBreadcrumb($breadcrumbs);
         <div class="products-grid wishlist-grid">
             <?php foreach ($wishlistItems as $item): ?>
                 <div class="card product-card" data-id="prod-<?php echo $item['product_id']; ?>">
-                        <?php 
+                        <?php
                         $isOutOfStock = ($item['stock_quantity'] <= 0);
                         $packageQuantity = normalizePackageQuantity($item['package_quantity'] ?? 1);
-                        $maxQuantity = (int)($item['stock_quantity'] ?? 99);
-                        if (isset($item['max_quantity_per_order']) && $item['max_quantity_per_order'] !== null) {
-                            $maxQuantity = min($maxQuantity, (int)$item['max_quantity_per_order']);
-                        }
+                        $maxQuantity = getProductOrderMaxQuantity($item);
                         echo renderProductDiscountBanner($item);
                         ?>
                         <div class="product-info">

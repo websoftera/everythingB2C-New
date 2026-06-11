@@ -181,10 +181,7 @@ foreach ($discountedProducts as $product):
   $inWishlist = in_array($product['id'], $wishlist_ids);
   $isOutOfStock = ($product['stock_quantity'] <= 0);
   $packageQuantity = normalizePackageQuantity($product['package_quantity'] ?? 1);
-  $maxQuantity = (int)($product['display_base_stock_quantity'] ?? $product['stock_quantity']);
-  if (isset($product['max_quantity_per_order']) && $product['max_quantity_per_order'] !== null) {
-    $maxQuantity = min($maxQuantity, (int)$product['max_quantity_per_order']);
-  }
+  $maxQuantity = getProductOrderMaxQuantity($product);
 ?>
             <div class="card product-card" data-id="prod-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>">
                 <?php echo renderProductDiscountBanner($product); ?>
@@ -275,10 +272,7 @@ foreach ($featuredProducts as $product):
   $inWishlist = in_array($product['id'], $wishlist_ids);
   $isOutOfStock = ($product['stock_quantity'] <= 0);
   $packageQuantity = normalizePackageQuantity($product['package_quantity'] ?? 1);
-  $maxQuantity = (int)($product['display_base_stock_quantity'] ?? $product['stock_quantity']);
-  if (isset($product['max_quantity_per_order']) && $product['max_quantity_per_order'] !== null) {
-    $maxQuantity = min($maxQuantity, (int)$product['max_quantity_per_order']);
-  }
+  $maxQuantity = getProductOrderMaxQuantity($product);
 ?>
             <div class="card product-card" data-id="prod-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>">
                 <?php echo renderProductDiscountBanner($product); ?>

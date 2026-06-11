@@ -11,6 +11,22 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
+function formatEmailAmount($amount) {
+    $amount = (float)$amount;
+    $decimals = abs($amount - round($amount)) < 0.005 ? 0 : 2;
+    return number_format($amount, $decimals);
+}
+
+function getEmailOrderItemAmounts(array $item) {
+    $unitPrice = isset($item['unit_price']) ? (float)$item['unit_price'] : (float)($item['price'] ?? 0);
+    $lineTotal = isset($item['price']) ? (float)$item['price'] : ($unitPrice * (float)($item['quantity'] ?? 1));
+
+    return [
+        'unit_price' => $unitPrice,
+        'line_total' => $lineTotal
+    ];
+}
+
 /**
  * Send email using PHPMailer
  */
@@ -151,20 +167,20 @@ function sendOrderStatusChangedNotification($userId, $orderId, $newStatus, $oldS
  * Generate HTML email body for order placed user notification
  */
 function generateOrderPlacedUserEmail($user, $order, $orderItems) {
-    $total = number_format($order['total_amount'], 2);
+    $total = formatEmailAmount($order['total_amount']);
     $orderDate = date('F j, Y \a\t g:i A', strtotime($order['created_at']));
     
     $itemsHTML = '';
     foreach ($orderItems as $item) {
         $productName = $item['name'] ?? 'Unknown Product';
         $quantity = $item['quantity'] ?? 1;
-        $price = $item['price'] ?? 0;
+        $amounts = getEmailOrderItemAmounts($item);
         $itemsHTML .= "
         <tr>
             <td style='padding: 10px; border-bottom: 1px solid #eee;'>{$productName}</td>
             <td style='padding: 10px; border-bottom: 1px solid #eee; text-align: center;'>{$quantity}</td>
-            <td style='padding: 10px; border-bottom: 1px solid #eee; text-align: right;'>₹" . number_format($price, 2) . "</td>
-            <td style='padding: 10px; border-bottom: 1px solid #eee; text-align: right;'>₹" . number_format($price * $quantity, 2) . "</td>
+            <td style='padding: 10px; border-bottom: 1px solid #eee; text-align: center;'>₹" . formatEmailAmount($amounts['unit_price']) . "</td>
+            <td style='padding: 10px; border-bottom: 1px solid #eee; text-align: center;'>₹" . formatEmailAmount($amounts['line_total']) . "</td>
         </tr>";
     }
     
@@ -205,9 +221,9 @@ function generateOrderPlacedUserEmail($user, $order, $orderItems) {
                     <thead>
                         <tr>
                             <th>Product</th>
-                            <th>Quantity</th>
-                            <th>Price</th>
-                            <th>Total</th>
+                            <th style='text-align: center;'>Quantity</th>
+                            <th style='text-align: center;'>Price</th>
+                            <th style='text-align: center;'>Total</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -216,7 +232,7 @@ function generateOrderPlacedUserEmail($user, $order, $orderItems) {
                     <tfoot>
                         <tr>
                             <td colspan='3' style='text-align: right; padding: 10px; font-weight: bold;'>Total Amount:</td>
-                            <td style='text-align: right; padding: 10px; font-weight: bold;' class='total'>₹{$total}</td>
+                            <td style='text-align: center; padding: 10px; font-weight: bold;' class='total'>₹{$total}</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -240,20 +256,20 @@ function generateOrderPlacedUserEmail($user, $order, $orderItems) {
  * Generate HTML email body for order placed admin notification
  */
 function generateOrderPlacedAdminEmail($order, $orderItems) {
-    $total = number_format($order['total_amount'], 2);
+    $total = formatEmailAmount($order['total_amount']);
     $orderDate = date('F j, Y \a\t g:i A', strtotime($order['created_at']));
     
     $itemsHTML = '';
     foreach ($orderItems as $item) {
         $productName = $item['name'] ?? 'Unknown Product';
         $quantity = $item['quantity'] ?? 1;
-        $price = $item['price'] ?? 0;
+        $amounts = getEmailOrderItemAmounts($item);
         $itemsHTML .= "
         <tr>
             <td style='padding: 10px; border-bottom: 1px solid #eee;'>{$productName}</td>
             <td style='padding: 10px; border-bottom: 1px solid #eee; text-align: center;'>{$quantity}</td>
-            <td style='padding: 10px; border-bottom: 1px solid #eee; text-align: right;'>₹" . number_format($price, 2) . "</td>
-            <td style='padding: 10px; border-bottom: 1px solid #eee; text-align: right;'>₹" . number_format($price * $quantity, 2) . "</td>
+            <td style='padding: 10px; border-bottom: 1px solid #eee; text-align: center;'>₹" . formatEmailAmount($amounts['unit_price']) . "</td>
+            <td style='padding: 10px; border-bottom: 1px solid #eee; text-align: center;'>₹" . formatEmailAmount($amounts['line_total']) . "</td>
         </tr>";
     }
     
@@ -303,9 +319,9 @@ function generateOrderPlacedAdminEmail($order, $orderItems) {
                     <thead>
                         <tr>
                             <th>Product</th>
-                            <th>Quantity</th>
-                            <th>Price</th>
-                            <th>Total</th>
+                            <th style='text-align: center;'>Quantity</th>
+                            <th style='text-align: center;'>Price</th>
+                            <th style='text-align: center;'>Total</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -314,7 +330,7 @@ function generateOrderPlacedAdminEmail($order, $orderItems) {
                     <tfoot>
                         <tr>
                             <td colspan='3' style='text-align: right; padding: 10px; font-weight: bold;'>Total Amount:</td>
-                            <td style='text-align: right; padding: 10px; font-weight: bold;' class='total'>₹{$total}</td>
+                            <td style='text-align: center; padding: 10px; font-weight: bold;' class='total'>₹{$total}</td>
                         </tr>
                     </tfoot>
                 </table>

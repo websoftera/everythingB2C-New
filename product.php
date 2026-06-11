@@ -712,10 +712,7 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                     <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
                     <?php
                     $packageQuantity = normalizePackageQuantity($product['package_quantity'] ?? 1);
-                    $maxQuantity = (int)($product['display_base_stock_quantity'] ?? $product['stock_quantity']);
-                    if (isset($product['max_quantity_per_order']) && $product['max_quantity_per_order'] !== null) {
-                        $maxQuantity = min($maxQuantity, (int)$product['max_quantity_per_order']);
-                    }
+                    $maxQuantity = getProductOrderMaxQuantity($product);
                     ?>
                     <input type="number" class="quantity-input" value="<?php echo $packageQuantity; ?>" min="<?php echo $packageQuantity; ?>" step="<?php echo $packageQuantity; ?>" max="<?php echo $maxQuantity; ?>" data-product-id="<?php echo $product['id']; ?>" data-package-quantity="<?php echo $packageQuantity; ?>">
                     <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
@@ -838,10 +835,7 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                                                 <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
                                                 <?php
                                                 $relatedPackageQuantity = normalizePackageQuantity($relatedProduct['package_quantity'] ?? 1);
-                                                $relatedMaxQuantity = (int)($relatedProduct['display_base_stock_quantity'] ?? $relatedProduct['stock_quantity']);
-                                                if (isset($relatedProduct['max_quantity_per_order']) && $relatedProduct['max_quantity_per_order'] !== null) {
-                                                    $relatedMaxQuantity = min($relatedMaxQuantity, (int)$relatedProduct['max_quantity_per_order']);
-                                                }
+                                                $relatedMaxQuantity = getProductOrderMaxQuantity($relatedProduct);
                                                 ?>
                                                 <input type="number" class="quantity-input" value="<?php echo $relatedPackageQuantity; ?>" min="<?php echo $relatedPackageQuantity; ?>" step="<?php echo $relatedPackageQuantity; ?>" max="<?php echo $relatedMaxQuantity; ?>" data-product-id="<?php echo $relatedProduct['id']; ?>" data-package-quantity="<?php echo $relatedPackageQuantity; ?>">
                                                 <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
@@ -1011,11 +1005,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const quantityInput = document.querySelector('.product-detail-card .quantity-input');
             if (quantityInput) {
-                const productMaxOrderQuantity = <?php echo isset($product['max_quantity_per_order']) && $product['max_quantity_per_order'] !== null ? (int)$product['max_quantity_per_order'] : 'null'; ?>;
-                const variationStockQuantity = Math.max(0, parseInt(selectedVariation.stock_quantity, 10) || 0);
-                const variationMaxQuantity = productMaxOrderQuantity !== null
-                    ? Math.min(variationStockQuantity, productMaxOrderQuantity)
-                    : variationStockQuantity;
+                const productMaxQuantity = <?php echo (int)getProductOrderMaxQuantity($product); ?>;
+                const variationMaxQuantity = productMaxQuantity;
                 quantityInput.max = variationMaxQuantity;
                 if (typeof normalizeQuantityInputValue === 'function') {
                     normalizeQuantityInputValue(quantityInput);
