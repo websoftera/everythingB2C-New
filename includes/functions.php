@@ -1542,6 +1542,28 @@ function getOrderItems($orderId) {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+function getOrderItemDisplayAmounts(array $item) {
+    $quantity = max(1, (float)($item['quantity'] ?? 1));
+    $storedLineTotal = isset($item['price']) ? (float)$item['price'] : 0;
+    $unitPrice = 0;
+
+    if (isset($item['unit_price']) && $item['unit_price'] !== '' && (float)$item['unit_price'] > 0) {
+        $unitPrice = (float)$item['unit_price'];
+        $lineTotal = $storedLineTotal > 0 ? $storedLineTotal : ($unitPrice * $quantity);
+    } else {
+        $unitPrice = isset($item['selling_price']) && (float)$item['selling_price'] > 0
+            ? (float)$item['selling_price']
+            : $storedLineTotal;
+        $lineTotal = ($storedLineTotal > $unitPrice) ? $storedLineTotal : ($unitPrice * $quantity);
+    }
+
+    return [
+        'unit_price' => $unitPrice,
+        'line_total' => $lineTotal,
+        'price_multiplier' => $unitPrice > 0 ? max(1, $lineTotal / $unitPrice) : $quantity
+    ];
+}
+
 function getOrderStatusHistory($orderId) {
     global $pdo;
     $stmt = $pdo->prepare("SELECT osh.*, os.name as status_name, os.color as status_color
