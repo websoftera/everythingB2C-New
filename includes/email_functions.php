@@ -168,6 +168,9 @@ function sendOrderStatusChangedNotification($userId, $orderId, $newStatus, $oldS
  */
 function generateOrderPlacedUserEmail($user, $order, $orderItems) {
     $total = formatEmailAmount($order['total_amount']);
+    $productTotal = formatEmailAmount($order['subtotal'] ?? 0);
+    $shippingCharge = formatEmailAmount($order['shipping_charge'] ?? 0);
+    $hasShippingCharge = (float)($order['shipping_charge'] ?? 0) > 0;
     $orderDate = date('F j, Y \a\t g:i A', strtotime($order['created_at']));
     
     $itemsHTML = '';
@@ -231,7 +234,16 @@ function generateOrderPlacedUserEmail($user, $order, $orderItems) {
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan='3' style='text-align: right; padding: 10px; font-weight: bold;'>Total Amount:</td>
+                            <td colspan='3' style='text-align: right; padding: 10px; font-weight: bold; border-top: 1px solid #eee;'>Product Total:</td>
+                            <td style='text-align: center; padding: 10px; font-weight: bold; border-top: 1px solid #eee;'>₹{$productTotal}</td>
+                        </tr>" .
+                        ($hasShippingCharge ? "
+                        <tr>
+                            <td colspan='3' style='text-align: right; padding: 10px; font-weight: bold;'>Shipping Charges:</td>
+                            <td style='text-align: center; padding: 10px; font-weight: bold;'>₹{$shippingCharge}</td>
+                        </tr>" : "") . "
+                        <tr>
+                            <td colspan='3' style='text-align: right; padding: 10px; font-weight: bold; border-top: 1px solid #eee;'>Total Amount:</td>
                             <td style='text-align: center; padding: 10px; font-weight: bold;' class='total'>₹{$total}</td>
                         </tr>
                     </tfoot>
@@ -257,6 +269,9 @@ function generateOrderPlacedUserEmail($user, $order, $orderItems) {
  */
 function generateOrderPlacedAdminEmail($order, $orderItems) {
     $total = formatEmailAmount($order['total_amount']);
+    $productTotal = formatEmailAmount($order['subtotal'] ?? 0);
+    $shippingCharge = formatEmailAmount($order['shipping_charge'] ?? 0);
+    $hasShippingCharge = (float)($order['shipping_charge'] ?? 0) > 0;
     $orderDate = date('F j, Y \a\t g:i A', strtotime($order['created_at']));
     
     $itemsHTML = '';
@@ -329,7 +344,16 @@ function generateOrderPlacedAdminEmail($order, $orderItems) {
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan='3' style='text-align: right; padding: 10px; font-weight: bold;'>Total Amount:</td>
+                            <td colspan='3' style='text-align: right; padding: 10px; font-weight: bold; border-top: 1px solid #eee;'>Product Total:</td>
+                            <td style='text-align: center; padding: 10px; font-weight: bold; border-top: 1px solid #eee;'>₹{$productTotal}</td>
+                        </tr>" .
+                        ($hasShippingCharge ? "
+                        <tr>
+                            <td colspan='3' style='text-align: right; padding: 10px; font-weight: bold;'>Shipping Charges:</td>
+                            <td style='text-align: center; padding: 10px; font-weight: bold;'>₹{$shippingCharge}</td>
+                        </tr>" : "") . "
+                        <tr>
+                            <td colspan='3' style='text-align: right; padding: 10px; font-weight: bold; border-top: 1px solid #eee;'>Total Amount:</td>
                             <td style='text-align: center; padding: 10px; font-weight: bold;' class='total'>₹{$total}</td>
                         </tr>
                     </tfoot>
