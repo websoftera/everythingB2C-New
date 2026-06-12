@@ -66,6 +66,12 @@ $total = $order['total_amount'];
 $shippingCharge = (float)($order['shipping_charge'] ?? 0);
 $invoiceGrandTotal = (float)($order['total_amount'] ?? 0);
 
+function formatInvoiceAmount($amount) {
+    $amount = (float)$amount;
+    $decimals = abs($amount - round($amount)) < 0.005 ? 0 : 2;
+    return number_format($amount, $decimals);
+}
+
 // Prepare QR code data with required info
 $qrData =
     "Seller: everythingb2c\n" .
@@ -230,21 +236,21 @@ foreach ($orderItems as $item) {
     $html .= '<td>' . $qty . '</td>';
     $html .= '<td>' . $unit . '</td>';
     $html .= '<td>' . number_format($gst_rate, 2) . '%</td>';
-    $html .= '<td>' . number_format($item_mrp, 2) . '</td>';
-    $html .= '<td>' . number_format($item_sp, 2) . '</td>';
-    $html .= '<td>' . number_format($item_gst, 2) . '</td>';
-    $html .= '<td>' . number_format($net_price, 2) . '</td>';
-    $html .= '<td>' . number_format($net_gst, 2) . '</td>';
-    $html .= '<td>' . number_format($total, 2) . '</td>';
-    $html .= '<td>' . number_format($savings, 2) . '</td>';
+    $html .= '<td>' . formatInvoiceAmount($item_mrp) . '</td>';
+    $html .= '<td>' . formatInvoiceAmount($item_sp) . '</td>';
+    $html .= '<td>' . formatInvoiceAmount($item_gst) . '</td>';
+    $html .= '<td>' . formatInvoiceAmount($net_price) . '</td>';
+    $html .= '<td>' . formatInvoiceAmount($net_gst) . '</td>';
+    $html .= '<td>' . formatInvoiceAmount($total) . '</td>';
+    $html .= '<td>' . formatInvoiceAmount($savings) . '</td>';
     $html .= '</tr>';
     $sr++;
 }
-$html .= '<tr style="font-weight:bold;background:#f5f5f5;"><td colspan="10" align="right">Total</td><td>' . number_format($total_net_price, 2) . '</td><td>' . number_format($total_net_gst, 2) . '</td><td>' . number_format($total_total, 2) . '</td><td>' . number_format($total_savings, 2) . '</td></tr>';
+$html .= '<tr style="font-weight:bold;background:#f5f5f5;"><td colspan="10" align="right">Total</td><td>' . formatInvoiceAmount($total_net_price) . '</td><td>' . formatInvoiceAmount($total_net_gst) . '</td><td>' . formatInvoiceAmount($total_total) . '</td><td>' . formatInvoiceAmount($total_savings) . '</td></tr>';
 if ($shippingCharge > 0) {
-    $html .= '<tr style="font-weight:bold;background:#fafafa;"><td colspan="10" align="right">Shipping Charges</td><td>' . number_format($shippingCharge, 2) . '</td><td>0.00</td><td>' . number_format($shippingCharge, 2) . '</td><td>0.00</td></tr>';
+    $html .= '<tr style="font-weight:bold;background:#fafafa;"><td colspan="10" align="right">Shipping Charges</td><td>' . formatInvoiceAmount($shippingCharge) . '</td><td>0</td><td>' . formatInvoiceAmount($shippingCharge) . '</td><td>0</td></tr>';
 }
-$html .= '<tr style="font-weight:bold;background:#f5f5f5;"><td colspan="10" align="right">Grand Total</td><td></td><td></td><td>' . number_format($invoiceGrandTotal, 2) . '</td><td>' . number_format($total_savings, 2) . '</td></tr>';
+$html .= '<tr style="font-weight:bold;background:#f5f5f5;"><td colspan="10" align="right">Grand Total</td><td></td><td></td><td>' . formatInvoiceAmount($invoiceGrandTotal) . '</td><td>' . formatInvoiceAmount($total_savings) . '</td></tr>';
 $html .= '</table>';
 
 // GST Summary Table
@@ -255,25 +261,25 @@ foreach ($gst_summary as $hsn => $row) {
     $html .= '<tr>';
     $html .= '<td>' . htmlspecialchars($hsn) . '</td>';
     $html .= '<td>' . number_format($row['gst_rate'], 2) . '%</td>';
-    $html .= '<td>' . number_format($row['cgst'], 2) . '</td>';
-    $html .= '<td>' . number_format($row['sgst'], 2) . '</td>';
-    $html .= '<td>' . ($row['igst'] > 0 ? number_format($row['igst'], 2) : '-') . '</td>';
-    $html .= '<td>' . number_format($row['net_gst'], 2) . '</td>';
+    $html .= '<td>' . formatInvoiceAmount($row['cgst']) . '</td>';
+    $html .= '<td>' . formatInvoiceAmount($row['sgst']) . '</td>';
+    $html .= '<td>' . ($row['igst'] > 0 ? formatInvoiceAmount($row['igst']) : '-') . '</td>';
+    $html .= '<td>' . formatInvoiceAmount($row['net_gst']) . '</td>';
     $html .= '</tr>';
     $total_cgst += $row['cgst'];
     $total_sgst += $row['sgst'];
     $total_igst += $row['igst'];
     $total_gst += $row['net_gst'];
 }
-$html .= '<tr style="font-weight:bold;background:#f5f5f5;"><td colspan="2">Total GST</td><td>' . number_format($total_cgst, 2) . '</td><td>' . number_format($total_sgst, 2) . '</td><td>' . ($total_igst > 0 ? number_format($total_igst, 2) : '-') . '</td><td>' . number_format($total_gst, 2) . '</td></tr>';
+$html .= '<tr style="font-weight:bold;background:#f5f5f5;"><td colspan="2">Total GST</td><td>' . formatInvoiceAmount($total_cgst) . '</td><td>' . formatInvoiceAmount($total_sgst) . '</td><td>' . ($total_igst > 0 ? formatInvoiceAmount($total_igst) : '-') . '</td><td>' . formatInvoiceAmount($total_gst) . '</td></tr>';
 $html .= '</table>';
 
 // Total Invoice Value
-$html .= '<br><b>Product Total:</b> ' . number_format($total_total, 2) . '<br>';
+$html .= '<br><b>Product Total:</b> ' . formatInvoiceAmount($total_total) . '<br>';
 if ($shippingCharge > 0) {
-    $html .= '<b>Shipping Charges:</b> ' . number_format($shippingCharge, 2) . '<br>';
+    $html .= '<b>Shipping Charges:</b> ' . formatInvoiceAmount($shippingCharge) . '<br>';
 }
-$html .= '<b>Total Invoice Value:</b> ' . number_format($invoiceGrandTotal, 2) . '<br>';
+$html .= '<b>Total Invoice Value:</b> ' . formatInvoiceAmount($invoiceGrandTotal) . '<br>';
 $html .= '<b>Total Invoice Value in Words:</b> ' . numberToWords($invoiceGrandTotal) . ' Rupees Only<br>';
 
 // Helper function to convert number to words (Indian style)
