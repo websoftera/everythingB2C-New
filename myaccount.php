@@ -766,7 +766,9 @@ endif; ?>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <?php foreach ($orderItems as $item): ?>
+                                            <?php foreach ($orderItems as $item):
+                                                $amounts = getOrderItemDisplayAmounts($item);
+?>
                                                 <tr>
                                                     <td>
                                                         <img src="<?php echo htmlspecialchars($item['main_image'] ? $item['main_image'] : './uploads/products/blank-img.webp'); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" style="height:32px;width:32px;object-fit:cover;margin-right:8px;" onerror="this.onerror=null; this.src='./uploads/products/blank-img.webp';">
@@ -775,8 +777,8 @@ endif; ?>
                                                     <td><?php echo htmlspecialchars($item['sku']); ?></td>
                                                     <td><?php echo htmlspecialchars($item['hsn'] ?? ''); ?></td>
                                                     <td><?php echo $item['quantity']; ?></td>
-                                                    <td>₹<?php echo number_format($item['price'], 0); ?></td>
-                                                    <td>₹<?php echo number_format($item['price'] * $item['quantity'], 0); ?></td>
+                                                    <td>₹<?php echo number_format($amounts['unit_price'], 0); ?></td>
+                                                    <td>₹<?php echo number_format($amounts['line_total'], 0); ?></td>
                                                 </tr>
                                             <?php
         endforeach; ?>
@@ -787,8 +789,9 @@ endif; ?>
                                 <!-- Mobile Card View -->
                                 <div class="d-md-none">
                                     <?php foreach ($orderItems as $item):
-            $unit_price = $item['selling_price'] ?? $item['price'];
-            $item_savings = ($item['mrp'] - $unit_price) * $item['quantity'];
+            $amounts = getOrderItemDisplayAmounts($item);
+            $unit_price = $amounts['unit_price'];
+            $item_savings = ($item['mrp'] - $unit_price) * $amounts['price_multiplier'];
             $item_percent = $item['mrp'] > 0 ? round((($item['mrp'] - $unit_price) / $item['mrp']) * 100) : 0;
 ?>
                                         <div class="order-item-mobile-card">
@@ -808,8 +811,8 @@ endif; ?>
             endif; ?>
                                                     </div>
                                                     <div class="order-item-mobile-price-qty">
-                                                        <span>₹<?php echo number_format($item['price'], 0); ?> x <?php echo $item['quantity']; ?></span>
-                                                        <span class="order-item-mobile-total">₹<?php echo number_format($item['price'] * $item['quantity'], 0); ?></span>
+                                                        <span>₹<?php echo number_format($amounts['unit_price'], 0); ?> x <?php echo $item['quantity']; ?></span>
+                                                        <span class="order-item-mobile-total">₹<?php echo number_format($amounts['line_total'], 0); ?></span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -825,7 +828,8 @@ endif; ?>
         $total_savings = 0;
         foreach ($orderItems as $item) {
             if (isset($item['mrp']) && isset($item['selling_price'])) {
-                $total_savings += ($item['mrp'] - $item['selling_price']) * $item['quantity'];
+                $amounts = getOrderItemDisplayAmounts($item);
+                $total_savings += ($item['mrp'] - $amounts['unit_price']) * $amounts['price_multiplier'];
             }
         }
 ?>
