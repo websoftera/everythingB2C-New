@@ -107,17 +107,20 @@ include 'includes/header.php';
                     <h5 class="mb-0">Order Items</h5>
                 </div>
                 <div class="card-body">
-                    <?php foreach ($orderItems as $item): ?>
+                    <?php foreach ($orderItems as $item):
+                        $amounts = getOrderItemDisplayAmounts($item);
+                        $displayQty = formatDisplayQuantity(getOrderItemDisplayQuantity($item));
+                    ?>
                         <div class="row mb-3 align-items-center">
                             <div class="col-md-2">
-                                <img src="./<?php echo $item['main_image']; ?>" alt="<?php echo $item['name']; ?>" class="img-fluid">
+                                <img src="./<?php echo $item['main_image']; ?>" alt="<?php echo htmlspecialchars(cleanProductName($item['name'])); ?>" class="img-fluid">
                             </div>
                             <div class="col-md-6">
-                                <h6><?php echo htmlspecialchars($item['name']); ?></h6>
-                                <p class="text-muted">Quantity: <?php echo $item['quantity']; ?></p>
+                                <h6><?php echo htmlspecialchars(cleanProductName($item['name'])); ?></h6>
+                                <p class="text-muted">Quantity: <?php echo $displayQty; ?></p>
                             </div>
                             <div class="col-md-4 text-end">
-                                <strong>₹<?php echo number_format($item['price'] * $item['quantity'], 2); ?></strong>
+                                <strong>₹<?php echo number_format($amounts['line_total'], 2); ?></strong>
                             </div>
                         </div>
                     <?php endforeach; ?>

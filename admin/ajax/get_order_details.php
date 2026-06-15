@@ -14,7 +14,7 @@ if (!$order_id) {
     exit;
 }
 // Always fetch order before any output
-$stmt = $pdo->prepare("SELECT o.*, u.name as customer_name, u.email as customer_email, u.phone as customer_phone, a.name as address_name, a.phone as address_phone, a.address_line1, a.address_line2, a.city, a.state, a.pincode FROM orders o LEFT JOIN users u ON o.user_id = u.id LEFT JOIN addresses a ON o.address_id = a.id WHERE o.id = ?");
+$stmt = $pdo->prepare("SELECT o.*, os.name as status_name, u.name as customer_name, u.email as customer_email, u.phone as customer_phone, a.name as address_name, a.phone as address_phone, a.address_line1, a.address_line2, a.city, a.state, a.pincode FROM orders o LEFT JOIN order_statuses os ON o.order_status_id = os.id LEFT JOIN users u ON o.user_id = u.id LEFT JOIN addresses a ON o.address_id = a.id WHERE o.id = ?");
 $stmt->execute([$order_id]);
 $order = $stmt->fetch(PDO::FETCH_ASSOC);
 if (isset($_GET['json']) && $_GET['json'] == '1') {
@@ -56,7 +56,7 @@ try {
     echo '<div class="mb-3">';
     echo '<h6>Order Items</h6>';
     // Reuse get_order_items.php logic
-    $stmt = $pdo->prepare("SELECT oi.*, p.name as product_name, p.main_image, p.slug, p.hsn FROM order_items oi LEFT JOIN products p ON oi.product_id = p.id WHERE oi.order_id = ?");
+    $stmt = $pdo->prepare("SELECT oi.*, p.name as product_name, p.main_image, p.slug, p.hsn, p.package_quantity FROM order_items oi LEFT JOIN products p ON oi.product_id = p.id WHERE oi.order_id = ?");
     $stmt->execute([$order_id]);
     $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
     $total_savings = 0;
@@ -72,11 +72,13 @@ try {
         $total_savings = 0;
         foreach ($items as $item) {
             $mrp = isset($item['mrp']) ? $item['mrp'] : 0;
-            $selling = isset($item['selling_price']) ? $item['selling_price'] : $item['price'];
-            $qty = $item['quantity'];
-            $mrp_total = $mrp * $qty;
-            $selling_total = $selling * $qty;
-            $item_savings = ($mrp - $selling) * $qty;
+            $amounts = getOrderItemDisplayAmounts($item);
+            $selling = $amounts['unit_price'];
+            $qty = formatDisplayQuantity(getOrderItemDisplayQuantity($item));
+            $priceMultiplier = $amounts['price_multiplier'];
+            $mrp_total = $mrp * $priceMultiplier;
+            $selling_total = $amounts['line_total'];
+            $item_savings = max(0, $mrp - $selling) * $priceMultiplier;
             $total_mrp += $mrp_total;
             $total_selling += $selling_total;
             $total_savings += $item_savings;

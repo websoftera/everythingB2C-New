@@ -95,7 +95,7 @@ if ($search || $payment_filter) {
 }
 
 // Get all order statuses for filter
-$orderStatuses = $pdo->query("SELECT * FROM order_statuses ORDER BY sort_order")->fetchAll(PDO::FETCH_ASSOC);
+$orderStatuses = getAllOrderStatuses();
 ?>
 
 <!DOCTYPE html>

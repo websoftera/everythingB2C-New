@@ -39,6 +39,23 @@ function getCartItemPriceMultiplier($item) {
     return getPackagePriceMultiplier($item['quantity'] ?? 0, $item['package_quantity'] ?? 1);
 }
 
+function getPackageDisplayQuantity($quantity, $packageQuantity = 1) {
+    $packageQuantity = normalizePackageQuantity($packageQuantity);
+    $quantity = max(0, (float)$quantity);
+    return $packageQuantity > 1 ? ($quantity / $packageQuantity) : $quantity;
+}
+
+function formatDisplayQuantity($quantity) {
+    $quantity = (float)$quantity;
+    return abs($quantity - round($quantity)) < 0.0001
+        ? (string)(int)round($quantity)
+        : rtrim(rtrim(number_format($quantity, 2, '.', ''), '0'), '.');
+}
+
+function getOrderItemDisplayQuantity(array $item) {
+    return getPackageDisplayQuantity($item['quantity'] ?? 0, $item['package_quantity'] ?? 1);
+}
+
 function isValidPackageQuantity($quantity, $packageQuantity) {
     $packageQuantity = normalizePackageQuantity($packageQuantity);
     $quantity = (int)$quantity;
@@ -603,10 +620,11 @@ function applyDisplayVariationPrices(array $products) {
 function cleanProductName($name) {
     // Decode HTML entities first
     $cleaned = html_entity_decode($name, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $cleaned = preg_replace('/<\s*br\s*\/?\s*>/i', ' ', $cleaned);
     // Remove any remaining HTML tags
     $cleaned = strip_tags($cleaned);
     // Trim whitespace
-    return trim($cleaned);
+    return trim(preg_replace('/\s+/', ' ', $cleaned));
 }
 
 // Function to format product names on listing cards while allowing manual <br> breaks
@@ -1534,7 +1552,7 @@ function getOrderById($orderId, $userId = null) {
 
 function getOrderItems($orderId) {
     global $pdo;
-    $stmt = $pdo->prepare("SELECT oi.*, p.name, p.main_image, p.slug, p.sku, oi.hsn
+    $stmt = $pdo->prepare("SELECT oi.*, p.name, p.main_image, p.slug, p.sku, p.package_quantity, oi.hsn
                           FROM order_items oi
                           JOIN products p ON oi.product_id = p.id
                           WHERE oi.order_id = ?");
@@ -1544,6 +1562,8 @@ function getOrderItems($orderId) {
 
 function getOrderItemDisplayAmounts(array $item) {
     $quantity = max(1, (float)($item['quantity'] ?? 1));
+    $packageQuantity = normalizePackageQuantity($item['package_quantity'] ?? 1);
+    $packageMultiplier = getPackagePriceMultiplier($quantity, $packageQuantity);
     $storedLineTotal = isset($item['price']) ? (float)$item['price'] : 0;
     $lineTotal = $storedLineTotal;
 
@@ -1556,13 +1576,13 @@ function getOrderItemDisplayAmounts(array $item) {
     }
 
     if ($lineTotal <= 0 && $unitPrice > 0) {
-        $lineTotal = $unitPrice * $quantity;
+        $lineTotal = $unitPrice * $packageMultiplier;
     }
 
     return [
         'unit_price' => $unitPrice,
         'line_total' => $lineTotal,
-        'price_multiplier' => $unitPrice > 0 ? max(1, $lineTotal / $unitPrice) : $quantity
+        'price_multiplier' => $unitPrice > 0 ? max(1, $lineTotal / $unitPrice) : $packageMultiplier
     ];
 }
 
@@ -1594,14 +1614,65 @@ function getUserOrders($userId, $limit = null) {
 
 function getAllOrderStatuses() {
     global $pdo;
+    ensureDefaultOrderStatuses();
+
     $stmt = $pdo->query("SELECT * FROM order_statuses ORDER BY sort_order, name");
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $statuses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $uniqueStatuses = [];
+    $seenNames = [];
+
+    foreach ($statuses as $status) {
+        $statusName = trim($status['name'] ?? '');
+        $statusKey = strtolower($statusName);
+
+        if ($statusKey === '' || isset($seenNames[$statusKey])) {
+            continue;
+        }
+
+        $seenNames[$statusKey] = true;
+        $uniqueStatuses[] = $status;
+    }
+
+    return $uniqueStatuses;
+}
+
+function ensureDefaultOrderStatuses() {
+    global $pdo;
+
+    $defaultStatuses = [
+        ['Pending', 'Order has been placed and is awaiting confirmation', '#ffc107', 1],
+        ['Processing', 'Order is being processed and prepared for packing', '#17a2b8', 2],
+        ['Packed', 'Order has been packed and is ready for shipping', '#20c997', 3],
+        ['Shipped', 'Order has been shipped from our warehouse', '#9fbe1b', 4],
+        ['In Transit', 'Order is in transit to delivery location', '#6f42c1', 5],
+        ['Out for Delivery', 'Order is out for delivery to your address', '#fd7e14', 6],
+        ['Delivered', 'Order has been successfully delivered', '#198754', 7],
+        ['Canceled', 'Order has been canceled', '#dc3545', 8],
+    ];
+
+    $stmt = $pdo->prepare("INSERT INTO order_statuses (name, description, color, is_system, sort_order)
+        SELECT ?, ?, ?, TRUE, ?
+        WHERE NOT EXISTS (
+            SELECT 1 FROM order_statuses WHERE LOWER(TRIM(name)) = LOWER(TRIM(?)) LIMIT 1
+        )");
+
+    foreach ($defaultStatuses as $status) {
+        [$name, $description, $color, $sortOrder] = $status;
+        $stmt->execute([$name, $description, $color, $sortOrder, $name]);
+    }
 }
 
 function createCustomOrderStatus($name, $description, $color = '#007bff') {
     global $pdo;
+    $statusName = trim($name);
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM order_statuses WHERE LOWER(TRIM(name)) = LOWER(TRIM(?))");
+    $stmt->execute([$statusName]);
+    if ($stmt->fetchColumn() > 0) {
+        return false;
+    }
+
     $stmt = $pdo->prepare("INSERT INTO order_statuses (name, description, color, is_system, sort_order) VALUES (?, ?, ?, FALSE, (SELECT COALESCE(MAX(sort_order), 0) + 1 FROM order_statuses s))");
-    return $stmt->execute([$name, $description, $color]);
+    return $stmt->execute([$statusName, $description, $color]);
 }
 
 function updateOrderStatusRecord($statusId, $name, $description, $color) {

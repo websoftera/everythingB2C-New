@@ -768,15 +768,16 @@ endif; ?>
                                         <tbody>
                                             <?php foreach ($orderItems as $item):
                                                 $amounts = getOrderItemDisplayAmounts($item);
+                                                $displayQty = formatDisplayQuantity(getOrderItemDisplayQuantity($item));
 ?>
                                                 <tr>
                                                     <td>
-                                                        <img src="<?php echo htmlspecialchars($item['main_image'] ? $item['main_image'] : './uploads/products/blank-img.webp'); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" style="height:32px;width:32px;object-fit:cover;margin-right:8px;" onerror="this.onerror=null; this.src='./uploads/products/blank-img.webp';">
-                                                        <a href="product.php?slug=<?php echo htmlspecialchars($item['slug']); ?>" target="_blank"><?php echo htmlspecialchars($item['name']); ?></a>
+                                                        <img src="<?php echo htmlspecialchars($item['main_image'] ? $item['main_image'] : './uploads/products/blank-img.webp'); ?>" alt="<?php echo htmlspecialchars(cleanProductName($item['name'])); ?>" style="height:32px;width:32px;object-fit:cover;margin-right:8px;" onerror="this.onerror=null; this.src='./uploads/products/blank-img.webp';">
+                                                        <a href="product.php?slug=<?php echo htmlspecialchars($item['slug']); ?>" target="_blank"><?php echo htmlspecialchars(cleanProductName($item['name'])); ?></a>
                                                     </td>
                                                     <td><?php echo htmlspecialchars($item['sku']); ?></td>
                                                     <td><?php echo htmlspecialchars($item['hsn'] ?? ''); ?></td>
-                                                    <td><?php echo $item['quantity']; ?></td>
+                                                    <td><?php echo $displayQty; ?></td>
                                                     <td>₹<?php echo number_format($amounts['unit_price'], 0); ?></td>
                                                     <td>₹<?php echo number_format($amounts['line_total'], 0); ?></td>
                                                 </tr>
@@ -790,8 +791,9 @@ endif; ?>
                                 <div class="d-md-none">
                                     <?php foreach ($orderItems as $item):
             $amounts = getOrderItemDisplayAmounts($item);
+            $displayQty = formatDisplayQuantity(getOrderItemDisplayQuantity($item));
             $unit_price = $amounts['unit_price'];
-            $item_savings = ($item['mrp'] - $unit_price) * $amounts['price_multiplier'];
+            $item_savings = max(0, $item['mrp'] - $unit_price) * $amounts['price_multiplier'];
             $item_percent = $item['mrp'] > 0 ? round((($item['mrp'] - $unit_price) / $item['mrp']) * 100) : 0;
 ?>
                                         <div class="order-item-mobile-card">
@@ -801,17 +803,17 @@ endif; ?>
             endif; ?>
                                             <div class="order-item-mobile-content">
                                                 <a href="product.php?slug=<?php echo htmlspecialchars($item['slug']); ?>">
-                                                    <img src="<?php echo htmlspecialchars($item['main_image'] ? $item['main_image'] : './uploads/products/blank-img.webp'); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" onerror="this.onerror=null; this.src='./uploads/products/blank-img.webp';">
+                                                    <img src="<?php echo htmlspecialchars($item['main_image'] ? $item['main_image'] : './uploads/products/blank-img.webp'); ?>" alt="<?php echo htmlspecialchars(cleanProductName($item['name'])); ?>" onerror="this.onerror=null; this.src='./uploads/products/blank-img.webp';">
                                                 </a>
                                                 <div class="order-item-mobile-info">
-                                                    <a href="product.php?slug=<?php echo htmlspecialchars($item['slug']); ?>" class="order-item-mobile-title"><?php echo htmlspecialchars($item['name']); ?></a>
+                                                    <a href="product.php?slug=<?php echo htmlspecialchars($item['slug']); ?>" class="order-item-mobile-title"><?php echo htmlspecialchars(cleanProductName($item['name'])); ?></a>
                                                     <div class="order-item-mobile-meta">
                                                         SKU: <?php echo htmlspecialchars($item['sku']); ?> 
                                                         <?php if (!empty($item['hsn'])): ?>| HSN: <?php echo htmlspecialchars($item['hsn']); ?><?php
             endif; ?>
                                                     </div>
                                                     <div class="order-item-mobile-price-qty">
-                                                        <span>₹<?php echo number_format($amounts['unit_price'], 0); ?> x <?php echo $item['quantity']; ?></span>
+                                                        <span>₹<?php echo number_format($amounts['unit_price'], 0); ?> x <?php echo $displayQty; ?></span>
                                                         <span class="order-item-mobile-total">₹<?php echo number_format($amounts['line_total'], 0); ?></span>
                                                     </div>
                                                 </div>
@@ -829,7 +831,7 @@ endif; ?>
         foreach ($orderItems as $item) {
             if (isset($item['mrp']) && isset($item['selling_price'])) {
                 $amounts = getOrderItemDisplayAmounts($item);
-                $total_savings += ($item['mrp'] - $amounts['unit_price']) * $amounts['price_multiplier'];
+                $total_savings += max(0, $item['mrp'] - $amounts['unit_price']) * $amounts['price_multiplier'];
             }
         }
 ?>
@@ -975,11 +977,11 @@ endif; ?>
         endif; ?>
                                 <div class="wishlist-item-content">
                                     <a href="product.php?slug=<?php echo $item['slug']; ?>">
-                                        <img src="<?php echo(!empty($item['main_image']) ? htmlspecialchars($item['main_image']) : 'uploads/products/blank-img.webp'); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" onerror="this.onerror=null; this.src='./uploads/products/blank-img.webp';">
+                                        <img src="<?php echo(!empty($item['main_image']) ? htmlspecialchars($item['main_image']) : 'uploads/products/blank-img.webp'); ?>" alt="<?php echo htmlspecialchars(cleanProductName($item['name'])); ?>" onerror="this.onerror=null; this.src='./uploads/products/blank-img.webp';">
                                     </a>
                                     <div>
                                         <div class="account-wishlist-unit-line"><?php echo formatProductUnitLine($item, true); ?></div>
-                                        <h6><a href="product.php?slug=<?php echo $item['slug']; ?>" style="color:inherit; text-decoration:none;"><?php echo strtoupper(htmlspecialchars($item['name'])); ?></a></h6>
+                                        <h6><a href="product.php?slug=<?php echo $item['slug']; ?>" style="color:inherit; text-decoration:none;"><?php echo strtoupper(htmlspecialchars(cleanProductName($item['name']))); ?></a></h6>
                                         <p>₹<?php echo number_format($item['selling_price'], 0); ?></p>
                                         <div style="display: flex; gap: 8px; justify-content: center;">
                                             <a href="product.php?slug=<?php echo $item['slug']; ?>" class="btn small" style="flex: 1;">View</a>
