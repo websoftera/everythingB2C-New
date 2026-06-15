@@ -92,6 +92,8 @@ include 'includes/header.php';
 .product-row-inner {
     display: flex;
     padding: 12px 20px;
+    gap: 18px;
+    align-items: center;
 }
 
 .product-img-wrapper {
@@ -115,10 +117,12 @@ include 'includes/header.php';
 
 .product-info {
     flex-grow: 1;
-    padding-left: 15px;
+    padding-left: 0;
+    padding-right: 18px;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    min-width: 0;
 }
 
 .product-price-desktop {
@@ -131,6 +135,8 @@ include 'includes/header.php';
     font-weight: 700;
     font-size: 1.25rem;
     color: #007bff;
+    border-left: 1px solid #edf2f7;
+    padding-left: 18px;
 }
 
 /* Mobile Adjustments */
