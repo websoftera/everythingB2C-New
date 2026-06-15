@@ -78,7 +78,6 @@ try {
     echo '<h5 class="mb-2">#'.htmlspecialchars($order['order_number']).' <small class="text-muted">('.htmlspecialchars($order['tracking_id']).')</small></h5>';
     echo '<div class="d-flex flex-wrap gap-2">';
     echo '<span class="badge" style="background-color: '.htmlspecialchars($orderStatusColor).'">'.htmlspecialchars($orderStatusName).'</span>';
-    echo '<span class="badge '.$paymentBadgeClass.'">'.htmlspecialchars(ucfirst($paymentStatus)).'</span>';
     echo '<span class="badge bg-light text-dark border">'.htmlspecialchars($paymentMethodLabel).'</span>';
     echo '</div>';
     echo '</div>';

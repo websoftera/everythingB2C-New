@@ -741,7 +741,7 @@ endif; ?>
                                 <div>
                                     <h6>Order #<?php echo htmlspecialchars($order['tracking_id'] ?? $order['order_number']); ?></h6>
                                     <p>₹<?php echo number_format($order['total_amount'], 0); ?> • <?php echo date('M d, Y', strtotime($order['created_at'])); ?></p>
-                                    <p>Payment: <strong><?php echo strtoupper($order['payment_method'] ?? 'N/A'); ?></strong> • Status: <strong><?php echo ucfirst($order['payment_status'] ?? 'N/A'); ?></strong></p>
+                                    <p>Payment: <strong><?php echo strtoupper($order['payment_method'] ?? 'N/A'); ?></strong> • Payment Status: <strong><?php echo ucfirst($order['payment_status'] ?? 'N/A'); ?></strong></p>
                                     <p>Order Status: <span class="badge" style="background-color: <?php echo $order['color'] ?? '#007bff'; ?>; color: #fff;"><?php echo $order['status_name'] ?? ucfirst($order['status']); ?></span></p>
                                 </div>
                                 <div class="order-actions-mobile">

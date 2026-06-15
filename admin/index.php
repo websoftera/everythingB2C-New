@@ -41,7 +41,8 @@ $stmt = $pdo->query("SELECT COUNT(*) as count FROM orders");
 $stats['total_orders'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
 
 // Recent orders
-$stmt = $pdo->query("SELECT o.*, u.name as user_name FROM orders o 
+$stmt = $pdo->query("SELECT o.*, os.name as status_name, os.color as status_color, u.name as user_name FROM orders o
+                     LEFT JOIN order_statuses os ON o.order_status_id = os.id
                      LEFT JOIN users u ON o.user_id = u.id 
                      ORDER BY o.created_at DESC LIMIT 5");
 $recent_orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -174,7 +175,7 @@ $pageTitle = 'Admin Dashboard';
                                                         <th>Order #</th>
                                                         <th>Customer</th>
                                                         <th>Amount</th>
-                                                        <th>Status</th>
+                                                        <th>Payment</th>
                                                         <th>Date</th>
                                                     </tr>
                                                 </thead>
@@ -185,8 +186,18 @@ $pageTitle = 'Admin Dashboard';
                                                             <td><?php echo htmlspecialchars($order['user_name']); ?></td>
                                                             <td>₹<?php echo number_format($order['total_amount'], 2); ?></td>
                                                             <td>
-                                                                <span class="badge bg-<?php echo getStatusColor($order['status']); ?>">
-                                                                    <?php echo ucfirst($order['status']); ?>
+                                                                <?php
+                                                                $paymentStatus = strtolower($order['payment_status'] ?? 'pending');
+                                                                $paymentBadgeClass = match ($paymentStatus) {
+                                                                    'paid' => 'bg-success',
+                                                                    'pending' => 'bg-warning',
+                                                                    'failed' => 'bg-danger',
+                                                                    'refunded' => 'bg-info',
+                                                                    default => 'bg-secondary'
+                                                                };
+                                                                ?>
+                                                                <span class="badge <?php echo $paymentBadgeClass; ?>">
+                                                                    <?php echo htmlspecialchars(ucfirst($paymentStatus)); ?>
                                                                 </span>
                                                             </td>
                                                             <td><?php echo date('M d, Y', strtotime($order['created_at'])); ?></td>
