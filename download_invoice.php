@@ -95,7 +95,7 @@ $qrData =
     "Total Amount: ₹" . number_format($total, 2) . "\n" .
     "\n" .
     "Products:" . "\n" .
-    implode("\n", array_map(function($item) { return "  - " . $item['name']; }, $orderItems));
+    implode("\n", array_map(function($item) { return "  - " . cleanProductName($item['name']); }, $orderItems));
 
 if (ob_get_level() > 0) { ob_end_clean(); }
 ob_start();
@@ -193,9 +193,10 @@ foreach ($orderItems as $item) {
     // Force IGST if not Maharashtra
     $gst_type = $is_maharashtra ? ($item['gst_type'] ?? 'sgst_cgst') : 'igst';
     $amounts = getOrderItemDisplayAmounts($item);
-    $qty = (int)$item['quantity'];
+    $qty = formatDisplayQuantity(getOrderItemDisplayQuantity($item));
     $unit = 'No.';
-    if (stripos($item['name'], 'shoes') !== false) $unit = 'Pair';
+    $productName = cleanProductName($item['name']);
+    if (stripos($productName, 'shoes') !== false) $unit = 'Pair';
     $item_mrp = (float)$item['mrp'];
     $item_sp = (float)$amounts['unit_price'];
     $line_total = (float)$amounts['line_total'];
@@ -231,7 +232,7 @@ foreach ($orderItems as $item) {
     $html .= '<tr>';
     $html .= '<td>' . $sr . '</td>';
     $html .= '<td>' . $img_html . '</td>';
-    $html .= '<td>' . nl2br(htmlspecialchars($item['name'])) . '</td>';
+    $html .= '<td>' . htmlspecialchars($productName) . '</td>';
     $html .= '<td>' . htmlspecialchars($item['hsn']) . '</td>';
     $html .= '<td>' . $qty . '</td>';
     $html .= '<td>' . $unit . '</td>';

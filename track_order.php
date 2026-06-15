@@ -380,7 +380,10 @@ include 'includes/header.php';
                 <div class="col-lg-8">
                     <h4 class="sidebar-title ms-1">Product Details</h4>
                     <div class="products-list mb-5">
-                        <?php foreach ($orderItems as $item): ?>
+                        <?php foreach ($orderItems as $item):
+                            $amounts = getOrderItemDisplayAmounts($item);
+                            $displayQty = formatDisplayQuantity(getOrderItemDisplayQuantity($item));
+                        ?>
                         <div class="product-item-card">
                             <div class="product-card-blue-bar">ITEM DETAILS</div>
                             <div class="product-row-inner">
@@ -388,19 +391,19 @@ include 'includes/header.php';
                                     <img src="./<?php echo $item['main_image']; ?>" class="product-img" onerror="this.src='./uploads/products/blank-img.webp';">
                                 </div>
                                 <div class="product-info">
-                                    <h5 class="fw-bold"><?php echo htmlspecialchars($item['name']); ?></h5>
+                                    <h5 class="fw-bold"><?php echo htmlspecialchars(cleanProductName($item['name'])); ?></h5>
                                     
                                     <div class="product-details-line-mobile d-md-none">
-                                        ₹<?php echo number_format($item['price'] * $item['quantity'], 0); ?>
-                                        <span class="qty-info">(₹<?php echo number_format($item['price'], 0); ?> x <?php echo $item['quantity']; ?>)</span>
+                                        ₹<?php echo number_format($amounts['line_total'], 0); ?>
+                                        <span class="qty-info">(₹<?php echo number_format($amounts['unit_price'], 0); ?> x <?php echo $displayQty; ?>)</span>
                                     </div>
 
                                     <div class="d-none d-md-block text-muted small mt-1">
-                                        ₹<?php echo number_format($item['price'], 0); ?> x <?php echo $item['quantity']; ?>
+                                        ₹<?php echo number_format($amounts['unit_price'], 0); ?> x <?php echo $displayQty; ?>
                                     </div>
                                 </div>
                                 <div class="product-price-desktop d-none d-md-flex">
-                                    ₹<?php echo number_format($item['price'] * $item['quantity'], 0); ?>
+                                    ₹<?php echo number_format($amounts['line_total'], 0); ?>
                                 </div>
                             </div>
                         </div>
@@ -473,12 +476,15 @@ include 'includes/header.php';
                         <?php endif; ?>
                         <div class="d-flex justify-content-between mb-0 extra-small text-success">
                             <span>Total Savings</span>
-                            <span class="fw-bold">-₹<?php 
+                            <span class="fw-bold">₹<?php 
                                 $savings = 0;
                                 foreach($orderItems as $it) {
-                                    if(isset($it['mrp']) && isset($it['selling_price'])) $savings += ($it['mrp'] - $it['selling_price']) * $it['quantity'];
+                                    if(isset($it['mrp']) && isset($it['selling_price'])) {
+                                        $amounts = getOrderItemDisplayAmounts($it);
+                                        $savings += max(0, $it['mrp'] - $amounts['unit_price']) * $amounts['price_multiplier'];
+                                    }
                                 }
-                                echo number_format($savings, 0);
+                                echo number_format(max(0, $savings), 0);
                             ?></span>
                         </div>
                         <hr class="my-3 border-dashed">

@@ -96,16 +96,19 @@ try {
     foreach ($cartItems as $item) {
         $priceMultiplier = getCartItemPriceMultiplier($item);
         $itemTotal = $item['selling_price'] * $priceMultiplier;
-        $stmt2 = $pdo->prepare("INSERT INTO order_items (order_id, product_id, quantity, price, unit_price, gst_rate, gst_amount) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt2 = $pdo->prepare("INSERT INTO order_items (order_id, product_id, hsn, quantity, price, unit_price, gst_rate, gst_amount, mrp, selling_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         $gstBreakdown = getGSTBreakdown($itemTotal, $item['gst_type'] ?? 'IGST', $item['gst_rate'] ?? 18);
         $stmt2->execute([
             $tempOrderId,
             $item['product_id'],
+            $item['hsn'] ?? null,
             $item['quantity'],
             $itemTotal,
             $item['selling_price'],
             $item['gst_rate'] ?? 18,
-            $gstBreakdown['total_gst']
+            $gstBreakdown['total_gst'],
+            $item['mrp'] ?? $item['selling_price'],
+            $item['selling_price']
         ]);
     }
     $pdo->commit();

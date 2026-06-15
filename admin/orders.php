@@ -445,8 +445,49 @@ $statuses = getAllOrderStatuses();
         fetch('ajax/get_order_details.php?id=' + orderId + '&json=1')
             .then(response => response.json())
             .then(data => {
+                const paymentStatusSection = document.getElementById('paymentStatusSection');
                 if (data.success && data.order) {
-                    const paymentStatusSection = document.getElementById('paymentStatusSection');
+                    const statusSelect = document.querySelector('#updateStatusModal select[name="status_id"]');
+                    const paymentStatusSelect = document.querySelector('#updateStatusModal select[name="payment_status"]');
+                    const estimatedDeliveryInput = document.querySelector('#updateStatusModal input[name="estimated_delivery_date"]');
+                    const trackingIdInput = document.querySelector('#updateStatusModal input[name="external_tracking_id"]');
+                    const trackingLinkInput = document.querySelector('#updateStatusModal input[name="external_tracking_link"]');
+                    const descriptionInput = document.querySelector('#updateStatusModal textarea[name="status_description"]');
+
+                    if (statusSelect) {
+                        statusSelect.value = data.order.order_status_id || '';
+
+                        if (statusSelect.value !== String(data.order.order_status_id || '') && data.order.status_name) {
+                            const matchingOption = Array.from(statusSelect.options).find(option => {
+                                return option.textContent.trim().toLowerCase() === data.order.status_name.trim().toLowerCase();
+                            });
+
+                            if (matchingOption) {
+                                statusSelect.value = matchingOption.value;
+                            }
+                        }
+                    }
+
+                    if (paymentStatusSelect && data.order.payment_status) {
+                        paymentStatusSelect.value = data.order.payment_status;
+                    }
+
+                    if (estimatedDeliveryInput) {
+                        estimatedDeliveryInput.value = data.order.estimated_delivery_date || '';
+                    }
+
+                    if (trackingIdInput) {
+                        trackingIdInput.value = data.order.external_tracking_id || '';
+                    }
+
+                    if (trackingLinkInput) {
+                        trackingLinkInput.value = data.order.external_tracking_link || '';
+                    }
+
+                    if (descriptionInput) {
+                        descriptionInput.value = data.order.status_description || '';
+                    }
+
                     if (data.order.payment_method === 'cod' || data.order.payment_method === 'direct_payment') {
                         paymentStatusSection.style.display = '';
                     } else {

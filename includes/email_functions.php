@@ -18,13 +18,31 @@ function formatEmailAmount($amount) {
 }
 
 function getEmailOrderItemAmounts(array $item) {
+    if (function_exists('getOrderItemDisplayAmounts')) {
+        return getOrderItemDisplayAmounts($item);
+    }
+
+    $packageQuantity = max(1, (int)($item['package_quantity'] ?? 1));
+    $priceMultiplier = max(0, (float)($item['quantity'] ?? 1)) / $packageQuantity;
     $unitPrice = isset($item['unit_price']) ? (float)$item['unit_price'] : (float)($item['price'] ?? 0);
-    $lineTotal = isset($item['price']) ? (float)$item['price'] : ($unitPrice * (float)($item['quantity'] ?? 1));
+    $lineTotal = isset($item['price']) ? (float)$item['price'] : ($unitPrice * $priceMultiplier);
 
     return [
         'unit_price' => $unitPrice,
         'line_total' => $lineTotal
     ];
+}
+
+function getEmailOrderItemDisplayQuantity(array $item) {
+    if (function_exists('getOrderItemDisplayQuantity') && function_exists('formatDisplayQuantity')) {
+        return formatDisplayQuantity(getOrderItemDisplayQuantity($item));
+    }
+
+    $packageQuantity = max(1, (int)($item['package_quantity'] ?? 1));
+    $quantity = max(0, (float)($item['quantity'] ?? 1)) / $packageQuantity;
+    return abs($quantity - round($quantity)) < 0.0001
+        ? (string)(int)round($quantity)
+        : rtrim(rtrim(number_format($quantity, 2, '.', ''), '0'), '.');
 }
 
 /**
@@ -175,8 +193,8 @@ function generateOrderPlacedUserEmail($user, $order, $orderItems) {
     
     $itemsHTML = '';
     foreach ($orderItems as $item) {
-        $productName = $item['name'] ?? 'Unknown Product';
-        $quantity = $item['quantity'] ?? 1;
+        $productName = cleanProductName($item['name'] ?? 'Unknown Product');
+        $quantity = getEmailOrderItemDisplayQuantity($item);
         $amounts = getEmailOrderItemAmounts($item);
         $itemsHTML .= "
         <tr>
@@ -276,8 +294,8 @@ function generateOrderPlacedAdminEmail($order, $orderItems) {
     
     $itemsHTML = '';
     foreach ($orderItems as $item) {
-        $productName = $item['name'] ?? 'Unknown Product';
-        $quantity = $item['quantity'] ?? 1;
+        $productName = cleanProductName($item['name'] ?? 'Unknown Product');
+        $quantity = getEmailOrderItemDisplayQuantity($item);
         $amounts = getEmailOrderItemAmounts($item);
         $itemsHTML .= "
         <tr>
