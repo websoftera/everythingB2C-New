@@ -342,8 +342,8 @@ foreach ($editingItems as $item) {
         }
         .quotation-product-row {
             display: grid;
-            grid-template-columns: minmax(240px, 2fr) 96px 130px 130px 120px 150px 150px 92px 92px;
-            gap: 14px 16px;
+            grid-template-columns: minmax(190px, 1.7fr) 92px minmax(100px, 1fr) minmax(100px, 1fr) minmax(92px, .85fr) minmax(110px, 1fr) minmax(120px, 1fr) 86px 82px;
+            gap: 14px 12px;
             align-items: start;
             padding: 14px;
             border: 1px solid #dbe3ef;
@@ -387,7 +387,10 @@ foreach ($editingItems as $item) {
         .quotation-actions { display: flex; gap: 6px; align-items: center; }
         .quotation-actions form { margin: 0; }
         @media (max-width: 1400px) {
-            .quotation-product-row { grid-template-columns: repeat(4, minmax(160px, 1fr)); }
+            .quotation-product-row { grid-template-columns: repeat(3, minmax(180px, 1fr)); }
+        }
+        @media (max-width: 992px) {
+            .quotation-product-row { grid-template-columns: repeat(2, minmax(160px, 1fr)); }
         }
         @media (max-width: 768px) {
             .quotation-product-row { grid-template-columns: 1fr; }
