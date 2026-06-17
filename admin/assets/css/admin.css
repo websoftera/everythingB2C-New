@@ -42,17 +42,25 @@
 
 .everythingb2c-main-content {
     flex: 1;
+    min-width: 0;
+    width: calc(100% - 250px);
+    max-width: calc(100% - 250px);
     background-color: #f8f9fc;
     margin-left: 250px;
     transition: margin-left 0.3s ease;
+    overflow-x: hidden;
 }
 
 .everythingb2c-main-content.sidebar-hidden {
     margin-left: 0;
+    width: 100%;
+    max-width: 100%;
 }
 
 .everythingb2c-dashboard-content {
     padding: 1.5rem;
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 /* Admin Header Styles */
@@ -500,6 +508,8 @@
     
     .everythingb2c-main-content {
         margin-left: 0 !important;
+        width: 100%;
+        max-width: 100%;
     }
     
     .everythingb2c-header-content {
