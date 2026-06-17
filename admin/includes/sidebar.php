@@ -81,6 +81,24 @@ require_once __DIR__ . '/../../includes/functions.php';
                 </a>
             </li>
             <?php endif; ?>
+
+            <!-- Invoice Generate -->
+            <?php if (canAccess('manage_manual_invoices') || canAccess('view_orders')): ?>
+            <li class="everythingb2c-nav-item">
+                <a class="everythingb2c-nav-link <?php echo in_array(basename($_SERVER['PHP_SELF']), ['invoice_generate.php', 'download_manual_invoice.php']) ? 'active' : ''; ?>" href="invoice_generate.php">
+                    <i class="fas fa-file-invoice everythingb2c-nav-icon"></i> Invoice Generate
+                </a>
+            </li>
+            <?php endif; ?>
+
+            <!-- Quotation Generate -->
+            <?php if (canAccess('manage_quotations') || canAccess('view_orders')): ?>
+            <li class="everythingb2c-nav-item">
+                <a class="everythingb2c-nav-link <?php echo in_array(basename($_SERVER['PHP_SELF']), ['quotation_generate.php', 'download_quotation.php']) ? 'active' : ''; ?>" href="quotation_generate.php">
+                    <i class="fas fa-file-contract everythingb2c-nav-icon"></i> Quotation Generate
+                </a>
+            </li>
+            <?php endif; ?>
             
             <!-- Users -->
             <?php if (canAccess('view_users')): ?>
