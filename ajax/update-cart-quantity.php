@@ -36,8 +36,18 @@ try {
             throw new Exception('Product not found');
         }
 
-        $availableStock = $product['stock_quantity'];
+        $availableStock = (int)$product['stock_quantity'];
+        if ($variationId) {
+            $variation = getProductVariationById($productId, $variationId);
+            if ($variation) {
+                $availableStock = min($availableStock, (int)$variation['stock_quantity']);
+            }
+        }
         $packageQuantity = normalizePackageQuantity($product['package_quantity'] ?? 1);
+        $requestedStockQuantity = getCartItemStockQuantity([
+            'quantity' => $quantity,
+            'package_quantity' => $packageQuantity
+        ]);
 
         if (!isValidPackageQuantity($quantity, $packageQuantity)) {
             http_response_code(400);
@@ -46,11 +56,11 @@ try {
         }
 
         // Check if quantity exceeds stock
-        if ($quantity > $availableStock) {
+        if ($requestedStockQuantity > $availableStock) {
             throw new Exception('Quantity exceeds available stock');
         }
 
-        if ($product['max_quantity_per_order'] !== null && $quantity > $product['max_quantity_per_order']) {
+        if ($product['max_quantity_per_order'] !== null && $requestedStockQuantity > (int)$product['max_quantity_per_order']) {
             throw new Exception("Maximum quantity allowed for this product is {$product['max_quantity_per_order']}");
         }
 
@@ -102,8 +112,18 @@ try {
             throw new Exception('Product not found');
         }
 
-        $availableStock = $product['stock_quantity'];
+        $availableStock = (int)$product['stock_quantity'];
+        if ($variationId) {
+            $variation = getProductVariationById($productId, $variationId);
+            if ($variation) {
+                $availableStock = min($availableStock, (int)$variation['stock_quantity']);
+            }
+        }
         $packageQuantity = normalizePackageQuantity($product['package_quantity'] ?? 1);
+        $requestedStockQuantity = getCartItemStockQuantity([
+            'quantity' => $quantity,
+            'package_quantity' => $packageQuantity
+        ]);
 
         if (!isValidPackageQuantity($quantity, $packageQuantity)) {
             http_response_code(400);
@@ -112,11 +132,11 @@ try {
         }
 
         // Check if quantity exceeds stock
-        if ($quantity > $availableStock) {
+        if ($requestedStockQuantity > $availableStock) {
             throw new Exception('Quantity exceeds available stock');
         }
 
-        if ($product['max_quantity_per_order'] !== null && $quantity > $product['max_quantity_per_order']) {
+        if ($product['max_quantity_per_order'] !== null && $requestedStockQuantity > (int)$product['max_quantity_per_order']) {
             throw new Exception("Maximum quantity allowed for this product is {$product['max_quantity_per_order']}");
         }
 

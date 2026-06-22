@@ -44,8 +44,14 @@ if ($variationData['has_variations']) {
     }
 }
 
-$availableStock = $variation ? (int)$variation['stock_quantity'] : (int)$product['stock_quantity'];
+$availableStock = $variation
+    ? min((int)$product['stock_quantity'], (int)$variation['stock_quantity'])
+    : (int)$product['stock_quantity'];
 $packageQuantity = normalizePackageQuantity($product['package_quantity'] ?? 1);
+$requestedStockQuantity = getCartItemStockQuantity([
+    'quantity' => $quantity,
+    'package_quantity' => $packageQuantity
+]);
 
 if (!isValidPackageQuantity($quantity, $packageQuantity)) {
     echo json_encode(packageQuantityErrorResponse($quantity, $packageQuantity));
@@ -53,13 +59,13 @@ if (!isValidPackageQuantity($quantity, $packageQuantity)) {
 }
 
 // Check stock
-if ($availableStock < $quantity) {
+if ($availableStock < $requestedStockQuantity) {
     echo json_encode(['success' => false, 'message' => 'Insufficient stock']);
     exit;
 }
 
 // Check max quantity per order
-if ($product['max_quantity_per_order'] !== null && $quantity > $product['max_quantity_per_order']) {
+if ($product['max_quantity_per_order'] !== null && $requestedStockQuantity > (int)$product['max_quantity_per_order']) {
     echo json_encode([
         'success' => false,
         'message' => "Maximum quantity allowed for this product is {$product['max_quantity_per_order']}"

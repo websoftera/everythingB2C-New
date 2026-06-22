@@ -39,6 +39,11 @@ function getCartItemPriceMultiplier($item) {
     return getPackagePriceMultiplier($item['quantity'] ?? 0, $item['package_quantity'] ?? 1);
 }
 
+function getCartItemStockQuantity($item) {
+    $stockQuantity = getCartItemPriceMultiplier($item);
+    return max(1, (int)ceil($stockQuantity));
+}
+
 function getPackageDisplayQuantity($quantity, $packageQuantity = 1) {
     $packageQuantity = normalizePackageQuantity($packageQuantity);
     $quantity = max(0, (float)$quantity);
@@ -88,10 +93,10 @@ function getProductOrderMaxQuantity(array $product) {
     $stockQuantity = isset($product['display_base_stock_quantity'])
         ? (int)$product['display_base_stock_quantity']
         : (int)($product['stock_quantity'] ?? 0);
-    $maxQuantity = $stockQuantity;
+    $maxQuantity = $stockQuantity * $packageQuantity;
 
     if (isset($product['max_quantity_per_order']) && $product['max_quantity_per_order'] !== null && $product['max_quantity_per_order'] !== '') {
-        $maxQuantity = min($maxQuantity, (int)$product['max_quantity_per_order']);
+        $maxQuantity = min($maxQuantity, (int)$product['max_quantity_per_order'] * $packageQuantity);
     }
 
     $maxQuantity = roundToNearestPackage($maxQuantity, $packageQuantity);
@@ -110,14 +115,18 @@ function validateCartItemQuantityRules($cartItems) {
         $stockQuantity = isset($item['product_stock_quantity'])
             ? (int)$item['product_stock_quantity']
             : (isset($item['stock_quantity']) ? (int)$item['stock_quantity'] : null);
-        if ($stockQuantity !== null && $quantity > $stockQuantity) {
+        if (isset($item['product_stock_quantity'], $item['stock_quantity'])) {
+            $stockQuantity = min((int)$item['product_stock_quantity'], (int)$item['stock_quantity']);
+        }
+        $requestedStockQuantity = getCartItemStockQuantity($item);
+        if ($stockQuantity !== null && $requestedStockQuantity > $stockQuantity) {
             return [
                 'success' => false,
                 'message' => 'Quantity exceeds available stock'
             ];
         }
 
-        if (isset($item['max_quantity_per_order']) && $item['max_quantity_per_order'] !== null && $quantity > (int)$item['max_quantity_per_order']) {
+        if (isset($item['max_quantity_per_order']) && $item['max_quantity_per_order'] !== null && $requestedStockQuantity > (int)$item['max_quantity_per_order']) {
             return [
                 'success' => false,
                 'message' => "Maximum quantity allowed for this product is {$item['max_quantity_per_order']}"
@@ -126,6 +135,36 @@ function validateCartItemQuantityRules($cartItems) {
     }
 
     return ['success' => true];
+}
+
+function deductBookedStockForCartItem(array $item) {
+    global $pdo;
+
+    $productId = (int)($item['product_id'] ?? 0);
+    $quantity = getCartItemStockQuantity($item);
+    $variationId = !empty($item['variation_id']) ? (int)$item['variation_id'] : null;
+
+    if ($productId <= 0 || $quantity <= 0) {
+        throw new Exception('Invalid product quantity for stock update.');
+    }
+
+    $stmt = $pdo->prepare("UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ? AND stock_quantity >= ?");
+    $stmt->execute([$quantity, $productId, $quantity]);
+    if ($stmt->rowCount() !== 1) {
+        throw new Exception('Insufficient stock for one or more products.');
+    }
+
+    if ($variationId) {
+        $stmt = $pdo->prepare("
+            UPDATE product_variations
+            SET stock_quantity = stock_quantity - ?
+            WHERE id = ? AND product_id = ? AND stock_quantity >= ?
+        ");
+        $stmt->execute([$quantity, $variationId, $productId, $quantity]);
+        if ($stmt->rowCount() !== 1) {
+            throw new Exception('Insufficient variant stock for one or more products.');
+        }
+    }
 }
 
 // Function to get cart summary for header display
@@ -1421,6 +1460,7 @@ function createOrder($userId, $addressId, $paymentMethod, $gstNumber = null, $co
                 $item['mrp'],
                 $item['selling_price']
             ]);
+            deductBookedStockForCartItem($item);
         }
         // Add initial status history
         addOrderStatusHistory($orderId, 1, 'Order placed successfully', 'system');

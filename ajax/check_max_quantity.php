@@ -32,6 +32,10 @@ try {
     $max_quantity = $product['max_quantity_per_order'];
     $stock_quantity = $product['stock_quantity'];
     $package_quantity = normalizePackageQuantity($product['package_quantity'] ?? 1);
+    $requested_stock_quantity = getCartItemStockQuantity([
+        'quantity' => $quantity,
+        'package_quantity' => $package_quantity
+    ]);
 
     if (!isValidPackageQuantity($quantity, $package_quantity)) {
         echo json_encode(packageQuantityErrorResponse($quantity, $package_quantity));
@@ -39,10 +43,10 @@ try {
     }
     
     // Check if quantity exceeds max_quantity_per_order
-    if ($max_quantity !== null && $quantity > $max_quantity) {
+    if ($max_quantity !== null && $requested_stock_quantity > (int)$max_quantity) {
         echo json_encode([
             'error' => 'Maximum quantity exceeded',
-            'max_quantity' => $max_quantity,
+            'max_quantity' => (int)$max_quantity * $package_quantity,
             'message' => "Maximum quantity allowed for this product is {$max_quantity}"
         ]);
         exit;
@@ -57,11 +61,12 @@ try {
     ];
     
     // Check if quantity exceeds stock
-    if ($quantity > $stock_quantity) {
+    if ($requested_stock_quantity > $stock_quantity) {
         echo json_encode([
             'error' => 'Insufficient stock',
             'stock_quantity' => $stock_quantity,
-            'message' => "Only {$stock_quantity} items available in stock"
+            'max_quantity' => $stock_quantity * $package_quantity,
+            'message' => "Only {$stock_quantity} package(s) available in stock"
         ]);
         exit;
     }

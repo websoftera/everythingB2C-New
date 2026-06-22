@@ -59,14 +59,24 @@ if ($productId) {
         }
 
         $availableStock = (int)$product['stock_quantity'];
-        if ($quantity > $availableStock) {
+        if ($variationId) {
+            $variation = getProductVariationById($productId, $variationId);
+            if ($variation) {
+                $availableStock = min($availableStock, (int)$variation['stock_quantity']);
+            }
+        }
+        $requestedStockQuantity = getCartItemStockQuantity([
+            'quantity' => $quantity,
+            'package_quantity' => $packageQuantity
+        ]);
+        if ($requestedStockQuantity > $availableStock) {
             session_write_close();
             echo json_encode(['success' => false, 'message' => 'Quantity exceeds available stock']);
             exit;
         }
     }
 
-    if ($product && $product['max_quantity_per_order'] !== null && $quantity > $product['max_quantity_per_order']) {
+    if ($product && $product['max_quantity_per_order'] !== null && $requestedStockQuantity > (int)$product['max_quantity_per_order']) {
         session_write_close();
         echo json_encode(['success' => false, 'message' => "Maximum quantity allowed for this product is {$product['max_quantity_per_order']}"]);
         exit;

@@ -392,9 +392,13 @@ echo renderBreadcrumb($breadcrumbs);
                             $variationDetails = renderCartVariationDetails($item);
                             $packageQuantity = normalizePackageQuantity($item['package_quantity'] ?? 1);
                             $priceMultiplier = getCartItemPriceMultiplier($item);
-                            $cartMaxQuantity = (int)($item['product_stock_quantity'] ?? $item['stock_quantity'] ?? 99);
+                            $cartStockQuantity = (int)($item['product_stock_quantity'] ?? $item['stock_quantity'] ?? 99);
+                            if (isset($item['product_stock_quantity'], $item['stock_quantity'])) {
+                                $cartStockQuantity = min((int)$item['product_stock_quantity'], (int)$item['stock_quantity']);
+                            }
+                            $cartMaxQuantity = $cartStockQuantity * $packageQuantity;
                             if (isset($item['max_quantity_per_order']) && $item['max_quantity_per_order'] !== null) {
-                                $cartMaxQuantity = min($cartMaxQuantity, (int)$item['max_quantity_per_order']);
+                                $cartMaxQuantity = min($cartMaxQuantity, (int)$item['max_quantity_per_order'] * $packageQuantity);
                             }
                             ?>
                             <div class="cart-item-row d-flex align-items-center flex-nowrap" style="border: 1px solid #e0e0e0; border-radius: 7px; padding: 7px 0 7px 8px; margin-bottom: 10px; background: #fff; gap: 8px;">

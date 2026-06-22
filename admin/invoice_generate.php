@@ -41,12 +41,91 @@ function manualInvoiceValidDateValue($value, $required = false) {
     return $date && $date->format('Y-m-d') === $value;
 }
 
+function manualInvoiceValidDocumentNumber($value) {
+    $value = trim((string)$value);
+    if ($value === '') {
+        return false;
+    }
+    if (preg_match('/^[A-Za-z0-9][A-Za-z0-9\-\/]{0,59}$/', $value) !== 1) {
+        return false;
+    }
+    if (preg_match('/^0/', $value) === 1) {
+        return false;
+    }
+    if (preg_match('/[1-9]/', $value) !== 1) {
+        return false;
+    }
+    return preg_match('/(?:^|[\-\/])0+$/', $value) !== 1;
+}
+
+function manualInvoiceDocumentNumberExists(PDO $pdo, $invoiceNo, $excludeInvoiceId = 0) {
+    $sql = 'SELECT id FROM manual_invoices WHERE invoice_no = ?';
+    $params = [$invoiceNo];
+    if ((int)$excludeInvoiceId > 0) {
+        $sql .= ' AND id <> ?';
+        $params[] = (int)$excludeInvoiceId;
+    }
+    $sql .= ' LIMIT 1';
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    return (bool)$stmt->fetchColumn();
+}
+
+function restoreManualInvoiceStock(PDO $pdo, $invoiceId) {
+    $stmt = $pdo->prepare("SELECT stock_deducted FROM manual_invoices WHERE id = ?");
+    $stmt->execute([(int)$invoiceId]);
+    if ((int)$stmt->fetchColumn() !== 1) {
+        return;
+    }
+
+    $stmt = $pdo->prepare("SELECT product_id, quantity FROM manual_invoice_items WHERE invoice_id = ?");
+    $stmt->execute([(int)$invoiceId]);
+    $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $update = $pdo->prepare("UPDATE products SET stock_quantity = stock_quantity + ? WHERE id = ?");
+    foreach ($items as $item) {
+        $productId = (int)($item['product_id'] ?? 0);
+        $quantity = (int)round((float)($item['quantity'] ?? 0));
+        if ($productId > 0 && $quantity > 0) {
+            $update->execute([$quantity, $productId]);
+        }
+    }
+}
+
+function deductManualInvoiceStock(PDO $pdo, array $items) {
+    $stmt = $pdo->prepare("UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ? AND stock_quantity >= ?");
+    foreach ($items as $item) {
+        $productId = (int)($item['product_id'] ?? 0);
+        $quantity = (int)round((float)($item['quantity'] ?? 0));
+        if ($productId <= 0 || $quantity <= 0) {
+            continue;
+        }
+        $stmt->execute([$quantity, $productId, $quantity]);
+        if ($stmt->rowCount() !== 1) {
+            throw new Exception('Insufficient stock for invoice product.');
+        }
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_invoice'])) {
     $deleteId = (int)($_POST['invoice_id'] ?? 0);
-    if ($deleteId > 0 && deleteManualInvoice($pdo, $deleteId)) {
+    try {
+        if ($deleteId <= 0) {
+            throw new Exception('Unable to delete invoice.');
+        }
+
+        $pdo->beginTransaction();
+        restoreManualInvoiceStock($pdo, $deleteId);
+        if (!deleteManualInvoice($pdo, $deleteId)) {
+            throw new Exception('Unable to delete invoice.');
+        }
+        $pdo->commit();
         $_SESSION['success_message'] = 'Invoice deleted successfully.';
-    } else {
-        $_SESSION['error_message'] = 'Unable to delete invoice.';
+    } catch (Exception $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        $_SESSION['error_message'] = $e->getMessage();
     }
     header('Location: invoice_generate.php');
     exit;
@@ -62,6 +141,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_invoice'])) {
         $cgstTotal = 0;
         $sgstTotal = 0;
         $grandTotal = 0;
+
+        if (!manualInvoiceValidDocumentNumber($invoiceNo)) {
+            throw new Exception('Invoice number must contain letters/numbers and cannot start with 0, be 00, or end with only zeros.');
+        }
+
+        if (manualInvoiceDocumentNumberExists($pdo, $invoiceNo, $editingInvoiceId)) {
+            throw new Exception('Invoice number already exists.');
+        }
 
         foreach ($items as $index => $item) {
             $productName = trim($item['product_name'] ?? '');
@@ -180,6 +267,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_invoice'])) {
         ];
 
         if ($editingInvoiceId > 0) {
+            restoreManualInvoiceStock($pdo, $editingInvoiceId);
+            deductManualInvoiceStock($pdo, $preparedItems);
+
             $stmt = $pdo->prepare("
                 UPDATE manual_invoices SET
                     invoice_no = ?, invoice_date = ?, customer_name = ?, mobile_no = ?,
@@ -187,21 +277,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_invoice'])) {
                     payment_terms = ?, payment_date = ?, transporter = ?, lr_no = ?,
                     bill_to_name = ?, bill_to_gstin = ?, bill_to_mobile = ?, bill_to_address = ?,
                     ship_to_name = ?, ship_to_gstin = ?, ship_to_mobile = ?, ship_to_address = ?,
-                    taxable_total = ?, cgst_total = ?, sgst_total = ?, grand_total = ?
+                    taxable_total = ?, cgst_total = ?, sgst_total = ?, grand_total = ?, stock_deducted = 1
                 WHERE id = ?
             ");
             $stmt->execute(array_merge($invoiceData, [$editingInvoiceId]));
             $invoiceId = $editingInvoiceId;
             $pdo->prepare("DELETE FROM manual_invoice_items WHERE invoice_id = ?")->execute([$invoiceId]);
         } else {
+            deductManualInvoiceStock($pdo, $preparedItems);
+
             $stmt = $pdo->prepare("
                 INSERT INTO manual_invoices (
                     invoice_no, invoice_date, customer_name, mobile_no, eway_bill_no, eway_bill_date,
                     buyer_po_no, buyer_po_date, payment_terms, payment_date, transporter, lr_no,
                     bill_to_name, bill_to_gstin, bill_to_mobile, bill_to_address,
                     ship_to_name, ship_to_gstin, ship_to_mobile, ship_to_address,
-                    taxable_total, cgst_total, sgst_total, grand_total, created_by
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    taxable_total, cgst_total, sgst_total, grand_total, stock_deducted, created_by
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
             ");
             $stmt->execute(array_merge($invoiceData, [$_SESSION['admin_id'] ?? null]));
             $invoiceId = (int)$pdo->lastInsertId();
@@ -435,8 +527,8 @@ foreach ($editingItems as $item) {
                         <div class="row g-3">
                             <div class="col-md-3">
                                 <label class="form-label">Invoice No.</label>
-                                <input type="text" name="invoice_no" class="form-control" value="<?php echo htmlspecialchars($formInvoice['invoice_no']); ?>" pattern="[A-Za-z0-9\-\/]+" required>
-                                <div class="invalid-feedback">Invoice number is required.</div>
+                                <input type="text" name="invoice_no" class="form-control document-number-field" value="<?php echo htmlspecialchars($formInvoice['invoice_no']); ?>" pattern="[A-Za-z0-9][A-Za-z0-9\-\/]{0,59}" maxlength="60" required>
+                                <div class="invalid-feedback">Enter a valid invoice number. It cannot start with 0, be 00, or end with only zeros.</div>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">Invoice Date</label>
@@ -806,6 +898,23 @@ function updateInvoiceTotal() {
 document.getElementById('addInvoiceProduct').addEventListener('click', () => addInvoiceRow());
 
 const manualInvoiceForm = document.getElementById('manualInvoiceForm');
+const invoiceNumberField = manualInvoiceForm.querySelector('.document-number-field');
+
+function validateInvoiceNumber() {
+    const value = invoiceNumberField.value.trim();
+    const isValid = /^[A-Za-z0-9][A-Za-z0-9/-]{0,59}$/.test(value)
+        && !/^0/.test(value)
+        && /[1-9]/.test(value)
+        && !/(^|[-/])0+$/.test(value);
+    invoiceNumberField.setCustomValidity(isValid ? '' : 'Enter a valid invoice number.');
+}
+
+invoiceNumberField.addEventListener('input', () => {
+    invoiceNumberField.value = invoiceNumberField.value.replace(/[^A-Za-z0-9/-]/g, '');
+    validateInvoiceNumber();
+});
+validateInvoiceNumber();
+
 manualInvoiceForm.querySelectorAll('.phone-field').forEach(input => {
     input.addEventListener('input', () => {
         input.value = input.value.replace(/[^0-9+\-\s]/g, '');
@@ -819,6 +928,7 @@ manualInvoiceForm.querySelectorAll('.text-name-field').forEach(input => {
 });
 
 manualInvoiceForm.addEventListener('submit', event => {
+    validateInvoiceNumber();
     if (!manualInvoiceForm.checkValidity()) {
         event.preventDefault();
         event.stopPropagation();

@@ -110,6 +110,7 @@ try {
             $item['mrp'] ?? $item['selling_price'],
             $item['selling_price']
         ]);
+        deductBookedStockForCartItem($item);
     }
     $pdo->commit();
 } catch (Exception $e) {

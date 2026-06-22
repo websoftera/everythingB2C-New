@@ -41,6 +41,36 @@ function QuotationValidDateValue($value, $required = false) {
     return $date && $date->format('Y-m-d') === $value;
 }
 
+function QuotationValidDocumentNumber($value) {
+    $value = trim((string)$value);
+    if ($value === '') {
+        return false;
+    }
+    if (preg_match('/^[A-Za-z0-9][A-Za-z0-9\-\/]{0,59}$/', $value) !== 1) {
+        return false;
+    }
+    if (preg_match('/^0/', $value) === 1) {
+        return false;
+    }
+    if (preg_match('/[1-9]/', $value) !== 1) {
+        return false;
+    }
+    return preg_match('/(?:^|[\-\/])0+$/', $value) !== 1;
+}
+
+function QuotationDocumentNumberExists(PDO $pdo, $quotationNo, $excludeQuotationId = 0) {
+    $sql = 'SELECT id FROM quotations WHERE quotation_no = ?';
+    $params = [$quotationNo];
+    if ((int)$excludeQuotationId > 0) {
+        $sql .= ' AND id <> ?';
+        $params[] = (int)$excludeQuotationId;
+    }
+    $sql .= ' LIMIT 1';
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    return (bool)$stmt->fetchColumn();
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_quotation'])) {
     $deleteId = (int)($_POST['quotation_id'] ?? 0);
     if ($deleteId > 0 && deleteQuotation($pdo, $deleteId)) {
@@ -62,6 +92,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_quotation'])) {
         $cgstTotal = 0;
         $sgstTotal = 0;
         $grandTotal = 0;
+
+        if (!QuotationValidDocumentNumber($quotationNo)) {
+            throw new Exception('Quotation number must contain letters/numbers and cannot start with 0, be 00, or end with only zeros.');
+        }
+
+        if (QuotationDocumentNumberExists($pdo, $quotationNo, $editingquotationId)) {
+            throw new Exception('Quotation number already exists.');
+        }
 
         foreach ($items as $index => $item) {
             $productName = trim($item['product_name'] ?? '');
@@ -427,8 +465,8 @@ foreach ($editingItems as $item) {
                         <div class="row g-3">
                             <div class="col-md-3">
                                 <label class="form-label">Quotation No.</label>
-                                <input type="text" name="quotation_no" class="form-control" value="<?php echo htmlspecialchars($formQuotation['quotation_no']); ?>" pattern="[A-Za-z0-9\-\/]+" required>
-                                <div class="invalid-feedback">Quotation number is required.</div>
+                                <input type="text" name="quotation_no" class="form-control document-number-field" value="<?php echo htmlspecialchars($formQuotation['quotation_no']); ?>" pattern="[A-Za-z0-9][A-Za-z0-9\-\/]{0,59}" maxlength="60" required>
+                                <div class="invalid-feedback">Enter a valid quotation number. It cannot start with 0, be 00, or end with only zeros.</div>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">Quotation Date</label>
@@ -759,6 +797,23 @@ function updatequotationTotal() {
 document.getElementById('addquotationProduct').addEventListener('click', () => addquotationRow());
 
 const QuotationForm = document.getElementById('QuotationForm');
+const quotationNumberField = QuotationForm.querySelector('.document-number-field');
+
+function validateQuotationNumber() {
+    const value = quotationNumberField.value.trim();
+    const isValid = /^[A-Za-z0-9][A-Za-z0-9/-]{0,59}$/.test(value)
+        && !/^0/.test(value)
+        && /[1-9]/.test(value)
+        && !/(^|[-/])0+$/.test(value);
+    quotationNumberField.setCustomValidity(isValid ? '' : 'Enter a valid quotation number.');
+}
+
+quotationNumberField.addEventListener('input', () => {
+    quotationNumberField.value = quotationNumberField.value.replace(/[^A-Za-z0-9/-]/g, '');
+    validateQuotationNumber();
+});
+validateQuotationNumber();
+
 QuotationForm.querySelectorAll('.phone-field').forEach(input => {
     input.addEventListener('input', () => {
         input.value = input.value.replace(/[^0-9+\-\s]/g, '');
@@ -772,6 +827,7 @@ QuotationForm.querySelectorAll('.text-name-field').forEach(input => {
 });
 
 QuotationForm.addEventListener('submit', event => {
+    validateQuotationNumber();
     if (!QuotationForm.checkValidity()) {
         event.preventDefault();
         event.stopPropagation();
