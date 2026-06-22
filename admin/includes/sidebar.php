@@ -209,3 +209,37 @@ require_once __DIR__ . '/../../includes/functions.php';
         </button>
     </div>
 </div>
+<script>
+(function () {
+    const sidebarNav = document.querySelector('.everythingb2c-sidebar-nav');
+    if (!sidebarNav) {
+        return;
+    }
+
+    const scrollKey = 'everythingb2cAdminSidebarScrollTop';
+
+    function saveSidebarScroll() {
+        sessionStorage.setItem(scrollKey, String(sidebarNav.scrollTop || 0));
+    }
+
+    function restoreSidebarScroll() {
+        const savedScrollTop = parseInt(sessionStorage.getItem(scrollKey) || '0', 10);
+        if (Number.isFinite(savedScrollTop) && savedScrollTop > 0) {
+            sidebarNav.scrollTop = savedScrollTop;
+            return;
+        }
+
+        const activeLink = sidebarNav.querySelector('.everythingb2c-nav-link.active');
+        if (activeLink) {
+            activeLink.scrollIntoView({ block: 'center' });
+        }
+    }
+
+    sidebarNav.addEventListener('scroll', saveSidebarScroll, { passive: true });
+    sidebarNav.querySelectorAll('a[href]').forEach(link => {
+        link.addEventListener('click', saveSidebarScroll);
+    });
+    window.addEventListener('beforeunload', saveSidebarScroll);
+    requestAnimationFrame(restoreSidebarScroll);
+})();
+</script>

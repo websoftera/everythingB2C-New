@@ -30,11 +30,17 @@ function ensureManualInvoiceSchema(PDO $pdo) {
                 cgst_total DECIMAL(12,2) NOT NULL DEFAULT 0,
                 sgst_total DECIMAL(12,2) NOT NULL DEFAULT 0,
                 grand_total DECIMAL(12,2) NOT NULL DEFAULT 0,
+                stock_deducted TINYINT(1) NOT NULL DEFAULT 0,
                 created_by INT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
         ");
+
+        $stmt = $pdo->query("SHOW COLUMNS FROM manual_invoices LIKE 'stock_deducted'");
+        if (!$stmt->fetch(PDO::FETCH_ASSOC)) {
+            $pdo->exec("ALTER TABLE manual_invoices ADD COLUMN stock_deducted TINYINT(1) NOT NULL DEFAULT 0 AFTER grand_total");
+        }
 
         $pdo->exec("
             CREATE TABLE IF NOT EXISTS manual_invoice_items (
