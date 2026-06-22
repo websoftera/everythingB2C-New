@@ -1637,7 +1637,7 @@ function getOrderStatusHistory($orderId) {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-function getUserOrders($userId, $limit = null) {
+function getUserOrders($userId, $limit = null, $offset = 0) {
     global $pdo;
     $sql = "SELECT o.*, os.name as status_name, os.color as status_color, a.state as state FROM orders o
             LEFT JOIN order_statuses os ON o.order_status_id = os.id
@@ -1645,11 +1645,18 @@ function getUserOrders($userId, $limit = null) {
             WHERE o.user_id = ?
             ORDER BY o.created_at DESC";
     if ($limit) {
-        $sql .= " LIMIT " . intval($limit);
+        $sql .= " LIMIT " . intval($limit) . " OFFSET " . max(0, intval($offset));
     }
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$userId]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function getUserOrderCount($userId) {
+    global $pdo;
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM orders WHERE user_id = ?");
+    $stmt->execute([$userId]);
+    return (int)$stmt->fetchColumn();
 }
 
 function getAllOrderStatuses() {

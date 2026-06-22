@@ -25,32 +25,32 @@ $open_address_section = false;
 function validateAccountAddressData($data) {
     $errors = [];
 
-    if ($data['name'] === '' || strlen($data['name']) < 2 || strlen($data['name']) > 60 || !preg_match("/^[A-Za-z][A-Za-z .'-]*$/", $data['name'])) {
-        $errors[] = 'Please enter a valid full name.';
+    if ($data['name'] === '' || strlen($data['name']) < 2 || strlen($data['name']) > 60 || !preg_match('/^[A-Za-z ]+$/', $data['name'])) {
+        $errors[] = 'Full Name can contain only letters and spaces.';
     }
 
-    if (!preg_match('/^(?:\+91|0)?[6-9][0-9]{9}$/', $data['phone'])) {
-        $errors[] = 'Please enter a valid phone number.';
+    if (!preg_match('/^(?:0)?[6-9][0-9]{9}$/', $data['phone'])) {
+        $errors[] = 'Phone Number can contain only digits and must be a valid mobile number.';
     }
 
     if (!preg_match('/^[1-9][0-9]{5}$/', $data['pincode'])) {
-        $errors[] = 'Please enter a valid 6 digit PIN code.';
+        $errors[] = 'PIN Code can contain only 6 digits.';
     }
 
-    if (strlen($data['address_line1']) < 5 || strlen($data['address_line1']) > 150) {
-        $errors[] = 'Address Line 1 must be between 5 and 150 characters.';
+    if (strlen($data['address_line1']) < 5 || strlen($data['address_line1']) > 150 || !preg_match('/^[A-Za-z0-9\s,.\-\/#]+$/', $data['address_line1'])) {
+        $errors[] = 'Address Line 1 can contain only letters, numbers, spaces, comma, dot, hyphen, slash, and #.';
     }
 
-    if ($data['address_line2'] !== '' && strlen($data['address_line2']) > 150) {
-        $errors[] = 'Address Line 2 must be 150 characters or less.';
+    if ($data['address_line2'] !== '' && (strlen($data['address_line2']) > 150 || !preg_match('/^[A-Za-z0-9\s,.\-\/#]+$/', $data['address_line2']))) {
+        $errors[] = 'Address Line 2 can contain only letters, numbers, spaces, comma, dot, hyphen, slash, and #.';
     }
 
-    if ($data['city'] === '' || strlen($data['city']) < 2 || strlen($data['city']) > 60 || !preg_match("/^[A-Za-z][A-Za-z .'-]*$/", $data['city'])) {
-        $errors[] = 'Please enter a valid city.';
+    if ($data['city'] === '' || strlen($data['city']) < 2 || strlen($data['city']) > 60 || !preg_match('/^[A-Za-z ]+$/', $data['city'])) {
+        $errors[] = 'City can contain only letters and spaces.';
     }
 
-    if ($data['state'] === '' || strlen($data['state']) < 2 || strlen($data['state']) > 60 || !preg_match("/^[A-Za-z][A-Za-z .'-]*$/", $data['state'])) {
-        $errors[] = 'Please enter a valid state.';
+    if ($data['state'] === '' || strlen($data['state']) < 2 || strlen($data['state']) > 60 || !preg_match('/^[A-Za-z ]+$/', $data['state'])) {
+        $errors[] = 'State can contain only letters and spaces.';
     }
 
     return $errors;
@@ -147,7 +147,22 @@ if (isset($_POST['delete_address'])) {
     exit;
 }
 
-$userOrders = getUserOrders($userId, 5);
+$orderPage = isset($_GET['order_page']) ? (int)$_GET['order_page'] : 1;
+if ($orderPage < 1)
+    $orderPage = 1;
+$orderLimit = 5;
+$orderOffset = ($orderPage - 1) * $orderLimit;
+
+$totalOrders = getUserOrderCount($userId);
+$totalOrderPages = ceil($totalOrders / $orderLimit);
+
+if ($orderPage > $totalOrderPages && $totalOrderPages > 0) {
+    $orderPage = $totalOrderPages;
+    $orderOffset = ($orderPage - 1) * $orderLimit;
+}
+
+$userOrders = getUserOrders($userId, $orderLimit, $orderOffset);
+$recentOrders = getUserOrders($userId, 3);
 $userAddresses = getUserAddresses($userId);
 
 // Wishlist Pagination setup for myaccount.php
@@ -170,6 +185,7 @@ $wishlistItems = getWishlistItems($userId, $wishlistLimit, $wishlistOffset);
 
 // Check if we need to open wishlist tab
 $openWishlistTab = isset($_GET['wishlist_page']) || (isset($_GET['tab']) && $_GET['tab'] === 'wishlist');
+$openOrdersTab = isset($_GET['order_page']) || (isset($_GET['tab']) && $_GET['tab'] === 'orders');
 
 $pageTitle = 'My Account';
 include 'includes/header.php';
@@ -688,7 +704,7 @@ echo renderBreadcrumb($breadcrumbs);
                 <h3>Welcome back, <?php echo htmlspecialchars($user['name']); ?>!</h3>
                 <div class="account-stats">
                     <div class="account-stat-card primary">
-                        <h4><?php echo count($userOrders); ?></h4>
+                        <h4><?php echo $totalOrders; ?></h4>
                         <p>Total Orders</p>
                     </div>
                     <div class="account-stat-card success">
@@ -702,8 +718,8 @@ echo renderBreadcrumb($breadcrumbs);
                 </div>
 
                 <h5>Recent Orders</h5>
-                <?php if (!empty($userOrders)): ?>
-                    <?php foreach (array_slice($userOrders, 0, 3) as $order): ?>
+                <?php if (!empty($recentOrders)): ?>
+                    <?php foreach ($recentOrders as $order): ?>
                         <div class="account-order-card">
                             <div>
                                 <h6>Order #<?php echo htmlspecialchars($order['tracking_id'] ?? $order['order_number']); ?></h6>
@@ -852,6 +868,37 @@ endif; ?>
                         </div>
                     <?php
     endforeach; ?>
+                    <?php if ($totalOrderPages > 1): ?>
+                        <nav aria-label="Order pagination" class="mt-4">
+                            <ul class="pagination justify-content-center">
+                                <?php if ($orderPage > 1): ?>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?order_page=<?php echo $orderPage - 1; ?>#orders">Previous</a>
+                                    </li>
+                                <?php else: ?>
+                                    <li class="page-item disabled">
+                                        <a class="page-link" href="javascript:void(0)" style="cursor: default;">Previous</a>
+                                    </li>
+                                <?php endif; ?>
+
+                                <?php for ($i = 1; $i <= $totalOrderPages; $i++): ?>
+                                    <li class="page-item <?php echo ($i === $orderPage) ? 'active' : ''; ?>">
+                                        <a class="page-link" href="?order_page=<?php echo $i; ?>#orders"><?php echo $i; ?></a>
+                                    </li>
+                                <?php endfor; ?>
+
+                                <?php if ($orderPage < $totalOrderPages): ?>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?order_page=<?php echo $orderPage + 1; ?>#orders">Next</a>
+                                    </li>
+                                <?php else: ?>
+                                    <li class="page-item disabled">
+                                        <a class="page-link" href="javascript:void(0)" style="cursor: default;">Next</a>
+                                    </li>
+                                <?php endif; ?>
+                            </ul>
+                        </nav>
+                    <?php endif; ?>
                 <?php
 else: ?>
                     <div class="account-empty">
@@ -881,25 +928,25 @@ endif; ?>
                     <input type="hidden" name="add_address" value="1">
                     <div class="row g-2">
                         <div class="col-md-6">
-                            <input type="text" name="name" class="form-control" placeholder="Full Name" minlength="2" maxlength="60" pattern="[A-Za-z][A-Za-z .'-]*" title="Enter a valid full name" value="<?php echo htmlspecialchars($address_form_values['name'] ?? ''); ?>" required>
+                            <input type="text" name="name" class="form-control" placeholder="Full Name" minlength="2" maxlength="60" pattern="[A-Za-z ]+" title="Only letters and spaces are allowed" data-alpha-only value="<?php echo htmlspecialchars($address_form_values['name'] ?? ''); ?>" required>
                         </div>
                         <div class="col-md-6">
-                            <input type="text" name="phone" class="form-control" placeholder="Phone Number" inputmode="tel" maxlength="13" pattern="(?:\+91|0)?[6-9][0-9]{9}" title="Enter a valid Indian mobile number" value="<?php echo htmlspecialchars($address_form_values['phone'] ?? ''); ?>" required>
+                            <input type="text" name="phone" class="form-control" placeholder="Phone Number" inputmode="numeric" maxlength="11" pattern="(?:0)?[6-9][0-9]{9}" title="Only digits are allowed. Enter a valid mobile number." data-digits-only value="<?php echo htmlspecialchars($address_form_values['phone'] ?? ''); ?>" required>
                         </div>
                         <div class="col-md-4">
-                            <input type="text" name="pincode" class="form-control" placeholder="PIN Code" inputmode="numeric" maxlength="6" pattern="[1-9][0-9]{5}" title="Enter a valid 6 digit PIN code" value="<?php echo htmlspecialchars($address_form_values['pincode'] ?? ''); ?>" required>
+                            <input type="text" name="pincode" class="form-control" placeholder="PIN Code" inputmode="numeric" maxlength="6" pattern="[1-9][0-9]{5}" title="Only 6 digits are allowed" data-digits-only value="<?php echo htmlspecialchars($address_form_values['pincode'] ?? ''); ?>" required>
                         </div>
                         <div class="col-md-8">
-                            <input type="text" name="address_line1" class="form-control" placeholder="Address Line 1" minlength="5" maxlength="150" value="<?php echo htmlspecialchars($address_form_values['address_line1'] ?? ''); ?>" required>
+                            <input type="text" name="address_line1" class="form-control" placeholder="Address Line 1" minlength="5" maxlength="150" pattern="[A-Za-z0-9\s,.\-/#]+" title="Only letters, numbers, spaces, comma, dot, hyphen, slash, and # are allowed" data-address-only value="<?php echo htmlspecialchars($address_form_values['address_line1'] ?? ''); ?>" required>
                         </div>
                         <div class="col-md-12">
-                            <input type="text" name="address_line2" class="form-control" placeholder="Address Line 2 (optional)" maxlength="150" value="<?php echo htmlspecialchars($address_form_values['address_line2'] ?? ''); ?>">
+                            <input type="text" name="address_line2" class="form-control" placeholder="Address Line 2 (optional)" maxlength="150" pattern="[A-Za-z0-9\s,.\-/#]*" title="Only letters, numbers, spaces, comma, dot, hyphen, slash, and # are allowed" data-address-only value="<?php echo htmlspecialchars($address_form_values['address_line2'] ?? ''); ?>">
                         </div>
                         <div class="col-md-6">
-                            <input type="text" name="city" class="form-control" placeholder="City" minlength="2" maxlength="60" pattern="[A-Za-z][A-Za-z .'-]*" title="Enter a valid city" value="<?php echo htmlspecialchars($address_form_values['city'] ?? ''); ?>" required>
+                            <input type="text" name="city" class="form-control" placeholder="City" minlength="2" maxlength="60" pattern="[A-Za-z ]+" title="Only letters and spaces are allowed" data-alpha-only value="<?php echo htmlspecialchars($address_form_values['city'] ?? ''); ?>" required>
                         </div>
                         <div class="col-md-6">
-                            <input type="text" name="state" class="form-control" placeholder="State" minlength="2" maxlength="60" pattern="[A-Za-z][A-Za-z .'-]*" title="Enter a valid state" value="<?php echo htmlspecialchars($address_form_values['state'] ?? ''); ?>" required>
+                            <input type="text" name="state" class="form-control" placeholder="State" minlength="2" maxlength="60" pattern="[A-Za-z ]+" title="Only letters and spaces are allowed" data-alpha-only value="<?php echo htmlspecialchars($address_form_values['state'] ?? ''); ?>" required>
                         </div>
                         <div class="col-12">
                             <div class="form-check">
@@ -1147,13 +1194,13 @@ document.addEventListener('DOMContentLoaded', function() {
     <form method="post" action="myaccount.php#addresses" id="editAddressForm">
       <input type="hidden" name="edit_address" value="1">
       <input type="hidden" name="address_id" id="edit_address_id">
-      <div class="mb-2"><input type="text" name="name" id="edit_name" class="form-control" placeholder="Full Name" minlength="2" maxlength="60" pattern="[A-Za-z][A-Za-z .'-]*" title="Enter a valid full name" required></div>
-      <div class="mb-2"><input type="text" name="phone" id="edit_phone" class="form-control" placeholder="Phone Number" inputmode="tel" maxlength="13" pattern="(?:\+91|0)?[6-9][0-9]{9}" title="Enter a valid Indian mobile number" required></div>
-      <div class="mb-2"><input type="text" name="pincode" id="edit_pincode" class="form-control" placeholder="PIN Code" inputmode="numeric" maxlength="6" pattern="[1-9][0-9]{5}" title="Enter a valid 6 digit PIN code" required></div>
-      <div class="mb-2"><input type="text" name="address_line1" id="edit_address_line1" class="form-control" placeholder="Address Line 1" minlength="5" maxlength="150" required></div>
-      <div class="mb-2"><input type="text" name="address_line2" id="edit_address_line2" class="form-control" placeholder="Address Line 2 (optional)" maxlength="150"></div>
-      <div class="mb-2"><input type="text" name="city" id="edit_city" class="form-control" placeholder="City" minlength="2" maxlength="60" pattern="[A-Za-z][A-Za-z .'-]*" title="Enter a valid city" required></div>
-      <div class="mb-2"><input type="text" name="state" id="edit_state" class="form-control" placeholder="State" minlength="2" maxlength="60" pattern="[A-Za-z][A-Za-z .'-]*" title="Enter a valid state" required></div>
+      <div class="mb-2"><input type="text" name="name" id="edit_name" class="form-control" placeholder="Full Name" minlength="2" maxlength="60" pattern="[A-Za-z ]+" title="Only letters and spaces are allowed" data-alpha-only required></div>
+      <div class="mb-2"><input type="text" name="phone" id="edit_phone" class="form-control" placeholder="Phone Number" inputmode="numeric" maxlength="11" pattern="(?:0)?[6-9][0-9]{9}" title="Only digits are allowed. Enter a valid mobile number." data-digits-only required></div>
+      <div class="mb-2"><input type="text" name="pincode" id="edit_pincode" class="form-control" placeholder="PIN Code" inputmode="numeric" maxlength="6" pattern="[1-9][0-9]{5}" title="Only 6 digits are allowed" data-digits-only required></div>
+      <div class="mb-2"><input type="text" name="address_line1" id="edit_address_line1" class="form-control" placeholder="Address Line 1" minlength="5" maxlength="150" pattern="[A-Za-z0-9\s,.\-/#]+" title="Only letters, numbers, spaces, comma, dot, hyphen, slash, and # are allowed" data-address-only required></div>
+      <div class="mb-2"><input type="text" name="address_line2" id="edit_address_line2" class="form-control" placeholder="Address Line 2 (optional)" maxlength="150" pattern="[A-Za-z0-9\s,.\-/#]*" title="Only letters, numbers, spaces, comma, dot, hyphen, slash, and # are allowed" data-address-only></div>
+      <div class="mb-2"><input type="text" name="city" id="edit_city" class="form-control" placeholder="City" minlength="2" maxlength="60" pattern="[A-Za-z ]+" title="Only letters and spaces are allowed" data-alpha-only required></div>
+      <div class="mb-2"><input type="text" name="state" id="edit_state" class="form-control" placeholder="State" minlength="2" maxlength="60" pattern="[A-Za-z ]+" title="Only letters and spaces are allowed" data-alpha-only required></div>
       <div class="form-check mb-2">
         <input class="form-check-input" type="checkbox" name="is_default" id="edit_is_default">
         <label class="form-check-label" for="edit_is_default">Set as default address</label>
@@ -1171,12 +1218,30 @@ function showSection(id) {
 }
 document.addEventListener('DOMContentLoaded', () => {
     const hash = window.location.hash.substring(1);
-    const forcedSection = <?php echo json_encode($open_address_section ? 'addresses' : ''); ?>;
+    const forcedSection = <?php echo json_encode($open_address_section ? 'addresses' : ($openOrdersTab ? 'orders' : ($openWishlistTab ? 'wishlist' : ''))); ?>;
     if (forcedSection) {
         showSection(forcedSection);
     } else if (hash) {
         showSection(hash);
     }
+
+    document.querySelectorAll('[data-alpha-only]').forEach(input => {
+        input.addEventListener('input', () => {
+            input.value = input.value.replace(/[^A-Za-z ]+/g, '');
+        });
+    });
+
+    document.querySelectorAll('[data-digits-only]').forEach(input => {
+        input.addEventListener('input', () => {
+            input.value = input.value.replace(/\D+/g, '');
+        });
+    });
+
+    document.querySelectorAll('[data-address-only]').forEach(input => {
+        input.addEventListener('input', () => {
+            input.value = input.value.replace(/[^A-Za-z0-9\s,.#\/-]+/g, '');
+        });
+    });
 });
 
 function openEditAddressModal(address) {
