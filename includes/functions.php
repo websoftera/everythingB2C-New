@@ -705,6 +705,62 @@ function ensureProductUnitSchema(PDO $pdo) {
     }
 }
 
+function sanitizeProductUnitOption($label) {
+    $label = trim(strip_tags((string)$label));
+    $label = preg_replace('/\s+/', ' ', $label);
+    return $label !== '' ? substr($label, 0, 20) : '';
+}
+
+function ensureProductUnitOptionsSchema(PDO $pdo) {
+    try {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS product_unit_options (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            label VARCHAR(20) NOT NULL UNIQUE,
+            is_default TINYINT(1) NOT NULL DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+        $stmt = $pdo->prepare("INSERT IGNORE INTO product_unit_options (label, is_default) VALUES (?, 1)");
+        foreach (['No.', 'Pair'] as $defaultUnit) {
+            $stmt->execute([$defaultUnit]);
+        }
+    } catch (PDOException $e) {
+        // Keep product forms usable if the optional unit-options table cannot be created.
+    }
+}
+
+function getProductUnitOptions(PDO $pdo, $selectedLabel = '') {
+    ensureProductUnitOptionsSchema($pdo);
+    $options = [];
+
+    try {
+        $stmt = $pdo->query("SELECT label, is_default FROM product_unit_options ORDER BY is_default DESC, label ASC");
+        $options = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        $options = [
+            ['label' => 'No.', 'is_default' => 1],
+            ['label' => 'Pair', 'is_default' => 1],
+        ];
+    }
+
+    $selectedLabel = sanitizeProductUnitOption($selectedLabel);
+    if ($selectedLabel !== '') {
+        $hasSelected = false;
+        foreach ($options as $option) {
+            if (($option['label'] ?? '') === $selectedLabel) {
+                $hasSelected = true;
+                break;
+            }
+        }
+
+        if (!$hasSelected) {
+            $options[] = ['label' => $selectedLabel, 'is_default' => 0];
+        }
+    }
+
+    return $options;
+}
+
 function hasProductUnitSchema(PDO $pdo) {
     static $hasSchema = null;
 
