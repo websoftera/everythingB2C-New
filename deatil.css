@@ -153,14 +153,17 @@
 .thumbnail-row {
   margin-top: 35px;
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   gap: 15px;
-  overflow: visible;
-  /* Ensure zoomed thumbnails don’t get clipped */
+  max-width: 100%;
+  overflow: hidden;
+  /* Keep thumbnails inside the image column. */
 }
 
 .thumbnail-row img {
   width: 65px;
+  flex: 0 0 65px;
   height: 65px;
   object-fit: cover;
   border-radius: 8px;

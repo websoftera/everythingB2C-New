@@ -191,6 +191,19 @@ $returnToProducts = 'products.php' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $
             min-height: 48px;
         }
 
+        .products-title-header {
+            gap: 18px;
+        }
+
+        .products-title-left,
+        .products-title-actions {
+            min-width: 0;
+        }
+
+        .products-title-actions {
+            gap: 10px;
+        }
+
         .products-sort-note {
             display: inline-flex;
             align-items: center;
@@ -262,6 +275,15 @@ $returnToProducts = 'products.php' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $
             font-size: 15px;
             font-weight: 500;
             line-height: 1.25;
+        }
+
+        .products-title-actions .btn,
+        .products-table-actions .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            white-space: nowrap;
         }
 
         .products-management-page .filter-card .btn {
@@ -512,8 +534,8 @@ $returnToProducts = 'products.php' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $
                 <div class="container-fluid">
                     <div class="row mb-4 products-title-row">
                         <div class="col-12">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="d-flex align-items-center">
+                            <div class="d-flex justify-content-between align-items-center products-title-header">
+                                <div class="d-flex align-items-center products-title-left">
                                     <h1 class="h3 mb-0">Products Management</h1>
                                     <?php if ($reorder_mode): ?>
                                         <span class="products-mode-badge ms-3"><i class="fas fa-arrows-up-down"></i> Reorder mode enabled</span>
@@ -521,7 +543,7 @@ $returnToProducts = 'products.php' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $
                                         <span class="products-mode-badge ms-3"><i class="fas fa-arrows-up-down"></i> Use reorder mode to move items across pages</span>
                                     <?php endif; ?>
                                 </div>
-                                <div class="d-flex align-items-center">
+                                <div class="d-flex align-items-center products-title-actions">
                                     <?php if ($category_filter === ''): ?>
                                         <span class="products-sort-note">
                                             <i class="fas fa-info-circle"></i> Filter by a category to enable manual sorting
@@ -616,7 +638,7 @@ $returnToProducts = 'products.php' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $
                     <div class="card">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">Products (<?php echo $total_products; ?>)</h5>
-                            <div class="d-flex gap-2">
+                            <div class="d-flex gap-2 products-table-actions">
                                 <?php if ($reorder_mode): ?>
                                     <button type="button" id="saveProductOrderBtn" class="btn btn-outline-primary btn-sm">
                                         <i class="fas fa-arrows-up-down"></i> Back to paginated view

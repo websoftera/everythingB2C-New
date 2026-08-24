@@ -104,12 +104,16 @@
 
 .thumbnail-row {
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
     margin-top: 16px;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 .thumbnail {
     width: 80px;
+    flex: 0 0 80px;
     height: 80px;
     object-fit: contain;
     border-radius: 8px;
@@ -311,6 +315,14 @@
     height: 36px;
     padding: 0;
     background: #fff;
+    appearance: textfield;
+    -moz-appearance: textfield;
+}
+
+.quantity-input::-webkit-outer-spin-button,
+.quantity-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 .cart-actions .add-to-cart-btn {

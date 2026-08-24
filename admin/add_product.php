@@ -233,6 +233,17 @@ function uploadImage($file, $folder) {
             font-weight: 500;
         }
 
+        .product-form-page input[type="number"] {
+            appearance: textfield;
+            -moz-appearance: textfield;
+        }
+
+        .product-form-page input[type="number"]::-webkit-outer-spin-button,
+        .product-form-page input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
         .product-form-page textarea.form-control {
             min-height: 280px;
         }
@@ -291,6 +302,30 @@ function uploadImage($file, $folder) {
 
         .product-form-page .description-content.is-invalid {
             box-shadow: inset 0 0 0 1px #dc3545;
+        }
+
+        .product-form-page .description-content h1 {
+            font-size: 30px;
+            font-weight: 700;
+            margin: 0 0 14px;
+        }
+
+        .product-form-page .description-content h2 {
+            font-size: 26px;
+            font-weight: 700;
+            margin: 0 0 12px;
+        }
+
+        .product-form-page .description-content h3 {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0 0 10px;
+        }
+
+        .product-form-page .description-content h4 {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 0 0 8px;
         }
 
         .product-form-page .description-source {
@@ -596,8 +631,12 @@ function uploadImage($file, $folder) {
                                             <label for="description" class="form-label">Description *</label>
                                             <div class="description-editor">
                                                 <div class="description-toolbar">
-                                                    <select tabindex="-1">
-                                                        <option>Normal</option>
+                                                    <select class="description-block-format" aria-label="Description format">
+                                                        <option value="P">Normal</option>
+                                                        <option value="H1">Heading 1</option>
+                                                        <option value="H2">Heading 2</option>
+                                                        <option value="H3">Heading 3</option>
+                                                        <option value="H4">Heading 4</option>
                                                     </select>
                                                     <button type="button" data-format="bold"><i class="fas fa-bold"></i></button>
                                                     <button type="button" data-format="italic"><i class="fas fa-italic"></i></button>
@@ -709,6 +748,15 @@ function uploadImage($file, $folder) {
 
                 function focusEditor() {
                     content.focus();
+                }
+
+                const blockFormat = editor.querySelector('.description-block-format');
+                if (blockFormat) {
+                    blockFormat.addEventListener('change', function() {
+                        focusEditor();
+                        document.execCommand('formatBlock', false, this.value);
+                        syncDescription();
+                    });
                 }
 
                 editor.querySelectorAll('[data-format]').forEach(function(button) {
@@ -887,8 +935,6 @@ function uploadImage($file, $folder) {
             
             document.getElementById('total_with_shipping_display').textContent = '₹' + formatAdminDisplayNumber(sellingPrice);
         }
-
-
 
         document.querySelectorAll('input[type="number"]').forEach(function(input) {
             input.addEventListener('wheel', function(event) {
