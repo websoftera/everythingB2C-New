@@ -19,8 +19,47 @@ $allCategories = getAllCategoriesWithProductCount();
 $categoryTree = buildCategoryTree($allCategories);
 ensureProductVariationSchema($pdo);
 ensureProductUnitSchema($pdo);
+ensureProductUnitOptionsSchema($pdo);
 ensureProductPackageQuantitySchema($pdo);
 $attributeOptions = getProductAttributeOptions($pdo);
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['unit_action'])) {
+    header('Content-Type: application/json');
+    $unitAction = $_POST['unit_action'];
+    $unitLabel = sanitizeProductUnitOption($_POST['unit_label'] ?? '');
+
+    if ($unitLabel === '') {
+        echo json_encode(['success' => false, 'message' => 'Please enter a unit name.']);
+        exit;
+    }
+
+    try {
+        if ($unitAction === 'add') {
+            $stmt = $pdo->prepare("INSERT IGNORE INTO product_unit_options (label, is_default) VALUES (?, 0)");
+            $stmt->execute([$unitLabel]);
+            echo json_encode(['success' => true, 'label' => $unitLabel]);
+            exit;
+        }
+
+        if ($unitAction === 'delete') {
+            if (in_array($unitLabel, ['No.', 'Pair'], true)) {
+                echo json_encode(['success' => false, 'message' => 'Default units cannot be deleted.']);
+                exit;
+            }
+
+            $stmt = $pdo->prepare("DELETE FROM product_unit_options WHERE label = ? AND is_default = 0");
+            $stmt->execute([$unitLabel]);
+            echo json_encode(['success' => true]);
+            exit;
+        }
+    } catch (PDOException $e) {
+        echo json_encode(['success' => false, 'message' => 'Unable to update unit options.']);
+        exit;
+    }
+
+    echo json_encode(['success' => false, 'message' => 'Invalid unit action.']);
+    exit;
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name']);
@@ -29,7 +68,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $mrp = floatval($_POST['mrp']);
     $selling_price = floatval($_POST['selling_price']);
     $pay_per_unit = isset($_POST['pay_per_unit']) && $_POST['pay_per_unit'] !== '' ? floatval($_POST['pay_per_unit']) : $selling_price;
-    $unit_label = in_array($_POST['unit_label'] ?? 'No.', ['No.', 'Pair'], true) ? $_POST['unit_label'] : 'No.';
+    $unit_label = sanitizeProductUnitOption($_POST['unit_label'] ?? 'No.');
+    $unit_label = $unit_label !== '' && $unit_label !== '__add_new_unit__' ? $unit_label : 'No.';
     
     // Handle category selection - use the selected category directly
     $category_id = intval($_POST['parent_category_id']);
@@ -343,6 +383,72 @@ function uploadImage($file, $folder) {
             font-size: 12px;
         }
 
+        .product-form-page .unit-select-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .product-form-page .unit-select-control .form-select {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .product-form-page .unit-delete-btn {
+            width: 42px;
+            min-width: 42px;
+            height: 42px;
+            padding: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .product-form-page .unit-delete-btn.is-visible {
+            display: inline-flex;
+        }
+
+        .unit-modal .modal-content {
+            border: 0;
+            border-radius: 8px;
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.22);
+        }
+
+        .unit-modal .modal-header,
+        .unit-modal .modal-footer {
+            border-color: #e2e8f0;
+        }
+
+        .unit-modal .modal-title {
+            color: #111827;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .unit-modal .modal-body {
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .unit-modal .unit-modal-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #eef4ff;
+            color: #0d6efd;
+            margin-bottom: 12px;
+        }
+
+        .unit-modal .unit-modal-error {
+            display: none;
+            color: #dc3545;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
         .product-form-page .form-control-plaintext {
             min-height: 42px;
             border: 1px solid #cfd6df;
@@ -565,11 +671,20 @@ function uploadImage($file, $folder) {
                                             </div>
                                             <div class="col-md-3">
                                                 <label class="form-label">Unit</label>
-                                                <select class="form-control form-select" name="unit_label">
-                                                    <?php $selectedUnitLabel = $_POST['unit_label'] ?? 'No.'; ?>
-                                                    <option value="No." <?php echo $selectedUnitLabel === 'No.' ? 'selected' : ''; ?>>No.</option>
-                                                    <option value="Pair" <?php echo $selectedUnitLabel === 'Pair' ? 'selected' : ''; ?>>Pair</option>
-                                                </select>
+                                                <?php $selectedUnitLabel = $_POST['unit_label'] ?? 'No.'; ?>
+                                                <?php $unitOptions = getProductUnitOptions($pdo, $selectedUnitLabel); ?>
+                                                <div class="unit-select-control">
+                                                    <select class="form-control form-select unit-label-select" name="unit_label">
+                                                        <?php foreach ($unitOptions as $unitOption): ?>
+                                                            <?php $unitLabelOption = $unitOption['label']; ?>
+                                                            <option value="<?php echo htmlspecialchars($unitLabelOption); ?>" data-default="<?php echo !empty($unitOption['is_default']) ? '1' : '0'; ?>" <?php echo $selectedUnitLabel === $unitLabelOption ? 'selected' : ''; ?>><?php echo htmlspecialchars($unitLabelOption); ?></option>
+                                                        <?php endforeach; ?>
+                                                        <option value="__add_new_unit__" data-default="1">+ Add new unit</option>
+                                                    </select>
+                                                    <button type="button" class="btn btn-outline-danger unit-delete-btn" title="Delete unit">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -728,6 +843,47 @@ function uploadImage($file, $folder) {
                             </form>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade unit-modal" id="unitAddModal" tabindex="-1" aria-labelledby="unitAddModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="unitAddModalLabel">Add Unit</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="unit-modal-icon"><i class="fas fa-ruler"></i></div>
+                    <label for="unitAddInput" class="form-label">Unit name</label>
+                    <input type="text" class="form-control" id="unitAddInput" maxlength="20" placeholder="Example: Gram">
+                    <div class="unit-modal-error" id="unitAddError"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="unitAddConfirmBtn">Add Unit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade unit-modal" id="unitDeleteModal" tabindex="-1" aria-labelledby="unitDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="unitDeleteModalLabel">Delete Unit</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="unit-modal-icon text-danger" style="background:#fff1f2;"><i class="fas fa-trash"></i></div>
+                    <p class="mb-0">Delete <strong id="unitDeleteName"></strong> from the unit dropdown?</p>
+                    <div class="unit-modal-error" id="unitDeleteError"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="unitDeleteConfirmBtn">Delete Unit</button>
                 </div>
             </div>
         </div>
@@ -935,6 +1091,208 @@ function uploadImage($file, $folder) {
             
             document.getElementById('total_with_shipping_display').textContent = '₹' + formatAdminDisplayNumber(sellingPrice);
         }
+
+        function setUnitModalError(element, message) {
+            element.textContent = message || '';
+            element.style.display = message ? 'block' : 'none';
+        }
+
+        function openUnitAddModal() {
+            const modalEl = document.getElementById('unitAddModal');
+            const input = document.getElementById('unitAddInput');
+            const error = document.getElementById('unitAddError');
+            const confirmBtn = document.getElementById('unitAddConfirmBtn');
+            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+
+            input.value = '';
+            setUnitModalError(error, '');
+            modal.show();
+
+            setTimeout(function() {
+                input.focus();
+            }, 180);
+
+            return new Promise(function(resolve) {
+                function cleanup(value) {
+                    confirmBtn.removeEventListener('click', onConfirm);
+                    input.removeEventListener('keydown', onKeydown);
+                    modalEl.removeEventListener('hidden.bs.modal', onHidden);
+                    resolve(value);
+                }
+
+                function onConfirm() {
+                    const value = input.value.trim().replace(/\s+/g, ' ').slice(0, 20);
+                    if (!value) {
+                        setUnitModalError(error, 'Please enter a unit name.');
+                        input.focus();
+                        return;
+                    }
+
+                    modal.hide();
+                    cleanup(value);
+                }
+
+                function onKeydown(event) {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        onConfirm();
+                    }
+                }
+
+                function onHidden() {
+                    cleanup('');
+                }
+
+                confirmBtn.addEventListener('click', onConfirm);
+                input.addEventListener('keydown', onKeydown);
+                modalEl.addEventListener('hidden.bs.modal', onHidden, { once: true });
+            });
+        }
+
+        function openUnitDeleteModal(unitName) {
+            const modalEl = document.getElementById('unitDeleteModal');
+            const nameEl = document.getElementById('unitDeleteName');
+            const error = document.getElementById('unitDeleteError');
+            const confirmBtn = document.getElementById('unitDeleteConfirmBtn');
+            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+
+            nameEl.textContent = unitName;
+            setUnitModalError(error, '');
+            modal.show();
+
+            return new Promise(function(resolve) {
+                function cleanup(value) {
+                    confirmBtn.removeEventListener('click', onConfirm);
+                    modalEl.removeEventListener('hidden.bs.modal', onHidden);
+                    resolve(value);
+                }
+
+                function onConfirm() {
+                    modal.hide();
+                    cleanup(true);
+                }
+
+                function onHidden() {
+                    cleanup(false);
+                }
+
+                confirmBtn.addEventListener('click', onConfirm);
+                modalEl.addEventListener('hidden.bs.modal', onHidden, { once: true });
+            });
+        }
+
+        document.querySelectorAll('.unit-select-control').forEach(function(control) {
+            const select = control.querySelector('.unit-label-select');
+            const deleteBtn = control.querySelector('.unit-delete-btn');
+            const addNewValue = '__add_new_unit__';
+            let previousValue = select.value || 'No.';
+
+            function getSelectedOption() {
+                return select.options[select.selectedIndex];
+            }
+
+            function updateDeleteButton() {
+                const selected = getSelectedOption();
+                const canDelete = selected && selected.value !== addNewValue && selected.dataset.default !== '1';
+                deleteBtn.disabled = !canDelete;
+                deleteBtn.classList.toggle('is-visible', !!canDelete);
+            }
+
+            function postUnitAction(action, label) {
+                const formData = new FormData();
+                formData.append('unit_action', action);
+                formData.append('unit_label', label);
+
+                return fetch(window.location.href, {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'same-origin'
+                }).then(function(response) {
+                    return response.json();
+                });
+            }
+
+            select.addEventListener('focus', function() {
+                if (select.value !== addNewValue) {
+                    previousValue = select.value;
+                }
+            });
+
+            select.addEventListener('change', function() {
+                if (select.value !== addNewValue) {
+                    previousValue = select.value;
+                    updateDeleteButton();
+                    return;
+                }
+
+                openUnitAddModal().then(function(newUnit) {
+                    if (!newUnit) {
+                        select.value = previousValue;
+                        updateDeleteButton();
+                        return;
+                    }
+
+                    postUnitAction('add', newUnit).then(function(data) {
+                        if (!data.success) {
+                            alert(data.message || 'Unable to add unit.');
+                            select.value = previousValue;
+                            updateDeleteButton();
+                            return;
+                        }
+
+                        let option = Array.from(select.options).find(function(item) {
+                            return item.value.toLowerCase() === data.label.toLowerCase();
+                        });
+
+                        if (!option) {
+                            option = new Option(data.label, data.label);
+                            option.dataset.default = '0';
+                            select.insertBefore(option, select.querySelector('option[value="' + addNewValue + '"]'));
+                        }
+
+                        option.selected = true;
+                        previousValue = option.value;
+                        updateDeleteButton();
+                    }).catch(function() {
+                        alert('Unable to add unit.');
+                        select.value = previousValue;
+                        updateDeleteButton();
+                    });
+                }).catch(function() {
+                    select.value = previousValue;
+                    updateDeleteButton();
+                });
+            });
+
+            deleteBtn.addEventListener('click', function() {
+                const selected = getSelectedOption();
+                if (!selected || selected.dataset.default === '1' || selected.value === addNewValue) {
+                    return;
+                }
+
+                openUnitDeleteModal(selected.value).then(function(confirmed) {
+                    if (!confirmed) {
+                        return;
+                    }
+
+                    postUnitAction('delete', selected.value).then(function(data) {
+                        if (!data.success) {
+                            alert(data.message || 'Unable to delete unit.');
+                            return;
+                        }
+
+                        selected.remove();
+                        select.value = 'No.';
+                        previousValue = select.value;
+                        updateDeleteButton();
+                    }).catch(function() {
+                        alert('Unable to delete unit.');
+                    });
+                });
+            });
+
+            updateDeleteButton();
+        });
 
         document.querySelectorAll('input[type="number"]').forEach(function(input) {
             input.addEventListener('wheel', function(event) {
