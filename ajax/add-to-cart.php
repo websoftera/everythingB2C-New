@@ -15,6 +15,7 @@ if (!$input || !isset($input['product_id']) || !isset($input['quantity'])) {
 $productId = (int)$input['product_id'];
 $quantity = (int)$input['quantity'];
 $variationId = !empty($input['variation_id']) ? (int)$input['variation_id'] : null;
+$selectedAttributes = normalizeCartSelectedAttributes($input['selected_attributes'] ?? []);
 
 // Validate quantity
 if ($quantity < 1) {
@@ -29,29 +30,22 @@ if (!$product) {
     exit;
 }
 
-$variationData = getProductVariationData($productId);
-$variation = null;
-if ($variationData['has_variations']) {
-    if (!$variationId) {
-        echo json_encode(['success' => false, 'message' => 'Please select a variant']);
-        exit;
-    }
-
-    $variation = getProductVariationById($productId, $variationId);
-    if (!$variation) {
-        echo json_encode(['success' => false, 'message' => 'Selected variant is not available']);
-        exit;
-    }
-}
-
-$availableStock = $variation
-    ? min((int)$product['stock_quantity'], (int)$variation['stock_quantity'])
-    : (int)$product['stock_quantity'];
 $packageQuantity = normalizePackageQuantity($product['package_quantity'] ?? 1);
 $requestedStockQuantity = getCartItemStockQuantity([
     'quantity' => $quantity,
     'package_quantity' => $packageQuantity
 ]);
+
+$variationValidation = validateProductVariationSelection($productId, $variationId, $requestedStockQuantity);
+if (!$variationValidation['success']) {
+    echo json_encode($variationValidation);
+    exit;
+}
+
+$variation = $variationValidation['variation'] ?? null;
+$availableStock = $variation
+    ? min((int)$product['stock_quantity'], (int)$variation['stock_quantity'])
+    : (int)$product['stock_quantity'];
 
 if (!isValidPackageQuantity($quantity, $packageQuantity)) {
     echo json_encode(packageQuantityErrorResponse($quantity, $packageQuantity));
@@ -76,9 +70,9 @@ if ($product['max_quantity_per_order'] !== null && $requestedStockQuantity > (in
 // Check if user is logged in
 if (isLoggedIn()) {
     $userId = $_SESSION['user_id'];
-    $result = addToCart($userId, $productId, $quantity, $variationId);
+    $result = addToCart($userId, $productId, $quantity, $variationId, $selectedAttributes);
 } else {
-    $result = addToSessionCart($productId, $quantity, $variationId);
+    $result = addToSessionCart($productId, $quantity, $variationId, $selectedAttributes);
 }
 
 if ($result) {

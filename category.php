@@ -331,31 +331,34 @@ endif; ?>
           <nav aria-label="Product pagination">
             <ul class="pagination justify-content-center">
               <?php if ($currentPage > 1): ?>
-                <li class="page-item">
-                  <a class="page-link" href="<?php echo buildPaginationUrl('category', $currentPage - 1, $_GET); ?>">Previous</a>
+                <li class="page-item pagination-nav-item">
+                  <a class="page-link pagination-nav-link" href="<?php echo buildPaginationUrl('category', $currentPage - 1, $_GET); ?>">Previous</a>
                 </li>
+              <?php endif; ?>
+
               <?php
-  endif; ?>
-              
-              <?php
-  // Show a window of up to 5 pages, anchored to start from 1 for early pages
-  $windowSize = 5;
-  $startPage = max(1, min($currentPage - 2, $totalPages - $windowSize + 1));
-  $endPage = min($totalPages, $startPage + $windowSize - 1);
-  for ($i = $startPage; $i <= $endPage; $i++):
+  $paginationWindow = getPaginationWindow($currentPage, $totalPages);
+  foreach ($paginationWindow['pages'] as $i):
 ?>
                 <li class="page-item <?php echo $i == $currentPage ? 'active' : ''; ?>">
                   <a class="page-link" href="<?php echo buildPaginationUrl('category', $i, $_GET); ?>"><?php echo $i; ?></a>
                 </li>
               <?php
-  endfor; ?>
-              
-              <?php if ($currentPage < $totalPages): ?>
-                <li class="page-item">
-                  <a class="page-link" href="<?php echo buildPaginationUrl('category', $currentPage + 1, $_GET); ?>">Next</a>
+  endforeach; ?>
+              <?php if ($paginationWindow['show_ellipsis']): ?>
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+              <?php endif; ?>
+              <?php if ($paginationWindow['last_page']): ?>
+                <li class="page-item <?php echo $paginationWindow['last_page'] == $currentPage ? 'active' : ''; ?>">
+                  <a class="page-link" href="<?php echo buildPaginationUrl('category', $paginationWindow['last_page'], $_GET); ?>"><?php echo $paginationWindow['last_page']; ?></a>
                 </li>
-              <?php
-  endif; ?>
+              <?php endif; ?>
+
+              <?php if ($currentPage < $totalPages): ?>
+                <li class="page-item pagination-nav-item">
+                  <a class="page-link pagination-nav-link" href="<?php echo buildPaginationUrl('category', $currentPage + 1, $_GET); ?>">Next</a>
+                </li>
+              <?php endif; ?>
             </ul>
           </nav>
         <?php
@@ -369,6 +372,13 @@ endif; ?>
 /* Category Page Layout Styles */
 .products-container {
   padding: 20px 0;
+}
+
+.category-container .pagination .pagination-nav-link:hover,
+.category-container .pagination .pagination-nav-link:focus {
+  border-color: #0c79e7;
+  color: #0c79e7;
+  background: #fff;
 }
 
 .category-header {

@@ -4,6 +4,81 @@ require_once __DIR__ . '/../config/database.php';
 // Set default timezone for India
 date_default_timezone_set('Asia/Kolkata');
 
+function ensureSiteSettingsSchema($pdo = null) {
+    if ($pdo === null) {
+        global $pdo;
+    }
+
+    static $checked = false;
+    if ($checked || !$pdo) {
+        return (bool)$pdo;
+    }
+
+    try {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS site_settings (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            setting_key VARCHAR(100) NOT NULL UNIQUE,
+            setting_value TEXT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        )");
+
+        $stmt = $pdo->prepare("
+            INSERT INTO site_settings (setting_key, setting_value)
+            VALUES ('google_search_visibility', 'visible')
+            ON DUPLICATE KEY UPDATE setting_value = setting_value
+        ");
+        $stmt->execute();
+        $checked = true;
+        return true;
+    } catch (Exception $e) {
+        error_log('Unable to ensure site_settings table: ' . $e->getMessage());
+        return false;
+    }
+}
+
+function getSiteSetting($key, $default = null) {
+    global $pdo;
+
+    if (!ensureSiteSettingsSchema($pdo)) {
+        return $default;
+    }
+
+    try {
+        $stmt = $pdo->prepare("SELECT setting_value FROM site_settings WHERE setting_key = ? LIMIT 1");
+        $stmt->execute([$key]);
+        $value = $stmt->fetchColumn();
+        return $value === false ? $default : $value;
+    } catch (Exception $e) {
+        error_log('Unable to read site setting: ' . $e->getMessage());
+        return $default;
+    }
+}
+
+function setSiteSetting($key, $value) {
+    global $pdo;
+
+    if (!ensureSiteSettingsSchema($pdo)) {
+        return false;
+    }
+
+    try {
+        $stmt = $pdo->prepare("
+            INSERT INTO site_settings (setting_key, setting_value)
+            VALUES (?, ?)
+            ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value), updated_at = CURRENT_TIMESTAMP
+        ");
+        return $stmt->execute([$key, $value]);
+    } catch (Exception $e) {
+        error_log('Unable to save site setting: ' . $e->getMessage());
+        return false;
+    }
+}
+
+function isGoogleSearchVisible() {
+    return getSiteSetting('google_search_visibility', 'visible') !== 'hidden';
+}
+
 function ensureProductPackageQuantitySchema($pdo = null) {
     if ($pdo === null) {
         global $pdo;
@@ -644,6 +719,27 @@ function applyDisplayVariationPrice(array $product) {
     return hydrateProductDiscountFields($product);
 }
 
+function normalizeProductAttributeName($name) {
+    $attributeName = trim((string)$name);
+    if ($attributeName === '') {
+        return '';
+    }
+
+    $attributeName = preg_replace('/^(choose|shoose)\s+/i', '', $attributeName);
+    $attributeName = preg_replace('/\s+/', ' ', $attributeName);
+    $attributeKey = strtolower($attributeName);
+
+    if (in_array($attributeKey, ['color', 'colour'], true)) {
+        return 'Colour';
+    }
+
+    if ($attributeKey === 'size') {
+        return 'size';
+    }
+
+    return $attributeName;
+}
+
 function applyDisplayVariationPrices(array $products) {
     foreach ($products as &$product) {
         if (is_array($product)) {
@@ -878,21 +974,25 @@ function getProductVariationData($productId) {
     $attributePlaceholders = implode(',', array_fill(0, count($attributeIds), '?'));
     $valuePlaceholders = implode(',', array_fill(0, count($valueIds), '?'));
 
-    $stmt = $pdo->prepare("SELECT id, name FROM product_attributes WHERE is_active = 1 AND id IN ($attributePlaceholders)");
+    $stmt = $pdo->prepare("SELECT id, name, sort_order FROM product_attributes WHERE is_active = 1 AND id IN ($attributePlaceholders)");
     $stmt->execute($attributeIds);
     $activeAttributes = [];
     foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $attribute) {
-        $activeAttributes[(int)$attribute['id']] = $attribute['name'];
+        $activeAttributes[(int)$attribute['id']] = [
+            'name' => $attribute['name'],
+            'sort_order' => (int)($attribute['sort_order'] ?? 0)
+        ];
     }
 
-    $stmt = $pdo->prepare("SELECT id, attribute_id, value FROM product_attribute_values WHERE id IN ($valuePlaceholders)");
+    $stmt = $pdo->prepare("SELECT id, attribute_id, value, sort_order FROM product_attribute_values WHERE id IN ($valuePlaceholders)");
     $stmt->execute($valueIds);
     $activeValues = [];
     foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $value) {
         $activeValues[(int)$value['id']] = [
             'id' => (int)$value['id'],
             'attribute_id' => (int)$value['attribute_id'],
-            'value' => $value['value']
+            'value' => $value['value'],
+            'sort_order' => (int)($value['sort_order'] ?? 0)
         ];
     }
 
@@ -908,6 +1008,7 @@ function getProductVariationData($productId) {
                 break;
             }
 
+            $attribute = $activeAttributes[$item['attribute_id']];
             $value = $activeValues[$item['value_id']];
             if ($value['attribute_id'] !== $item['attribute_id']) {
                 $items = [];
@@ -916,9 +1017,11 @@ function getProductVariationData($productId) {
 
             $items[] = [
                 'attribute_id' => $item['attribute_id'],
-                'attribute_name' => $activeAttributes[$item['attribute_id']],
+                'attribute_name' => $attribute['name'],
+                'attribute_sort_order' => $attribute['sort_order'],
                 'value_id' => $item['value_id'],
-                'value' => $value['value']
+                'value' => $value['value'],
+                'value_sort_order' => $value['sort_order']
             ];
         }
 
@@ -941,12 +1044,14 @@ function getProductVariationData($productId) {
                 $groups[$item['attribute_id']] = [
                     'id' => $item['attribute_id'],
                     'name' => $item['attribute_name'],
+                    'sort_order' => $item['attribute_sort_order'],
                     'values' => []
                 ];
             }
             $groups[$item['attribute_id']]['values'][$item['value_id']] = [
                 'id' => $item['value_id'],
-                'value' => $item['value']
+                'value' => $item['value'],
+                'sort_order' => $item['value_sort_order']
             ];
         }
 
@@ -972,8 +1077,33 @@ function getProductVariationData($productId) {
     }
 
     foreach ($groups as &$group) {
+        uasort($group['values'], function ($a, $b) {
+            $sortCompare = ($a['sort_order'] ?? 0) <=> ($b['sort_order'] ?? 0);
+            if ($sortCompare !== 0) {
+                return $sortCompare;
+            }
+            return strnatcasecmp((string)($a['value'] ?? ''), (string)($b['value'] ?? ''));
+        });
         $group['values'] = array_values($group['values']);
+        foreach ($group['values'] as &$value) {
+            unset($value['sort_order']);
+        }
+        unset($value);
     }
+    unset($group);
+
+    uasort($groups, function ($a, $b) {
+        $sortCompare = ($a['sort_order'] ?? 0) <=> ($b['sort_order'] ?? 0);
+        if ($sortCompare !== 0) {
+            return $sortCompare;
+        }
+        return strnatcasecmp((string)($a['name'] ?? ''), (string)($b['name'] ?? ''));
+    });
+
+    foreach ($groups as &$group) {
+        unset($group['sort_order']);
+    }
+    unset($group);
 
     return [
         'has_variations' => !empty($variations),
@@ -992,11 +1122,143 @@ function getProductVariationById($productId, $variationId) {
     return null;
 }
 
+function productRequiresVariationSelection($productId) {
+    return !empty(getProductVariationData($productId)['has_variations']);
+}
+
+function validateProductVariationSelection($productId, $variationId, $quantity = 1) {
+    $productId = (int)$productId;
+    $variationId = $variationId ? (int)$variationId : 0;
+    $quantity = max(1, (int)$quantity);
+
+    if (!productRequiresVariationSelection($productId)) {
+        return ['success' => true, 'variation' => null];
+    }
+
+    if ($variationId <= 0) {
+        return ['success' => false, 'message' => 'Please select available product options before adding to cart.'];
+    }
+
+    $variation = getProductVariationById($productId, $variationId);
+    if (!$variation) {
+        return ['success' => false, 'message' => 'Selected variation not found.'];
+    }
+
+    if ((int)$variation['stock_quantity'] <= 0) {
+        return ['success' => false, 'message' => 'Selected variation is out of stock.', 'stock_quantity' => 0];
+    }
+
+    if ((int)$variation['stock_quantity'] < $quantity) {
+        return [
+            'success' => false,
+            'message' => "Maximum quantity allowed for this product is {$variation['stock_quantity']}",
+            'stock_quantity' => (int)$variation['stock_quantity']
+        ];
+    }
+
+    return ['success' => true, 'variation' => $variation];
+}
+
+function normalizeCartSelectedAttributes($selectedAttributes) {
+    if (is_string($selectedAttributes)) {
+        $decoded = json_decode($selectedAttributes, true);
+        $selectedAttributes = is_array($decoded) ? $decoded : [];
+    }
+
+    if (!is_array($selectedAttributes)) {
+        return [];
+    }
+
+    $normalized = [];
+    foreach ($selectedAttributes as $name => $values) {
+        $attributeName = normalizeProductAttributeName($name);
+        if ($attributeName === '') {
+            continue;
+        }
+
+        if (!is_array($values)) {
+            $values = [$values];
+        }
+
+        foreach ($values as $value) {
+            $attributeValue = trim((string)$value);
+            if ($attributeValue === '') {
+                continue;
+            }
+
+            if (!isset($normalized[$attributeName])) {
+                $normalized[$attributeName] = [];
+            }
+
+            if (!in_array($attributeValue, $normalized[$attributeName], true)) {
+                $normalized[$attributeName][] = $attributeValue;
+            }
+        }
+    }
+
+    return $normalized;
+}
+
+function getVariationAttributesByVariationId($variationId) {
+    global $pdo;
+
+    $variationId = (int)$variationId;
+    if ($variationId <= 0) {
+        return [];
+    }
+
+    try {
+        $stmt = $pdo->prepare("
+            SELECT pa.name AS attribute_name, pav.value AS attribute_value
+            FROM product_variation_attributes pva
+            JOIN product_attributes pa ON pva.attribute_id = pa.id
+            JOIN product_attribute_values pav ON pva.attribute_value_id = pav.id
+            WHERE pva.variation_id = ?
+            ORDER BY pa.sort_order ASC, pa.name ASC, pav.sort_order ASC, pav.value ASC
+        ");
+        $stmt->execute([$variationId]);
+    } catch (PDOException $e) {
+        return [];
+    }
+
+    $attributes = [];
+    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        $name = normalizeProductAttributeName($row['attribute_name'] ?? '');
+        $value = trim((string)($row['attribute_value'] ?? ''));
+        if ($name === '' || $value === '') {
+            continue;
+        }
+
+        $attributes[$name][] = $value;
+    }
+
+    return normalizeCartSelectedAttributes($attributes);
+}
+
+function mergeCartSelectedAttributes(array $storedAttributes, array $variationAttributes) {
+    $stored = normalizeCartSelectedAttributes($storedAttributes);
+    $variation = normalizeCartSelectedAttributes($variationAttributes);
+
+    if (empty($stored)) {
+        return $variation;
+    }
+
+    return array_replace($stored, $variation);
+}
+
 function ensureCartVariationSchema() {
     global $pdo;
 
     try {
         $pdo->exec("ALTER TABLE cart ADD COLUMN variation_id INT NULL DEFAULT NULL");
+    } catch (PDOException $e) {
+        if (strpos($e->getMessage(), 'Duplicate column') === false && strpos($e->getMessage(), '1060') === false) {
+            throw $e;
+        }
+    }
+
+    try {
+        $pdo->exec("ALTER TABLE cart ADD COLUMN selected_attributes TEXT NULL AFTER variation_id");
     } catch (PDOException $e) {
         if (strpos($e->getMessage(), 'Duplicate column') === false && strpos($e->getMessage(), '1060') === false) {
             throw $e;
@@ -1024,9 +1286,23 @@ function getCurrentUser() {
 }
 
 // Function to add to cart
-function addToCart($userId, $productId, $quantity = 1, $variationId = null) {
+function addToCart($userId, $productId, $quantity = 1, $variationId = null, $selectedAttributes = []) {
     global $pdo;
     ensureCartVariationSchema();
+    $product = getProductById($productId);
+    if (!$product) {
+        return false;
+    }
+    $variationValidation = validateProductVariationSelection($productId, $variationId, getCartItemStockQuantity([
+        'quantity' => $quantity,
+        'package_quantity' => $product['package_quantity'] ?? 1
+    ]));
+    if (!$variationValidation['success']) {
+        return false;
+    }
+    $variationId = $variationId ? (int)$variationId : null;
+    $variationAttributes = $variationId ? getVariationAttributesByVariationId($variationId) : [];
+    $selectedAttributesJson = json_encode(mergeCartSelectedAttributes(normalizeCartSelectedAttributes($selectedAttributes), $variationAttributes), JSON_UNESCAPED_UNICODE);
 
     // Check if product already in cart
     if ($variationId) {
@@ -1040,12 +1316,12 @@ function addToCart($userId, $productId, $quantity = 1, $variationId = null) {
 
     if ($existing) {
         // Update quantity (replace, don't add)
-        $stmt = $pdo->prepare("UPDATE cart SET quantity = ? WHERE id = ?");
-        return $stmt->execute([$quantity, $existing['id']]);
+        $stmt = $pdo->prepare("UPDATE cart SET quantity = ?, selected_attributes = ? WHERE id = ?");
+        return $stmt->execute([$quantity, $selectedAttributesJson, $existing['id']]);
     } else {
         // Add new item
-        $stmt = $pdo->prepare("INSERT INTO cart (user_id, product_id, variation_id, quantity) VALUES (?, ?, ?, ?)");
-        return $stmt->execute([$userId, $productId, $variationId ?: null, $quantity]);
+        $stmt = $pdo->prepare("INSERT INTO cart (user_id, product_id, variation_id, quantity, selected_attributes) VALUES (?, ?, ?, ?, ?)");
+        return $stmt->execute([$userId, $productId, $variationId ?: null, $quantity, $selectedAttributesJson]);
     }
 }
 
@@ -1068,6 +1344,7 @@ function getCartItems($userId = null) {
                    COALESCE(pv.mrp, p.mrp) AS mrp,
                    COALESCE(pv.image_path, p.main_image) AS main_image,
                    COALESCE(pv.stock_quantity, p.stock_quantity) AS stock_quantity,
+                   pv.id AS matched_variation_id,
                    pv.variation_label
             FROM cart c
             JOIN products p ON c.product_id = p.id
@@ -1078,6 +1355,12 @@ function getCartItems($userId = null) {
         $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
         foreach ($items as &$item) {
             $item['name'] = cleanProductName($item['name']);
+            $variationId = !empty($item['variation_id']) ? (int)$item['variation_id'] : 0;
+            $item['variation_found'] = $variationId > 0 ? !empty($item['matched_variation_id']) : true;
+            $storedAttributes = normalizeCartSelectedAttributes($item['selected_attributes'] ?? []);
+            $item['selected_attributes'] = $variationId > 0
+                ? mergeCartSelectedAttributes($storedAttributes, getVariationAttributesByVariationId($variationId))
+                : $storedAttributes;
             if (!empty($item['variation_label'])) {
                 $item['name'] .= ' - ' . $item['variation_label'];
             }
@@ -1164,10 +1447,26 @@ function generateRandomString($length = 10) {
 }
 
 // --- SESSION-BASED CART & WISHLIST FOR GUESTS ---
-function addToSessionCart($productId, $quantity = 1, $variationId = null) {
+function addToSessionCart($productId, $quantity = 1, $variationId = null, $selectedAttributes = []) {
     if (!isset($_SESSION['cart'])) $_SESSION['cart'] = [];
+    $product = getProductById($productId);
+    if (!$product) {
+        return false;
+    }
+    $variationValidation = validateProductVariationSelection($productId, $variationId, getCartItemStockQuantity([
+        'quantity' => $quantity,
+        'package_quantity' => $product['package_quantity'] ?? 1
+    ]));
+    if (!$variationValidation['success']) {
+        return false;
+    }
     // Always set the quantity (replace, don't add)
-    $_SESSION['cart'][cartSessionKey($productId, $variationId)] = $quantity;
+    $_SESSION['cart'][cartSessionKey($productId, $variationId)] = [
+        'product_id' => (int)$productId,
+        'variation_id' => $variationId ? (int)$variationId : null,
+        'quantity' => (int)$quantity,
+        'selected_attributes' => normalizeCartSelectedAttributes($selectedAttributes)
+    ];
     return true;
 }
 
@@ -1184,10 +1483,11 @@ function getSessionCartItems() {
     ensureProductPackageQuantitySchema($pdo);
     $items = [];
     if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) return $items;
-    foreach ($_SESSION['cart'] as $cartKey => $qty) {
+    foreach ($_SESSION['cart'] as $cartKey => $entry) {
+        $qty = is_array($entry) ? (int)($entry['quantity'] ?? 1) : (int)$entry;
         $parts = explode(':', (string)$cartKey, 2);
-        $productId = (int)$parts[0];
-        $variationId = isset($parts[1]) ? (int)$parts[1] : null;
+        $productId = is_array($entry) ? (int)($entry['product_id'] ?? $parts[0]) : (int)$parts[0];
+        $variationId = is_array($entry) ? (int)($entry['variation_id'] ?? 0) : (isset($parts[1]) ? (int)$parts[1] : 0);
 
         $unitSelect = hasProductUnitSchema($pdo)
             ? "pay_per_unit, unit_label,"
@@ -1205,6 +1505,11 @@ function getSessionCartItems() {
                 $product['variation_id'] = $variation['id'];
                 $product['variation_label'] = $variation['label'];
             }
+            $storedAttributes = is_array($entry) ? normalizeCartSelectedAttributes($entry['selected_attributes'] ?? []) : [];
+            $product['selected_attributes'] = $variationId
+                ? mergeCartSelectedAttributes($storedAttributes, getVariationAttributesByVariationId($variationId))
+                : $storedAttributes;
+            $product['variation_found'] = !$variationId || !empty($variation);
             $product['name'] = cleanProductName($product['name']);
             if (!empty($product['variation_label'])) {
                 $product['name'] .= ' - ' . $product['variation_label'];
@@ -1958,8 +2263,20 @@ function renderBreadcrumb($breadcrumbs) {
 // Merge session cart into user cart after login
 function mergeSessionCartToUserCart($userId) {
     if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) return;
-    foreach ($_SESSION['cart'] as $productId => $qty) {
-        addToCart($userId, $productId, $qty);
+    foreach ($_SESSION['cart'] as $cartKey => $entry) {
+        if (is_array($entry)) {
+            addToCart(
+                $userId,
+                (int)($entry['product_id'] ?? 0),
+                (int)($entry['quantity'] ?? 1),
+                !empty($entry['variation_id']) ? (int)$entry['variation_id'] : null,
+                $entry['selected_attributes'] ?? []
+            );
+            continue;
+        }
+
+        $parts = explode(':', (string)$cartKey, 2);
+        addToCart($userId, (int)$parts[0], (int)$entry, isset($parts[1]) ? (int)$parts[1] : null);
     }
     clearSessionCart();
 }
@@ -2008,6 +2325,40 @@ function buildPaginationUrl($pageType, $page, $params = []) {
         $separator = strpos($baseUrl, '?') !== false ? '&' : '?';
         return $baseUrl . ($queryString ? $separator . $queryString : '');
     }
+}
+
+function getPaginationWindow($currentPage, $totalPages, $windowSize = 5) {
+    $currentPage = max(1, (int)$currentPage);
+    $totalPages = max(1, (int)$totalPages);
+    $windowSize = max(1, (int)$windowSize);
+
+    if ($totalPages <= $windowSize) {
+        return [
+            'pages' => range(1, $totalPages),
+            'show_ellipsis' => false,
+            'last_page' => null
+        ];
+    }
+
+    if ($currentPage <= $windowSize) {
+        $startPage = 1;
+    } else {
+        $startPage = $currentPage - 2;
+    }
+
+    $endPage = min($totalPages, $startPage + $windowSize - 1);
+    if ($endPage >= $totalPages) {
+        $startPage = max(1, $totalPages - $windowSize + 1);
+        $endPage = $totalPages;
+    }
+
+    $pages = range($startPage, $endPage);
+
+    return [
+        'pages' => $pages,
+        'show_ellipsis' => $endPage < ($totalPages - 1),
+        'last_page' => $endPage < $totalPages ? $totalPages : null
+    ];
 }
 
 // ==================== DTDC API INTEGRATION FUNCTIONS ====================

@@ -11,6 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 $product_id = isset($_POST['product_id']) ? intval($_POST['product_id']) : 0;
+$variation_id = isset($_POST['variation_id']) ? intval($_POST['variation_id']) : 0;
 $quantity = isset($_POST['quantity']) ? intval($_POST['quantity']) : 1;
 
 if ($product_id <= 0) {
@@ -36,6 +37,20 @@ try {
         'quantity' => $quantity,
         'package_quantity' => $package_quantity
     ]);
+
+    $variationValidation = validateProductVariationSelection($product_id, $variation_id, $requested_stock_quantity);
+    if (!$variationValidation['success']) {
+        echo json_encode([
+            'error' => 'Invalid variation',
+            'message' => $variationValidation['message'],
+            'stock_quantity' => $variationValidation['stock_quantity'] ?? 0
+        ]);
+        exit;
+    }
+
+    if ($variation_id > 0 && !empty($variationValidation['variation'])) {
+        $stock_quantity = min($stock_quantity, (int)$variationValidation['variation']['stock_quantity']);
+    }
 
     if (!isValidPackageQuantity($quantity, $package_quantity)) {
         echo json_encode(packageQuantityErrorResponse($quantity, $package_quantity));
@@ -76,8 +91,13 @@ try {
     // amount to add on top of what is already in cart.
     if (isset($_SESSION['user_id'])) {
         $user_id = $_SESSION['user_id'];
-        $stmt = $pdo->prepare("SELECT quantity FROM cart WHERE user_id = ? AND product_id = ?");
-        $stmt->execute([$user_id, $product_id]);
+        if ($variation_id > 0) {
+            $stmt = $pdo->prepare("SELECT quantity FROM cart WHERE user_id = ? AND product_id = ? AND variation_id = ?");
+            $stmt->execute([$user_id, $product_id, $variation_id]);
+        } else {
+            $stmt = $pdo->prepare("SELECT quantity FROM cart WHERE user_id = ? AND product_id = ? AND variation_id IS NULL");
+            $stmt->execute([$user_id, $product_id]);
+        }
         $cart_item = $stmt->fetch(PDO::FETCH_ASSOC);
 
         $current_cart_quantity = $cart_item ? $cart_item['quantity'] : 0;

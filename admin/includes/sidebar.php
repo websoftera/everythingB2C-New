@@ -177,6 +177,11 @@ require_once __DIR__ . '/../../includes/functions.php';
                     <i class="fas fa-cog everythingb2c-nav-icon"></i> Settings
                 </a>
             </li>
+            <li class="everythingb2c-nav-item">
+                <a class="everythingb2c-nav-link" href="settings.php#seo-settings">
+                    <i class="fas fa-search everythingb2c-nav-icon"></i> SEO Settings
+                </a>
+            </li>
             <?php endif; ?>
             
             <!-- Admin Management Section -->

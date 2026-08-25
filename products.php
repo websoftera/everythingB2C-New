@@ -281,25 +281,34 @@ endif; ?>
           <nav aria-label="Product pagination">
             <ul class="pagination justify-content-center">
               <?php if ($currentPage > 1): ?>
-                <li class="page-item">
-                  <a class="page-link" href="<?php echo buildPaginationUrl('products', $currentPage - 1, $_GET); ?>">Previous</a>
+                <li class="page-item pagination-nav-item">
+                  <a class="page-link pagination-nav-link" href="<?php echo buildPaginationUrl('products', $currentPage - 1, $_GET); ?>">Previous</a>
                 </li>
+              <?php endif; ?>
+
               <?php
-  endif; ?>
-              
-              <?php for ($i = max(1, $currentPage - 2); $i <= min($totalPages, $currentPage + 2); $i++): ?>
+  $paginationWindow = getPaginationWindow($currentPage, $totalPages);
+  foreach ($paginationWindow['pages'] as $i):
+?>
                 <li class="page-item <?php echo $i == $currentPage ? 'active' : ''; ?>">
                   <a class="page-link" href="<?php echo buildPaginationUrl('products', $i, $_GET); ?>"><?php echo $i; ?></a>
                 </li>
               <?php
-  endfor; ?>
-              
-              <?php if ($currentPage < $totalPages): ?>
-                <li class="page-item">
-                  <a class="page-link" href="<?php echo buildPaginationUrl('products', $currentPage + 1, $_GET); ?>">Next</a>
+  endforeach; ?>
+              <?php if ($paginationWindow['show_ellipsis']): ?>
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+              <?php endif; ?>
+              <?php if ($paginationWindow['last_page']): ?>
+                <li class="page-item <?php echo $paginationWindow['last_page'] == $currentPage ? 'active' : ''; ?>">
+                  <a class="page-link" href="<?php echo buildPaginationUrl('products', $paginationWindow['last_page'], $_GET); ?>"><?php echo $paginationWindow['last_page']; ?></a>
                 </li>
-              <?php
-  endif; ?>
+              <?php endif; ?>
+
+              <?php if ($currentPage < $totalPages): ?>
+                <li class="page-item pagination-nav-item">
+                  <a class="page-link pagination-nav-link" href="<?php echo buildPaginationUrl('products', $currentPage + 1, $_GET); ?>">Next</a>
+                </li>
+              <?php endif; ?>
             </ul>
           </nav>
         <?php
@@ -313,6 +322,13 @@ endif; ?>
 /* Products Page Layout Styles */
 .products-container {
   padding: 20px 0;
+}
+
+.products-page-container .pagination .pagination-nav-link:hover,
+.products-page-container .pagination .pagination-nav-link:focus {
+  border-color: #0c79e7;
+  color: #0c79e7;
+  background: #fff;
 }
 
 .products-header {

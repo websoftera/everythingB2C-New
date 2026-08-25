@@ -1,5 +1,5 @@
 // Max Quantity Check JavaScript
-// This file handles maximum quantity validation for cart operations
+// Handles quantity validation and sends variation selections with cart requests.
 
 class MaxQuantityChecker {
     constructor() {
@@ -7,12 +7,10 @@ class MaxQuantityChecker {
     }
 
     init() {
-        // Add event listeners to all add-to-cart buttons
         this.addEventListeners();
     }
 
     addEventListeners() {
-        // Listen for add-to-cart button clicks
         document.addEventListener('click', (e) => {
             if (e.target.matches('.add-to-cart-btn') || e.target.closest('.add-to-cart-btn')) {
                 e.preventDefault();
@@ -21,46 +19,47 @@ class MaxQuantityChecker {
             }
         });
 
-        // Listen for quantity input changes
         document.addEventListener('change', (e) => {
             if (e.target.matches('.quantity-input')) {
-                if (parseInt(e.target.value) > 99) e.target.value = 99;
+                if (parseInt(e.target.value, 10) > 99) e.target.value = 99;
                 this.checkMaxQuantity(e.target);
             }
         });
 
-        // Listen for quantity input keyup for real-time validation
         document.addEventListener('input', (e) => {
             if (e.target.matches('.quantity-input')) {
-                if (e.target.value.length > 2) e.target.value = e.target.value.slice(0,2);
-                if (parseInt(e.target.value) > 99) e.target.value = 99;
+                if (e.target.value.length > 2) e.target.value = e.target.value.slice(0, 2);
+                if (parseInt(e.target.value, 10) > 99) e.target.value = 99;
                 this.validateQuantityInput(e.target);
             }
         });
 
-        // Listen for blur to clamp value
         document.addEventListener('blur', (e) => {
-            if (e.target.matches('.quantity-input')) {
-                if (parseInt(e.target.value) > 99) e.target.value = 99;
+            if (e.target.matches('.quantity-input') && parseInt(e.target.value, 10) > 99) {
+                e.target.value = 99;
             }
         }, true);
     }
 
     async handleAddToCart(button) {
         const productId = button.dataset.productId;
-        const quantityInput = button.closest('.product-form').querySelector('.quantity-input');
-        const quantity = quantityInput ? parseInt(quantityInput.value) || 1 : 1;
+        const variationId = button.dataset.variationId || button.getAttribute('data-variation-id') || '';
+        const container = button.closest('.product-form, .product-detail-card, .product-card, .card, .shop-page-product-card');
+        const quantityInput = container ? container.querySelector('.quantity-input') : null;
+        const quantity = quantityInput ? parseInt(quantityInput.value, 10) || 1 : 1;
 
-        // Show loading state
+        if ((button.dataset.requiresVariation === '1' || button.getAttribute('data-requires-variation') === '1') && !variationId) {
+            this.showError('Please select available product options before adding to cart.');
+            return;
+        }
+
         this.showLoading(button);
 
         try {
-            // Check max quantity first
-            const checkResult = await this.checkMaxQuantityBeforeAdd(productId, quantity);
-            
+            const checkResult = await this.checkMaxQuantityBeforeAdd(productId, quantity, variationId);
+
             if (checkResult.success) {
-                // Proceed with adding to cart
-                const result = await this.addToCart(productId, quantity);
+                const result = await this.addToCart(productId, quantity, variationId, this.getSelectedAttributes(button));
                 if (result.success) {
                     this.showSuccess('Product added to cart successfully!');
                     this.updateCartCount();
@@ -69,7 +68,7 @@ class MaxQuantityChecker {
                     this.showError(result.message);
                 }
             } else {
-                this.showError(checkResult.message);
+                this.showError(checkResult.message || checkResult.error || 'Unable to validate quantity.');
             }
         } catch (error) {
             console.error('Error:', error);
@@ -79,73 +78,136 @@ class MaxQuantityChecker {
         }
     }
 
-    async checkMaxQuantityBeforeAdd(productId, quantity) {
+    async checkMaxQuantityBeforeAdd(productId, quantity, variationId = '') {
         try {
             const response = await fetch(this.ajaxUrl('ajax/check_max_quantity.php'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
+                    'Accept': 'application/json'
                 },
-                body: `product_id=${productId}&quantity=${quantity}`
+                body: `product_id=${encodeURIComponent(productId)}&quantity=${encodeURIComponent(quantity)}&variation_id=${encodeURIComponent(variationId || '')}`
             });
 
-            const result = await response.json();
-            return result;
+            return await this.parseJsonResponse(response, 'Failed to check quantity limits');
         } catch (error) {
             console.error('Error checking max quantity:', error);
-            return { error: 'Failed to check quantity limits' };
+            return { success: false, message: 'Failed to check quantity limits' };
         }
     }
 
-    async addToCart(productId, quantity) {
+    async addToCart(productId, quantity, variationId = '', selectedAttributes = {}) {
         try {
             const response = await fetch(this.ajaxUrl('ajax/add-to-cart.php'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Accept': 'application/json'
                 },
                 body: JSON.stringify({
                     product_id: productId,
-                    quantity: quantity
+                    quantity: quantity,
+                    variation_id: variationId || undefined,
+                    selected_attributes: selectedAttributes || {}
                 })
             });
 
-            return await response.json();
+            return await this.parseJsonResponse(response, 'Failed to add to cart');
         } catch (error) {
             console.error('Error adding to cart:', error);
             return { success: false, message: 'Failed to add to cart' };
         }
     }
 
+    async parseJsonResponse(response, fallbackMessage) {
+        const text = await response.text();
+        try {
+            return JSON.parse(text);
+        } catch (error) {
+            console.error('Invalid JSON response:', text);
+            return {
+                success: false,
+                message: text && text.trim().startsWith('Connection failed')
+                    ? 'Database connection failed. Please try again later.'
+                    : fallbackMessage
+            };
+        }
+    }
+
+    getSelectedAttributes(button) {
+        const raw = button.dataset.selectedAttributes || button.getAttribute('data-selected-attributes') || '';
+        if (!raw) return {};
+
+        try {
+            return JSON.parse(raw);
+        } catch (error) {
+            return {};
+        }
+    }
+
     async checkMaxQuantity(input) {
         const productId = input.dataset.productId;
-        const quantity = parseInt(input.value) || 1;
+        const variationId = this.getVariationIdFromInput(input);
+        const quantity = parseInt(input.value, 10) || 1;
 
         if (quantity < 1) {
             this.showQuantityError(input, 'Quantity must be at least 1');
             return false;
         }
 
+        if (this.requiresVariation(input) && !variationId) {
+            this.clearQuantityError(input);
+            return true;
+        }
+
         try {
-            const result = await this.checkMaxQuantityBeforeAdd(productId, quantity);
-            
-            if (result.error) {
-                this.showQuantityError(input, result.message);
+            const result = await this.checkMaxQuantityBeforeAdd(productId, quantity, variationId);
+
+            if (result.error || result.success === false) {
+                this.showQuantityError(input, result.message || result.error);
                 return false;
-            } else {
-                this.clearQuantityError(input);
-                return true;
             }
+
+            this.clearQuantityError(input);
+            return true;
         } catch (error) {
             console.error('Error checking quantity:', error);
             return false;
         }
     }
 
+    getVariationIdFromInput(input) {
+        const inputVariationId = input.dataset.variationId || input.getAttribute('data-variation-id') || '';
+        if (inputVariationId) return inputVariationId;
+
+        const container = input.closest('.product-form, .product-detail-card, .product-card, .card, .shop-page-product-card');
+        if (!container) return '';
+
+        const addToCartBtn = container.querySelector('.add-to-cart-btn, .add-to-cart, .shop-page-add-to-cart-btn');
+        return addToCartBtn
+            ? (addToCartBtn.dataset.variationId || addToCartBtn.getAttribute('data-variation-id') || '')
+            : '';
+    }
+
+    requiresVariation(input) {
+        if (input.dataset.requiresVariation === '1' || input.getAttribute('data-requires-variation') === '1') {
+            return true;
+        }
+
+        const container = input.closest('.product-form, .product-detail-card, .product-card, .card, .shop-page-product-card');
+        if (!container) return false;
+
+        const addToCartBtn = container.querySelector('.add-to-cart-btn, .add-to-cart, .shop-page-add-to-cart-btn');
+        return !!addToCartBtn && (
+            addToCartBtn.dataset.requiresVariation === '1'
+            || addToCartBtn.getAttribute('data-requires-variation') === '1'
+        );
+    }
+
     validateQuantityInput(input) {
-        const value = parseInt(input.value);
-        const min = parseInt(input.min) || 1;
-        const max = parseInt(input.max);
+        const value = parseInt(input.value, 10);
+        const min = parseInt(input.min, 10) || 1;
+        const max = parseInt(input.max, 10);
 
         if (value < min) {
             input.value = min;
@@ -155,26 +217,20 @@ class MaxQuantityChecker {
     }
 
     showQuantityError(input, message) {
-        // Remove existing error message
         this.clearQuantityError(input);
-
-        // Add error class to input
         input.classList.add('is-invalid');
 
-        // Create error message element
         const errorDiv = document.createElement('div');
         errorDiv.className = 'invalid-feedback max-quantity-error';
-        errorDiv.textContent = message;
+        errorDiv.textContent = message || 'Invalid quantity';
         errorDiv.style.display = 'block';
         errorDiv.style.color = '#dc3545';
         errorDiv.style.fontSize = '0.875rem';
         errorDiv.style.marginTop = '0.25rem';
-
-        // Insert error message after input
         input.parentNode.appendChild(errorDiv);
 
-        // Disable add to cart button
-        const addToCartBtn = input.closest('.product-form').querySelector('.add-to-cart-btn');
+        const container = input.closest('.product-form, .product-detail-card, .product-card, .card, .shop-page-product-card');
+        const addToCartBtn = container ? container.querySelector('.add-to-cart-btn') : null;
         if (addToCartBtn) {
             addToCartBtn.disabled = true;
             addToCartBtn.classList.add('btn-secondary');
@@ -183,18 +239,20 @@ class MaxQuantityChecker {
     }
 
     clearQuantityError(input) {
-        // Remove error class from input
         input.classList.remove('is-invalid');
 
-        // Remove existing error message
         const existingError = input.parentNode.querySelector('.max-quantity-error');
         if (existingError) {
             existingError.remove();
         }
 
-        // Enable add to cart button
-        const addToCartBtn = input.closest('.product-form').querySelector('.add-to-cart-btn');
+        const container = input.closest('.product-form, .product-detail-card, .product-card, .card, .shop-page-product-card');
+        const addToCartBtn = container ? container.querySelector('.add-to-cart-btn') : null;
         if (addToCartBtn) {
+            if ((addToCartBtn.dataset.requiresVariation === '1' || addToCartBtn.getAttribute('data-requires-variation') === '1') &&
+                !(addToCartBtn.dataset.variationId || addToCartBtn.getAttribute('data-variation-id'))) {
+                return;
+            }
             addToCartBtn.disabled = false;
             addToCartBtn.classList.remove('btn-secondary');
             addToCartBtn.classList.add('btn-primary');
@@ -202,16 +260,14 @@ class MaxQuantityChecker {
     }
 
     showLoading(button) {
-        const originalText = button.innerHTML;
-        button.dataset.originalText = originalText;
+        button.dataset.originalText = button.innerHTML;
         button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
         button.disabled = true;
     }
 
     hideLoading(button) {
-        const originalText = button.dataset.originalText;
-        if (originalText) {
-            button.innerHTML = originalText;
+        if (button.dataset.originalText) {
+            button.innerHTML = button.dataset.originalText;
         }
         button.disabled = false;
     }
@@ -225,12 +281,10 @@ class MaxQuantityChecker {
     }
 
     showAlert(message, type = 'info') {
-        // Create alert element
         const alertDiv = document.createElement('div');
         alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
         alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px; max-width: 400px; font-weight: 500;';
-        
-        // Add icon based on type
+
         let icon = '';
         if (type === 'success') {
             icon = '<i class="fas fa-check-circle me-2"></i>';
@@ -239,16 +293,13 @@ class MaxQuantityChecker {
         } else {
             icon = '<i class="fas fa-info-circle me-2"></i>';
         }
-        
+
         alertDiv.innerHTML = `
             ${icon}${message}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         `;
 
-        // Add to page
         document.body.appendChild(alertDiv);
-
-        // Auto remove after 5 seconds
         setTimeout(() => {
             if (alertDiv.parentNode) {
                 alertDiv.remove();
@@ -270,24 +321,18 @@ class MaxQuantityChecker {
     }
 
     highlightProductCard(button) {
-        // Find the product card container
         const productCard = button.closest('.card, .product-detail-card, [data-id^="prod-"]');
-        
+
         if (productCard) {
-            // Add highlight class
             productCard.classList.add('product-added-highlight');
-            
-            // Animate the button
             button.classList.add('btn-success');
             button.innerHTML = '<i class="fas fa-check"></i> ADDED';
-            
-            // Reset button after 2 seconds
+
             setTimeout(() => {
                 button.classList.remove('btn-success');
                 button.innerHTML = '<i class="fas fa-shopping-cart" style="margin-right: 6px; transform: scaleX(-1); font-size: 18px;"></i>ADD TO CART';
             }, 2000);
-            
-            // Remove highlight after 3 seconds
+
             setTimeout(() => {
                 productCard.classList.remove('product-added-highlight');
             }, 3000);
@@ -295,7 +340,6 @@ class MaxQuantityChecker {
     }
 }
 
-// Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     new MaxQuantityChecker();
-}); 
+});
