@@ -677,21 +677,21 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
             <button class="zoom-icon-btn modern-zoom" id="zoomBtn" title="Zoom"><i class="fas fa-search-plus"></i></button>
             <div class="img-magnifier-container" id="mainImageContainer" style="position:relative;">
                 <?php if (!empty($product['main_image'])): ?>
-                    <img id="mainImage" src="<?php echo $product['main_image']; ?>" alt="<?php echo cleanProductName($product['name']); ?>" data-index="0" style="width:100%;height:100%;object-fit:contain;border-radius:8px;display:block;" />
+                    <img id="mainImage" src="<?php echo $product['main_image']; ?>" alt="<?php echo cleanProductName($product['name']); ?>" data-index="0" fetchpriority="high" decoding="async" style="width:100%;height:100%;object-fit:contain;border-radius:8px;display:block;" />
                 <?php else: ?>
-                    <img id="mainImage" src="./uploads/products/blank-img.webp" alt="No image available" data-index="0" style="width:100%;height:100%;object-fit:contain;border-radius:8px;display:block;" />
+                    <img id="mainImage" src="./uploads/products/blank-img.webp" alt="No image available" data-index="0" fetchpriority="high" decoding="async" style="width:100%;height:100%;object-fit:contain;border-radius:8px;display:block;" />
                 <?php endif; ?>
                 <div id="magnifier" class="img-magnifier-glass" style="display:none;"></div>
             </div>
             <div class="thumbnail-row">
                 <?php if (!empty($product['main_image'])): ?>
-                    <img class="thumbnail" src="<?php echo $product['main_image']; ?>" alt="<?php echo cleanProductName($product['name']); ?>">
+                    <img class="thumbnail" src="<?php echo $product['main_image']; ?>" alt="<?php echo cleanProductName($product['name']); ?>" loading="lazy" decoding="async">
                 <?php else: ?>
-                    <img class="thumbnail" src="./uploads/products/blank-img.webp" alt="No image available">
+                    <img class="thumbnail" src="./uploads/products/blank-img.webp" alt="No image available" loading="lazy" decoding="async">
                 <?php endif; ?>
                 <?php foreach ($productImages as $image): ?>
                     <?php if ($image['image_path'] !== $product['main_image']): ?>
-                        <img class="thumbnail" src="<?php echo $image['image_path']; ?>" alt="<?php echo cleanProductName($product['name']); ?>">
+                        <img class="thumbnail" src="<?php echo $image['image_path']; ?>" alt="<?php echo cleanProductName($product['name']); ?>" loading="lazy" decoding="async">
                     <?php endif; ?>
                 <?php endforeach; ?>
             </div>
@@ -794,7 +794,7 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
             </div>
             <div class="related-products-slider-wrapper">
                 <button class="related-nav-btn prev-btn" aria-label="Scroll Left">
-                    <img src="asset/icons/blue_arrow.png" alt="Previous">
+                    <img src="asset/icons/blue_arrow.png" alt="Previous" loading="lazy" decoding="async">
                 </button>
                 <div class="related-products-container" id="related-slider">
                     <?php foreach ($relatedProducts as $relatedProduct): 
@@ -808,9 +808,9 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                                 <div class="product-image">
                                     <a href="product.php?slug=<?php echo $relatedProduct['slug']; ?>">
                                         <?php if (!empty($relatedProduct['main_image'])): ?>
-                                            <img src="<?php echo $relatedProduct['main_image']; ?>" alt="<?php echo cleanProductName($relatedProduct['name']); ?>">
+                                            <img src="<?php echo $relatedProduct['main_image']; ?>" alt="<?php echo cleanProductName($relatedProduct['name']); ?>" loading="lazy" decoding="async">
                                         <?php else: ?>
-                                            <img src="./uploads/products/blank-img.webp" alt="No image available">
+                                            <img src="./uploads/products/blank-img.webp" alt="No image available" loading="lazy" decoding="async">
                                         <?php endif; ?>
                                     </a>
                                     <?php if ($isOutOfStock): ?>
@@ -866,7 +866,7 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                     <?php endforeach; ?>
                 </div>
                 <button class="related-nav-btn next-btn" aria-label="Scroll Right">
-                    <img src="asset/icons/blue_arrow.png" alt="Next" style="transform: rotate(180deg);">
+                    <img src="asset/icons/blue_arrow.png" alt="Next" loading="lazy" decoding="async" style="transform: rotate(180deg);">
                 </button>
             </div>
         </div>

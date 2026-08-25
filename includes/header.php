@@ -6,6 +6,19 @@ require_once __DIR__ . '/functions.php';
 require_once __DIR__ . '/delivery_popup_functions.php';
 $base_url = $base_url ?? '';
 
+if (!function_exists('b2c_asset_version')) {
+    function b2c_asset_version($path) {
+        $assetPath = realpath(__DIR__ . '/../' . ltrim($path, '/\\'));
+        $rootPath = realpath(__DIR__ . '/..');
+
+        if ($assetPath && $rootPath && strpos($assetPath, $rootPath) === 0 && is_file($assetPath)) {
+            return filemtime($assetPath);
+        }
+
+        return '1';
+    }
+}
+
 // Helper: Use this snippet for authentication checks
 // if (!isLoggedIn()) {
 //     $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
@@ -58,10 +71,6 @@ if (isLoggedIn()) {
     <!-- Favicon -->
     <link rel="icon" href="<?php echo $base_url; ?>sitelogo.png" type="image/webp">
 
-    <!-- Font Awesome Preload for better performance -->
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
-    
     <!-- Google Fonts - Mulish -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -71,18 +80,18 @@ if (isLoggedIn()) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="stylesheet" href="<?php echo $base_url; ?>Header.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?php echo $base_url; ?>Header.css?v=<?php echo b2c_asset_version('Header.css'); ?>">
 
-    <link rel="stylesheet" href="<?php echo $base_url; ?>asset/style/global-colors.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="<?php echo $base_url; ?>asset/style/popup.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="<?php echo $base_url; ?>asset/style/style.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="<?php echo $base_url; ?>asset/style/product-card.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?php echo $base_url; ?>asset/style/global-colors.css?v=<?php echo b2c_asset_version('asset/style/global-colors.css'); ?>">
+    <link rel="stylesheet" href="<?php echo $base_url; ?>asset/style/popup.css?v=<?php echo b2c_asset_version('asset/style/popup.css'); ?>">
+    <link rel="stylesheet" href="<?php echo $base_url; ?>asset/style/style.css?v=<?php echo b2c_asset_version('asset/style/style.css'); ?>">
+    <link rel="stylesheet" href="<?php echo $base_url; ?>asset/style/product-card.css?v=<?php echo b2c_asset_version('asset/style/product-card.css'); ?>">
     <?php if (!empty($pageStyles) && is_array($pageStyles)): ?>
         <?php foreach ($pageStyles as $pageStyle): ?>
-            <link rel="stylesheet" href="<?php echo $base_url . htmlspecialchars($pageStyle); ?>?v=<?php echo time(); ?>">
+            <link rel="stylesheet" href="<?php echo $base_url . htmlspecialchars($pageStyle); ?>?v=<?php echo b2c_asset_version($pageStyle); ?>">
         <?php endforeach; ?>
     <?php endif; ?>
-    <script src="<?php echo $base_url; ?>asset/js/sliders.js?v=<?php echo time(); ?>" defer></script>
+    <script src="<?php echo $base_url; ?>asset/js/sliders.js?v=<?php echo b2c_asset_version('asset/js/sliders.js'); ?>" defer></script>
     <style>
 html, body {
   overflow-x: hidden !important;
@@ -804,9 +813,9 @@ renderCategoryMenu($categoryTree);
     return (window.BASE_URL || '') + String(path || '').replace(/^\/+/, '');
   };
 </script>
-<script src="<?php echo $base_url; ?>popup/popup.js?v=<?php echo time(); ?>"></script>
+<script src="<?php echo $base_url; ?>popup/popup.js?v=<?php echo b2c_asset_version('popup/popup.js'); ?>"></script>
 <script src="<?php echo $base_url; ?>popup/searchbar.js"></script>
-<script src="<?php echo $base_url; ?>js/real-time-max-quantity.js"></script>
+<script src="<?php echo $base_url; ?>js/real-time-max-quantity.js?v=<?php echo b2c_asset_version('js/real-time-max-quantity.js'); ?>"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 // Ensure all dropdown toggles (e.g., Sign In) initialize correctly
@@ -2506,6 +2515,9 @@ function smoothUpdatePerItemTotal(cartId, newTotal) {
     // Function to load current cart quantity for a product
     function loadCartQuantity(productId, input) {
         if (!productId || !input) return;
+        if (input.dataset.cartQuantityChecked === 'true') return;
+
+        input.dataset.cartQuantityChecked = 'true';
         
         fetch(window.b2cAjaxUrl(`ajax/check-product-in-cart.php?product_id=${productId}`))
             .then(res => res.json())
@@ -2584,16 +2596,6 @@ function smoothUpdatePerItemTotal(cartId, newTotal) {
     } else {
         setTimeout(initQuantityInputs, 100);
     }
-    
-    // Also run when window is fully loaded
-    window.addEventListener('load', () => {
-        setTimeout(initQuantityInputs, 200);
-    });
-    
-    // Run after longer delays as fallbacks
-    setTimeout(initQuantityInputs, 1000);
-    setTimeout(initQuantityInputs, 2000);
-    setTimeout(initQuantityInputs, 3000);
     
     // Make function globally available
     window.headerInitQuantities = initQuantityInputs;

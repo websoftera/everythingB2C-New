@@ -200,13 +200,17 @@ class RealTimeMaxQuantityChecker {
     }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+function initializeRealTimeMaxQuantityChecker() {
+    if (window.realTimeMaxQuantityCheckerInitialized) {
+        return;
+    }
+
+    window.realTimeMaxQuantityCheckerInitialized = true;
     new RealTimeMaxQuantityChecker();
-});
+}
+
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() {
-        new RealTimeMaxQuantityChecker();
-    });
+    document.addEventListener('DOMContentLoaded', initializeRealTimeMaxQuantityChecker);
 } else {
-    new RealTimeMaxQuantityChecker();
-} 
+    initializeRealTimeMaxQuantityChecker();
+}
