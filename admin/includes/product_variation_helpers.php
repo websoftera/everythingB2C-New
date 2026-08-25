@@ -235,6 +235,7 @@ function getPostedVariationSnapshot() {
 
     $snapshot = [];
     $labels = $_POST['variation_label'];
+    $variationIds = $_POST['variation_id'] ?? [];
     $attributesJson = $_POST['variation_attributes_json'] ?? [];
     $mrps = $_POST['variation_mrp'] ?? [];
     $sellingPrices = $_POST['variation_selling_price'] ?? [];
@@ -367,6 +368,7 @@ function saveProductVariations($pdo, $productId) {
 
         $variationRows[] = [
             'label' => $label,
+            'id' => isset($variationIds[$index]) ? (int)$variationIds[$index] : 0,
             'attributes' => $normalizedAttributes,
             'mrp' => (float)($mrps[$index] ?? 0),
             'selling_price' => (float)($sellingPrices[$index] ?? 0),
@@ -381,27 +383,59 @@ function saveProductVariations($pdo, $productId) {
         return 0;
     }
 
-    $pdo->prepare("DELETE FROM product_variations WHERE product_id = ?")->execute([$productId]);
-
     $attributeStmt = $pdo->prepare("
         INSERT INTO product_variation_attributes
             (variation_id, attribute_id, attribute_value_id)
         VALUES (?, ?, ?)
     ");
+    $updateStmt = $pdo->prepare("
+        UPDATE product_variations
+        SET variation_label = ?, attributes_json = ?, mrp = ?, selling_price = ?, stock_quantity = ?, image_path = ?, sort_order = ?
+        WHERE id = ? AND product_id = ?
+    ");
+    $insertStmt = $stmt;
+    $deleteAttributesStmt = $pdo->prepare("DELETE FROM product_variation_attributes WHERE variation_id = ?");
+    $ownershipStmt = $pdo->prepare("SELECT id FROM product_variations WHERE id = ? AND product_id = ?");
 
     $savedCount = 0;
+    $savedVariationIds = [];
     foreach ($variationRows as $variationRow) {
-        $stmt->execute([
-            $productId,
-            $variationRow['label'],
-            $variationRow['attributes'],
-            $variationRow['mrp'],
-            $variationRow['selling_price'],
-            $variationRow['stock'],
-            $variationRow['image'],
-            $variationRow['sort_order']
-        ]);
-        $variationId = (int)$pdo->lastInsertId();
+        $variationId = (int)($variationRow['id'] ?? 0);
+        if ($variationId > 0) {
+            $ownershipStmt->execute([$variationId, $productId]);
+            if ($ownershipStmt->fetchColumn()) {
+                $updateStmt->execute([
+                    $variationRow['label'],
+                    $variationRow['attributes'],
+                    $variationRow['mrp'],
+                    $variationRow['selling_price'],
+                    $variationRow['stock'],
+                    $variationRow['image'],
+                    $variationRow['sort_order'],
+                    $variationId,
+                    $productId
+                ]);
+            } else {
+                $variationId = 0;
+            }
+        }
+
+        if ($variationId <= 0) {
+            $insertStmt->execute([
+                $productId,
+                $variationRow['label'],
+                $variationRow['attributes'],
+                $variationRow['mrp'],
+                $variationRow['selling_price'],
+                $variationRow['stock'],
+                $variationRow['image'],
+                $variationRow['sort_order']
+            ]);
+            $variationId = (int)$pdo->lastInsertId();
+        }
+
+        $savedVariationIds[] = $variationId;
+        $deleteAttributesStmt->execute([$variationId]);
         $normalizedItems = json_decode($variationRow['attributes'], true);
         foreach ($normalizedItems as $item) {
             $attributeStmt->execute([
@@ -411,6 +445,13 @@ function saveProductVariations($pdo, $productId) {
             ]);
         }
         $savedCount++;
+    }
+
+    if (!empty($savedVariationIds)) {
+        $placeholders = implode(',', array_fill(0, count($savedVariationIds), '?'));
+        $deleteParams = array_merge([$productId], $savedVariationIds);
+        $deleteStmt = $pdo->prepare("DELETE FROM product_variations WHERE product_id = ? AND id NOT IN ($placeholders)");
+        $deleteStmt->execute($deleteParams);
     }
 
     return $savedCount;
@@ -423,20 +464,26 @@ function renderProductAttributesSection($attributeOptions, $selectedAttributes =
     $baseStock = isset($product['stock_quantity']) ? (int)$product['stock_quantity'] : 0;
     ?>
     <div class="product-attributes-panel mt-4">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="mb-0">Product Attributes</h5>
+        <div class="product-attributes-heading">
+            <div>
+                <h5 class="mb-1">Product Attributes</h5>
+                <p class="product-attributes-help mb-0">Choose attributes and values, then click Sync Combinations to create product variations.</p>
+            </div>
             <button type="button" class="btn btn-outline-primary btn-sm" id="addProductAttributeBtn">
                 <i class="fas fa-plus"></i> Add Attribute
             </button>
         </div>
 
-        <div class="form-check form-switch mb-3">
+        <div id="productAttributeSelectorWrap" class="d-none"></div>
+        <div class="saved-attribute-groups" id="savedAttributeGroups"></div>
+
+        <label class="product-variation-toggle" for="hasVariations">
             <input class="form-check-input" type="checkbox" id="hasVariations" name="has_variations" <?php echo $hasVariations ? 'checked' : ''; ?>>
-            <label class="form-check-label fw-bold" for="hasVariations">This product has variations (Price/Image based on attributes)</label>
-        </div>
+            <span class="product-variation-switch" aria-hidden="true"></span>
+            <span>This product has variations (Price/Image based on attributes)</span>
+        </label>
 
         <div id="variationControls" class="<?php echo $hasVariations ? '' : 'd-none'; ?>">
-            <div id="productAttributeSelectorWrap"></div>
             <div id="variationDuplicateMessage" class="variation-duplicate-message d-none">
                 This variation already exists. Please select a different attribute value.
             </div>
@@ -454,7 +501,7 @@ function renderProductAttributesSection($attributeOptions, $selectedAttributes =
             </div>
 
             <div class="table-responsive product-variations-table-wrap">
-                <table class="table table-bordered align-middle product-variations-table">
+                <table class="table table-bordered table-sm align-middle product-variations-table">
                     <thead>
                         <tr>
                             <th>Variation<br>(Attribute Mix)</th>
@@ -477,6 +524,7 @@ function renderProductAttributesSection($attributeOptions, $selectedAttributes =
         window.productExistingVariations = <?php echo json_encode(array_map(function ($variation) {
             return [
                 'label' => $variation['variation_label'],
+                'id' => (int)$variation['id'],
                 'attributes_json' => $variation['attributes_json'],
                 'mrp' => formatAdminNumberInput($variation['mrp']),
                 'selling_price' => formatAdminNumberInput($variation['selling_price']),
@@ -497,8 +545,61 @@ function renderProductVariationAssets() {
     ?>
     <style>
         .product-form-page .product-attributes-panel {
-            border-top: 1px solid #d9dee7;
-            padding-top: 22px;
+            font-family: inherit;
+            max-width: 960px;
+            margin-top: 28px !important;
+            padding: 26px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+        }
+
+        .product-form-page .product-attributes-heading {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+
+        .product-form-page .product-attributes-heading h5 {
+            color: #020617;
+            font-size: inherit;
+            font-weight: 500;
+            line-height: 1.2;
+            margin-bottom: 0 !important;
+        }
+
+        .product-form-page .product-attributes-help {
+            color: #607086;
+            font-size: .875rem;
+            line-height: 1.35;
+            white-space: nowrap;
+        }
+
+        .product-form-page #addProductAttributeBtn {
+            align-self: flex-start;
+            margin-left: auto;
+            padding: .25rem .5rem;
+            font-size: .875rem;
+            border-radius: .2rem;
+            display: inline-block;
+            font-weight: 400;
+            line-height: 1.5;
+            text-align: center;
+            text-decoration: none;
+            vertical-align: middle;
+            color: #0d6efd;
+            border-color: #0d6efd;
+            white-space: nowrap;
+        }
+
+        .product-form-page #addProductAttributeBtn:hover,
+        .product-form-page #addProductAttributeBtn:focus {
+            background: #0d6efd;
+            border-color: #0d6efd;
+            color: #fff;
         }
 
         .product-form-page .product-save-success-alert {
@@ -517,27 +618,309 @@ function renderProductVariationAssets() {
 
         .product-form-page .product-attribute-row {
             display: grid;
-            grid-template-columns: minmax(220px, 366px) minmax(260px, 445px) 40px;
-            gap: 20px;
-            align-items: end;
+            grid-template-columns: minmax(220px, 0.9fr) minmax(390px, 1.5fr) 34px;
+            gap: 12px 0;
+            align-items: center;
             max-width: 960px;
-            margin-bottom: 12px;
+            margin: 0 0 12px;
+            padding: 18px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        .product-form-page #productAttributeSelectorWrap:not(.d-none) {
+            margin-bottom: 14px;
+        }
+
+        .product-form-page .product-attribute-field {
+            min-width: 0;
+            padding-left: 12px;
+            padding-right: 12px;
+        }
+
+        .product-form-page .saved-attribute-groups {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .product-form-page .saved-attribute-groups:empty {
+            display: none;
+        }
+
+        .product-form-page .saved-attribute-groups-title {
+            margin: 0 0 2px;
+            color: #0f172a;
+            font-size: inherit;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        .product-form-page .saved-attribute-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
             padding: 12px 14px;
-            border: 1px solid #cfd6df;
+            border: 1px solid #dbe3ec;
             border-radius: 8px;
             background: #f8fafc;
         }
 
+        .product-form-page .saved-attribute-group-name {
+            margin-bottom: 3px;
+            color: #0f172a;
+            font-size: inherit;
+            font-weight: 800;
+            line-height: 1.15;
+        }
+
+        .product-form-page .saved-attribute-group-values {
+            color: #475569;
+            font-size: inherit;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .product-form-page .saved-attribute-edit {
+            flex: 0 0 auto;
+            border: 1px solid #0d6efd;
+            border-radius: 7px;
+            background: #fff;
+            color: #0d6efd;
+            padding: 5px 12px;
+            font-size: inherit;
+            font-weight: 700;
+        }
+
+        .product-form-page .inline-combination-editor {
+            margin: 14px 0 18px;
+            padding: 14px;
+            border: 1px solid #ffba7a;
+            border-left: 4px solid #ff7700;
+            border-radius: 10px;
+            background: #fffaf4;
+        }
+
+        .product-form-page .combination-editor-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .product-form-page .combination-editor-title {
+            color: #020617;
+            font-size: inherit;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        .product-form-page .combination-editor-subtitle {
+            color: #68758a;
+            font-size: inherit;
+            font-weight: 500;
+        }
+
+        .product-form-page .combination-editor-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .product-form-page .combination-editor-values {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .product-form-page .combination-editor-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 10px 12px;
+            border: 1px solid #dbe3ec;
+            border-radius: 8px;
+            background: #fff;
+            color: #020617;
+            font-size: inherit;
+            font-weight: 500;
+        }
+
+        .product-form-page .combination-editor-option.is-selected {
+            background: #eef6ff;
+            border-color: #b8d7ff;
+        }
+
+        .product-form-page .combination-editor-option input {
+            width: 16px;
+            height: 16px;
+            accent-color: #0d6efd;
+        }
+
+        .product-form-page .combination-editor-badge {
+            min-width: 54px;
+            padding: 2px 8px;
+            border: 1px solid #cfddec;
+            border-radius: 999px;
+            background: #f8fafc;
+            color: #667085;
+            font-size: 0.85em;
+            font-weight: 800;
+            text-align: center;
+        }
+
+        .product-form-page .combination-editor-badge.added {
+            border-color: #a9dfbb;
+            background: #dcf8e6;
+            color: #078c35;
+        }
+
+        .product-form-page .combination-editor-current {
+            padding: 10px 12px;
+            border: 1px solid #ffd9a8;
+            border-radius: 8px;
+            background: #fff8ef;
+            color: #a73400;
+            font-size: inherit;
+            font-weight: 800;
+        }
+
+        .product-form-page .product-variation-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 18px 0 26px;
+            padding: 12px 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            background: #f8fafc;
+            color: #020617;
+            font-size: inherit;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .product-form-page .product-variation-toggle input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .product-form-page .product-variation-switch {
+            position: relative;
+            flex: 0 0 44px;
+            width: 44px;
+            height: 22px;
+            border-radius: 999px;
+            background: #cbd5e1;
+            transition: background 0.2s ease;
+        }
+
+        .product-form-page .product-variation-switch::after {
+            content: "";
+            position: absolute;
+            top: 3px;
+            left: 4px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #fff;
+            transition: transform 0.2s ease;
+        }
+
+        .product-form-page .product-variation-toggle input:checked + .product-variation-switch {
+            background: #0d6efd;
+        }
+
+        .product-form-page .product-variation-toggle input:checked + .product-variation-switch::after {
+            transform: translateX(20px);
+        }
+
+        .product-form-page #variationControls {
+            border-top: 1px solid #e2e8f0;
+            padding-top: 18px;
+        }
+
         .product-form-page .product-attribute-field label {
             color: #667085 !important;
-            font-size: 14px;
-            font-weight: 500;
-            margin: 0 0 6px;
+            font-size: inherit;
+            font-weight: 700;
+            margin: 0 0 8px;
+        }
+
+        .product-form-page .product-attribute-row .form-select,
+        .product-form-page .attribute-value-grid {
+            min-height: 46px;
+            font-size: inherit;
         }
 
         .product-form-page .product-attribute-row .form-select {
-            min-height: 38px;
-            font-size: 14px;
+            border-radius: 7px;
+            width: 100%;
+            border-color: #cbd5e1;
+            box-shadow: none;
+            font-weight: 600;
+        }
+
+        .product-form-page .attribute-value-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(170px, 1fr));
+            gap: 10px;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            background: #fff;
+            width: 100%;
+        }
+
+        .product-form-page .attribute-value-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            padding: 9px 10px;
+            border: 1px solid #dbe3ec;
+            border-radius: 7px;
+            background: #fff;
+            color: inherit;
+            font-weight: 700;
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .product-form-page .attribute-value-option input {
+            flex: 0 0 auto;
+            width: 16px;
+            height: 16px;
+            accent-color: #0d6efd;
+        }
+
+        .product-form-page .attribute-value-option.is-selected {
+            background: #f0f7ff;
+            border-color: #b9d7ff;
+        }
+
+        .product-form-page .attribute-value-status {
+            flex: 0 0 auto;
+            margin-left: auto;
+            padding: 2px 6px;
+            border: 1px solid #cfddec;
+            border-radius: 999px;
+            background: #f8fafc;
+            color: #667085;
+            font-size: 0.8em;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        .product-form-page .attribute-value-status.added {
+            border-color: #a9dfbb;
+            background: #dcf8e6;
+            color: #078c35;
         }
 
         .product-form-page .remove-product-attribute-btn,
@@ -550,9 +933,26 @@ function renderProductVariationAssets() {
             border: 0;
             background: transparent;
             color: #e62f49;
-            font-size: 18px;
+            font-size: 1.05em;
+            font-weight: 800;
             line-height: 1;
             padding: 0 0 6px;
+        }
+
+        .product-form-page .product-attribute-row .remove-product-attribute-btn {
+            width: 30px;
+            min-height: 30px;
+            height: 30px;
+            margin-top: 36px;
+            padding: 0;
+            border: 1px solid #fee2e2;
+            border-radius: 7px;
+            background: #fff;
+        }
+
+        .product-form-page .product-variations-table-wrap {
+            max-width: 100%;
+            overflow-x: hidden;
         }
 
         .product-form-page .product-variations-table {
@@ -563,75 +963,95 @@ function renderProductVariationAssets() {
         }
 
         .product-form-page .product-variations-table th {
-            font-size: 15px;
-            font-weight: 700;
+            font-size: 0.9em;
+            font-weight: 800;
             vertical-align: bottom;
             background: #f8fafc;
-            border-bottom: 2px solid #222;
+            border-bottom: 2px solid #0f172a;
         }
 
         .product-form-page .product-variations-table th:nth-child(1),
         .product-form-page .product-variations-table td:nth-child(1) {
-            width: 23%;
+            width: 32%;
         }
 
         .product-form-page .product-variations-table th:nth-child(2),
         .product-form-page .product-variations-table td:nth-child(2),
         .product-form-page .product-variations-table th:nth-child(3),
         .product-form-page .product-variations-table td:nth-child(3) {
-            width: 14.5%;
+            width: 14%;
         }
 
         .product-form-page .product-variations-table th:nth-child(4),
         .product-form-page .product-variations-table td:nth-child(4) {
-            width: 12%;
+            width: 10%;
         }
 
         .product-form-page .product-variations-table th:nth-child(5),
         .product-form-page .product-variations-table td:nth-child(5) {
-            width: 30%;
+            width: 25%;
         }
 
         .product-form-page .product-variations-table th:nth-child(6),
         .product-form-page .product-variations-table td:nth-child(6) {
-            width: 6%;
+            width: 5%;
         }
 
         .product-form-page .product-variations-table td {
-            font-size: 14px;
-            font-weight: 600;
+            font-size: 0.86em;
+            font-weight: 400;
             vertical-align: middle;
             overflow-wrap: anywhere;
-            padding-top: 6px;
-            padding-bottom: 6px;
+            padding: 3px 6px;
         }
 
         .product-form-page .product-variations-table td:first-child strong {
-            display: inline-block;
-            font-size: 11px;
-            line-height: 1.18;
+            display: inline;
+            font-size: inherit;
+            font-weight: 400;
+            line-height: 1.25;
+        }
+
+        .product-form-page .variation-label-line {
+            display: inline;
+            font-size: calc(1em + 1px);
+            line-height: 1.25;
+        }
+
+        .product-form-page .variation-label-line strong {
+            min-width: 0;
+            overflow-wrap: anywhere;
+        }
+
+        .product-form-page .variation-label-line .variation-status-badge {
+            margin-left: 6px;
+            white-space: nowrap;
+            vertical-align: middle;
         }
 
         .product-form-page .product-variations-table input[type="number"],
         .product-form-page .product-variations-table input[type="text"] {
-            height: 38px;
-            min-height: 38px;
-            padding: 6px 10px;
+            height: 32px;
+            min-height: 32px;
+            max-width: 100%;
+            padding: 3px 8px;
+            box-sizing: border-box;
         }
 
         .product-form-page .variation-file-input {
-            height: 38px;
-            min-height: 38px;
+            height: 32px;
+            min-height: 32px;
             min-width: 0;
+            width: 100%;
             flex: 1 1 auto;
-            font-size: 13px;
-            line-height: 24px;
+            font-size: .875rem;
+            line-height: 20px;
             padding: 0 8px 0 0;
             overflow: hidden;
         }
 
         .product-form-page .variation-file-input::file-selector-button {
-            height: 36px;
+            height: 30px;
             margin: 0 10px 0 0;
             padding: 0 10px;
             border: 0;
@@ -641,20 +1061,20 @@ function renderProductVariationAssets() {
         }
 
         .product-form-page .variation-current-image {
-            flex: 0 0 38px;
+            flex: 0 0 34px;
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 38px;
-            height: 38px;
+            width: 34px;
+            height: 34px;
             color: transparent;
             font-size: 0;
             line-height: 0;
         }
 
         .product-form-page .variation-current-image img {
-            width: 38px;
-            height: 38px;
+            width: 34px;
+            height: 34px;
             border: 1px solid #d9dee7;
             border-radius: 4px;
             object-fit: cover;
@@ -665,6 +1085,7 @@ function renderProductVariationAssets() {
             align-items: center;
             gap: 6px;
             min-width: 0;
+            width: 100%;
         }
 
         .product-form-page .variations-disabled {
@@ -675,13 +1096,36 @@ function renderProductVariationAssets() {
         .product-form-page .variation-empty-row td {
             height: 90px;
             color: #667085;
-            font-size: 17px;
+            font-size: inherit;
             font-weight: 500;
             text-align: center;
         }
 
         .product-form-page .product-variation-title-row {
+            display: flex !important;
+            align-items: center !important;
             max-width: 960px;
+            margin-top: 10px !important;
+            margin-bottom: 14px !important;
+        }
+
+        .product-form-page .product-variation-title-row h5 {
+            font-size: inherit;
+            font-weight: 400;
+            line-height: 1.2;
+        }
+
+        .product-form-page #syncVariationCombinationsBtn {
+            padding: .25rem .5rem;
+            font-size: .875rem;
+            border-radius: .2rem;
+            display: inline-block;
+            font-weight: 400;
+            line-height: 1.5;
+            text-align: center;
+            text-decoration: none;
+            vertical-align: middle;
+            white-space: nowrap;
         }
 
         .product-form-page .variation-duplicate-message {
@@ -714,6 +1158,54 @@ function renderProductVariationAssets() {
             opacity: 0;
         }
 
+        .product-form-page .variation-status-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 42px;
+            padding: 2px 7px;
+            border-radius: 999px;
+            font-size: 0.78em;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        .product-form-page .variation-status-badge.added {
+            border: 1px solid #a9dfbb;
+            background: #dcf8e6;
+            color: #078c35;
+        }
+
+        .product-form-page .variation-status-badge.new {
+            border: 1px solid #ffd9a8;
+            background: #fff4e4;
+            color: #ff7800;
+        }
+
+        @media (max-width: 900px) {
+            .product-form-page .product-attributes-panel {
+                padding: 24px;
+            }
+
+            .product-form-page .product-attribute-row {
+                grid-template-columns: 1fr;
+                padding: 18px;
+            }
+
+            .product-form-page .attribute-value-grid {
+                max-width: none;
+            }
+
+            .product-form-page .product-attribute-row .remove-product-attribute-btn {
+                margin-top: 0;
+                justify-self: end;
+            }
+
+            .product-form-page .product-attributes-help {
+                white-space: normal;
+            }
+        }
+
     </style>
     <script>
         function initProductVariationManager() {
@@ -725,6 +1217,7 @@ function renderProductVariationAssets() {
             const variationControls = document.getElementById('variationControls');
             const selectorWrap = document.getElementById('productAttributeSelectorWrap');
             const rowsBody = document.getElementById('variationRows');
+            const savedGroups = document.getElementById('savedAttributeGroups');
             const addBtn = document.getElementById('addProductAttributeBtn');
             const syncBtn = document.getElementById('syncVariationCombinationsBtn');
             const duplicateMsg = document.getElementById('variationDuplicateMessage');
@@ -891,21 +1384,42 @@ function renderProductVariationAssets() {
                 renderEmptyVariationRow();
             }
 
-            function renderValueSelect(row, selectedValueId) {
+            function getConfiguredValueIds(attributeId) {
+                const configured = new Set();
+                getConfiguredVariationRows().forEach(function (entry) {
+                    entry.attrs.forEach(function (item) {
+                        if (String(item.attribute_id) === String(attributeId)) {
+                            configured.add(String(item.value_id));
+                        }
+                    });
+                });
+                return configured;
+            }
+
+            function renderValueCheckboxes(row, selectedValueIds) {
                 const attributeId = row.querySelector('.product-attribute-select').value;
-                const valueSelect = row.querySelector('.product-attribute-value-select');
+                const valueContainer = row.querySelector('.attribute-value-grid');
                 const attribute = getAttributeById(attributeId);
+                const selected = new Set((selectedValueIds || []).map(function (valueId) {
+                    return String(valueId);
+                }));
+                const configured = getConfiguredValueIds(attributeId);
 
                 if (!attribute || !attribute.values.length) {
-                    valueSelect.innerHTML = '<option value="">Select Value...</option>';
-                    valueSelect.disabled = true;
+                    valueContainer.innerHTML = '<span class="text-muted">Select an attribute first.</span>';
                     return;
                 }
 
-                valueSelect.disabled = false;
-                valueSelect.innerHTML = '<option value="">Select Value...</option>' + attribute.values.map(function (value) {
-                    const selected = String(value.id) === String(selectedValueId || '') ? 'selected' : '';
-                    return `<option value="${value.id}" ${selected}>${escapeHtml(value.value)}</option>`;
+                valueContainer.innerHTML = attribute.values.map(function (value) {
+                    const valueId = String(value.id);
+                    const checked = selected.has(valueId);
+                    const statusText = configured.has(valueId) ? 'Added' : 'Not Added';
+                    return `
+                        <label class="attribute-value-option ${checked ? 'is-selected' : ''}">
+                            <span><input type="checkbox" class="product-attribute-value-checkbox" value="${escapeHtml(value.id)}" ${checked ? 'checked' : ''}> ${escapeHtml(value.value)}</span>
+                            <span class="attribute-value-status ${configured.has(valueId) ? 'added' : ''}">${statusText}</span>
+                        </label>
+                    `;
                 }).join('');
             }
 
@@ -924,9 +1438,9 @@ function renderProductVariationAssets() {
                     </div>
                     <div class="product-attribute-field">
                         <label class="form-label">Value</label>
-                        <select class="form-select product-attribute-value-select">
-                            <option value="">Select Value...</option>
-                        </select>
+                        <div class="attribute-value-grid">
+                            <span class="text-muted">Select an attribute first.</span>
+                        </div>
                     </div>
                     <button type="button" class="remove-product-attribute-btn" title="Remove attribute"><i class="fas fa-trash-alt"></i></button>
                 `;
@@ -936,14 +1450,22 @@ function renderProductVariationAssets() {
                     row.querySelector('.product-attribute-select').value = attributeId;
                 }
 
-                renderValueSelect(row, selectedValueId || '');
+                renderValueCheckboxes(row, selectedValueId ? [selectedValueId] : []);
 
                 row.querySelector('.product-attribute-select').addEventListener('change', function () {
                     hideDuplicateMessage();
-                    renderValueSelect(row, '');
+                    renderValueCheckboxes(row, []);
                 });
 
-                row.querySelector('.product-attribute-value-select').addEventListener('change', hideDuplicateMessage);
+                row.querySelector('.attribute-value-grid').addEventListener('change', function (event) {
+                    if (!event.target.matches('.product-attribute-value-checkbox')) return;
+
+                    const option = event.target.closest('.attribute-value-option');
+                    if (option) {
+                        option.classList.toggle('is-selected', event.target.checked);
+                    }
+                    hideDuplicateMessage();
+                });
 
                 row.querySelector('.remove-product-attribute-btn').addEventListener('click', function () {
                     hideDuplicateMessage();
@@ -958,23 +1480,10 @@ function renderProductVariationAssets() {
 
                 Array.from(selectorWrap.querySelectorAll('.product-attribute-row')).forEach(function (row) {
                     const attributeId = row.querySelector('.product-attribute-select').value;
-                    const valueId = row.querySelector('.product-attribute-value-select').value;
                     const attribute = getAttributeById(attributeId);
-                    if (!attribute || !valueId) {
+                    if (!attribute) {
                         return;
                     }
-
-                    const value = getValueById(attribute, valueId);
-                    if (!value) {
-                        return;
-                    }
-
-                    const normalizedValue = {
-                        attribute_id: attribute.id,
-                        attribute_name: attribute.name,
-                        value_id: value.id,
-                        value: value.value
-                    };
 
                     if (!groups.has(String(attribute.id))) {
                         groups.set(String(attribute.id), {
@@ -985,14 +1494,28 @@ function renderProductVariationAssets() {
                     }
 
                     const group = groups.get(String(attribute.id));
-                    if (!group.values.some(function (existingValue) {
-                        return String(existingValue.value_id) === String(value.id);
-                    })) {
-                        group.values.push(normalizedValue);
-                    }
+                    row.querySelectorAll('.product-attribute-value-checkbox:checked').forEach(function (checkbox) {
+                        const value = getValueById(attribute, checkbox.value);
+                        if (!value) {
+                            return;
+                        }
+
+                        if (!group.values.some(function (existingValue) {
+                            return String(existingValue.value_id) === String(value.id);
+                        })) {
+                            group.values.push({
+                                attribute_id: attribute.id,
+                                attribute_name: attribute.name,
+                                value_id: value.id,
+                                value: value.value
+                            });
+                        }
+                    });
                 });
 
-                return Array.from(groups.values()).sort(function (a, b) {
+                return Array.from(groups.values()).filter(function (group) {
+                    return group.values.length > 0;
+                }).sort(function (a, b) {
                     return Number(a.attribute_id) - Number(b.attribute_id);
                 });
             }
@@ -1023,6 +1546,7 @@ function renderProductVariationAssets() {
                     }
 
                     map.set(key, {
+                        id: (row.querySelector('input[name="variation_id[]"]') || {}).value || '',
                         attributes_json: attributesInput ? attributesInput.value : '[]',
                         mrp: (row.querySelector('input[name="variation_mrp[]"]') || {}).value || defaults.mrp,
                         selling_price: (row.querySelector('input[name="variation_selling_price[]"]') || {}).value || defaults.sellingPrice,
@@ -1036,18 +1560,120 @@ function renderProductVariationAssets() {
 
             function variationLabel(items) {
                 return normalizeVariationItems(items).map(function (item) {
-                    return item.attribute_name + ': ' + item.value;
+                    return item.attribute_name.toLowerCase() + ': ' + item.value;
                 }).join(' / ');
+            }
+
+            function getConfiguredVariationRows() {
+                return Array.from(rowsBody.querySelectorAll('tr:not(.variation-empty-row)')).map(function (row) {
+                    const attributesInput = row.querySelector('input[name="variation_attributes_json[]"]');
+                    const attrs = normalizeVariationItems(parseAttributes(attributesInput ? attributesInput.value : '[]'));
+                    return { row, attrs };
+                }).filter(function (item) {
+                    return item.attrs.length > 0;
+                });
+            }
+
+            function findAttributeByName(pattern) {
+                return options.find(function (attribute) {
+                    return pattern.test(String(attribute.name || ''));
+                }) || null;
+            }
+
+            function renderSavedAttributeGroups() {
+                if (!savedGroups) return;
+
+                const rows = getConfiguredVariationRows();
+                if (!rows.length) {
+                    savedGroups.innerHTML = '';
+                    return;
+                }
+
+                const colorAttribute = findAttributeByName(/colou?r/i);
+                const sizeAttribute = findAttributeByName(/size/i);
+                const groups = new Map();
+                let singleAttribute = null;
+
+                if (colorAttribute && sizeAttribute) {
+                    rows.forEach(function (entry) {
+                        const color = entry.attrs.find(function (item) {
+                            return String(item.attribute_id) === String(colorAttribute.id);
+                        });
+                        const size = entry.attrs.find(function (item) {
+                            return String(item.attribute_id) === String(sizeAttribute.id);
+                        });
+                        if (!color || !size) return;
+
+                        const key = String(color.value_id);
+                        if (!groups.has(key)) {
+                            groups.set(key, {
+                                name: color.value,
+                                sourceAttributeId: color.attribute_id,
+                                sourceValueId: color.value_id,
+                                targetAttributeId: size.attribute_id,
+                                values: []
+                            });
+                        }
+                        if (!groups.get(key).values.includes(size.value)) {
+                            groups.get(key).values.push(size.value);
+                        }
+                    });
+                }
+
+                if (!groups.size) {
+                    const first = rows[0].attrs[0];
+                    singleAttribute = first ? getAttributeById(first.attribute_id) : null;
+                    if (singleAttribute) {
+                        const values = [];
+                        rows.forEach(function (entry) {
+                            entry.attrs.forEach(function (item) {
+                                if (String(item.attribute_id) === String(singleAttribute.id) && !values.includes(item.value)) {
+                                    values.push(item.value);
+                                }
+                            });
+                        });
+                        groups.set(String(singleAttribute.id), {
+                            name: singleAttribute.name,
+                            sourceAttributeId: singleAttribute.id,
+                            sourceValueId: '',
+                            targetAttributeId: singleAttribute.id,
+                            values,
+                            isSingle: true
+                        });
+                    }
+                }
+
+                if (!groups.size) {
+                    savedGroups.innerHTML = '';
+                    return;
+                }
+
+                savedGroups.innerHTML = `
+                    <div class="saved-attribute-groups-title">Selected Size and Colour</div>
+                    ${Array.from(groups.values()).map(function (group) {
+                        return `
+                            <div class="saved-attribute-group" data-source-attribute-id="${escapeHtml(group.sourceAttributeId)}" data-source-value-id="${escapeHtml(group.sourceValueId)}" data-target-attribute-id="${escapeHtml(group.targetAttributeId)}" data-editor-type="${group.isSingle ? 'single' : 'matrix'}">
+                                <div>
+                                    <div class="saved-attribute-group-name">${escapeHtml(group.name)}</div>
+                                    <div class="saved-attribute-group-values">${escapeHtml(group.values.join(', '))}</div>
+                                </div>
+                                <button type="button" class="saved-attribute-edit">Edit</button>
+                            </div>
+                        `;
+                    }).join('')}
+                `;
             }
 
             function renderEmptyVariationRow() {
                 if (!hasVariations.checked || rowsBody.querySelector('tr:not(.variation-empty-row)')) {
                     const emptyRow = rowsBody.querySelector('.variation-empty-row');
                     if (emptyRow) emptyRow.remove();
+                    renderSavedAttributeGroups();
                     return;
                 }
 
                 rowsBody.innerHTML = '<tr class="variation-empty-row"><td colspan="6">Select attributes above and click "Sync Combinations"</td></tr>';
+                renderSavedAttributeGroups();
             }
 
             function addVariationRow(data) {
@@ -1066,7 +1692,11 @@ function renderProductVariationAssets() {
 
                 row.innerHTML = `
                     <td>
-                        <strong>${escapeHtml(label)}</strong>
+                        <span class="variation-label-line">
+                            <strong>${escapeHtml(label)}</strong>
+                            <span class="variation-status-badge ${data.isNew ? 'new' : 'added'}">${data.isNew ? 'New' : 'Added'}</span>
+                        </span>
+                        <input type="hidden" name="variation_id[]" value="${escapeHtml(data.id || '')}">
                         <input type="hidden" name="variation_label[]" value="${escapeHtml(label)}">
                         <input type="hidden" name="variation_attributes_json[]" value="${escapeHtml(attributesJson)}">
                     </td>
@@ -1088,6 +1718,7 @@ function renderProductVariationAssets() {
                 row.querySelector('.remove-variation-row-btn').addEventListener('click', function () {
                     row.remove();
                     renderEmptyVariationRow();
+                    renderSavedAttributeGroups();
                 });
 
                 row.querySelector('.variation-file-input').addEventListener('change', function () {
@@ -1095,6 +1726,176 @@ function renderProductVariationAssets() {
                 });
 
                 rowsBody.appendChild(row);
+                renderSavedAttributeGroups();
+            }
+
+            function getRowsForCombination(sourceAttributeId, sourceValueId, targetAttributeId, targetValueId) {
+                return getConfiguredVariationRows().filter(function (entry) {
+                    const sourceMatches = sourceValueId
+                        ? entry.attrs.some(function (item) {
+                            return String(item.attribute_id) === String(sourceAttributeId) && String(item.value_id) === String(sourceValueId);
+                        })
+                        : true;
+                    const targetMatches = entry.attrs.some(function (item) {
+                        return String(item.attribute_id) === String(targetAttributeId) && String(item.value_id) === String(targetValueId);
+                    });
+                    return sourceMatches && targetMatches;
+                });
+            }
+
+            function openInlineCombinationEditor(groupEl) {
+                document.querySelectorAll('.inline-combination-editor').forEach(function (editor) {
+                    editor.remove();
+                });
+
+                const sourceAttributeId = groupEl.dataset.sourceAttributeId;
+                const sourceValueId = groupEl.dataset.sourceValueId || '';
+                const targetAttributeId = groupEl.dataset.targetAttributeId;
+                const editorType = groupEl.dataset.editorType || 'matrix';
+                const sourceAttribute = getAttributeById(sourceAttributeId);
+                const sourceValue = sourceAttribute ? getValueById(sourceAttribute, sourceValueId) : null;
+                const targetAttribute = getAttributeById(targetAttributeId);
+
+                if (!targetAttribute || !targetAttribute.values || !targetAttribute.values.length) {
+                    return;
+                }
+
+                const selectedValueIds = new Set();
+                targetAttribute.values.forEach(function (value) {
+                    if (getRowsForCombination(sourceAttributeId, sourceValueId, targetAttributeId, value.id).length > 0) {
+                        selectedValueIds.add(String(value.id));
+                    }
+                });
+
+                const title = editorType === 'single'
+                    ? targetAttribute.name
+                    : (sourceValue ? sourceValue.value : groupEl.querySelector('.saved-attribute-group-name')?.textContent || '');
+                const subtitle = editorType === 'single'
+                    ? `Select ${targetAttribute.name} values`
+                    : `Select ${targetAttribute.name.toLowerCase()} for this colour`;
+
+                const editor = document.createElement('div');
+                editor.className = 'inline-combination-editor';
+                editor.dataset.sourceAttributeId = sourceAttributeId;
+                editor.dataset.sourceValueId = sourceValueId;
+                editor.dataset.targetAttributeId = targetAttributeId;
+                editor.dataset.editorType = editorType;
+                editor.innerHTML = `
+                    <div class="combination-editor-head">
+                        <div>
+                            <div class="combination-editor-title">${escapeHtml(title)}</div>
+                            <div class="combination-editor-subtitle">${escapeHtml(subtitle)}</div>
+                        </div>
+                        <div class="combination-editor-actions">
+                            <button type="button" class="btn btn-secondary combination-editor-cancel">Cancel</button>
+                            <button type="button" class="btn btn-primary combination-editor-save">Save</button>
+                        </div>
+                    </div>
+                    <div class="combination-editor-values">
+                        ${targetAttribute.values.map(function (value) {
+                            const checked = selectedValueIds.has(String(value.id));
+                            return `
+                                <label class="combination-editor-option ${checked ? 'is-selected' : ''}">
+                                    <span><input type="checkbox" class="combination-editor-checkbox" value="${escapeHtml(value.id)}" ${checked ? 'checked' : ''}> ${escapeHtml(value.value)}</span>
+                                    <span class="combination-editor-badge ${checked ? 'added' : ''}">${checked ? 'Added' : 'Add'}</span>
+                                </label>
+                            `;
+                        }).join('')}
+                    </div>
+                    <div class="combination-editor-current"></div>
+                `;
+
+                groupEl.insertAdjacentElement('afterend', editor);
+
+                function refreshCurrent() {
+                    const selectedLabels = Array.from(editor.querySelectorAll('.combination-editor-checkbox:checked')).map(function (checkbox) {
+                        return getValueById(targetAttribute, checkbox.value)?.value || checkbox.value;
+                    });
+                    editor.querySelector('.combination-editor-current').textContent = selectedLabels.length
+                        ? `Selected sizes: ${selectedLabels.join(', ')}`
+                        : 'No sizes selected';
+                    editor.querySelectorAll('.combination-editor-option').forEach(function (option) {
+                        const checked = option.querySelector('input').checked;
+                        option.classList.toggle('is-selected', checked);
+                        const badge = option.querySelector('.combination-editor-badge');
+                        badge.classList.toggle('added', checked);
+                        badge.textContent = checked ? 'Added' : 'Add';
+                    });
+                }
+
+                editor.addEventListener('change', refreshCurrent);
+                editor.querySelector('.combination-editor-cancel').addEventListener('click', function () {
+                    editor.remove();
+                });
+                editor.querySelector('.combination-editor-save').addEventListener('click', function () {
+                    saveInlineCombinationEditor(editor);
+                    editor.remove();
+                });
+                refreshCurrent();
+            }
+
+            function saveInlineCombinationEditor(editor) {
+                const sourceAttributeId = editor.dataset.sourceAttributeId;
+                const sourceValueId = editor.dataset.sourceValueId || '';
+                const targetAttributeId = editor.dataset.targetAttributeId;
+                const editorType = editor.dataset.editorType || 'matrix';
+                const sourceAttribute = getAttributeById(sourceAttributeId);
+                const sourceValue = sourceAttribute ? getValueById(sourceAttribute, sourceValueId) : null;
+                const targetAttribute = getAttributeById(targetAttributeId);
+                const checked = new Set(Array.from(editor.querySelectorAll('.combination-editor-checkbox:checked')).map(function (checkbox) {
+                    return String(checkbox.value);
+                }));
+
+                targetAttribute.values.forEach(function (targetValue) {
+                    const rows = getRowsForCombination(sourceAttributeId, sourceValueId, targetAttributeId, targetValue.id);
+                    const shouldExist = checked.has(String(targetValue.id));
+
+                    if (!shouldExist) {
+                        rows.forEach(function (entry) {
+                            entry.row.remove();
+                        });
+                        return;
+                    }
+
+                    if (rows.length > 0) {
+                        return;
+                    }
+
+                    const attributes = editorType === 'single'
+                        ? [{
+                            attribute_id: targetAttribute.id,
+                            attribute_name: targetAttribute.name,
+                            value_id: targetValue.id,
+                            value: targetValue.value
+                        }]
+                        : [
+                            {
+                                attribute_id: targetAttribute.id,
+                                attribute_name: targetAttribute.name,
+                                value_id: targetValue.id,
+                                value: targetValue.value
+                            },
+                            {
+                                attribute_id: sourceAttribute.id,
+                                attribute_name: sourceAttribute.name,
+                                value_id: sourceValue.id,
+                                value: sourceValue.value
+                            }
+                        ];
+
+                    addVariationRow({
+                        attributes,
+                        mrp: defaults.mrp,
+                        selling_price: defaults.sellingPrice,
+                        stock_quantity: defaults.stock,
+                        image_path: '',
+                        isNew: true
+                    });
+                });
+
+                renderEmptyVariationRow();
+                renderSavedAttributeGroups();
+                showVariationInfoMessage();
             }
 
             function syncCombinations() {
@@ -1120,7 +1921,7 @@ function renderProductVariationAssets() {
                     }
 
                     seenKeys.add(key);
-                    addVariationRow(Object.assign({}, existingData.get(key) || {}, { attributes: items }));
+                    addVariationRow(Object.assign({}, existingData.get(key) || {}, { attributes: items, isNew: true }));
                     addedCount++;
                 });
 
@@ -1147,11 +1948,13 @@ function renderProductVariationAssets() {
 
                 addVariationRow({
                     label: variation.label,
+                    id: variation.id || '',
                     attributes_json: variation.attributes_json,
                     mrp: variation.mrp,
                     selling_price: variation.selling_price,
                     stock_quantity: variation.stock_quantity,
-                    image_path: variation.image_path
+                    image_path: variation.image_path,
+                    isNew: false
                 });
 
                 if (key) {
@@ -1169,6 +1972,18 @@ function renderProductVariationAssets() {
                 addAttributeRow('', '');
             });
 
+            if (savedGroups) {
+                savedGroups.addEventListener('click', function (event) {
+                    const editButton = event.target.closest('.saved-attribute-edit');
+                    if (!editButton) return;
+
+                    const groupEl = editButton.closest('.saved-attribute-group');
+                    if (groupEl) {
+                        openInlineCombinationEditor(groupEl);
+                    }
+                });
+            }
+
             syncBtn.addEventListener('click', syncCombinations);
             hasVariations.addEventListener('change', function () {
                 hideDuplicateMessage();
@@ -1178,6 +1993,7 @@ function renderProductVariationAssets() {
                 }
             });
             updateEnabledState();
+            renderSavedAttributeGroups();
         }
 
         document.addEventListener('DOMContentLoaded', initProductVariationManager);

@@ -644,6 +644,27 @@ function applyDisplayVariationPrice(array $product) {
     return hydrateProductDiscountFields($product);
 }
 
+function normalizeProductAttributeName($name) {
+    $attributeName = trim((string)$name);
+    if ($attributeName === '') {
+        return '';
+    }
+
+    $attributeName = preg_replace('/^(choose|shoose)\s+/i', '', $attributeName);
+    $attributeName = preg_replace('/\s+/', ' ', $attributeName);
+    $attributeKey = strtolower($attributeName);
+
+    if (in_array($attributeKey, ['color', 'colour'], true)) {
+        return 'Colour';
+    }
+
+    if ($attributeKey === 'size') {
+        return 'size';
+    }
+
+    return $attributeName;
+}
+
 function applyDisplayVariationPrices(array $products) {
     foreach ($products as &$product) {
         if (is_array($product)) {
@@ -992,11 +1013,143 @@ function getProductVariationById($productId, $variationId) {
     return null;
 }
 
+function productRequiresVariationSelection($productId) {
+    return !empty(getProductVariationData($productId)['has_variations']);
+}
+
+function validateProductVariationSelection($productId, $variationId, $quantity = 1) {
+    $productId = (int)$productId;
+    $variationId = $variationId ? (int)$variationId : 0;
+    $quantity = max(1, (int)$quantity);
+
+    if (!productRequiresVariationSelection($productId)) {
+        return ['success' => true, 'variation' => null];
+    }
+
+    if ($variationId <= 0) {
+        return ['success' => false, 'message' => 'Please select available product options before adding to cart.'];
+    }
+
+    $variation = getProductVariationById($productId, $variationId);
+    if (!$variation) {
+        return ['success' => false, 'message' => 'Selected variation not found.'];
+    }
+
+    if ((int)$variation['stock_quantity'] <= 0) {
+        return ['success' => false, 'message' => 'Selected variation is out of stock.', 'stock_quantity' => 0];
+    }
+
+    if ((int)$variation['stock_quantity'] < $quantity) {
+        return [
+            'success' => false,
+            'message' => "Maximum quantity allowed for this product is {$variation['stock_quantity']}",
+            'stock_quantity' => (int)$variation['stock_quantity']
+        ];
+    }
+
+    return ['success' => true, 'variation' => $variation];
+}
+
+function normalizeCartSelectedAttributes($selectedAttributes) {
+    if (is_string($selectedAttributes)) {
+        $decoded = json_decode($selectedAttributes, true);
+        $selectedAttributes = is_array($decoded) ? $decoded : [];
+    }
+
+    if (!is_array($selectedAttributes)) {
+        return [];
+    }
+
+    $normalized = [];
+    foreach ($selectedAttributes as $name => $values) {
+        $attributeName = normalizeProductAttributeName($name);
+        if ($attributeName === '') {
+            continue;
+        }
+
+        if (!is_array($values)) {
+            $values = [$values];
+        }
+
+        foreach ($values as $value) {
+            $attributeValue = trim((string)$value);
+            if ($attributeValue === '') {
+                continue;
+            }
+
+            if (!isset($normalized[$attributeName])) {
+                $normalized[$attributeName] = [];
+            }
+
+            if (!in_array($attributeValue, $normalized[$attributeName], true)) {
+                $normalized[$attributeName][] = $attributeValue;
+            }
+        }
+    }
+
+    return $normalized;
+}
+
+function getVariationAttributesByVariationId($variationId) {
+    global $pdo;
+
+    $variationId = (int)$variationId;
+    if ($variationId <= 0) {
+        return [];
+    }
+
+    try {
+        $stmt = $pdo->prepare("
+            SELECT pa.name AS attribute_name, pav.value AS attribute_value
+            FROM product_variation_attributes pva
+            JOIN product_attributes pa ON pva.attribute_id = pa.id
+            JOIN product_attribute_values pav ON pva.attribute_value_id = pav.id
+            WHERE pva.variation_id = ?
+            ORDER BY pa.sort_order ASC, pa.name ASC, pav.sort_order ASC, pav.value ASC
+        ");
+        $stmt->execute([$variationId]);
+    } catch (PDOException $e) {
+        return [];
+    }
+
+    $attributes = [];
+    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        $name = normalizeProductAttributeName($row['attribute_name'] ?? '');
+        $value = trim((string)($row['attribute_value'] ?? ''));
+        if ($name === '' || $value === '') {
+            continue;
+        }
+
+        $attributes[$name][] = $value;
+    }
+
+    return normalizeCartSelectedAttributes($attributes);
+}
+
+function mergeCartSelectedAttributes(array $storedAttributes, array $variationAttributes) {
+    $stored = normalizeCartSelectedAttributes($storedAttributes);
+    $variation = normalizeCartSelectedAttributes($variationAttributes);
+
+    if (empty($stored)) {
+        return $variation;
+    }
+
+    return array_replace($stored, $variation);
+}
+
 function ensureCartVariationSchema() {
     global $pdo;
 
     try {
         $pdo->exec("ALTER TABLE cart ADD COLUMN variation_id INT NULL DEFAULT NULL");
+    } catch (PDOException $e) {
+        if (strpos($e->getMessage(), 'Duplicate column') === false && strpos($e->getMessage(), '1060') === false) {
+            throw $e;
+        }
+    }
+
+    try {
+        $pdo->exec("ALTER TABLE cart ADD COLUMN selected_attributes TEXT NULL AFTER variation_id");
     } catch (PDOException $e) {
         if (strpos($e->getMessage(), 'Duplicate column') === false && strpos($e->getMessage(), '1060') === false) {
             throw $e;
@@ -1024,9 +1177,23 @@ function getCurrentUser() {
 }
 
 // Function to add to cart
-function addToCart($userId, $productId, $quantity = 1, $variationId = null) {
+function addToCart($userId, $productId, $quantity = 1, $variationId = null, $selectedAttributes = []) {
     global $pdo;
     ensureCartVariationSchema();
+    $product = getProductById($productId);
+    if (!$product) {
+        return false;
+    }
+    $variationValidation = validateProductVariationSelection($productId, $variationId, getCartItemStockQuantity([
+        'quantity' => $quantity,
+        'package_quantity' => $product['package_quantity'] ?? 1
+    ]));
+    if (!$variationValidation['success']) {
+        return false;
+    }
+    $variationId = $variationId ? (int)$variationId : null;
+    $variationAttributes = $variationId ? getVariationAttributesByVariationId($variationId) : [];
+    $selectedAttributesJson = json_encode(mergeCartSelectedAttributes(normalizeCartSelectedAttributes($selectedAttributes), $variationAttributes), JSON_UNESCAPED_UNICODE);
 
     // Check if product already in cart
     if ($variationId) {
@@ -1040,12 +1207,12 @@ function addToCart($userId, $productId, $quantity = 1, $variationId = null) {
 
     if ($existing) {
         // Update quantity (replace, don't add)
-        $stmt = $pdo->prepare("UPDATE cart SET quantity = ? WHERE id = ?");
-        return $stmt->execute([$quantity, $existing['id']]);
+        $stmt = $pdo->prepare("UPDATE cart SET quantity = ?, selected_attributes = ? WHERE id = ?");
+        return $stmt->execute([$quantity, $selectedAttributesJson, $existing['id']]);
     } else {
         // Add new item
-        $stmt = $pdo->prepare("INSERT INTO cart (user_id, product_id, variation_id, quantity) VALUES (?, ?, ?, ?)");
-        return $stmt->execute([$userId, $productId, $variationId ?: null, $quantity]);
+        $stmt = $pdo->prepare("INSERT INTO cart (user_id, product_id, variation_id, quantity, selected_attributes) VALUES (?, ?, ?, ?, ?)");
+        return $stmt->execute([$userId, $productId, $variationId ?: null, $quantity, $selectedAttributesJson]);
     }
 }
 
@@ -1068,6 +1235,7 @@ function getCartItems($userId = null) {
                    COALESCE(pv.mrp, p.mrp) AS mrp,
                    COALESCE(pv.image_path, p.main_image) AS main_image,
                    COALESCE(pv.stock_quantity, p.stock_quantity) AS stock_quantity,
+                   pv.id AS matched_variation_id,
                    pv.variation_label
             FROM cart c
             JOIN products p ON c.product_id = p.id
@@ -1078,6 +1246,12 @@ function getCartItems($userId = null) {
         $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
         foreach ($items as &$item) {
             $item['name'] = cleanProductName($item['name']);
+            $variationId = !empty($item['variation_id']) ? (int)$item['variation_id'] : 0;
+            $item['variation_found'] = $variationId > 0 ? !empty($item['matched_variation_id']) : true;
+            $storedAttributes = normalizeCartSelectedAttributes($item['selected_attributes'] ?? []);
+            $item['selected_attributes'] = $variationId > 0
+                ? mergeCartSelectedAttributes($storedAttributes, getVariationAttributesByVariationId($variationId))
+                : $storedAttributes;
             if (!empty($item['variation_label'])) {
                 $item['name'] .= ' - ' . $item['variation_label'];
             }
@@ -1164,10 +1338,26 @@ function generateRandomString($length = 10) {
 }
 
 // --- SESSION-BASED CART & WISHLIST FOR GUESTS ---
-function addToSessionCart($productId, $quantity = 1, $variationId = null) {
+function addToSessionCart($productId, $quantity = 1, $variationId = null, $selectedAttributes = []) {
     if (!isset($_SESSION['cart'])) $_SESSION['cart'] = [];
+    $product = getProductById($productId);
+    if (!$product) {
+        return false;
+    }
+    $variationValidation = validateProductVariationSelection($productId, $variationId, getCartItemStockQuantity([
+        'quantity' => $quantity,
+        'package_quantity' => $product['package_quantity'] ?? 1
+    ]));
+    if (!$variationValidation['success']) {
+        return false;
+    }
     // Always set the quantity (replace, don't add)
-    $_SESSION['cart'][cartSessionKey($productId, $variationId)] = $quantity;
+    $_SESSION['cart'][cartSessionKey($productId, $variationId)] = [
+        'product_id' => (int)$productId,
+        'variation_id' => $variationId ? (int)$variationId : null,
+        'quantity' => (int)$quantity,
+        'selected_attributes' => normalizeCartSelectedAttributes($selectedAttributes)
+    ];
     return true;
 }
 
@@ -1184,10 +1374,11 @@ function getSessionCartItems() {
     ensureProductPackageQuantitySchema($pdo);
     $items = [];
     if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) return $items;
-    foreach ($_SESSION['cart'] as $cartKey => $qty) {
+    foreach ($_SESSION['cart'] as $cartKey => $entry) {
+        $qty = is_array($entry) ? (int)($entry['quantity'] ?? 1) : (int)$entry;
         $parts = explode(':', (string)$cartKey, 2);
-        $productId = (int)$parts[0];
-        $variationId = isset($parts[1]) ? (int)$parts[1] : null;
+        $productId = is_array($entry) ? (int)($entry['product_id'] ?? $parts[0]) : (int)$parts[0];
+        $variationId = is_array($entry) ? (int)($entry['variation_id'] ?? 0) : (isset($parts[1]) ? (int)$parts[1] : 0);
 
         $unitSelect = hasProductUnitSchema($pdo)
             ? "pay_per_unit, unit_label,"
@@ -1205,6 +1396,11 @@ function getSessionCartItems() {
                 $product['variation_id'] = $variation['id'];
                 $product['variation_label'] = $variation['label'];
             }
+            $storedAttributes = is_array($entry) ? normalizeCartSelectedAttributes($entry['selected_attributes'] ?? []) : [];
+            $product['selected_attributes'] = $variationId
+                ? mergeCartSelectedAttributes($storedAttributes, getVariationAttributesByVariationId($variationId))
+                : $storedAttributes;
+            $product['variation_found'] = !$variationId || !empty($variation);
             $product['name'] = cleanProductName($product['name']);
             if (!empty($product['variation_label'])) {
                 $product['name'] .= ' - ' . $product['variation_label'];
@@ -1958,8 +2154,20 @@ function renderBreadcrumb($breadcrumbs) {
 // Merge session cart into user cart after login
 function mergeSessionCartToUserCart($userId) {
     if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) return;
-    foreach ($_SESSION['cart'] as $productId => $qty) {
-        addToCart($userId, $productId, $qty);
+    foreach ($_SESSION['cart'] as $cartKey => $entry) {
+        if (is_array($entry)) {
+            addToCart(
+                $userId,
+                (int)($entry['product_id'] ?? 0),
+                (int)($entry['quantity'] ?? 1),
+                !empty($entry['variation_id']) ? (int)$entry['variation_id'] : null,
+                $entry['selected_attributes'] ?? []
+            );
+            continue;
+        }
+
+        $parts = explode(':', (string)$cartKey, 2);
+        addToCart($userId, (int)$parts[0], (int)$entry, isset($parts[1]) ? (int)$parts[1] : null);
     }
     clearSessionCart();
 }

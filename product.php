@@ -158,6 +158,15 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
             box-shadow: none;
         }
 
+        .product-page-container .detail-variant-option:disabled,
+        .product-page-container .detail-variant-option.is-unavailable {
+            color: #9aa4b2;
+            background: #f3f5f8;
+            border-color: #e1e6ee;
+            cursor: not-allowed;
+            opacity: 0.75;
+        }
+
         .product-page-container .detail-variant-note {
             color: #7c86a0;
             font-size: 14px;
@@ -707,17 +716,17 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                 <div class="product-unit-line detail-unit-line product-detail-unit-price" id="detailUnitLine"><?php echo formatProductUnitLine($product, true); ?></div>
             </div>
             <?php if ($product['stock_quantity'] > 0): ?>
-            <div class="cart-action-btns cart-actions d-flex align-items-center gap-2">
+                <div class="cart-action-btns cart-actions d-flex align-items-center gap-2">
                 <div class="quantity-control d-inline-flex align-items-center">
                     <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
                     <?php
                     $packageQuantity = normalizePackageQuantity($product['package_quantity'] ?? 1);
                     $maxQuantity = getProductOrderMaxQuantity($product);
                     ?>
-                    <input type="number" class="quantity-input" value="<?php echo $packageQuantity; ?>" min="<?php echo $packageQuantity; ?>" step="<?php echo $packageQuantity; ?>" max="<?php echo $maxQuantity; ?>" data-product-id="<?php echo $product['id']; ?>" data-package-quantity="<?php echo $packageQuantity; ?>">
+                    <input type="number" class="quantity-input" value="<?php echo $packageQuantity; ?>" min="<?php echo $packageQuantity; ?>" step="<?php echo $packageQuantity; ?>" max="<?php echo $maxQuantity; ?>" data-product-id="<?php echo $product['id']; ?>" data-package-quantity="<?php echo $packageQuantity; ?>" <?php echo $variationData['has_variations'] ? 'data-requires-variation="1"' : ''; ?>>
                     <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
                 </div>
-                                            <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>" id="detailAddToCartBtn">
+                                            <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>" id="detailAddToCartBtn" data-variation-id="" <?php echo $variationData['has_variations'] ? 'data-requires-variation="1"' : ''; ?>>
                                     <i class="fas fa-shopping-cart"></i>
                                     ADD TO CART
                                 </button>
@@ -749,7 +758,7 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                             <div class="detail-variant-options">
                                 <?php foreach ($attribute['values'] as $index => $value): ?>
                                     <button type="button"
-                                            class="detail-variant-option <?php echo $index === 0 ? 'active' : ''; ?>"
+                                            class="detail-variant-option"
                                             data-attribute-id="<?php echo (int)$attribute['id']; ?>"
                                             data-value-id="<?php echo (int)$value['id']; ?>">
                                         <?php echo htmlspecialchars($value['value']); ?>
@@ -920,9 +929,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const detailVariationData = window.productDetailVariations || { has_variations: false, attributes: [], variations: [] };
     if (detailVariationData.has_variations && detailVariationData.variations.length) {
         const selectedValues = {};
-        const firstVariation = detailVariationData.variations.find(variation => variation.stock_quantity > 0) || detailVariationData.variations[0];
+        const attributeGroups = detailVariationData.attributes || [];
+        const variations = detailVariationData.variations || [];
+        const firstVariation = variations.find(variation => Number(variation.stock_quantity) > 0) || variations[0];
         (firstVariation.attributes || []).forEach(item => {
-            selectedValues[item.attribute_id] = item.value_id;
+            selectedValues[String(item.attribute_id)] = String(item.value_id);
         });
 
         const mrpValue = document.getElementById('detailMrpValue');
@@ -933,8 +944,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const addToCartBtn = document.getElementById('detailAddToCartBtn');
         const detailMainImage = document.getElementById('mainImage');
         const detailDiscountBanner = document.querySelector('.discount-banner-detail');
+        const quantityInput = document.querySelector('.product-detail-card .quantity-input');
         const productUnitPrice = <?php echo json_encode(getProductUnitPrice($product)); ?>;
         const hasProductUnitPrice = <?php echo json_encode((float)($product['pay_per_unit'] ?? 0) > 0); ?>;
+        const packageQuantity = <?php echo (int)normalizePackageQuantity($product['package_quantity'] ?? 1); ?>;
+        const productMaxPackages = <?php echo (int)(($product['max_quantity_per_order'] ?? 0) ?: 0); ?>;
 
         function formatPriceValue(value) {
             return '₹ ' + Number(value || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 });
@@ -946,6 +960,68 @@ document.addEventListener('DOMContentLoaded', function() {
 
         function getVariationUnitPrice(variation) {
             return hasProductUnitPrice ? productUnitPrice : variation.selling_price;
+        }
+
+        function variationMatchesFilters(variation, filters) {
+            return Object.entries(filters).every(([attributeId, valueId]) => {
+                return String(variation.attribute_value_ids?.[attributeId]) === String(valueId);
+            });
+        }
+
+        function exactSelectedVariation() {
+            if (attributeGroups.some(group => !selectedValues[String(group.id)])) {
+                return null;
+            }
+
+            return variations.find(variation => {
+                return attributeGroups.every(group => {
+                    return String(variation.attribute_value_ids?.[group.id]) === String(selectedValues[String(group.id)]);
+                });
+            }) || null;
+        }
+
+        function getSelectionWithOption(attributeId, valueId) {
+            const filters = {};
+            const targetIndex = attributeGroups.findIndex(group => String(group.id) === String(attributeId));
+            attributeGroups.forEach((group, index) => {
+                const groupId = String(group.id);
+                if (index < targetIndex && selectedValues[groupId]) {
+                    filters[groupId] = selectedValues[groupId];
+                }
+            });
+            filters[String(attributeId)] = String(valueId);
+            return filters;
+        }
+
+        function isValueAvailable(attributeId, valueId) {
+            const filters = getSelectionWithOption(attributeId, valueId);
+            return variations.some(variation => Number(variation.stock_quantity) > 0 && variationMatchesFilters(variation, filters));
+        }
+
+        function clearUnavailableSelectedValues(changedAttributeId) {
+            const changedIndex = attributeGroups.findIndex(group => String(group.id) === String(changedAttributeId));
+            attributeGroups.forEach((group, index) => {
+                const attributeId = String(group.id);
+                if (index <= changedIndex || !selectedValues[attributeId]) {
+                    return;
+                }
+
+                if (!isValueAvailable(attributeId, selectedValues[attributeId])) {
+                    delete selectedValues[attributeId];
+                }
+            });
+        }
+
+        function selectedAttributePayload() {
+            const payload = {};
+            attributeGroups.forEach(group => {
+                const valueId = selectedValues[String(group.id)];
+                const value = (group.values || []).find(item => String(item.id) === String(valueId));
+                if (value) {
+                    payload[group.name] = [value.value];
+                }
+            });
+            return payload;
         }
 
         function updateDetailDiscountBanner(variation) {
@@ -963,51 +1039,60 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        function findSelectedVariation() {
-            return detailVariationData.variations
-                .filter(variation => {
-                    return (variation.attributes || []).every(item => {
-                        return String(selectedValues[item.attribute_id]) === String(item.value_id);
-                    });
-                })
-                .sort((a, b) => (b.attributes || []).length - (a.attributes || []).length)[0] || null;
+        function syncOptionButtons() {
+            document.querySelectorAll('.detail-variant-option').forEach(button => {
+                const attributeId = button.dataset.attributeId;
+                const valueId = button.dataset.valueId;
+                const available = isValueAvailable(attributeId, valueId);
+                button.classList.toggle('active', String(selectedValues[String(attributeId)] || '') === String(valueId));
+                button.classList.toggle('is-unavailable', !available);
+                button.disabled = !available;
+            });
         }
 
-        function findVariationByValue(attributeId, valueId) {
-            return detailVariationData.variations
-                .filter(variation => {
-                    return (variation.attributes || []).some(item => item.attribute_id == attributeId && item.value_id == valueId);
-                })
-                .sort((a, b) => (b.attributes || []).length - (a.attributes || []).length)[0] || null;
-        }
+        function applySelectedVariation() {
+            const selectedVariation = exactSelectedVariation();
+            syncOptionButtons();
 
-        function applySelectedVariation(nextVariation) {
-            const selectedVariation = nextVariation || findSelectedVariation() || firstVariation;
+            if (!selectedVariation) {
+                if (addToCartBtn) {
+                    addToCartBtn.dataset.variationId = '';
+                    addToCartBtn.setAttribute('data-variation-id', '');
+                    addToCartBtn.disabled = true;
+                }
+                if (stockText) {
+                    stockText.className = 'text-danger';
+                    stockText.innerHTML = '<strong>Selected combination is not available</strong>';
+                }
+                return;
+            }
+
             if (mrpValue) mrpValue.textContent = formatPriceValue(selectedVariation.mrp);
             if (payValue) payValue.textContent = formatPriceValue(selectedVariation.selling_price);
             updateDetailDiscountBanner(selectedVariation);
             if (detailUnitLine) detailUnitLine.textContent = formatUnitLine(getVariationUnitPrice(selectedVariation));
             if (mobileDetailUnitLine) mobileDetailUnitLine.textContent = formatUnitLine(getVariationUnitPrice(selectedVariation));
+            if (detailMainImage && selectedVariation.image_path) {
+                detailMainImage.src = selectedVariation.image_path;
+            }
+
+            const variationStockQuantity = Math.max(0, parseInt(selectedVariation.stock_quantity, 10) || 0);
             if (stockText) {
-                const variationStockQuantity = Math.max(0, parseInt(selectedVariation.stock_quantity, 10) || 0);
                 stockText.className = variationStockQuantity > 0 ? 'text-success' : 'text-danger';
                 stockText.innerHTML = variationStockQuantity > 0
                     ? '<strong>Stock:</strong> ' + variationStockQuantity + ' units available'
                     : '<strong>Out of Stock</strong>';
             }
-            if (detailMainImage && selectedVariation.image_path) {
-                detailMainImage.src = selectedVariation.image_path;
-            }
             if (addToCartBtn) {
                 addToCartBtn.dataset.variationId = selectedVariation.id;
-                addToCartBtn.disabled = selectedVariation.stock_quantity <= 0;
+                addToCartBtn.setAttribute('data-variation-id', selectedVariation.id);
+                addToCartBtn.dataset.selectedAttributes = JSON.stringify(selectedAttributePayload());
+                addToCartBtn.disabled = variationStockQuantity <= 0;
             }
-
-            const quantityInput = document.querySelector('.product-detail-card .quantity-input');
             if (quantityInput) {
-                const productMaxQuantity = <?php echo (int)getProductOrderMaxQuantity($product); ?>;
-                const variationMaxQuantity = productMaxQuantity;
-                quantityInput.max = variationMaxQuantity;
+                const maxPackages = productMaxPackages > 0 ? Math.min(productMaxPackages, variationStockQuantity) : variationStockQuantity;
+                quantityInput.max = Math.max(packageQuantity, maxPackages * packageQuantity);
+                quantityInput.dataset.variationId = selectedVariation.id;
                 if (typeof normalizeQuantityInputValue === 'function') {
                     normalizeQuantityInputValue(quantityInput);
                 }
@@ -1018,21 +1103,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         document.querySelectorAll('.detail-variant-option').forEach(button => {
-            const attributeId = button.dataset.attributeId;
-            if (selectedValues[attributeId] == button.dataset.valueId) {
-                button.classList.add('active');
-            } else {
-                button.classList.remove('active');
-            }
-
             button.addEventListener('click', function() {
-                selectedValues[attributeId] = this.dataset.valueId;
-                const group = this.closest('.detail-variant-group');
-                if (group) {
-                    group.querySelectorAll('.detail-variant-option').forEach(option => option.classList.remove('active'));
-                }
-                this.classList.add('active');
-                applySelectedVariation(findVariationByValue(attributeId, this.dataset.valueId));
+                if (this.disabled) return;
+                selectedValues[String(this.dataset.attributeId)] = String(this.dataset.valueId);
+                clearUnavailableSelectedValues(this.dataset.attributeId);
+                applySelectedVariation();
             });
         });
 
