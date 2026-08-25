@@ -697,6 +697,26 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
             <?php if (!empty($product['hsn'])): ?>
                 <div class="product-hsn"><strong>HSN:</strong> <?php echo htmlspecialchars($product['hsn']); ?></div>
             <?php endif; ?>
+            <?php if ($variationData['has_variations']): ?>
+                <div class="detail-variant-section" id="detailVariantSection">
+                    <?php foreach ($variationData['attributes'] as $attribute): ?>
+                        <div class="detail-variant-group" data-attribute-id="<?php echo (int)$attribute['id']; ?>">
+                            <h5>Select <?php echo htmlspecialchars($attribute['name']); ?></h5>
+                            <div class="detail-variant-options">
+                                <?php foreach ($attribute['values'] as $index => $value): ?>
+                                    <button type="button"
+                                            class="detail-variant-option"
+                                            data-attribute-id="<?php echo (int)$attribute['id']; ?>"
+                                            data-value-id="<?php echo (int)$value['id']; ?>">
+                                        <?php echo htmlspecialchars($value['value']); ?>
+                                    </button>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                    <p class="detail-variant-note">Showing details for selected options.</p>
+                </div>
+            <?php endif; ?>
             <div class="mobile-detail-unit-line"><strong>Unit:</strong> <span id="mobileDetailUnitLine"><?php echo formatProductUnitLine($product, true); ?></span></div>
             <div class="price-buttons1 modern-prices">
                 <div class="price-btn mrp">
@@ -749,26 +769,6 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                 <p class="text-success" id="detailStockText"><strong>Stock:</strong> <?php echo (int)($product['display_base_stock_quantity'] ?? $product['stock_quantity']); ?> units available</p>
             <?php else: ?>
                 <p class="text-danger"><strong>Out of Stock</strong></p>
-            <?php endif; ?>
-            <?php if ($variationData['has_variations']): ?>
-                <div class="detail-variant-section" id="detailVariantSection">
-                    <?php foreach ($variationData['attributes'] as $attribute): ?>
-                        <div class="detail-variant-group" data-attribute-id="<?php echo (int)$attribute['id']; ?>">
-                            <h5>Select <?php echo htmlspecialchars($attribute['name']); ?></h5>
-                            <div class="detail-variant-options">
-                                <?php foreach ($attribute['values'] as $index => $value): ?>
-                                    <button type="button"
-                                            class="detail-variant-option"
-                                            data-attribute-id="<?php echo (int)$attribute['id']; ?>"
-                                            data-value-id="<?php echo (int)$value['id']; ?>">
-                                        <?php echo htmlspecialchars($value['value']); ?>
-                                    </button>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                    <p class="detail-variant-note">Showing details for selected options.</p>
-                </div>
             <?php endif; ?>
         </div>
     </div>
@@ -931,10 +931,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedValues = {};
         const attributeGroups = detailVariationData.attributes || [];
         const variations = detailVariationData.variations || [];
-        const firstVariation = variations.find(variation => Number(variation.stock_quantity) > 0) || variations[0];
-        (firstVariation.attributes || []).forEach(item => {
-            selectedValues[String(item.attribute_id)] = String(item.value_id);
-        });
 
         const mrpValue = document.getElementById('detailMrpValue');
         const payValue = document.getElementById('detailPayValue');
@@ -1050,19 +1046,26 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
+        function syncCartButtonSelection() {
+            if (!addToCartBtn) return;
+            addToCartBtn.dataset.selectedValueIds = JSON.stringify(selectedValues);
+            addToCartBtn.setAttribute('data-selected-value-ids', JSON.stringify(selectedValues));
+            addToCartBtn.dataset.selectedAttributes = JSON.stringify(selectedAttributePayload());
+        }
+
         function applySelectedVariation() {
             const selectedVariation = exactSelectedVariation();
             syncOptionButtons();
+            syncCartButtonSelection();
 
             if (!selectedVariation) {
                 if (addToCartBtn) {
                     addToCartBtn.dataset.variationId = '';
                     addToCartBtn.setAttribute('data-variation-id', '');
-                    addToCartBtn.disabled = true;
+                    addToCartBtn.disabled = false;
                 }
-                if (stockText) {
-                    stockText.className = 'text-danger';
-                    stockText.innerHTML = '<strong>Selected combination is not available</strong>';
+                if (quantityInput) {
+                    quantityInput.dataset.variationId = '';
                 }
                 return;
             }
@@ -1105,11 +1108,38 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.detail-variant-option').forEach(button => {
             button.addEventListener('click', function() {
                 if (this.disabled) return;
-                selectedValues[String(this.dataset.attributeId)] = String(this.dataset.valueId);
+                const attributeId = String(this.dataset.attributeId);
+                const valueId = String(this.dataset.valueId);
+                if (String(selectedValues[attributeId] || '') === valueId) {
+                    delete selectedValues[attributeId];
+                } else {
+                    selectedValues[attributeId] = valueId;
+                }
                 clearUnavailableSelectedValues(this.dataset.attributeId);
                 applySelectedVariation();
             });
         });
+
+        window.getProductDetailVariantSelection = function(productId) {
+            if (String(productId) !== String(<?php echo (int)$product['id']; ?>)) {
+                return {};
+            }
+            return Object.assign({}, selectedValues);
+        };
+
+        window.applyProductDetailVariantSelection = function(productId, nextSelectedValues) {
+            if (String(productId) !== String(<?php echo (int)$product['id']; ?>)) {
+                return;
+            }
+
+            Object.keys(selectedValues).forEach(attributeId => delete selectedValues[attributeId]);
+            Object.entries(nextSelectedValues || {}).forEach(([attributeId, valueId]) => {
+                if (valueId !== null && valueId !== undefined && valueId !== '') {
+                    selectedValues[String(attributeId)] = String(valueId);
+                }
+            });
+            applySelectedVariation();
+        };
 
         applySelectedVariation();
     }

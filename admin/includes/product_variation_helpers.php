@@ -731,7 +731,7 @@ function renderProductVariationAssets() {
 
         .product-form-page .combination-editor-values {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
             gap: 10px;
             margin-bottom: 14px;
         }
@@ -755,7 +755,10 @@ function renderProductVariationAssets() {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            line-height: 1;
+            min-width: 0;
+            height: 20px;
+            line-height: 20px;
+            white-space: nowrap;
         }
 
         .product-form-page .combination-editor-option.is-selected {
@@ -768,19 +771,26 @@ function renderProductVariationAssets() {
             height: 16px;
             margin: 0;
             flex: 0 0 auto;
+            display: inline-block;
+            vertical-align: middle;
+            position: relative;
+            top: 1px;
             accent-color: #0d6efd;
         }
 
         .product-form-page .combination-editor-badge {
-            min-width: 54px;
-            padding: 2px 8px;
+            min-width: 46px;
+            padding: 2px 7px;
             border: 1px solid #cfddec;
             border-radius: 999px;
             background: #f8fafc;
             color: #667085;
-            font-size: 0.85em;
+            font-size: 0.72em;
             font-weight: 800;
             text-align: center;
+            line-height: 1.2;
+            white-space: nowrap;
+            flex: 0 0 auto;
         }
 
         .product-form-page .combination-editor-badge.added {
@@ -897,7 +907,8 @@ function renderProductVariationAssets() {
             align-items: center;
             justify-content: space-between;
             gap: 6px;
-            padding: 9px 10px;
+            min-height: 48px;
+            padding: 8px 10px;
             border: 1px solid #dbe3ec;
             border-radius: 7px;
             background: #fff;
@@ -907,10 +918,25 @@ function renderProductVariationAssets() {
             overflow: hidden;
         }
 
+        .product-form-page .attribute-value-option > span:first-child {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+            height: 20px;
+            line-height: 20px;
+            white-space: nowrap;
+        }
+
         .product-form-page .attribute-value-option input {
             flex: 0 0 auto;
             width: 16px;
             height: 16px;
+            margin: 0;
+            display: inline-block;
+            vertical-align: middle;
+            position: relative;
+            top: 1px;
             accent-color: #0d6efd;
         }
 
@@ -930,6 +956,7 @@ function renderProductVariationAssets() {
             font-size: 0.8em;
             font-weight: 800;
             line-height: 1.2;
+            white-space: nowrap;
         }
 
         .product-form-page .attribute-value-status.added {
