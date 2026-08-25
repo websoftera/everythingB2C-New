@@ -741,13 +741,21 @@ function renderProductVariationAssets() {
             align-items: center;
             justify-content: space-between;
             gap: 8px;
-            padding: 10px 12px;
+            min-height: 48px;
+            padding: 8px 12px;
             border: 1px solid #dbe3ec;
             border-radius: 8px;
             background: #fff;
             color: #020617;
             font-size: inherit;
             font-weight: 500;
+        }
+
+        .product-form-page .combination-editor-option > span:first-child {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            line-height: 1;
         }
 
         .product-form-page .combination-editor-option.is-selected {
@@ -758,6 +766,8 @@ function renderProductVariationAssets() {
         .product-form-page .combination-editor-option input {
             width: 16px;
             height: 16px;
+            margin: 0;
+            flex: 0 0 auto;
             accent-color: #0d6efd;
         }
 
@@ -785,8 +795,8 @@ function renderProductVariationAssets() {
             border-radius: 8px;
             background: #fff8ef;
             color: #a73400;
-            font-size: inherit;
-            font-weight: 800;
+            font-size: 0.875rem;
+            font-weight: 700;
         }
 
         .product-form-page .product-variation-toggle {
@@ -799,7 +809,7 @@ function renderProductVariationAssets() {
             border-radius: 10px;
             background: #f8fafc;
             color: #020617;
-            font-size: inherit;
+            font-size: 0.875rem;
             font-weight: 800;
             cursor: pointer;
         }
@@ -877,6 +887,11 @@ function renderProductVariationAssets() {
             width: 100%;
         }
 
+        .product-form-page .attribute-value-grid > .text-muted {
+            grid-column: 1 / -1;
+            white-space: nowrap;
+        }
+
         .product-form-page .attribute-value-option {
             display: flex;
             align-items: center;
@@ -933,7 +948,7 @@ function renderProductVariationAssets() {
             border: 0;
             background: transparent;
             color: #e62f49;
-            font-size: 1.05em;
+            font-size: 1.22em;
             font-weight: 800;
             line-height: 1;
             padding: 0 0 6px;
@@ -1107,12 +1122,14 @@ function renderProductVariationAssets() {
             max-width: 960px;
             margin-top: 10px !important;
             margin-bottom: 14px !important;
+            min-height: 32px;
         }
 
         .product-form-page .product-variation-title-row h5 {
             font-size: inherit;
             font-weight: 400;
             line-height: 1.2;
+            margin: 0 !important;
         }
 
         .product-form-page #syncVariationCombinationsBtn {
@@ -1592,7 +1609,34 @@ function renderProductVariationAssets() {
                 const colorAttribute = findAttributeByName(/colou?r/i);
                 const sizeAttribute = findAttributeByName(/size/i);
                 const groups = new Map();
-                let singleAttribute = null;
+                const singleGroups = new Map();
+
+                rows.forEach(function (entry) {
+                    if (entry.attrs.length !== 1) return;
+
+                    const item = entry.attrs[0];
+                    const key = String(item.attribute_id);
+                    if (!singleGroups.has(key)) {
+                        singleGroups.set(key, {
+                            name: item.attribute_name,
+                            sourceAttributeId: item.attribute_id,
+                            sourceValueId: '',
+                            targetAttributeId: item.attribute_id,
+                            values: [],
+                            isSingle: true
+                        });
+                    }
+
+                    if (!singleGroups.get(key).values.includes(item.value)) {
+                        singleGroups.get(key).values.push(item.value);
+                    }
+                });
+
+                if (singleGroups.size) {
+                    singleGroups.forEach(function (group, key) {
+                        groups.set('single:' + key, group);
+                    });
+                }
 
                 if (colorAttribute && sizeAttribute) {
                     rows.forEach(function (entry) {
@@ -1605,8 +1649,8 @@ function renderProductVariationAssets() {
                         if (!color || !size) return;
 
                         const key = String(color.value_id);
-                        if (!groups.has(key)) {
-                            groups.set(key, {
+                        if (!groups.has('matrix:' + key)) {
+                            groups.set('matrix:' + key, {
                                 name: color.value,
                                 sourceAttributeId: color.attribute_id,
                                 sourceValueId: color.value_id,
@@ -1614,33 +1658,10 @@ function renderProductVariationAssets() {
                                 values: []
                             });
                         }
-                        if (!groups.get(key).values.includes(size.value)) {
-                            groups.get(key).values.push(size.value);
+                        if (!groups.get('matrix:' + key).values.includes(size.value)) {
+                            groups.get('matrix:' + key).values.push(size.value);
                         }
                     });
-                }
-
-                if (!groups.size) {
-                    const first = rows[0].attrs[0];
-                    singleAttribute = first ? getAttributeById(first.attribute_id) : null;
-                    if (singleAttribute) {
-                        const values = [];
-                        rows.forEach(function (entry) {
-                            entry.attrs.forEach(function (item) {
-                                if (String(item.attribute_id) === String(singleAttribute.id) && !values.includes(item.value)) {
-                                    values.push(item.value);
-                                }
-                            });
-                        });
-                        groups.set(String(singleAttribute.id), {
-                            name: singleAttribute.name,
-                            sourceAttributeId: singleAttribute.id,
-                            sourceValueId: '',
-                            targetAttributeId: singleAttribute.id,
-                            values,
-                            isSingle: true
-                        });
-                    }
                 }
 
                 if (!groups.size) {
