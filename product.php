@@ -158,6 +158,11 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
             box-shadow: none;
         }
 
+        .product-page-container .detail-variant-option:hover:not(.active):not(:disabled):not(.is-unavailable) {
+            border-color: #0c79e7;
+            color: #0c79e7;
+        }
+
         .product-page-container .detail-variant-option:disabled,
         .product-page-container .detail-variant-option.is-unavailable {
             color: #9aa4b2;

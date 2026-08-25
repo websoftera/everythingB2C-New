@@ -899,21 +899,25 @@ function getProductVariationData($productId) {
     $attributePlaceholders = implode(',', array_fill(0, count($attributeIds), '?'));
     $valuePlaceholders = implode(',', array_fill(0, count($valueIds), '?'));
 
-    $stmt = $pdo->prepare("SELECT id, name FROM product_attributes WHERE is_active = 1 AND id IN ($attributePlaceholders)");
+    $stmt = $pdo->prepare("SELECT id, name, sort_order FROM product_attributes WHERE is_active = 1 AND id IN ($attributePlaceholders)");
     $stmt->execute($attributeIds);
     $activeAttributes = [];
     foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $attribute) {
-        $activeAttributes[(int)$attribute['id']] = $attribute['name'];
+        $activeAttributes[(int)$attribute['id']] = [
+            'name' => $attribute['name'],
+            'sort_order' => (int)($attribute['sort_order'] ?? 0)
+        ];
     }
 
-    $stmt = $pdo->prepare("SELECT id, attribute_id, value FROM product_attribute_values WHERE id IN ($valuePlaceholders)");
+    $stmt = $pdo->prepare("SELECT id, attribute_id, value, sort_order FROM product_attribute_values WHERE id IN ($valuePlaceholders)");
     $stmt->execute($valueIds);
     $activeValues = [];
     foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $value) {
         $activeValues[(int)$value['id']] = [
             'id' => (int)$value['id'],
             'attribute_id' => (int)$value['attribute_id'],
-            'value' => $value['value']
+            'value' => $value['value'],
+            'sort_order' => (int)($value['sort_order'] ?? 0)
         ];
     }
 
@@ -929,6 +933,7 @@ function getProductVariationData($productId) {
                 break;
             }
 
+            $attribute = $activeAttributes[$item['attribute_id']];
             $value = $activeValues[$item['value_id']];
             if ($value['attribute_id'] !== $item['attribute_id']) {
                 $items = [];
@@ -937,9 +942,11 @@ function getProductVariationData($productId) {
 
             $items[] = [
                 'attribute_id' => $item['attribute_id'],
-                'attribute_name' => $activeAttributes[$item['attribute_id']],
+                'attribute_name' => $attribute['name'],
+                'attribute_sort_order' => $attribute['sort_order'],
                 'value_id' => $item['value_id'],
-                'value' => $value['value']
+                'value' => $value['value'],
+                'value_sort_order' => $value['sort_order']
             ];
         }
 
@@ -962,12 +969,14 @@ function getProductVariationData($productId) {
                 $groups[$item['attribute_id']] = [
                     'id' => $item['attribute_id'],
                     'name' => $item['attribute_name'],
+                    'sort_order' => $item['attribute_sort_order'],
                     'values' => []
                 ];
             }
             $groups[$item['attribute_id']]['values'][$item['value_id']] = [
                 'id' => $item['value_id'],
-                'value' => $item['value']
+                'value' => $item['value'],
+                'sort_order' => $item['value_sort_order']
             ];
         }
 
@@ -993,8 +1002,33 @@ function getProductVariationData($productId) {
     }
 
     foreach ($groups as &$group) {
+        uasort($group['values'], function ($a, $b) {
+            $sortCompare = ($a['sort_order'] ?? 0) <=> ($b['sort_order'] ?? 0);
+            if ($sortCompare !== 0) {
+                return $sortCompare;
+            }
+            return strnatcasecmp((string)($a['value'] ?? ''), (string)($b['value'] ?? ''));
+        });
         $group['values'] = array_values($group['values']);
+        foreach ($group['values'] as &$value) {
+            unset($value['sort_order']);
+        }
+        unset($value);
     }
+    unset($group);
+
+    uasort($groups, function ($a, $b) {
+        $sortCompare = ($a['sort_order'] ?? 0) <=> ($b['sort_order'] ?? 0);
+        if ($sortCompare !== 0) {
+            return $sortCompare;
+        }
+        return strnatcasecmp((string)($a['name'] ?? ''), (string)($b['name'] ?? ''));
+    });
+
+    foreach ($groups as &$group) {
+        unset($group['sort_order']);
+    }
+    unset($group);
 
     return [
         'has_variations' => !empty($variations),

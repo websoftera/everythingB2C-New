@@ -1788,66 +1788,82 @@ function renderFloatingCart() {
           e.stopPropagation();
           const cartId = btn.getAttribute('data-cart-id');
           const row = btn.closest('.d-flex.align-items-center');
-          const rowClone = row.cloneNode(true);
-          row.parentNode.removeChild(row);
-          fetch(window.b2cAjaxUrl('ajax/remove-from-cart.php'), {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ cart_id: cartId })
-          })
-          .then(res => res.json())
-          .then(resp => {
-            if (resp.success) {
-              // Dispatch cart-item-removed event
-              if (resp.product_id) {
-                console.log('Dispatching cart-item-removed event for product ID:', resp.product_id);
-                window.dispatchEvent(new CustomEvent('cart-item-removed', {
-                  detail: { productId: resp.product_id }
-                }));
+          if (!cartId || !row) return;
+
+          Swal.fire({
+            title: 'Remove Item?',
+            text: 'Are you sure you want to remove this item?',
+            icon: 'warning',
+            showCancelButton: true,
+            showCloseButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No'
+          }).then((result) => {
+            if (!result.isConfirmed) return;
+
+            const rowClone = row.cloneNode(true);
+            row.parentNode.removeChild(row);
+            fetch(window.b2cAjaxUrl('ajax/remove-from-cart.php'), {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ cart_id: cartId })
+            })
+            .then(res => res.json())
+            .then(resp => {
+              if (resp.success) {
+                // Dispatch cart-item-removed event
+                if (resp.product_id) {
+                  console.log('Dispatching cart-item-removed event for product ID:', resp.product_id);
+                  window.dispatchEvent(new CustomEvent('cart-item-removed', {
+                    detail: { productId: resp.product_id }
+                  }));
+
+                  // Also dispatch cart-updated event to trigger button re-initialization
+                  window.dispatchEvent(new Event('cart-updated'));
+
+                  // Also directly update button state if updateButtonState function exists
+                  if (typeof updateButtonState === 'function') {
+                    updateButtonState(resp.product_id, false);
+                  }
+                } else {
+                  console.log('No product_id in response:', resp);
+                }
                 
-                // Also dispatch cart-updated event to trigger button re-initialization
-                window.dispatchEvent(new Event('cart-updated'));
-                
-                // Also directly update button state if updateButtonState function exists
-                if (typeof updateButtonState === 'function') {
-                  updateButtonState(resp.product_id, false);
+                // If cart is now empty, reload floating cart
+                if (!content.querySelector('.d-flex.align-items-center')) {
+                  renderFloatingCart();
+                  updateFloatingCartCount('updated');
+                } else {
+                  updateFloatingCartSummary();
+                  updateFloatingCartCount('updated');
                 }
               } else {
-                console.log('No product_id in response:', resp);
+                // Restore row if error
+                content.insertBefore(rowClone, content.firstChild);
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: resp.message || 'Could not remove item.',
+                        timer: 3000,
+                        showConfirmButton: false,
+                        showCloseButton: true,
+                        customClass: { popup: 'custom-swal-popup' }
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Remove Error',
+                        text: resp.message || 'Could not remove item.',
+                        confirmButtonText: 'OK',
+                        showCloseButton: true,
+                        customClass: { popup: 'custom-swal-popup' }
+                    });
+                }
               }
-              
-              // If cart is now empty, reload floating cart
-              if (!content.querySelector('.d-flex.align-items-center')) {
-                renderFloatingCart();
-                updateFloatingCartCount('updated');
-              } else {
-                updateFloatingCartSummary();
-                updateFloatingCartCount('updated');
-              }
-            } else {
-              // Restore row if error
-              content.insertBefore(rowClone, content.firstChild);
-              if (typeof Swal !== 'undefined') {
-                  Swal.fire({
-                      icon: 'error',
-                      title: 'Error',
-                      text: resp.message || 'Could not remove item.',
-                      timer: 3000,
-                      showConfirmButton: false,
-                      showCloseButton: true,
-                      customClass: { popup: 'custom-swal-popup' }
-                  });
-              } else {
-                  Swal.fire({
-                      icon: 'error',
-                      title: 'Remove Error',
-                      text: resp.message || 'Could not remove item.',
-                      confirmButtonText: 'OK',
-                      showCloseButton: true,
-                      customClass: { popup: 'custom-swal-popup' }
-                  });
-              }
-            }
+            });
           });
         };
       });
