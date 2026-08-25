@@ -82,7 +82,7 @@ $page = max(1, intval($_GET['page'] ?? 1));
 $per_page = 20;
 $offset = ($page - 1) * $per_page;
 
-$sql = "SELECT o.*, os.name as status_name, os.color as status_color, 
+$sql = "SELECT o.*, os.name as status_name, os.color as status_color,
                u.name as customer_name, u.email as customer_email,
                a.name as address_name, a.phone as address_phone,
                (SELECT GROUP_CONCAT(DISTINCT s.business_name SEPARATOR ', ')
@@ -94,7 +94,7 @@ $sql = "SELECT o.*, os.name as status_name, os.color as status_color,
                 FROM order_items oi
                 JOIN products p ON oi.product_id = p.id
                 WHERE oi.order_id = o.id AND p.seller_id IS NOT NULL) as seller_count
-        FROM orders o 
+        FROM orders o
         LEFT JOIN order_statuses os ON o.order_status_id = os.id
         LEFT JOIN users u ON o.user_id = u.id
         LEFT JOIN addresses a ON o.address_id = a.id
@@ -107,7 +107,7 @@ $stmt->execute($params);
 $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Get total count for pagination
-$count_sql = "SELECT COUNT(*) FROM orders o 
+$count_sql = "SELECT COUNT(*) FROM orders o
               LEFT JOIN users u ON o.user_id = u.id
               $where_clause";
 $stmt = $pdo->prepare($count_sql);
@@ -124,6 +124,8 @@ $statuses = getAllOrderStatuses();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $pageTitle; ?> - EverythingB2C</title>
+
+    <link rel="icon" href="../sitelogo.png" type="image/png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="assets/css/admin.css" rel="stylesheet">
@@ -309,7 +311,7 @@ $statuses = getAllOrderStatuses();
                                                                 <i class="fas fa-file-invoice"></i>
                                                             </a>
                                                             <!-- DTDC Integration Buttons (Hidden - Enable when DTDC is configured) -->
-                                                            <?php 
+                                                            <?php
                                                             // Uncomment below when DTDC is properly configured
                                                             /*
                                                             if (isset($order['dtdc_enabled']) && $order['dtdc_enabled'] && isset($order['dtdc_tracking_id']) && $order['dtdc_tracking_id']): ?>
@@ -686,7 +688,7 @@ $statuses = getAllOrderStatuses();
     function displayDTDCTrackingEvents(events) {
         if (typeof Swal !== 'undefined') {
             let eventsHtml = '';
-            
+
             if (events && events.length > 0) {
                 eventsHtml = '<div class="timeline">';
                 events.forEach(event => {
@@ -726,12 +728,12 @@ $statuses = getAllOrderStatuses();
         position: relative;
         padding-left: 30px;
     }
-    
+
     .timeline-item {
         position: relative;
         margin-bottom: 20px;
     }
-    
+
     .timeline-marker {
         position: absolute;
         left: -30px;
@@ -743,7 +745,7 @@ $statuses = getAllOrderStatuses();
         border: 2px solid #fff;
         box-shadow: 0 0 0 2px #007bff;
     }
-    
+
     .timeline-item:not(:last-child)::before {
         content: '';
         position: absolute;
@@ -753,16 +755,16 @@ $statuses = getAllOrderStatuses();
         height: calc(100% + 10px);
         background-color: #dee2e6;
     }
-    
+
     .timeline-content h6 {
         margin-bottom: 5px;
         color: #333;
     }
-    
+
     .timeline-content p {
         margin-bottom: 5px;
         font-size: 14px;
     }
     </style>
 </body>
-</html> 
+</html>

@@ -33,15 +33,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_seller'])) {
         'bank_name' => trim($_POST['bank_name'] ?? ''),
         'commission_percentage' => floatval($_POST['commission_percentage'] ?? 10)
     ];
-    
+
     try {
-        $stmt = $pdo->prepare("UPDATE sellers SET 
+        $stmt = $pdo->prepare("UPDATE sellers SET
                                business_name = ?, business_type = ?, gst_number = ?, pan_number = ?,
                                business_address = ?, business_email = ?, business_phone = ?,
-                               bank_account_name = ?, bank_account_number = ?, bank_ifsc_code = ?, 
+                               bank_account_name = ?, bank_account_number = ?, bank_ifsc_code = ?,
                                bank_name = ?, commission_percentage = ?
                                WHERE id = ?");
-        
+
         $stmt->execute([
             $businessName,
             $businessData['business_type'],
@@ -57,11 +57,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_seller'])) {
             $businessData['commission_percentage'],
             $sellerId
         ]);
-        
+
         $_SESSION['success_message'] = 'Seller details updated successfully!';
         header('Location: seller_details.php?id=' . $sellerId);
         exit;
-        
+
     } catch (Exception $e) {
         $_SESSION['error_message'] = 'Error updating seller: ' . $e->getMessage();
     }
@@ -90,6 +90,8 @@ $permissions = getSellerPermissions($sellerId);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $pageTitle; ?> - EverythingB2C</title>
+
+    <link rel="icon" href="../sitelogo.png" type="image/png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="assets/css/admin.css" rel="stylesheet">
@@ -166,7 +168,7 @@ $permissions = getSellerPermissions($sellerId);
                     <!-- Seller Information Form -->
                     <form method="POST">
                         <input type="hidden" name="update_seller" value="1">
-                        
+
                         <div class="card shadow mb-4">
                             <div class="card-header py-3">
                                 <h6 class="m-0 font-weight-bold text-primary">Business Information</h6>
@@ -175,7 +177,7 @@ $permissions = getSellerPermissions($sellerId);
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Business Name *</label>
-                                        <input type="text" name="business_name" class="form-control" 
+                                        <input type="text" name="business_name" class="form-control"
                                                value="<?php echo htmlspecialchars($seller['business_name']); ?>" required>
                                     </div>
                                     <div class="col-md-6 mb-3">
@@ -189,41 +191,41 @@ $permissions = getSellerPermissions($sellerId);
                                         </select>
                                     </div>
                                 </div>
-                                
+
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">GST Number</label>
-                                        <input type="text" name="gst_number" class="form-control" 
+                                        <input type="text" name="gst_number" class="form-control"
                                                value="<?php echo htmlspecialchars($seller['gst_number'] ?? ''); ?>">
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">PAN Number</label>
-                                        <input type="text" name="pan_number" class="form-control" 
+                                        <input type="text" name="pan_number" class="form-control"
                                                value="<?php echo htmlspecialchars($seller['pan_number'] ?? ''); ?>">
                                     </div>
                                 </div>
-                                
+
                                 <div class="mb-3">
                                     <label class="form-label">Business Address</label>
                                     <textarea name="business_address" class="form-control" rows="2"><?php echo htmlspecialchars($seller['business_address'] ?? ''); ?></textarea>
                                 </div>
-                                
+
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Business Email</label>
-                                        <input type="email" name="business_email" class="form-control" 
+                                        <input type="email" name="business_email" class="form-control"
                                                value="<?php echo htmlspecialchars($seller['business_email'] ?? ''); ?>">
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Business Phone</label>
-                                        <input type="text" name="business_phone" class="form-control" 
+                                        <input type="text" name="business_phone" class="form-control"
                                                value="<?php echo htmlspecialchars($seller['business_phone'] ?? ''); ?>">
                                     </div>
                                 </div>
-                                
+
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Commission % *</label>
-                                    <input type="number" name="commission_percentage" class="form-control" 
+                                    <input type="number" name="commission_percentage" class="form-control"
                                            value="<?php echo $seller['commission_percentage']; ?>" step="0.01" min="0" max="100" required>
                                 </div>
                             </div>
@@ -237,25 +239,25 @@ $permissions = getSellerPermissions($sellerId);
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Account Holder Name</label>
-                                        <input type="text" name="bank_account_name" class="form-control" 
+                                        <input type="text" name="bank_account_name" class="form-control"
                                                value="<?php echo htmlspecialchars($seller['bank_account_name'] ?? ''); ?>">
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Account Number</label>
-                                        <input type="text" name="bank_account_number" class="form-control" 
+                                        <input type="text" name="bank_account_number" class="form-control"
                                                value="<?php echo htmlspecialchars($seller['bank_account_number'] ?? ''); ?>">
                                     </div>
                                 </div>
-                                
+
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">IFSC Code</label>
-                                        <input type="text" name="bank_ifsc_code" class="form-control" 
+                                        <input type="text" name="bank_ifsc_code" class="form-control"
                                                value="<?php echo htmlspecialchars($seller['bank_ifsc_code'] ?? ''); ?>">
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Bank Name</label>
-                                        <input type="text" name="bank_name" class="form-control" 
+                                        <input type="text" name="bank_name" class="form-control"
                                                value="<?php echo htmlspecialchars($seller['bank_name'] ?? ''); ?>">
                                     </div>
                                 </div>
@@ -283,7 +285,7 @@ $permissions = getSellerPermissions($sellerId);
                                         <p><strong>Seller Since:</strong> <?php echo date('M d, Y', strtotime($seller['created_at'])); ?></p>
                                     </div>
                                     <div class="col-md-6">
-                                        <p><strong>Status:</strong> 
+                                        <p><strong>Status:</strong>
                                             <?php if ($seller['is_active']): ?>
                                                 <span class="badge bg-success">Active</span>
                                             <?php else: ?>

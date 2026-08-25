@@ -24,12 +24,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $current_password = $_POST['current_password'];
                 $new_password = $_POST['new_password'];
                 $confirm_password = $_POST['confirm_password'];
-                
+
                 // Validate current password
                 $stmt = $pdo->prepare("SELECT password FROM admins WHERE id = ?");
                 $stmt->execute([$_SESSION['admin_id']]);
                 $admin = $stmt->fetch(PDO::FETCH_ASSOC);
-                
+
                 if (!password_verify($current_password, $admin['password'])) {
                     $_SESSION['error_message'] = 'Current password is incorrect.';
                 } elseif ($new_password && $new_password !== $confirm_password) {
@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $stmt = $pdo->prepare("UPDATE admins SET name = ?, email = ? WHERE id = ?");
                             $stmt->execute([$name, $email, $_SESSION['admin_id']]);
                         }
-                        
+
                         $_SESSION['admin_name'] = $name;
                         $_SESSION['admin_email'] = $email;
                         $_SESSION['success_message'] = 'Profile updated successfully!';
@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 header('Location: settings.php');
                 exit;
                 break;
-                
+
             case 'update_site_settings':
                 $_SESSION['success_message'] = 'Site settings updated successfully!';
                 header('Location: settings.php');
@@ -99,6 +99,8 @@ $admin = $stmt->fetch(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $pageTitle; ?> - EverythingB2C</title>
+
+    <link rel="icon" href="../sitelogo.png" type="image/png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="assets/css/admin.css" rel="stylesheet">
@@ -187,36 +189,36 @@ $admin = $stmt->fetch(PDO::FETCH_ASSOC);
                                 <div class="card-body">
                                     <form method="POST">
                                         <input type="hidden" name="action" value="update_profile">
-                                        
+
                                         <div class="mb-3">
                                             <label for="name" class="form-label">Name</label>
-                                            <input type="text" class="form-control" id="name" name="name" 
+                                            <input type="text" class="form-control" id="name" name="name"
                                                    value="<?php echo htmlspecialchars($admin['name']); ?>" required>
                                         </div>
-                                        
+
                                         <div class="mb-3">
                                             <label for="email" class="form-label">Email</label>
-                                            <input type="email" class="form-control" id="email" name="email" 
+                                            <input type="email" class="form-control" id="email" name="email"
                                                    value="<?php echo htmlspecialchars($admin['email']); ?>" required>
                                         </div>
-                                        
+
                                         <hr>
-                                        
+
                                         <div class="mb-3">
                                             <label for="current_password" class="form-label">Current Password</label>
                                             <input type="password" class="form-control" id="current_password" name="current_password" required>
                                         </div>
-                                        
+
                                         <div class="mb-3">
                                             <label for="new_password" class="form-label">New Password (leave blank to keep current)</label>
                                             <input type="password" class="form-control" id="new_password" name="new_password" minlength="6">
                                         </div>
-                                        
+
                                         <div class="mb-3">
                                             <label for="confirm_password" class="form-label">Confirm New Password</label>
                                             <input type="password" class="form-control" id="confirm_password" name="confirm_password" minlength="6">
                                         </div>
-                                        
+
                                         <button type="submit" class="btn btn-primary">
                                             <i class="fas fa-save"></i> Update Profile
                                         </button>
@@ -413,7 +415,7 @@ $admin = $stmt->fetch(PDO::FETCH_ASSOC);
             const newPassword = document.getElementById('new_password').value;
             const confirmPassword = document.getElementById('confirm_password').value;
             const confirmField = document.getElementById('confirm_password');
-            
+
             if (newPassword && confirmPassword && newPassword !== confirmPassword) {
                 confirmField.setCustomValidity('Passwords do not match');
             } else {

@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }
                 break;
-                
+
             case 'update_settings':
                 $settings = [
                     'popup_enabled' => $_POST['popup_enabled'] ?? '0',
@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 updatePopupSettings($settings);
                 $message = "Settings updated successfully.";
                 break;
-                
+
             case 'delete_pincode':
                 $id = $_POST['pincode_id'] ?? 0;
                 if ($id > 0) {
@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $message = "Pincode deleted successfully.";
                 }
                 break;
-                
+
             case 'toggle_status':
                 $id = $_POST['pincode_id'] ?? 0;
                 if ($id > 0) {
@@ -88,6 +88,8 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $pageTitle; ?> - EverythingB2C Admin</title>
+
+    <link rel="icon" href="../sitelogo.png" type="image/png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="assets/css/admin.css" rel="stylesheet">
@@ -153,21 +155,21 @@ try {
         <div class="row">
             <div class="col-md-12">
                 <h2 class="mb-4"><i class="fas fa-map-marker-alt"></i> Manage Serviceable Pincodes</h2>
-                
+
                 <?php if ($message): ?>
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         <i class="fas fa-check-circle"></i> <?php echo htmlspecialchars($message); ?>
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 <?php endif; ?>
-                
+
                 <?php if ($error): ?>
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <i class="fas fa-exclamation-circle"></i> <?php echo htmlspecialchars($error); ?>
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 <?php endif; ?>
-                
+
                 <div class="row">
                     <!-- Add Pincodes Section -->
                     <div class="col-md-6 mb-4">
@@ -180,7 +182,7 @@ try {
                                     <input type="hidden" name="action" value="add_pincodes">
                                     <div class="mb-3">
                                         <label for="pincodes" class="form-label">Pincodes (comma-separated) *</label>
-                                        <textarea class="form-control" id="pincodes" name="pincodes" rows="4" 
+                                        <textarea class="form-control" id="pincodes" name="pincodes" rows="4"
                                                   placeholder="Enter pincodes separated by commas (e.g., 411001, 411002, 411003)" required></textarea>
                                         <div class="form-text">Enter 6-digit pincodes separated by commas</div>
                                     </div>
@@ -191,7 +193,7 @@ try {
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Popup Settings Section -->
                     <div class="col-md-6 mb-4">
                         <div class="card">
@@ -203,7 +205,7 @@ try {
                                     <input type="hidden" name="action" value="update_settings">
                                     <div class="mb-3">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="popup_enabled" name="popup_enabled" value="1" 
+                                            <input class="form-check-input" type="checkbox" id="popup_enabled" name="popup_enabled" value="1"
                                                    <?php echo ($settings['popup_enabled'] ?? '1') == '1' ? 'checked' : ''; ?>>
                                             <label class="form-check-label" for="popup_enabled">
                                                 Enable Delivery Popup
@@ -212,22 +214,22 @@ try {
                                     </div>
                                     <div class="mb-3">
                                         <label for="popup_message" class="form-label">Popup Message</label>
-                                        <input type="text" class="form-control" id="popup_message" name="popup_message" 
+                                        <input type="text" class="form-control" id="popup_message" name="popup_message"
                                                value="<?php echo htmlspecialchars($settings['popup_message'] ?? ''); ?>" required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="popup_instruction" class="form-label">Instruction Text</label>
-                                        <input type="text" class="form-control" id="popup_instruction" name="popup_instruction" 
+                                        <input type="text" class="form-control" id="popup_instruction" name="popup_instruction"
                                                value="<?php echo htmlspecialchars($settings['popup_instruction'] ?? ''); ?>" required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="service_available_message" class="form-label">Service Available Message</label>
-                                        <input type="text" class="form-control" id="service_available_message" name="service_available_message" 
+                                        <input type="text" class="form-control" id="service_available_message" name="service_available_message"
                                                value="<?php echo htmlspecialchars($settings['service_available_message'] ?? ''); ?>" required>
                                     </div>
                                     <div class="mb-3">
                                         <label for="service_unavailable_message" class="form-label">Service Unavailable Message</label>
-                                        <input type="text" class="form-control" id="service_unavailable_message" name="service_unavailable_message" 
+                                        <input type="text" class="form-control" id="service_unavailable_message" name="service_unavailable_message"
                                                value="<?php echo htmlspecialchars($settings['service_unavailable_message'] ?? ''); ?>" required>
                                     </div>
                                     <button type="submit" class="btn btn-success w-100">
@@ -238,7 +240,7 @@ try {
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Pincodes List -->
                 <div class="card">
                     <div class="card-header">
@@ -258,7 +260,7 @@ try {
                                                 <div class="flex-grow-1">
                                                     <h6 class="mb-1"><strong><?php echo htmlspecialchars($pincode['pincode']); ?></strong></h6>
                                                     <small class="text-muted">
-                                                        <?php echo htmlspecialchars($pincode['city'] ?? 'N/A'); ?>, 
+                                                        <?php echo htmlspecialchars($pincode['city'] ?? 'N/A'); ?>,
                                                         <?php echo htmlspecialchars($pincode['state'] ?? 'N/A'); ?>
                                                     </small>
                                                 </div>
@@ -296,7 +298,7 @@ try {
             </div>
         </div>
     </div>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

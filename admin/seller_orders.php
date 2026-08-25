@@ -50,6 +50,8 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $pageTitle; ?> - EverythingB2C</title>
+
+    <link rel="icon" href="../sitelogo.png" type="image/png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
@@ -145,7 +147,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <strong>₹<?php echo number_format($order['total_amount'], 2); ?></strong>
                                 </td>
                                 <td>
-                                    <?php 
+                                    <?php
                                     $paymentBadge = $order['payment_method'] === 'cod' ? 'bg-warning' : 'bg-info';
                                     ?>
                                     <span class="badge <?php echo $paymentBadge; ?>">
@@ -160,7 +162,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <td><?php echo date('M d, Y', strtotime($order['created_at'])); ?></td>
                                 <td>
                                     <div class="btn-group btn-group-sm">
-                                        <a href="orders.php?view=<?php echo $order['id']; ?>" 
+                                        <a href="orders.php?view=<?php echo $order['id']; ?>"
                                            class="btn btn-info" title="View Details">
                                             <i class="fas fa-eye"></i>
                                         </a>

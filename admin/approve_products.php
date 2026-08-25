@@ -14,13 +14,13 @@ if (!isset($_SESSION['admin_id'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['approve_product'])) {
     $productId = intval($_POST['product_id']);
     $result = approveProduct($productId, $_SESSION['admin_id']);
-    
+
     if ($result['success']) {
         $_SESSION['success_message'] = 'Product approved successfully!';
     } else {
         $_SESSION['error_message'] = 'Error approving product: ' . $result['message'];
     }
-    
+
     header('Location: approve_products.php');
     exit;
 }
@@ -29,15 +29,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['approve_product'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reject_product'])) {
     $productId = intval($_POST['product_id']);
     $reason = trim($_POST['rejection_reason']);
-    
+
     $result = rejectProduct($productId, $_SESSION['admin_id'], $reason);
-    
+
     if ($result['success']) {
         $_SESSION['success_message'] = 'Product rejected successfully!';
     } else {
         $_SESSION['error_message'] = 'Error rejecting product: ' . $result['message'];
     }
-    
+
     header('Location: approve_products.php');
     exit;
 }
@@ -54,6 +54,8 @@ $pendingProducts = getPendingApprovalProducts();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $pageTitle; ?> - EverythingB2C</title>
+
+    <link rel="icon" href="../sitelogo.png" type="image/png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="assets/css/admin.css" rel="stylesheet">
@@ -80,8 +82,8 @@ $pendingProducts = getPendingApprovalProducts();
 
     <?php if (isset($_SESSION['success_message'])): ?>
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <?php 
-            echo htmlspecialchars($_SESSION['success_message']); 
+            <?php
+            echo htmlspecialchars($_SESSION['success_message']);
             unset($_SESSION['success_message']);
             ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -90,8 +92,8 @@ $pendingProducts = getPendingApprovalProducts();
 
     <?php if (isset($_SESSION['error_message'])): ?>
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <?php 
-            echo htmlspecialchars($_SESSION['error_message']); 
+            <?php
+            echo htmlspecialchars($_SESSION['error_message']);
             unset($_SESSION['error_message']);
             ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -116,7 +118,7 @@ $pendingProducts = getPendingApprovalProducts();
                     <div class="card-body">
                         <!-- Product Image -->
                         <?php if ($product['main_image']): ?>
-                            <?php 
+                            <?php
                             // Handle both relative and absolute image paths
                             $imagePath = $product['main_image'];
                             if (strpos($imagePath, 'uploads/') === 0) {
@@ -127,19 +129,19 @@ $pendingProducts = getPendingApprovalProducts();
                                 $imagePath = '../uploads/' . $imagePath;
                             }
                             ?>
-                            <img src="<?php echo htmlspecialchars($imagePath); ?>" 
+                            <img src="<?php echo htmlspecialchars($imagePath); ?>"
                                  class="img-fluid mb-3" alt="<?php echo htmlspecialchars($product['name']); ?>"
                                  style="max-height: 200px; width: 100%; object-fit: contain;">
                         <?php else: ?>
-                            <div class="bg-light d-flex align-items-center justify-content-center mb-3" 
+                            <div class="bg-light d-flex align-items-center justify-content-center mb-3"
                                  style="height: 200px;">
                                 <i class="fas fa-image fa-3x text-muted"></i>
                             </div>
                         <?php endif; ?>
-                        
+
                         <!-- Product Details -->
                         <h5 class="card-title"><?php echo htmlspecialchars($product['name']); ?></h5>
-                        
+
                         <table class="table table-sm table-borderless">
                             <tr>
                                 <th width="40%">Seller:</th>
@@ -178,7 +180,7 @@ $pendingProducts = getPendingApprovalProducts();
                                 <td><?php echo date('M d, Y', strtotime($product['created_at'])); ?></td>
                             </tr>
                         </table>
-                        
+
                         <!-- Description -->
                         <?php if ($product['description']): ?>
                             <div class="mb-3">
@@ -189,18 +191,18 @@ $pendingProducts = getPendingApprovalProducts();
                                 </p>
                             </div>
                         <?php endif; ?>
-                        
+
                         <!-- Action Buttons -->
                         <div class="d-grid gap-2">
-                            <button type="button" class="btn btn-success" 
+                            <button type="button" class="btn btn-success"
                                     onclick="approveProduct(<?php echo $product['id']; ?>)">
                                 <i class="fas fa-check"></i> Approve Product
                             </button>
-                            <button type="button" class="btn btn-danger" 
+                            <button type="button" class="btn btn-danger"
                                     onclick="rejectProduct(<?php echo $product['id']; ?>)">
                                 <i class="fas fa-times"></i> Reject Product
                             </button>
-                            <a href="edit_product.php?id=<?php echo $product['id']; ?>" 
+                            <a href="edit_product.php?id=<?php echo $product['id']; ?>"
                                class="btn btn-info btn-sm">
                                 <i class="fas fa-eye"></i> View Full Details
                             </a>
@@ -234,7 +236,7 @@ $pendingProducts = getPendingApprovalProducts();
                     <p>Please provide a reason for rejecting this product. The seller will be notified.</p>
                     <div class="mb-3">
                         <label class="form-label">Rejection Reason *</label>
-                        <textarea name="rejection_reason" class="form-control" rows="4" required 
+                        <textarea name="rejection_reason" class="form-control" rows="4" required
                                   placeholder="e.g., Images are not clear, Description is incomplete, Price is too high..."></textarea>
                     </div>
                 </div>

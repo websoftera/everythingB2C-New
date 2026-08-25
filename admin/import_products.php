@@ -17,7 +17,7 @@ $import_results = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_FILES['csv_file']) && $_FILES['csv_file']['error'] === UPLOAD_ERR_OK) {
         $file = $_FILES['csv_file'];
-        
+
         // Check file type
         $file_extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
         if ($file_extension !== 'csv') {
@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($bom !== "\xEF\xBB\xBF") {
                     rewind($handle);
                 }
-                
+
                 // Read headers
                 $headers = fgetcsv($handle);
                 if (!$headers) {
@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Validate required headers
                     $required_headers = ['Name', 'SKU', 'Description', 'MRP', 'Selling Price', 'Category Name'];
                     $missing_headers = array_diff($required_headers, $headers);
-                    
+
                     if (!empty($missing_headers)) {
                         $error_message = 'Missing required columns: ' . implode(', ', $missing_headers);
                     } else {
@@ -48,50 +48,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $row_number = 1; // Start from 1 since we already read headers
                         $success_count = 0;
                         $error_count = 0;
-                        
+
                         while (($data = fgetcsv($handle)) !== FALSE) {
                             $row_number++;
-                            
+
                             try {
                                 // Create associative array from headers and data
                                 $row_data = array_combine($headers, $data);
-                                
+
                                 // Validate required fields
-                                if (empty($row_data['Name']) || empty($row_data['SKU']) || 
-                                    empty($row_data['Description']) || empty($row_data['MRP']) || 
+                                if (empty($row_data['Name']) || empty($row_data['SKU']) ||
+                                    empty($row_data['Description']) || empty($row_data['MRP']) ||
                                     empty($row_data['Selling Price']) || empty($row_data['Category Name'])) {
                                     throw new Exception('Missing required fields');
                                 }
-                                
+
                                 // Validate numeric fields
                                 if (!is_numeric($row_data['MRP']) || !is_numeric($row_data['Selling Price'])) {
                                     throw new Exception('MRP and Selling Price must be numeric');
                                 }
-                                
+
                                 $mrp = floatval($row_data['MRP']);
                                 $selling_price = floatval($row_data['Selling Price']);
-                                
+
                                 if ($mrp <= 0 || $selling_price <= 0) {
                                     throw new Exception('MRP and Selling Price must be greater than 0');
                                 }
-                                
+
                                 if ($selling_price > $mrp) {
                                     throw new Exception('Selling Price cannot be greater than MRP');
                                 }
-                                
+
                                 // Check if SKU already exists
                                 $stmt = $pdo->prepare("SELECT id FROM products WHERE sku = ?");
                                 $stmt->execute([$row_data['SKU']]);
                                 if ($stmt->fetch()) {
                                     throw new Exception('SKU already exists');
                                 }
-                                
+
                                 // Get or create category
                                 $category_name = trim($row_data['Category Name']);
                                 $stmt = $pdo->prepare("SELECT id FROM categories WHERE name = ?");
                                 $stmt->execute([$category_name]);
                                 $category = $stmt->fetch();
-                                
+
                                 if (!$category) {
                                     // Create new category
                                     $category_slug = createSlug($category_name);
@@ -101,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 } else {
                                     $category_id = $category['id'];
                                 }
-                                
+
                                 // Prepare product data
                                 $product_data = [
                                     'name' => trim($row_data['Name']),
@@ -123,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     'is_discounted' => isset($row_data['Is Discounted']) ? (strtolower($row_data['Is Discounted']) === 'yes' ? 1 : 0) : 0,
                                     'main_image' => isset($row_data['Main Image']) ? trim($row_data['Main Image']) : null
                                 ];
-                                
+
                                 // Insert product
                                 ensureProductPackageQuantitySchema($pdo);
                                 $stmt = $pdo->prepare("INSERT INTO products (name, slug, sku, hsn, description, mrp, selling_price, discount_percentage, category_id, stock_quantity, package_quantity, max_quantity_per_order, gst_type, gst_rate, is_active, is_featured, is_discounted, main_image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
@@ -147,14 +147,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     $product_data['is_discounted'],
                                     $product_data['main_image']
                                 ]);
-                                
+
                                 $success_count++;
                                 $import_results[] = [
                                     'row' => $row_number,
                                     'status' => 'success',
                                     'message' => 'Product "' . $product_data['name'] . '" imported successfully'
                                 ];
-                                
+
                             } catch (Exception $e) {
                                 $error_count++;
                                 $import_results[] = [
@@ -164,9 +164,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 ];
                             }
                         }
-                        
+
                         fclose($handle);
-                        
+
                         if ($success_count > 0) {
                             $success_message = "Import completed! $success_count products imported successfully.";
                             if ($error_count > 0) {
@@ -203,6 +203,8 @@ function createSlug($string) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $pageTitle; ?> - EverythingB2C</title>
+
+    <link rel="icon" href="../sitelogo.png" type="image/png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="assets/css/admin.css" rel="stylesheet">
@@ -252,7 +254,7 @@ function createSlug($string) {
                                             <input type="file" class="form-control" id="csv_file" name="csv_file" accept=".csv" required>
                                             <div class="form-text">Upload a CSV file with product data</div>
                                         </div>
-                                        
+
                                         <button type="submit" class="btn btn-primary">
                                             <i class="fas fa-upload"></i> Import Products
                                         </button>
@@ -260,7 +262,7 @@ function createSlug($string) {
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="col-md-4">
                             <div class="card">
                                 <div class="card-header">
@@ -276,7 +278,7 @@ function createSlug($string) {
                                         <li><strong>Selling Price</strong> - Actual selling price</li>
                                         <li><strong>Category Name</strong> - Product category</li>
                                     </ul>
-                                    
+
                                     <h6>Optional Columns:</h6>
                                     <ul class="list-unstyled">
                                         <li><strong>HSN</strong> - HSN code</li>
@@ -288,7 +290,7 @@ function createSlug($string) {
                                         <li><strong>Is Discounted</strong> - Yes/No</li>
                                         <li><strong>Main Image</strong> - Image path</li>
                                     </ul>
-                                    
+
                                     <div class="mt-3">
                                         <a href="sample_products.csv" class="btn btn-success btn-sm" download>
                                             <i class="fas fa-download"></i> Download Sample CSV
@@ -340,4 +342,4 @@ function createSlug($string) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/admin.js"></script>
 </body>
-</html> 
+</html>

@@ -70,10 +70,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pay_per_unit = isset($_POST['pay_per_unit']) && $_POST['pay_per_unit'] !== '' ? floatval($_POST['pay_per_unit']) : $selling_price;
     $unit_label = sanitizeProductUnitOption($_POST['unit_label'] ?? 'No.');
     $unit_label = $unit_label !== '' && $unit_label !== '__add_new_unit__' ? $unit_label : 'No.';
-    
+
     // Handle category selection - use the selected category directly
     $category_id = intval($_POST['parent_category_id']);
-    
+
     $stock_quantity = isset($_POST['stock_quantity']) ? (int)round((float)$_POST['stock_quantity']) : 0;
     $package_quantity = isset($_POST['package_quantity']) ? (int)round((float)$_POST['package_quantity']) : 1;
     $max_quantity_per_order = !empty($_POST['max_quantity_per_order']) ? (int)round((float)$_POST['max_quantity_per_order']) : null;
@@ -106,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Insert product
             $stmt = $pdo->prepare("INSERT INTO products (name, slug, description, mrp, selling_price, pay_per_unit, unit_label, discount_percentage, gst_type, gst_rate, category_id, stock_quantity, package_quantity, max_quantity_per_order, is_active, is_featured, is_discounted, sku, hsn) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $stmt->execute([$name, $slug, $description, $mrp, $selling_price, $pay_per_unit, $unit_label, $discount_percentage, $gst_type, $gst_rate, $category_id, $stock_quantity, $package_quantity, $max_quantity_per_order, $is_active, $is_featured, $is_discounted, $sku, $hsn]);
-            
+
             $product_id = $pdo->lastInsertId();
 
             // Handle main image upload
@@ -121,7 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Handle additional images
             if (isset($_FILES['images']) && is_array($_FILES['images']['name'])) {
                 $sort_orders = $_POST['sort_order'] ?? [];
-                
+
                 for ($i = 0; $i < count($_FILES['images']['name']); $i++) {
                     if ($_FILES['images']['error'][$i] === UPLOAD_ERR_OK) {
                         $file = [
@@ -131,12 +131,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             'error' => $_FILES['images']['error'][$i],
                             'size' => $_FILES['images']['size'][$i]
                         ];
-                        
+
                         $image_path = uploadImage($file, 'products');
                         if ($image_path) {
                             $sort_order = isset($sort_orders[$i]) ? intval($sort_orders[$i]) : $i + 1;
                             $is_main = ($i === 0 && empty($_FILES['main_image']['name'])) ? 1 : 0;
-                            
+
                             $stmt = $pdo->prepare("INSERT INTO product_images (product_id, image_path, is_main, sort_order) VALUES (?, ?, ?, ?)");
                             $stmt->execute([$product_id, $image_path, $is_main, $sort_order]);
                         }
@@ -150,10 +150,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $success_message = $savedVariationCount > 0
                 ? 'Product added successfully! Product variations saved successfully.'
                 : 'Product added successfully!';
-            
+
             // Redirect to products list after a short delay
             header("refresh:2;url=products.php");
-            
+
         } catch (Exception $e) {
             $pdo->rollBack();
             $error_message = 'Error adding product: ' . $e->getMessage();
@@ -176,20 +176,20 @@ function uploadImage($file, $folder) {
     if (!is_dir($upload_dir)) {
         mkdir($upload_dir, 0755, true);
     }
-    
+
     $allowed_types = ['image/jpeg', 'image/png', 'image/webp'];
     if (!in_array($file['type'], $allowed_types)) {
         return false;
     }
-    
+
     $file_extension = pathinfo($file['name'], PATHINFO_EXTENSION);
     $filename = uniqid() . '.' . $file_extension;
     $filepath = $upload_dir . $filename;
-    
+
     if (move_uploaded_file($file['tmp_name'], $filepath)) {
         return "uploads/$folder/" . $filename;
     }
-    
+
     return false;
 }
 ?>
@@ -200,6 +200,8 @@ function uploadImage($file, $folder) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $pageTitle; ?> - EverythingB2C</title>
+
+    <link rel="icon" href="../sitelogo.png" type="image/png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="assets/css/admin.css" rel="stylesheet">
@@ -618,7 +620,7 @@ function uploadImage($file, $folder) {
                                     <!-- Basic Information -->
                                     <div class="col-md-8">
                                         <h5 class="mb-3">Basic Information</h5>
-                                        
+
                                         <div class="row mb-3">
                                             <div class="col-md-6">
                                                 <label for="name" class="form-label">Product Name *</label>
@@ -629,7 +631,7 @@ function uploadImage($file, $folder) {
                                                 <label for="parent_category_id" class="form-label">Category *</label>
                                                 <select class="form-control form-select" id="parent_category_id" name="parent_category_id" required>
                                                     <option value="">Select Category</option>
-                                                    <?php 
+                                                    <?php
                                                     // Display categories in hierarchical structure
                                                     function displayCategoryOptions($categories, $level = 0) {
                                                         foreach ($categories as $category) {
@@ -638,7 +640,7 @@ function uploadImage($file, $folder) {
                                                             echo '<option value="' . $category['id'] . '" ' . $selected . '>';
                                                             echo $indent . htmlspecialchars($category['name']);
                                                             echo '</option>';
-                                                            
+
                                                             if (!empty($category['children'])) {
                                                                 displayCategoryOptions($category['children'], $level + 1);
                                                             }
@@ -805,7 +807,7 @@ function uploadImage($file, $folder) {
                                     <!-- Images -->
                                     <div class="col-md-4">
                                         <h5 class="mb-3">Images</h5>
-                                        
+
                                         <div class="mb-3">
                                             <label class="form-label">Feature Image</label>
                                             <div class="form-text mb-2">Upload Feature Image</div>
@@ -979,7 +981,7 @@ function uploadImage($file, $folder) {
             const preview = document.getElementById('main_image_preview');
             const tile = document.getElementById('featureImageTile');
             const wrap = document.getElementById('featureImageWrap');
-            
+
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
@@ -1064,7 +1066,7 @@ function uploadImage($file, $folder) {
         function calculateDiscount() {
             const mrp = parseFloat(document.getElementById('mrp').value) || 0;
             const sellingPrice = parseFloat(document.getElementById('selling_price').value) || 0;
-            
+
             if (mrp > 0 && sellingPrice > 0) {
                 const discount = ((mrp - sellingPrice) / mrp) * 100;
                 document.getElementById('discount_display').textContent = discount.toFixed(2) + '%';
@@ -1075,7 +1077,7 @@ function uploadImage($file, $folder) {
                 document.getElementById('discount_display').textContent = '0.00%';
             }
         }
-            
+
 
         function formatAdminDisplayNumber(value) {
             return (Number(value) || 0).toFixed(2).replace(/\.?0+$/, '');
@@ -1088,7 +1090,7 @@ function uploadImage($file, $folder) {
 
         function calculateTotalWithShipping() {
             const sellingPrice = parseFloat(document.getElementById('selling_price').value) || 0;
-            
+
             document.getElementById('total_with_shipping_display').textContent = '₹' + formatAdminDisplayNumber(sellingPrice);
         }
 
@@ -1320,4 +1322,4 @@ function uploadImage($file, $folder) {
         })();
     </script>
 </body>
-</html> 
+</html>

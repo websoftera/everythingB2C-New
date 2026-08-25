@@ -27,12 +27,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } else {
                     try {
                         $pdo->beginTransaction();
-                        
+
                         // Insert category
                         $stmt = $pdo->prepare("INSERT INTO categories (name, slug, description, parent_id) VALUES (?, ?, ?, ?)");
                         $stmt->execute([$name, $slug, $description, $parent_id]);
                         $category_id = $pdo->lastInsertId();
-                        
+
                         // Handle image upload
                         if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
                             $image_path = uploadImage($_FILES['image'], 'categories');
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 $stmt->execute([$image_path, $category_id]);
                             }
                         }
-                        
+
                         $pdo->commit();
                         $_SESSION['success_message'] = 'Category added successfully!';
                     } catch (Exception $e) {
@@ -52,24 +52,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 header('Location: categories.php');
                 exit;
                 break;
-                
+
             case 'edit':
                 $id = intval($_POST['id']);
                 $name = trim($_POST['name']);
                 $slug = createSlug($name);
                 $description = trim($_POST['description']);
                 $parent_id = isset($_POST['parent_id']) && $_POST['parent_id'] !== '' ? intval($_POST['parent_id']) : null;
-                
+
                 if (empty($name)) {
                     $_SESSION['error_message'] = 'Category name is required.';
                 } else {
                     try {
                         $pdo->beginTransaction();
-                        
+
                         // Update category
                         $stmt = $pdo->prepare("UPDATE categories SET name = ?, slug = ?, description = ?, parent_id = ? WHERE id = ?");
                         $stmt->execute([$name, $slug, $description, $parent_id, $id]);
-                        
+
                         // Handle image upload
                         if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
                             $image_path = uploadImage($_FILES['image'], 'categories');
@@ -78,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 $stmt->execute([$image_path, $id]);
                             }
                         }
-                        
+
                         $pdo->commit();
                         $_SESSION['success_message'] = 'Category updated successfully!';
                     } catch (Exception $e) {
@@ -89,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 header('Location: categories.php');
                 exit;
                 break;
-                
+
             case 'delete':
                 $id = intval($_POST['id']);
                 try {
@@ -97,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt = $pdo->prepare("SELECT COUNT(*) FROM products WHERE category_id = ?");
                     $stmt->execute([$id]);
                     $product_count = $stmt->fetchColumn();
-                    
+
                     if ($product_count > 0) {
                         $_SESSION['error_message'] = 'Cannot delete category with existing products.';
                     } else {
@@ -116,10 +116,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Get categories with product counts
-$stmt = $pdo->query("SELECT c.*, COUNT(p.id) as product_count 
-                     FROM categories c 
-                     LEFT JOIN products p ON c.id = p.category_id 
-                     GROUP BY c.id 
+$stmt = $pdo->query("SELECT c.*, COUNT(p.id) as product_count
+                     FROM categories c
+                     LEFT JOIN products p ON c.id = p.category_id
+                     GROUP BY c.id
                      ORDER BY c.name");
 $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -139,20 +139,20 @@ function uploadImage($file, $folder) {
     if (!is_dir($upload_dir)) {
         mkdir($upload_dir, 0755, true);
     }
-    
+
     $allowed_types = ['image/jpeg', 'image/png', 'image/webp'];
     if (!in_array($file['type'], $allowed_types)) {
         return false;
     }
-    
+
     $file_extension = pathinfo($file['name'], PATHINFO_EXTENSION);
     $filename = uniqid() . '.' . $file_extension;
     $filepath = $upload_dir . $filename;
-    
+
     if (move_uploaded_file($file['tmp_name'], $filepath)) {
         return "uploads/$folder/" . $filename;
     }
-    
+
     return false;
 }
 
@@ -165,6 +165,8 @@ $categoryTree = buildCategoryTree($categories);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $pageTitle; ?> - EverythingB2C</title>
+
+    <link rel="icon" href="../sitelogo.png" type="image/png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="assets/css/admin.css" rel="stylesheet">
@@ -228,7 +230,7 @@ $categoryTree = buildCategoryTree($categories);
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <?php 
+                                            <?php
                                             function displayCategories($categories, $level = 0) {
                                                 foreach ($categories as $category) {
                                                     echo '<tr>';
@@ -260,14 +262,14 @@ $categoryTree = buildCategoryTree($categories);
                                                     echo '</div>';
                                                     echo '</td>';
                                                     echo '</tr>';
-                                                    
+
                                                     // Recursively display subcategories
                                                     if (!empty($category['children'])) {
                                                         displayCategories($category['children'], $level + 1);
                                                     }
                                                 }
                                             }
-                                            
+
                                             displayCategories($categoryTree);
                                             ?>
                                         </tbody>
@@ -292,17 +294,17 @@ $categoryTree = buildCategoryTree($categories);
                 <form method="POST" enctype="multipart/form-data">
                     <div class="modal-body">
                         <input type="hidden" name="action" value="add">
-                        
+
                         <div class="mb-3">
                             <label for="name" class="form-label">Category Name *</label>
                             <input type="text" class="form-control" id="name" name="name" required>
                         </div>
-                        
+
                         <div class="mb-3">
                             <label for="parent_id" class="form-label">Parent Category</label>
                             <select class="form-control" id="parent_id" name="parent_id">
                                 <option value="">None (Main Category)</option>
-                                <?php 
+                                <?php
                                 // Build hierarchical category options
                                 $categoryTree = buildCategoryTree($allCategories);
                                 function displayCategoryOptions($categories, $level = 0) {
@@ -311,7 +313,7 @@ $categoryTree = buildCategoryTree($categories);
                                         echo '<option value="' . $category['id'] . '">';
                                         echo $indent . htmlspecialchars($category['name']);
                                         echo '</option>';
-                                        
+
                                         if (!empty($category['children'])) {
                                             displayCategoryOptions($category['children'], $level + 1);
                                         }
@@ -321,12 +323,12 @@ $categoryTree = buildCategoryTree($categories);
                                 ?>
                             </select>
                         </div>
-                        
+
                         <div class="mb-3">
                             <label for="description" class="form-label">Description</label>
                             <textarea class="form-control" id="description" name="description" rows="3"></textarea>
                         </div>
-                        
+
                         <div class="mb-3">
                             <label for="image" class="form-label">Category Image</label>
                             <input type="file" class="form-control" id="image" name="image" accept="image/*">
@@ -354,17 +356,17 @@ $categoryTree = buildCategoryTree($categories);
                     <div class="modal-body">
                         <input type="hidden" name="action" value="edit">
                         <input type="hidden" name="id" id="edit_id">
-                        
+
                         <div class="mb-3">
                             <label for="edit_name" class="form-label">Category Name *</label>
                             <input type="text" class="form-control" id="edit_name" name="name" required>
                         </div>
-                        
+
                         <div class="mb-3">
                             <label for="edit_parent_id" class="form-label">Parent Category</label>
                             <select class="form-control" id="edit_parent_id" name="parent_id">
                                 <option value="">None (Main Category)</option>
-                                <?php 
+                                <?php
                                 // Build hierarchical category options for edit form
                                 function displayCategoryOptionsForEdit($categories, $level = 0, $excludeId = null) {
                                     foreach ($categories as $category) {
@@ -376,7 +378,7 @@ $categoryTree = buildCategoryTree($categories);
                                         echo '<option value="' . $category['id'] . '">';
                                         echo $indent . htmlspecialchars($category['name']);
                                         echo '</option>';
-                                        
+
                                         if (!empty($category['children'])) {
                                             displayCategoryOptionsForEdit($category['children'], $level + 1, $excludeId);
                                         }
@@ -386,12 +388,12 @@ $categoryTree = buildCategoryTree($categories);
                                 ?>
                             </select>
                         </div>
-                        
+
                         <div class="mb-3">
                             <label for="edit_description" class="form-label">Description</label>
                             <textarea class="form-control" id="edit_description" name="description" rows="3"></textarea>
                         </div>
-                        
+
                         <div class="mb-3">
                             <label for="edit_image" class="form-label">Category Image</label>
                             <input type="file" class="form-control" id="edit_image" name="image" accept="image/*">
@@ -423,16 +425,16 @@ $categoryTree = buildCategoryTree($categories);
             document.getElementById('edit_name').value = category.name;
             document.getElementById('edit_description').value = category.description || '';
             document.getElementById('edit_parent_id').value = category.parent_id || '';
-            
+
             // Update the edit dropdown to exclude the current category
             const editParentSelect = document.getElementById('edit_parent_id');
             editParentSelect.innerHTML = '<option value="">None (Main Category)</option>';
-            
+
             // Rebuild the dropdown options excluding the current category
             const categories = <?php echo json_encode($allCategories); ?>;
             const categoryTree = buildCategoryTreeForJS(categories);
             displayCategoryOptionsForEditJS(categoryTree, category.id);
-            
+
             // Show current image preview
             const previewDiv = document.getElementById('current_image_preview');
             if (category.image) {
@@ -443,7 +445,7 @@ $categoryTree = buildCategoryTree($categories);
             } else {
                 previewDiv.innerHTML = '<em>No image currently set</em>';
             }
-            
+
             new bootstrap.Modal(document.getElementById('editCategoryModal')).show();
         }
 
@@ -468,17 +470,17 @@ $categoryTree = buildCategoryTree($categories);
                 }
             });
         }
-        
+
         // JavaScript functions for building category tree
         function buildCategoryTreeForJS(categories) {
             const tree = [];
             const lookup = {};
-            
+
             // Create lookup table
             categories.forEach(cat => {
                 lookup[cat.id] = { ...cat, children: [] };
             });
-            
+
             // Build tree
             categories.forEach(cat => {
                 if (cat.parent_id === null) {
@@ -489,22 +491,22 @@ $categoryTree = buildCategoryTree($categories);
                     }
                 }
             });
-            
+
             return tree;
         }
-        
+
         function displayCategoryOptionsForEditJS(categories, excludeId, level = 0) {
             const editParentSelect = document.getElementById('edit_parent_id');
-            
+
             categories.forEach(category => {
                 if (category.id == excludeId) return; // Skip the category being edited
-                
+
                 const indent = '— '.repeat(level);
                 const option = document.createElement('option');
                 option.value = category.id;
                 option.textContent = indent + category.name;
                 editParentSelect.appendChild(option);
-                
+
                 if (category.children && category.children.length > 0) {
                     displayCategoryOptionsForEditJS(category.children, excludeId, level + 1);
                 }
@@ -512,4 +514,4 @@ $categoryTree = buildCategoryTree($categories);
         }
     </script>
 </body>
-</html> 
+</html>
