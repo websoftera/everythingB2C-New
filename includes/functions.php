@@ -4,6 +4,81 @@ require_once __DIR__ . '/../config/database.php';
 // Set default timezone for India
 date_default_timezone_set('Asia/Kolkata');
 
+function ensureSiteSettingsSchema($pdo = null) {
+    if ($pdo === null) {
+        global $pdo;
+    }
+
+    static $checked = false;
+    if ($checked || !$pdo) {
+        return (bool)$pdo;
+    }
+
+    try {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS site_settings (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            setting_key VARCHAR(100) NOT NULL UNIQUE,
+            setting_value TEXT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        )");
+
+        $stmt = $pdo->prepare("
+            INSERT INTO site_settings (setting_key, setting_value)
+            VALUES ('google_search_visibility', 'visible')
+            ON DUPLICATE KEY UPDATE setting_value = setting_value
+        ");
+        $stmt->execute();
+        $checked = true;
+        return true;
+    } catch (Exception $e) {
+        error_log('Unable to ensure site_settings table: ' . $e->getMessage());
+        return false;
+    }
+}
+
+function getSiteSetting($key, $default = null) {
+    global $pdo;
+
+    if (!ensureSiteSettingsSchema($pdo)) {
+        return $default;
+    }
+
+    try {
+        $stmt = $pdo->prepare("SELECT setting_value FROM site_settings WHERE setting_key = ? LIMIT 1");
+        $stmt->execute([$key]);
+        $value = $stmt->fetchColumn();
+        return $value === false ? $default : $value;
+    } catch (Exception $e) {
+        error_log('Unable to read site setting: ' . $e->getMessage());
+        return $default;
+    }
+}
+
+function setSiteSetting($key, $value) {
+    global $pdo;
+
+    if (!ensureSiteSettingsSchema($pdo)) {
+        return false;
+    }
+
+    try {
+        $stmt = $pdo->prepare("
+            INSERT INTO site_settings (setting_key, setting_value)
+            VALUES (?, ?)
+            ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value), updated_at = CURRENT_TIMESTAMP
+        ");
+        return $stmt->execute([$key, $value]);
+    } catch (Exception $e) {
+        error_log('Unable to save site setting: ' . $e->getMessage());
+        return false;
+    }
+}
+
+function isGoogleSearchVisible() {
+    return getSiteSetting('google_search_visibility', 'visible') !== 'hidden';
+}
+
 function ensureProductPackageQuantitySchema($pdo = null) {
     if ($pdo === null) {
         global $pdo;
@@ -2250,6 +2325,40 @@ function buildPaginationUrl($pageType, $page, $params = []) {
         $separator = strpos($baseUrl, '?') !== false ? '&' : '?';
         return $baseUrl . ($queryString ? $separator . $queryString : '');
     }
+}
+
+function getPaginationWindow($currentPage, $totalPages, $windowSize = 5) {
+    $currentPage = max(1, (int)$currentPage);
+    $totalPages = max(1, (int)$totalPages);
+    $windowSize = max(1, (int)$windowSize);
+
+    if ($totalPages <= $windowSize) {
+        return [
+            'pages' => range(1, $totalPages),
+            'show_ellipsis' => false,
+            'last_page' => null
+        ];
+    }
+
+    if ($currentPage <= $windowSize) {
+        $startPage = 1;
+    } else {
+        $startPage = $currentPage - 2;
+    }
+
+    $endPage = min($totalPages, $startPage + $windowSize - 1);
+    if ($endPage >= $totalPages) {
+        $startPage = max(1, $totalPages - $windowSize + 1);
+        $endPage = $totalPages;
+    }
+
+    $pages = range($startPage, $endPage);
+
+    return [
+        'pages' => $pages,
+        'show_ellipsis' => $endPage < ($totalPages - 1),
+        'last_page' => $endPage < $totalPages ? $totalPages : null
+    ];
 }
 
 // ==================== DTDC API INTEGRATION FUNCTIONS ====================

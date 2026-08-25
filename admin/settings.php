@@ -12,6 +12,7 @@ if (!isset($_SESSION['admin_id'])) {
 $pageTitle = 'Settings';
 $success_message = '';
 $error_message = '';
+$googleVisibility = getSiteSetting('google_search_visibility', 'visible') === 'hidden' ? 'hidden' : 'visible';
 
 // Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -58,9 +59,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 break;
                 
             case 'update_site_settings':
-                // This would typically update site settings in a settings table
-                // For now, we'll just show a success message
                 $_SESSION['success_message'] = 'Site settings updated successfully!';
+                header('Location: settings.php');
+                exit;
+                break;
+
+            case 'update_seo_settings':
+                $newVisibility = ($_POST['google_search_visibility'] ?? 'visible') === 'hidden' ? 'hidden' : 'visible';
+                $previousVisibility = getSiteSetting('google_search_visibility', 'visible') === 'hidden' ? 'hidden' : 'visible';
+
+                if (setSiteSetting('google_search_visibility', $newVisibility)) {
+                    if ($newVisibility === 'hidden') {
+                        $_SESSION['success_message'] = 'Google visibility disabled. Search engines will receive noindex, nofollow.';
+                    } elseif ($previousVisibility === 'hidden') {
+                        $_SESSION['success_message'] = 'Google visibility enabled. Please request re-indexing through Google Search Console so Google can crawl the site again.';
+                    } else {
+                        $_SESSION['success_message'] = 'SEO settings saved successfully!';
+                    }
+                } else {
+                    $_SESSION['error_message'] = 'Unable to save SEO settings. Please try again.';
+                }
+
                 header('Location: settings.php');
                 exit;
                 break;
@@ -83,6 +102,47 @@ $admin = $stmt->fetch(PDO::FETCH_ASSOC);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="assets/css/admin.css" rel="stylesheet">
+    <style>
+        .seo-visibility-options {
+            display: grid;
+            gap: 12px;
+        }
+
+        .seo-visibility-option {
+            align-items: flex-start;
+            border: 1px solid #d9e2ef;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            gap: 12px;
+            padding: 14px;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .seo-visibility-option:hover,
+        .seo-visibility-option:has(input:checked) {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.12);
+        }
+
+        .seo-visibility-option input {
+            margin-top: 4px;
+        }
+
+        .seo-visibility-title {
+            color: #061426;
+            display: block;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        .seo-visibility-help {
+            color: #667085;
+            display: block;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+    </style>
 </head>
 <body>
     <div class="everythingb2c-admin-container">
@@ -174,30 +234,30 @@ $admin = $stmt->fetch(PDO::FETCH_ASSOC);
                                 <div class="card-body">
                                     <form method="POST">
                                         <input type="hidden" name="action" value="update_site_settings">
-                                        
+
                                         <div class="mb-3">
                                             <label for="site_name" class="form-label">Site Name</label>
-                                            <input type="text" class="form-control" id="site_name" name="site_name" 
+                                            <input type="text" class="form-control" id="site_name" name="site_name"
                                                    value="EverythingB2C" required>
                                         </div>
-                                        
+
                                         <div class="mb-3">
                                             <label for="site_description" class="form-label">Site Description</label>
                                             <textarea class="form-control" id="site_description" name="site_description" rows="3">Your one-stop shop for everything you need</textarea>
                                         </div>
-                                        
+
                                         <div class="mb-3">
                                             <label for="contact_email" class="form-label">Contact Email</label>
-                                            <input type="email" class="form-control" id="contact_email" name="contact_email" 
+                                            <input type="email" class="form-control" id="contact_email" name="contact_email"
                                                    value="contact@EverythingB2C.com">
                                         </div>
-                                        
+
                                         <div class="mb-3">
                                             <label for="contact_phone" class="form-label">Contact Phone</label>
-                                            <input type="tel" class="form-control" id="contact_phone" name="contact_phone" 
+                                            <input type="tel" class="form-control" id="contact_phone" name="contact_phone"
                                                    value="+91 1234567890">
                                         </div>
-                                        
+
                                         <div class="mb-3">
                                             <label for="currency" class="form-label">Currency</label>
                                             <select class="form-control" id="currency" name="currency">
@@ -206,7 +266,7 @@ $admin = $stmt->fetch(PDO::FETCH_ASSOC);
                                                 <option value="EUR">Euro (€)</option>
                                             </select>
                                         </div>
-                                        
+
                                         <div class="mb-3">
                                             <label for="timezone" class="form-label">Timezone</label>
                                             <select class="form-control" id="timezone" name="timezone">
@@ -215,7 +275,7 @@ $admin = $stmt->fetch(PDO::FETCH_ASSOC);
                                                 <option value="America/New_York">America/New_York (EST)</option>
                                             </select>
                                         </div>
-                                        
+
                                         <button type="submit" class="btn btn-primary">
                                             <i class="fas fa-save"></i> Update Settings
                                         </button>
@@ -296,6 +356,47 @@ $admin = $stmt->fetch(PDO::FETCH_ASSOC);
                             </div>
                         </div>
                     </div>
+
+                    <div class="row">
+                        <!-- SEO Settings -->
+                        <div class="col-lg-6">
+                            <div class="card shadow mb-4" id="seo-settings">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">SEO Settings</h6>
+                                </div>
+                                <div class="card-body">
+                                    <form method="POST">
+                                        <input type="hidden" name="action" value="update_seo_settings">
+
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Google Search Visibility</label>
+                                            <div class="seo-visibility-options">
+                                                <label class="seo-visibility-option">
+                                                    <input type="radio" name="google_search_visibility" value="visible" <?php echo $googleVisibility === 'visible' ? 'checked' : ''; ?>>
+                                                    <span>
+                                                        <span class="seo-visibility-title">Visible on Google</span>
+                                                        <span class="seo-visibility-help">Allow Google and other search engines to index public website pages.</span>
+                                                    </span>
+                                                </label>
+
+                                                <label class="seo-visibility-option">
+                                                    <input type="radio" name="google_search_visibility" value="hidden" <?php echo $googleVisibility === 'hidden' ? 'checked' : ''; ?>>
+                                                    <span>
+                                                        <span class="seo-visibility-title">Hide from Google</span>
+                                                        <span class="seo-visibility-help">Add a noindex, nofollow robots tag across the website.</span>
+                                                    </span>
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-save"></i> Save Settings
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -321,4 +422,4 @@ $admin = $stmt->fetch(PDO::FETCH_ASSOC);
         }
     </script>
 </body>
-</html> 
+</html>

@@ -50,6 +50,9 @@ if (isLoggedIn()) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <?php if (function_exists('isGoogleSearchVisible') && !isGoogleSearchVisible()): ?>
+    <meta name="robots" content="noindex, nofollow">
+    <?php endif; ?>
     <title><?php echo $pageTitle ?? 'everythingb2c'; ?></title>
 
     <!-- Favicon -->
