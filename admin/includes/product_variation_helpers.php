@@ -563,6 +563,11 @@ function renderProductVariationAssets() {
             margin-bottom: 18px;
         }
 
+        .product-form-page .product-attributes-heading > div {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
         .product-form-page .product-attributes-heading h5 {
             color: #020617;
             font-size: inherit;
@@ -573,16 +578,17 @@ function renderProductVariationAssets() {
 
         .product-form-page .product-attributes-help {
             color: #607086;
-            font-size: .875rem;
+            font-size: .8rem;
             line-height: 1.35;
-            white-space: nowrap;
+            white-space: normal;
         }
 
         .product-form-page #addProductAttributeBtn {
+            flex: 0 0 auto;
             align-self: flex-start;
             margin-left: auto;
-            padding: .25rem .5rem;
-            font-size: .875rem;
+            padding: .25rem .45rem;
+            font-size: .78rem;
             border-radius: .2rem;
             display: inline-block;
             font-weight: 400;
