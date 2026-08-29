@@ -801,6 +801,88 @@ function ensureProductUnitSchema(PDO $pdo) {
     }
 }
 
+function ensureProductCategoryAssignmentsSchema(PDO $pdo) {
+    static $schemaReady = false;
+    if ($schemaReady) {
+        return true;
+    }
+
+    try {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS product_category_assignments (
+            product_id INT NOT NULL,
+            category_id INT NOT NULL,
+            is_primary TINYINT(1) NOT NULL DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (product_id, category_id),
+            INDEX idx_product_category_category (category_id),
+            INDEX idx_product_category_primary (product_id, is_primary)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+        $pdo->exec("INSERT IGNORE INTO product_category_assignments (product_id, category_id, is_primary)
+                    SELECT id, category_id, 1 FROM products WHERE category_id IS NOT NULL AND category_id > 0");
+        $schemaReady = true;
+        return true;
+    } catch (PDOException $e) {
+        return false;
+    }
+}
+
+function getProductAssignedCategoryIds(PDO $pdo, $productId) {
+    ensureProductCategoryAssignmentsSchema($pdo);
+    try {
+        $stmt = $pdo->prepare("SELECT category_id FROM product_category_assignments WHERE product_id = ? ORDER BY is_primary DESC, category_id ASC");
+        $stmt->execute([(int)$productId]);
+        return array_map('intval', $stmt->fetchAll(PDO::FETCH_COLUMN));
+    } catch (PDOException $e) {
+        return [];
+    }
+}
+
+function saveProductCategoryAssignments(PDO $pdo, $productId, $primaryCategoryId, array $additionalCategoryIds = []) {
+    ensureProductCategoryAssignmentsSchema($pdo);
+    $primaryCategoryId = (int)$primaryCategoryId;
+    $categoryIds = array_values(array_unique(array_filter(array_map('intval', array_merge([$primaryCategoryId], $additionalCategoryIds)))));
+
+    $pdo->prepare("DELETE FROM product_category_assignments WHERE product_id = ?")->execute([(int)$productId]);
+    $stmt = $pdo->prepare("INSERT INTO product_category_assignments (product_id, category_id, is_primary) VALUES (?, ?, ?)");
+    foreach ($categoryIds as $categoryId) {
+        $stmt->execute([(int)$productId, $categoryId, $categoryId === $primaryCategoryId ? 1 : 0]);
+    }
+}
+
+function renderProductCategoryCheckboxes(array $categories, array $selectedIds = [], $level = 0) {
+    $selectedLookup = array_fill_keys(array_map('intval', $selectedIds), true);
+    foreach ($categories as $category) {
+        $categoryId = (int)$category['id'];
+        if ($level === 0) {
+            $checked = isset($selectedLookup[$categoryId]) ? ' checked' : '';
+            echo '<div class="d-flex align-items-center gap-2 px-3 py-2 fw-semibold text-dark product-main-category-row" data-main-category="' . $categoryId . '" style="font-size:15px;background:#eef4ff;border-top:1px solid #d7e4fb;border-bottom:1px solid #d7e4fb;cursor:pointer">';
+            echo '<input class="form-check-input mt-0 product-main-category-checkbox" type="checkbox" name="category_ids[]" value="' . $categoryId . '" data-category-name="' . htmlspecialchars($category['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8') . '"' . $checked . '>';
+            echo '<span class="flex-grow-1">' . htmlspecialchars($category['name']) . '</span>';
+            echo '<span class="badge rounded-pill" style="background:#dbeafe;color:#1d4ed8;font-size:.65rem;letter-spacing:.04em">MAIN</span>';
+            echo '</div>';
+            echo '<div class="product-subcategory-group ms-3 me-2 my-1 py-1" data-main-category="' . $categoryId . '" style="background:#fbfdff;border-left:3px solid #6ea8fe" hidden>';
+            if (!empty($category['children'])) {
+                renderProductCategoryCheckboxes($category['children'], $selectedIds, 1);
+            } else {
+                echo '<div class="text-muted small px-3 py-2">No subcategories available.</div>';
+            }
+            echo '</div>';
+            continue;
+        } else {
+            $checked = isset($selectedLookup[$categoryId]) ? ' checked' : '';
+            $indent = 12 + (($level - 1) * 20);
+            echo '<div class="d-flex align-items-center gap-2 py-1 product-subcategory-row" style="padding-left:' . $indent . 'px">';
+            echo '<input class="form-check-input mt-0 product-category-checkbox" type="checkbox" name="category_ids[]" value="' . $categoryId . '" data-category-name="' . htmlspecialchars($category['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8') . '"' . $checked . '>';
+            echo '<span><span class="text-muted me-1">' . ($level > 1 ? '&mdash;' : '&#8627;') . '</span>' . htmlspecialchars($category['name']) . '</span>';
+            echo '</div>';
+        }
+        if (!empty($category['children'])) {
+            renderProductCategoryCheckboxes($category['children'], $selectedIds, $level + 1);
+        }
+    }
+}
+
 function sanitizeProductUnitOption($label) {
     $label = trim(strip_tags((string)$label));
     $label = preg_replace('/\s+/', ' ', $label);

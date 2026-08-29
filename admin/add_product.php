@@ -21,6 +21,7 @@ ensureProductVariationSchema($pdo);
 ensureProductUnitSchema($pdo);
 ensureProductUnitOptionsSchema($pdo);
 ensureProductPackageQuantitySchema($pdo);
+ensureProductCategoryAssignmentsSchema($pdo);
 $attributeOptions = getProductAttributeOptions($pdo);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['unit_action'])) {
@@ -71,8 +72,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $unit_label = sanitizeProductUnitOption($_POST['unit_label'] ?? 'No.');
     $unit_label = $unit_label !== '' && $unit_label !== '__add_new_unit__' ? $unit_label : 'No.';
 
-    // Handle category selection - use the selected category directly
-    $category_id = intval($_POST['parent_category_id']);
+    // The first checked category is retained as the primary category for compatibility.
+    $selected_category_ids = isset($_POST['category_ids']) && is_array($_POST['category_ids']) ? array_values(array_unique(array_map('intval', $_POST['category_ids']))) : [];
+    $posted_primary_category_id = intval($_POST['parent_category_id'] ?? 0);
+    $category_id = in_array($posted_primary_category_id, $selected_category_ids, true) ? $posted_primary_category_id : intval($selected_category_ids[0] ?? 0);
+    $additional_category_ids = array_values(array_diff($selected_category_ids, [$category_id]));
 
     $stock_quantity = isset($_POST['stock_quantity']) ? (int)round((float)$_POST['stock_quantity']) : 0;
     $package_quantity = isset($_POST['package_quantity']) ? (int)round((float)$_POST['package_quantity']) : 1;
@@ -108,6 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([$name, $slug, $description, $mrp, $selling_price, $pay_per_unit, $unit_label, $discount_percentage, $gst_type, $gst_rate, $category_id, $stock_quantity, $package_quantity, $max_quantity_per_order, $is_active, $is_featured, $is_discounted, $sku, $hsn]);
 
             $product_id = $pdo->lastInsertId();
+            saveProductCategoryAssignments($pdo, $product_id, $category_id, $additional_category_ids);
 
             // Handle main image upload
             if (isset($_FILES['main_image']) && $_FILES['main_image']['error'] === UPLOAD_ERR_OK) {
@@ -573,6 +578,31 @@ function uploadImage($file, $folder) {
             padding-right: 12px;
             box-shadow: none;
         }
+
+        .product-form-page .product-category-dropdown {
+            position: relative;
+            z-index: 20;
+        }
+
+        .product-form-page .product-category-dropdown[open] {
+            z-index: 1050;
+            border-bottom-left-radius: 0 !important;
+            border-bottom-right-radius: 0 !important;
+        }
+
+        .product-form-page .product-category-menu {
+            position: absolute;
+            top: 100%;
+            left: -1px;
+            right: -1px;
+            max-height: min(430px, 60vh);
+            overflow-y: auto;
+            background: #fff;
+            border: 1px solid #cfd6df;
+            border-top: 0;
+            border-radius: 0 0 6px 6px;
+            box-shadow: 0 10px 24px rgba(15, 23, 42, .16);
+        }
     </style>
     <?php renderProductVariationAssets(); ?>
 </head>
@@ -628,28 +658,15 @@ function uploadImage($file, $folder) {
                                                 <div class="invalid-feedback">Please provide a product name.</div>
                                             </div>
                                             <div class="col-md-6">
-                                                <label for="parent_category_id" class="form-label">Category *</label>
-                                                <select class="form-control form-select" id="parent_category_id" name="parent_category_id" required>
-                                                    <option value="">Select Category</option>
-                                                    <?php
-                                                    // Display categories in hierarchical structure
-                                                    function displayCategoryOptions($categories, $level = 0) {
-                                                        foreach ($categories as $category) {
-                                                            $indent = str_repeat('— ', $level);
-                                                            $selected = (isset($_POST['parent_category_id']) && $_POST['parent_category_id'] == $category['id']) ? 'selected' : '';
-                                                            echo '<option value="' . $category['id'] . '" ' . $selected . '>';
-                                                            echo $indent . htmlspecialchars($category['name']);
-                                                            echo '</option>';
-
-                                                            if (!empty($category['children'])) {
-                                                                displayCategoryOptions($category['children'], $level + 1);
-                                                            }
-                                                        }
-                                                    }
-                                                    displayCategoryOptions($categoryTree);
-                                                    ?>
-                                                </select>
-                                                <div class="invalid-feedback">Please select a category.</div>
+                                                <label class="form-label">Categories *</label>
+                                                <input type="hidden" id="parent_category_id" name="parent_category_id" value="<?php echo (int)($_POST['parent_category_id'] ?? 0); ?>">
+                                                <details class="border rounded bg-white product-category-dropdown">
+                                                    <summary class="px-3 py-2 product-category-summary" style="cursor:pointer">Select main categories and subcategories</summary>
+                                                    <div class="border-top py-2 product-category-menu">
+                                                        <?php renderProductCategoryCheckboxes($categoryTree, $_POST['category_ids'] ?? []); ?>
+                                                    </div>
+                                                </details>
+                                                <div class="text-danger small mt-1 d-none product-category-error">Please select at least one category.</div>
                                             </div>
                                         </div>
 
@@ -1294,6 +1311,75 @@ function uploadImage($file, $folder) {
             });
 
             updateDeleteButton();
+        });
+
+        document.querySelectorAll('.product-category-dropdown').forEach(function(dropdown) {
+            const form = dropdown.closest('form');
+            const summary = dropdown.querySelector('.product-category-summary');
+            const checkboxes = Array.from(dropdown.querySelectorAll('.product-category-checkbox'));
+            const groups = Array.from(dropdown.querySelectorAll('.product-subcategory-group'));
+            const mainCheckboxes = Array.from(dropdown.querySelectorAll('.product-main-category-checkbox'));
+            const mainRows = Array.from(dropdown.querySelectorAll('.product-main-category-row'));
+            const primaryInput = form.querySelector('input[name="parent_category_id"]');
+            const error = dropdown.parentElement.querySelector('.product-category-error');
+            let activeMainCategoryId = '';
+
+            function syncMainCategoryGroups() {
+                groups.forEach(function(group) {
+                    group.hidden = group.dataset.mainCategory !== activeMainCategoryId;
+                    group.querySelectorAll('.product-category-checkbox').forEach(function(checkbox) { checkbox.disabled = false; });
+                });
+            }
+
+            function updateCategorySelection() {
+                const selectedMainCategories = mainCheckboxes.filter(function(checkbox) { return checkbox.checked; });
+                const selectedSubcategories = checkboxes.filter(function(checkbox) { return checkbox.checked && !checkbox.disabled; });
+                const selected = selectedMainCategories.concat(selectedSubcategories);
+                const selectedIds = selected.map(function(checkbox) { return checkbox.value; });
+                if (!selectedIds.includes(primaryInput.value)) {
+                    primaryInput.value = selectedIds[0] || '';
+                }
+                summary.textContent = selected.length === 0
+                    ? 'Select main categories and subcategories'
+                    : selected[0].dataset.categoryName + (selected.length > 1 ? ' +' + (selected.length - 1) : '');
+                error.classList.toggle('d-none', selected.length > 0);
+                return selected.length > 0;
+            }
+
+            checkboxes.forEach(function(checkbox) {
+                checkbox.addEventListener('change', updateCategorySelection);
+            });
+            mainCheckboxes.forEach(function(mainCheckbox) {
+                mainCheckbox.addEventListener('change', function() {
+                    updateCategorySelection();
+                });
+            });
+            mainRows.forEach(function(row) {
+                row.addEventListener('click', function(event) {
+                    if (event.target.matches('input')) return;
+                    activeMainCategoryId = activeMainCategoryId === row.dataset.mainCategory ? '' : row.dataset.mainCategory;
+                    syncMainCategoryGroups();
+                });
+            });
+            document.addEventListener('click', function(event) {
+                if (dropdown.open && !dropdown.contains(event.target)) dropdown.open = false;
+            });
+            form.addEventListener('submit', function(event) {
+                if (!updateCategorySelection()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    dropdown.open = true;
+                }
+            });
+            groups.forEach(function(group) {
+                if (group.querySelector('.product-category-checkbox:checked')) {
+                    const mainCheckbox = mainCheckboxes.find(function(checkbox) { return checkbox.value === group.dataset.mainCategory; });
+                    if (mainCheckbox) mainCheckbox.checked = true;
+                }
+            });
+            activeMainCategoryId = '';
+            syncMainCategoryGroups();
+            updateCategorySelection();
         });
 
         document.querySelectorAll('input[type="number"]').forEach(function(input) {
