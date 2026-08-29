@@ -764,20 +764,49 @@ function renderCategoryMenu($tree, $level = 0) {
         echo '<li class="' . $liClass . '">';
         
         if ($hasChildren) {
-            // Main category as dropdown toggle
-            echo '<a class="nav-link navigationtext dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">' . htmlspecialchars($cat['name']) . '</a>';
-            echo '<ul class="dropdown-menu">';
-            // Parent category as clickable item
-            echo '<li><a class="dropdown-item navigationtext parent-category" href="' . $base_url . 'category.php?slug=' . $cat['slug'] . '">' . htmlspecialchars($cat['name']) . '</a></li>';
-            echo '<li><hr class="dropdown-divider"></li>';
-            // Render all subcategories recursively
-            renderSubcategories($cat['children'], $level + 1);
+            echo '<a class="nav-link navigationtext dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">' . htmlspecialchars($cat['name']) . '</a>';
+            echo '<ul class="dropdown-menu category-mega-menu">';
+            echo '<li class="category-mega-heading">';
+            echo '<span class="category-mega-eyebrow">Browse categories</span>';
+            echo '<a class="category-mega-view-all" href="' . $base_url . 'category.php?slug=' . rawurlencode($cat['slug']) . '">View all ' . htmlspecialchars($cat['name']) . ' <span aria-hidden="true">&rarr;</span></a>';
+            echo '</li>';
+            echo '<li><div class="category-mega-grid">';
+            renderMegaSubcategoryGroups($cat['children']);
+            echo '</div></li>';
             echo '</ul>';
         } else {
             // Main category link (no children)
             echo '<a class="nav-link navigationtext" href="' . $base_url . 'category.php?slug=' . $cat['slug'] . '">' . htmlspecialchars($cat['name']) . '</a>';
         }
         echo '</li>';
+    }
+}
+
+function renderMegaSubcategoryGroups($subcategories) {
+    global $base_url;
+    foreach ($subcategories as $subcat) {
+        $hasChildren = !empty($subcat['children']);
+        $imagePath = trim((string)($subcat['image'] ?? ''));
+        $imageUrl = '';
+        if ($imagePath !== '') {
+            $imageUrl = preg_match('#^https?://#i', $imagePath) ? $imagePath : $base_url . ltrim($imagePath, './\\');
+        }
+        echo '<section class="category-mega-group">';
+        echo '<a class="category-mega-title" href="' . $base_url . 'category.php?slug=' . rawurlencode($subcat['slug']) . '">';
+        echo '<span class="category-mega-icon" aria-hidden="true"><span class="category-mega-fallback">&#8250;</span>';
+        if ($imageUrl !== '') {
+            echo '<img src="' . htmlspecialchars($imageUrl, ENT_QUOTES | ENT_HTML5, 'UTF-8') . '" alt="" loading="lazy" decoding="async" onerror="this.remove()">';
+        }
+        echo '</span><span class="category-mega-title-text">' . htmlspecialchars($subcat['name']) . '</span>';
+        echo '</a>';
+        if ($hasChildren) {
+            echo '<div class="category-mega-children">';
+            foreach ($subcat['children'] as $child) {
+                echo '<a href="' . $base_url . 'category.php?slug=' . rawurlencode($child['slug']) . '">' . htmlspecialchars($child['name']) . '</a>';
+            }
+            echo '</div>';
+        }
+        echo '</section>';
     }
 }
 
