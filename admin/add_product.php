@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $description = trim($_POST['description']);
     $mrp = floatval($_POST['mrp']);
     $selling_price = floatval($_POST['selling_price']);
-    $pay_per_unit = isset($_POST['pay_per_unit']) && $_POST['pay_per_unit'] !== '' ? floatval($_POST['pay_per_unit']) : $selling_price;
+    $pay_per_unit = isset($_POST['pay_per_unit']) && $_POST['pay_per_unit'] !== '' ? round(floatval($_POST['pay_per_unit']), 2) : $selling_price;
     $unit_label = sanitizeProductUnitOption($_POST['unit_label'] ?? 'No.');
     $unit_label = $unit_label !== '' && $unit_label !== '__add_new_unit__' ? $unit_label : 'No.';
 
@@ -668,7 +668,7 @@ function uploadImage($file, $folder) {
                                             </div>
                                             <div class="col-md-3">
                                                 <label class="form-label">Pay / Unit (₹)</label>
-                                                <input type="number" class="form-control" name="pay_per_unit" step="1" min="0" placeholder="e.g. 49" value="<?php echo htmlspecialchars(formatAdminNumberInput($_POST['pay_per_unit'] ?? '')); ?>">
+                                                <input type="number" class="form-control" name="pay_per_unit" step="any" min="0" inputmode="decimal" placeholder="e.g. 23.63" value="<?php echo htmlspecialchars(formatAdminNumberInput($_POST['pay_per_unit'] ?? '')); ?>">
                                                 <div class="form-text unit-help-text">Shown as ₹ price / selected unit.</div>
                                             </div>
                                             <div class="col-md-3">
