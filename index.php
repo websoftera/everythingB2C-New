@@ -56,13 +56,42 @@ if (empty($bannersList)) {
 }
 ?>
 
+<!-- Critical hero styles must be available before the slides are painted. -->
+<style>
+  #heroCarousel .carousel-inner {
+    position: relative;
+    overflow: hidden;
+  }
+
+  #heroCarousel .carousel-item {
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+  }
+
+  #heroCarousel .carousel-item.active {
+    position: relative !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  #heroCarousel .carousel-image {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+</style>
+
 <!-- Hero Section -->
 <section class="hero-slider-section">
     <div id="heroCarousel" class="custom-carousel">
         <div class="carousel-inner">
             <?php foreach ($bannersList as $index => $banner): ?>
             <div class="carousel-item <?php echo $index === 0 ? 'active' : ''; ?>">
-                <img src="<?php echo htmlspecialchars($banner['image_path']); ?>" alt="<?php echo htmlspecialchars($banner['title'] ?? 'Banner ' . ($index + 1)); ?>" class="carousel-image">
+                <img src="<?php echo htmlspecialchars($banner['image_path']); ?>" alt="<?php echo htmlspecialchars($banner['title'] ?? 'Banner ' . ($index + 1)); ?>" class="carousel-image" <?php echo $index === 0 ? 'fetchpriority="high"' : 'loading="lazy"'; ?>>
                 <div class="carousel-caption d-block <?php echo $index === 0 ? 'text-start' : 'text-end'; ?>">
                     <!-- Optional caption content -->
                 </div>
@@ -95,28 +124,28 @@ if (empty($bannersList)) {
 <section>
     <div class="process-container" style="gap: 5px !important;">
         <div class="step">
-            <img src="./asset/images/work-1.webp" alt="Online Shopping">
+            <img src="./asset/images/work-1.webp" alt="Online Shopping" loading="lazy" decoding="async">
             <p>ONLINE SHOPPING</p>
         </div>
         <div class="arrow">
             <!-- <img src="./asset/images/work-progress.webp" alt="Arrow"> -->
         </div>
         <div class="step">
-            <img src="./asset/images/work-2.webp" alt="Warehouse">
+            <img src="./asset/images/work-2.webp" alt="Warehouse" loading="lazy" decoding="async">
             <p>WAREHOUSE</p>
         </div>
         <div class="arrow">
             <!-- <img src="./asset/images/work-progress.webp" alt="Arrow"> -->
         </div>
         <div class="step">
-            <img src="./asset/images/work-3.webp" alt="Shipping">
+            <img src="./asset/images/work-3.webp" alt="Shipping" loading="lazy" decoding="async">
             <p>SHIPPING</p>
         </div>
         <div class="arrow">
             <!-- <img src="./asset/images/work-progress.webp" alt="Arrow"> -->
         </div>
         <div class="step">
-            <img src="./asset/images/work-4.webp" alt="Home Delivery">
+            <img src="./asset/images/work-4.webp" alt="Home Delivery" loading="lazy" decoding="async">
             <p>HOME DELIVERY</p>
         </div>
     </div>
@@ -140,7 +169,7 @@ if (empty($bannersList)) {
                             <div class="category-illustration">
                                 <?php $categoryImage = !empty($category['image']) ? ltrim($category['image'], './') : ''; ?>
                                 <?php if (!empty($categoryImage)): ?>
-                            <img src="./<?php echo htmlspecialchars($categoryImage); ?>" alt="<?php echo htmlspecialchars($category['name']); ?>" />
+                            <img src="./<?php echo htmlspecialchars($categoryImage); ?>" alt="<?php echo htmlspecialchars($category['name']); ?>" loading="lazy" decoding="async" />
                                 <?php
   else: ?>
                                   <div class="category-placeholder">
@@ -189,10 +218,10 @@ foreach ($discountedProducts as $product):
                 <div class="product-image">
                     <a href="product.php?slug=<?php echo $product['slug']; ?>">
                         <?php if (!empty($product['main_image'])): ?>
-                            <img src="<?php echo $product['main_image']; ?>" alt="<?php echo cleanProductName($product['name']); ?>">
+                            <img src="<?php echo htmlspecialchars($product['main_image']); ?>" alt="<?php echo cleanProductName($product['name']); ?>" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='./uploads/products/blank-img.webp';">
                         <?php
   else: ?>
-                            <img src="./uploads/products/blank-img.webp" alt="No image available">
+                            <img src="./uploads/products/blank-img.webp" alt="No image available" loading="lazy" decoding="async">
                         <?php
   endif; ?>
                     </a>
@@ -280,10 +309,10 @@ foreach ($featuredProducts as $product):
                 <div class="product-image">
                     <a href="product.php?slug=<?php echo $product['slug']; ?>">
                         <?php if (!empty($product['main_image'])): ?>
-                            <img src="<?php echo $product['main_image']; ?>" alt="<?php echo cleanProductName($product['name']); ?>">
+                            <img src="<?php echo htmlspecialchars($product['main_image']); ?>" alt="<?php echo cleanProductName($product['name']); ?>" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='./uploads/products/blank-img.webp';">
                         <?php
   else: ?>
-                            <img src="./uploads/products/blank-img.webp" alt="No image available">
+                            <img src="./uploads/products/blank-img.webp" alt="No image available" loading="lazy" decoding="async">
                         <?php
   endif; ?>
                     </a>
@@ -351,7 +380,7 @@ endforeach; ?>
       <div class="service-card free-shipping">
         <div class="service-inner">
           <div class="service-icon">
-            <img src="asset/icons/free_shipping.png" alt="Free Shipping">
+            <img src="asset/icons/free_shipping.png" alt="Free Shipping" loading="lazy" decoding="async">
           </div>
           <div class="service-divider"></div>
           <div class="service-text">
@@ -364,7 +393,7 @@ endforeach; ?>
       <div class="service-card lower-price">
         <div class="service-inner">
           <div class="service-icon">
-            <img src="asset/icons/lower_price_icon.png" alt="Lower Price">
+            <img src="asset/icons/lower_price_icon.png" alt="Lower Price" loading="lazy" decoding="async">
           </div>
           <div class="service-divider"></div>
           <div class="service-text">
@@ -377,7 +406,7 @@ endforeach; ?>
       <div class="service-card cod-service">
         <div class="service-inner">
           <div class="service-icon">
-            <img src="asset/icons/COD.png" alt="COD Service">
+            <img src="asset/icons/COD.png" alt="COD Service" loading="lazy" decoding="async">
           </div>
           <div class="service-divider"></div>
           <div class="service-text">
@@ -390,7 +419,7 @@ endforeach; ?>
       <div class="service-card return-policy">
         <div class="service-inner">
           <div class="service-icon">
-            <img src="asset/icons/return_policy.png" alt="Return Policy">
+            <img src="asset/icons/return_policy.png" alt="Return Policy" loading="lazy" decoding="async">
           </div>
           <div class="service-divider"></div>
           <div class="service-text">
@@ -407,9 +436,6 @@ endforeach; ?>
 <!-- Include Footer -->
 
 <?php include 'includes/footer.php'; ?>
-
-<!-- Include your existing CSS and JS files -->
-<link rel="stylesheet" href="./asset/style/style.css">
 
 <style>
 @media (max-width: 768px) {
@@ -2916,6 +2942,11 @@ endforeach; ?>
     width: 10px !important;
     height: 10px !important;
   }
+
+  /* Pagination dots are intentionally hidden on mobile only. */
+  .custom-carousel .carousel-indicators {
+    display: none !important;
+  }
 }
 
 /* Extra small mobile devices */
@@ -3433,34 +3464,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const indicators = heroCarousel.querySelectorAll('.indicator');
         const prevBtn = heroCarousel.querySelector('.carousel-control-prev');
         const nextBtn = heroCarousel.querySelector('.carousel-control-next');
-        const images = heroCarousel.querySelectorAll('.carousel-image');
-        
+
         let currentIndex = 0;
         let isTransitioning = false;
         let autoPlayInterval;
-        let imagesLoaded = 0;
-        
-        // Preload all images for smooth transitions
-        function preloadImages() {
-            images.forEach((img, index) => {
-                const newImg = new Image();
-                newImg.onload = () => {
-                    imagesLoaded++;
-                    if (imagesLoaded === images.length) {
-                        // All images loaded, start carousel
-                        initializeCarousel();
-                    }
-                };
-                newImg.onerror = () => {
-                    imagesLoaded++;
-                    if (imagesLoaded === images.length) {
-                        // All images processed, start carousel
-                        initializeCarousel();
-                    }
-                };
-                newImg.src = img.src;
-            });
-        }
         
         function initializeCarousel() {
             // Initialize first slide
@@ -3581,8 +3588,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // Start preloading images
-        preloadImages();
+        // The first slide is ready immediately; later slides use native lazy loading.
+        initializeCarousel();
     }
     
     // Category slider functionality removed - handled by asset/js/sliders.js
