@@ -54,6 +54,8 @@ $sellers = getAllSellers();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $pageTitle; ?> - EverythingB2C</title>
+
+    <link rel="icon" href="../sitelogo.png" type="image/png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
@@ -146,7 +148,7 @@ $sellers = getAllSellers();
                                 <td><?php echo $product['id']; ?></td>
                                 <td>
                                     <?php if ($product['main_image']): ?>
-                                        <?php 
+                                        <?php
                                         // Handle image path
                                         $imgPath = $product['main_image'];
                                         if (strpos($imgPath, 'uploads/') === 0) {
@@ -157,7 +159,7 @@ $sellers = getAllSellers();
                                             $imgPath = '../' . $imgPath;
                                         }
                                         ?>
-                                        <img src="<?php echo htmlspecialchars($imgPath); ?>" 
+                                        <img src="<?php echo htmlspecialchars($imgPath); ?>"
                                              alt="Product" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
                                     <?php else: ?>
                                         <div style="width: 50px; height: 50px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; border-radius: 4px;">
@@ -207,7 +209,7 @@ $sellers = getAllSellers();
                                 </td>
                                 <td>
                                     <div class="btn-group btn-group-sm">
-                                        <a href="edit_product.php?id=<?php echo $product['id']; ?>" 
+                                        <a href="edit_product.php?id=<?php echo $product['id']; ?>"
                                            class="btn btn-info" title="View/Edit">
                                             <i class="fas fa-eye"></i>
                                         </a>

@@ -14,11 +14,11 @@ $error = '';
 // Handle actions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
-    
+
     if ($action === 'add_role') {
         $name = trim($_POST['role_name'] ?? '');
         $description = trim($_POST['role_description'] ?? '');
-        
+
         if (empty($name)) {
             $error = 'Role name is required';
         } else {
@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $roleId = intval($_POST['role_id'] ?? 0);
         $name = trim($_POST['role_name'] ?? '');
         $description = trim($_POST['role_description'] ?? '');
-        
+
         if (empty($name)) {
             $error = 'Role name is required';
         } elseif (updateRole($roleId, $name, $description)) {
@@ -50,17 +50,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($action === 'update_permissions') {
         $roleId = intval($_POST['role_id'] ?? 0);
         $selectedPermissions = $_POST['permissions'] ?? [];
-        
+
         try {
             // Remove all existing permissions
             $stmt = $pdo->prepare("DELETE FROM role_permissions WHERE role_id = ?");
             $stmt->execute([$roleId]);
-            
+
             // Add selected permissions
             foreach ($selectedPermissions as $permissionId) {
                 addPermissionToRole($roleId, intval($permissionId));
             }
-            
+
             $message = 'Permissions updated successfully!';
         } catch (Exception $e) {
             $error = 'Failed to update permissions: ' . $e->getMessage();
@@ -93,6 +93,8 @@ if (isset($_GET['edit'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $pageTitle; ?> - EverythingB2C Admin</title>
+
+    <link rel="icon" href="../sitelogo.png" type="image/png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="assets/css/admin.css" rel="stylesheet">
@@ -143,21 +145,21 @@ if (isset($_GET['edit'])) {
                     <div class="row">
                         <div class="col-md-12">
                 <h2 class="mb-4"><i class="fas fa-shield-alt"></i> Manage Roles & Permissions</h2>
-                
+
                 <?php if ($message): ?>
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         <i class="fas fa-check-circle"></i> <?php echo htmlspecialchars($message); ?>
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 <?php endif; ?>
-                
+
                 <?php if ($error): ?>
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <i class="fas fa-exclamation-circle"></i> <?php echo htmlspecialchars($error); ?>
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 <?php endif; ?>
-                
+
                 <div class="row">
                     <div class="col-md-8">
                         <h4 class="mb-3">All Roles</h4>
@@ -194,7 +196,7 @@ if (isset($_GET['edit'])) {
                             </div>
                         <?php endforeach; ?>
                     </div>
-                    
+
                     <div class="col-md-4">
                         <h4 class="mb-3">Add New Role</h4>
                         <div class="card">
@@ -217,17 +219,17 @@ if (isset($_GET['edit'])) {
                         </div>
                     </div>
                 </div>
-                
+
                 <?php if ($selectedRole): ?>
                     <hr class="my-5">
                     <div id="permissions">
                         <h4 class="mb-3">Manage Permissions for: <strong><?php echo htmlspecialchars($selectedRole['name']); ?></strong></h4>
-                        
+
                         <form method="POST" class="card">
                             <div class="card-body">
                                 <input type="hidden" name="action" value="update_permissions">
                                 <input type="hidden" name="role_id" value="<?php echo $selectedRole['id']; ?>">
-                                
+
                                 <div class="row mb-3">
                                     <div class="col-md-6">
                                         <div class="card">
@@ -257,7 +259,7 @@ if (isset($_GET['edit'])) {
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-md-6">
                                         <div class="card">
                                             <div class="card-header bg-light">
@@ -269,8 +271,8 @@ if (isset($_GET['edit'])) {
                                                         <div class="permission-group-title"><?php echo htmlspecialchars($category); ?></div>
                                                         <?php foreach ($permissions as $permission): ?>
                                                             <div class="form-check">
-                                                                <input class="form-check-input" type="checkbox" name="permissions[]" 
-                                                                    id="perm_<?php echo $permission['id']; ?>" 
+                                                                <input class="form-check-input" type="checkbox" name="permissions[]"
+                                                                    id="perm_<?php echo $permission['id']; ?>"
                                                                     value="<?php echo $permission['id']; ?>"
                                                                     <?php echo in_array($permission['id'], $selectedRolePermissions) ? 'checked' : ''; ?>>
                                                                 <label class="form-check-label" for="perm_<?php echo $permission['id']; ?>">
@@ -300,7 +302,7 @@ if (isset($_GET['edit'])) {
             </div>
         </div>
     </div>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

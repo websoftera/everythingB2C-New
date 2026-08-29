@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bulk_action'])) {
     $action = $_POST['bulk_action'];
     $selected_products = $_POST['selected_products'] ?? [];
-    
+
     if (!empty($selected_products)) {
         switch ($action) {
             case 'delete':
@@ -140,12 +140,12 @@ $order_clause = $category_filter
 $limit_clause = $reorder_mode ? '' : "LIMIT $per_page OFFSET $offset";
 
 // Get products
-$sql = "SELECT p.*, c.name as category_name, c.parent_id, pc.name as parent_category_name, p.hsn 
-        FROM products p 
-        LEFT JOIN categories c ON p.category_id = c.id 
-        LEFT JOIN categories pc ON c.parent_id = pc.id 
-        $where_clause 
-        $order_clause 
+$sql = "SELECT p.*, c.name as category_name, c.parent_id, pc.name as parent_category_name, p.hsn
+        FROM products p
+        LEFT JOIN categories c ON p.category_id = c.id
+        LEFT JOIN categories pc ON c.parent_id = pc.id
+        $where_clause
+        $order_clause
         $limit_clause";
 
 $stmt = $pdo->prepare($sql);
@@ -172,6 +172,8 @@ $returnToProducts = 'products.php' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $pageTitle; ?> - EverythingB2C</title>
+
+    <link rel="icon" href="../sitelogo.png" type="image/png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="assets/css/admin.css" rel="stylesheet">
@@ -557,7 +559,7 @@ $returnToProducts = 'products.php' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $
                         </div>
                     </div>
 
-                    <?php 
+                    <?php
                     if (isset($_SESSION['success_message'])) {
                         $success_message = $_SESSION['success_message'];
                         unset($_SESSION['success_message']);
@@ -589,7 +591,7 @@ $returnToProducts = 'products.php' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $
                                 <div class="col-md-4">
                                     <div class="search-box">
                                         <i class="fas fa-search search-icon"></i>
-                                        <input type="text" class="form-control" name="search" 
+                                        <input type="text" class="form-control" name="search"
                                                placeholder="Search products..." value="<?php echo htmlspecialchars($search); ?>">
                                     </div>
                                 </div>
@@ -598,15 +600,15 @@ $returnToProducts = 'products.php' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $
                                         <option value="">All Categories</option>
                                         <?php foreach ($parentCategories as $parentCategory): ?>
                                             <optgroup label="<?php echo htmlspecialchars($parentCategory['name']); ?>">
-                                                <option value="<?php echo $parentCategory['id']; ?>" 
+                                                <option value="<?php echo $parentCategory['id']; ?>"
                                                         <?php echo $category_filter == $parentCategory['id'] ? 'selected' : ''; ?>>
                                                     <?php echo htmlspecialchars($parentCategory['name']); ?>
                                                 </option>
-                                                <?php 
+                                                <?php
                                                 $subcategories = getSubcategoriesByParentId($parentCategory['id']);
-                                                foreach ($subcategories as $subcategory): 
+                                                foreach ($subcategories as $subcategory):
                                                 ?>
-                                                    <option value="<?php echo $subcategory['id']; ?>" 
+                                                    <option value="<?php echo $subcategory['id']; ?>"
                                                             <?php echo $category_filter == $subcategory['id'] ? 'selected' : ''; ?>>
                                                         &nbsp;&nbsp;&nbsp;&nbsp;→ <?php echo htmlspecialchars($subcategory['name']); ?>
                                                     </option>
@@ -697,8 +699,8 @@ $returnToProducts = 'products.php' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $
                                                 <?php foreach ($products as $product): ?>
                                                     <tr class="product-row" <?php echo $reorder_mode ? 'draggable="true"' : ''; ?>>
                                                         <td>
-                                                            <input type="checkbox" name="selected_products[]" 
-                                                                   value="<?php echo $product['id']; ?>" 
+                                                            <input type="checkbox" name="selected_products[]"
+                                                                   value="<?php echo $product['id']; ?>"
                                                                    class="form-check-input item-checkbox">
                                                         </td>
                                                         <?php if ($reorder_mode): ?>
@@ -711,8 +713,8 @@ $returnToProducts = 'products.php' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $
                                                         <?php endif; ?>
                                                         <td>
                                                             <?php if ($product['main_image']): ?>
-                                                                <img src="../<?php echo $product['main_image']; ?>" 
-                                                                     alt="<?php echo cleanProductName($product['name']); ?>" 
+                                                                <img src="../<?php echo $product['main_image']; ?>"
+                                                                     alt="<?php echo cleanProductName($product['name']); ?>"
                                                                      class="product-thumb">
                                                             <?php else: ?>
                                                                 <div class="product-thumb d-flex align-items-center justify-content-center">
@@ -725,7 +727,7 @@ $returnToProducts = 'products.php' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $
                                                         </td>
                                                         <td class="product-sku-cell"><?php echo htmlspecialchars($product['sku']); ?></td>
                                                         <td class="product-category-cell">
-                                                            <?php 
+                                                            <?php
                                                             if ($product['parent_category_name']) {
                                                                 // Product is in a subcategory
                                                                 echo '<strong>' . htmlspecialchars($product['parent_category_name']) . '</strong>';
@@ -750,7 +752,7 @@ $returnToProducts = 'products.php' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <?php 
+                                                            <?php
                                                             $gst_type_text = ($product['gst_type'] == 'sgst_cgst') ? 'SGST+CGST' : 'IGST';
                                                             echo $gst_type_text . '<br>' . $product['gst_rate'] . '%';
                                                             ?>
@@ -763,15 +765,15 @@ $returnToProducts = 'products.php' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $
                                                         </td>
                                                         <td>
                                                             <div class="action-buttons">
-                                                                <a href="edit_product.php?id=<?php echo $product['id']; ?>&return_to=<?php echo urlencode($returnToProducts); ?>" 
+                                                                <a href="edit_product.php?id=<?php echo $product['id']; ?>&return_to=<?php echo urlencode($returnToProducts); ?>"
                                                                    class="btn btn-warning btn-sm" title="Edit">
                                                                     <i class="fas fa-edit"></i>
                                                                 </a>
-                                                                <a href="../product.php?slug=<?php echo $product['slug']; ?>" 
+                                                                <a href="../product.php?slug=<?php echo $product['slug']; ?>"
                                                                    class="btn btn-info btn-sm" title="View" target="_blank">
                                                                     <i class="fas fa-eye"></i>
                                                                 </a>
-                                                                <button type="button" class="btn btn-danger btn-sm btn-delete" 
+                                                                <button type="button" class="btn btn-danger btn-sm btn-delete"
                                                                         onclick="deleteProduct(<?php echo $product['id']; ?>)" title="Delete">
                                                                     <i class="fas fa-trash"></i>
                                                                 </button>
@@ -1016,4 +1018,4 @@ $returnToProducts = 'products.php' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $
         });
     </script>
 </body>
-</html> 
+</html>

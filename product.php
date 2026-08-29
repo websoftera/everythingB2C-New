@@ -781,7 +781,7 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
     <!-- Zoom Modal -->
     <div id="zoomModal" class="zoom-modal">
         <span class="zoom-close" id="zoomClose">&times;</span>
-        <img class="zoom-modal-content" id="zoomedImg" src="" alt="Zoomed Product Image">
+        <img class="zoom-modal-content" id="zoomedImg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="Zoomed Product Image">
         <button id="zoomPrev" class="zoom-nav-btn zoom-prev">&#8592;</button>
         <button id="zoomNext" class="zoom-nav-btn zoom-next">&#8594;</button>
     </div>

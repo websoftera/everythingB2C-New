@@ -19,18 +19,18 @@ $date_from = $_GET['date_from'] ?? date('Y-m-01'); // First day of current month
 $date_to = $_GET['date_to'] ?? date('Y-m-d'); // Today
 
 // Get sales statistics
-$stmt = $pdo->prepare("SELECT 
+$stmt = $pdo->prepare("SELECT
     COUNT(*) as total_orders,
     SUM(total_amount) as total_sales,
     AVG(total_amount) as avg_order_value,
     COUNT(DISTINCT user_id) as unique_customers
-    FROM orders 
+    FROM orders
     WHERE DATE(created_at) BETWEEN ? AND ? AND status != 'cancelled'");
 $stmt->execute([$date_from, $date_to]);
 $sales_stats = $stmt->fetch(PDO::FETCH_ASSOC);
 
 // Get top selling products
-$stmt = $pdo->prepare("SELECT 
+$stmt = $pdo->prepare("SELECT
     p.name, p.slug, p.main_image,
     SUM(oi.quantity) as total_sold,
     SUM(oi.quantity * oi.selling_price) as total_revenue
@@ -45,7 +45,7 @@ $stmt->execute([$date_from, $date_to]);
 $top_products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Get sales by category
-$stmt = $pdo->prepare("SELECT 
+$stmt = $pdo->prepare("SELECT
     c.name as category_name,
     SUM(oi.quantity * oi.selling_price) as total_revenue,
     COUNT(DISTINCT o.id) as order_count
@@ -60,11 +60,11 @@ $stmt->execute([$date_from, $date_to]);
 $category_sales = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Get daily sales for chart
-$stmt = $pdo->prepare("SELECT 
+$stmt = $pdo->prepare("SELECT
     DATE(created_at) as date,
     COUNT(*) as orders,
     SUM(total_amount) as sales
-    FROM orders 
+    FROM orders
     WHERE DATE(created_at) BETWEEN ? AND ? AND status != 'cancelled'
     GROUP BY DATE(created_at)
     ORDER BY date");
@@ -89,6 +89,8 @@ foreach ($daily_sales as $day) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $pageTitle; ?> - EverythingB2C</title>
+
+    <link rel="icon" href="../sitelogo.png" type="image/png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="assets/css/admin.css" rel="stylesheet">
@@ -275,8 +277,8 @@ foreach ($daily_sales as $day) {
                                                             <td>
                                                                 <div class="d-flex align-items-center">
                                                                     <?php if ($product['main_image']): ?>
-                                                                        <img src="../../<?php echo $product['main_image']; ?>" 
-                                                                             alt="<?php echo cleanProductName($product['name']); ?>" 
+                                                                        <img src="../../<?php echo $product['main_image']; ?>"
+                                                                             alt="<?php echo cleanProductName($product['name']); ?>"
                                                                              style="width:50px;height:50px;object-fit:cover;border-radius:4px;">
                                                                     <?php endif; ?>
                                                                     <div>
@@ -291,7 +293,7 @@ foreach ($daily_sales as $day) {
                                                                 <strong>₹<?php echo number_format($product['total_revenue'], 2); ?></strong>
                                                             </td>
                                                             <td>
-                                                                <a href="../product.php?slug=<?php echo $product['slug']; ?>" 
+                                                                <a href="../product.php?slug=<?php echo $product['slug']; ?>"
                                                                    class="btn btn-sm btn-info" target="_blank">
                                                                     <i class="fas fa-eye"></i> View
                                                                 </a>
@@ -408,12 +410,12 @@ foreach ($daily_sales as $day) {
         function exportReport() {
             const dateFrom = document.querySelector('input[name="date_from"]').value;
             const dateTo = document.querySelector('input[name="date_to"]').value;
-            
+
             // Create CSV data
             let csvContent = "data:text/csv;charset=utf-8,";
             csvContent += "EverythingB2C - Sales Report\n";
             csvContent += "Date Range: " + dateFrom + " to " + dateTo + "\n\n";
-            
+
             // Add statistics
             csvContent += "Sales Statistics\n";
             csvContent += "Total Orders,Total Sales,Average Order Value,Unique Customers\n";
@@ -421,7 +423,7 @@ foreach ($daily_sales as $day) {
             csvContent += document.querySelector('[class*="Total Sales"]').parentElement.parentElement.textContent.replaceAll(/₹|,/g, '') + ",";
             csvContent += document.querySelector('[class*="Average Order"]').parentElement.parentElement.textContent.replaceAll(/₹|,/g, '') + ",";
             csvContent += document.querySelector('[class*="Unique Customers"]').parentElement.parentElement.textContent.match(/\d+/)[0] + "\n\n";
-            
+
             // Add table data from Top Products
             csvContent += "Top Selling Products\n";
             const table = document.querySelector('table');
@@ -436,7 +438,7 @@ foreach ($daily_sales as $day) {
                     }
                 });
             }
-            
+
             // Download CSV
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");

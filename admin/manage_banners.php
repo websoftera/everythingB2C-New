@@ -56,7 +56,7 @@ function uploadBannerImage($fileInputName, &$errorMessage)
 
 // Processing Form Submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
-    
+
     if ($_POST['action'] === 'update_order') {
         if (isset($_POST['display_order']) && is_array($_POST['display_order'])) {
             $stmt = $pdo->prepare("UPDATE banners SET order_index = ? WHERE id = ?");
@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         header("Location: manage_banners.php");
         exit;
     }
-    
+
     if ($_POST['action'] === 'add') {
         $title = sanitizeInput($_POST['title'] ?? '');
         $nextOrderStmt = $pdo->query("SELECT COALESCE(MAX(order_index), 0) + 1 FROM banners");
@@ -139,18 +139,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 // Processing Deletion
 if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
     $id = $_GET['delete'];
-    
+
     // Get image path to delete file
     $stmt = $pdo->prepare("SELECT image_path FROM banners WHERE id = ?");
     $stmt->execute([$id]);
     $banner = $stmt->fetch();
-    
+
     if ($banner) {
         $filePath = "../" . $banner['image_path'];
         if (file_exists($filePath)) {
             unlink($filePath);
         }
-        
+
         $delStmt = $pdo->prepare("DELETE FROM banners WHERE id = ?");
         $delStmt->execute([$id]);
         $_SESSION['success_message'] = "Banner deleted successfully.";
@@ -181,6 +181,8 @@ $pageTitle = 'Manage Banners';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $pageTitle; ?> - EverythingB2C</title>
+
+    <link rel="icon" href="../sitelogo.png" type="image/png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="assets/css/admin.css" rel="stylesheet">
@@ -228,7 +230,7 @@ $pageTitle = 'Manage Banners';
                             </button>
                         </div>
                     </div>
-                    
+
                     <!-- Flash Messages -->
                     <?php if (isset($_SESSION['success_message'])): ?>
                         <div class="alert alert-success alert-dismissible fade show">
@@ -374,12 +376,12 @@ $pageTitle = 'Manage Banners';
                     </div>
                     <div class="modal-body">
                         <input type="hidden" name="action" value="add">
-                        
+
                         <div class="mb-3">
                             <label for="title" class="form-label">Banner Title (Optional)</label>
                             <input type="text" class="form-control" id="title" name="title">
                         </div>
-                        
+
                         <div class="mb-3">
                             <label for="banner_image" class="form-label">Upload Image <span class="text-danger">*</span></label>
                             <input type="file" class="form-control" id="banner_image" name="banner_image" accept="image/*" required>

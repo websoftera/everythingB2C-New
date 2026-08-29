@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             case 'toggle_status':
                 $user_id = intval($_POST['user_id']);
                 $new_status = $_POST['new_status'];
-                
+
                 try {
                     $stmt = $pdo->prepare("UPDATE users SET is_active = ? WHERE id = ?");
                     $stmt->execute([$new_status, $user_id]);
@@ -31,16 +31,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 header('Location: users.php');
                 exit;
                 break;
-                
+
             case 'delete':
                 $user_id = intval($_POST['user_id']);
-                
+
                 try {
                     // Check if user has orders
                     $stmt = $pdo->prepare("SELECT COUNT(*) FROM orders WHERE user_id = ?");
                     $stmt->execute([$user_id]);
                     $order_count = $stmt->fetchColumn();
-                    
+
                     if ($order_count > 0) {
                         $_SESSION['error_message'] = 'Cannot delete user with existing orders.';
                     } else {
@@ -93,14 +93,14 @@ $total_pages = ceil($total_users / $per_page);
 $offset = ($page - 1) * $per_page;
 
 // Get users with order counts
-$sql = "SELECT u.*, 
+$sql = "SELECT u.*,
                COUNT(DISTINCT o.id) as order_count,
                SUM(o.total_amount) as total_spent
-        FROM users u 
-        LEFT JOIN orders o ON u.id = o.user_id 
-        $where_clause 
-        GROUP BY u.id 
-        ORDER BY u.created_at DESC 
+        FROM users u
+        LEFT JOIN orders o ON u.id = o.user_id
+        $where_clause
+        GROUP BY u.id
+        ORDER BY u.created_at DESC
         LIMIT $per_page OFFSET $offset";
 
 $stmt = $pdo->prepare($sql);
@@ -114,6 +114,8 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $pageTitle; ?> - EverythingB2C</title>
+
+    <link rel="icon" href="../sitelogo.png" type="image/png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="assets/css/admin.css" rel="stylesheet">
@@ -152,7 +154,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <div class="col-md-6">
                                     <div class="search-box">
                                         <i class="fas fa-search search-icon"></i>
-                                        <input type="text" class="form-control" name="search" 
+                                        <input type="text" class="form-control" name="search"
                                                placeholder="Search users..." value="<?php echo htmlspecialchars($search); ?>">
                                     </div>
                                 </div>
@@ -228,17 +230,17 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                     <td><?php echo date('M d, Y', strtotime($user['created_at'])); ?></td>
                                                     <td>
                                                         <div class="action-buttons">
-                                                            <button type="button" class="btn btn-info btn-sm" 
+                                                            <button type="button" class="btn btn-info btn-sm"
                                                                     onclick="viewUserDetails(<?php echo $user['id']; ?>)" title="View Details">
                                                                 <i class="fas fa-eye"></i>
                                                             </button>
-                                                            <button type="button" class="btn btn-warning btn-sm" 
-                                                                    onclick="toggleUserStatus(<?php echo $user['id']; ?>, <?php echo $user['is_active'] ? 0 : 1; ?>)" 
+                                                            <button type="button" class="btn btn-warning btn-sm"
+                                                                    onclick="toggleUserStatus(<?php echo $user['id']; ?>, <?php echo $user['is_active'] ? 0 : 1; ?>)"
                                                                     title="<?php echo $user['is_active'] ? 'Deactivate' : 'Activate'; ?>">
                                                                 <i class="fas fa-<?php echo $user['is_active'] ? 'ban' : 'check'; ?>"></i>
                                                             </button>
                                                             <?php if ($user['order_count'] == 0): ?>
-                                                                <button type="button" class="btn btn-danger btn-sm" 
+                                                                <button type="button" class="btn btn-danger btn-sm"
                                                                         onclick="deleteUser(<?php echo $user['id']; ?>, '<?php echo htmlspecialchars($user['name']); ?>')" title="Delete">
                                                                     <i class="fas fa-trash"></i>
                                                                 </button>
@@ -330,4 +332,4 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
     </script>
 </body>
-</html> 
+</html>

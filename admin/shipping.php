@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             case 'add_zone':
                 $name = trim($_POST['name']);
                 $description = trim($_POST['description']);
-                
+
                 if (empty($name)) {
                     $error_message = 'Zone name is required.';
                 } else {
@@ -34,12 +34,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }
                 break;
-                
+
             case 'add_location':
                 $zone_id = intval($_POST['zone_id']);
                 $location_type = $_POST['location_type'];
                 $location_value = trim($_POST['location_value']);
-                
+
                 if (empty($location_value)) {
                     $error_message = 'Location value is required.';
                 } else {
@@ -52,14 +52,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }
                 break;
-                
+
             case 'add_charge':
                 $zone_id = intval($_POST['zone_id']);
                 $charge_type = $_POST['charge_type'];
                 $charge_value = floatval($_POST['charge_value']);
                 $min_order_amount = floatval($_POST['min_order_amount']);
                 $max_order_amount = !empty($_POST['max_order_amount']) ? floatval($_POST['max_order_amount']) : null;
-                
+
                 if ($charge_value < 0) {
                     $error_message = 'Charge value cannot be negative.';
                 } else {
@@ -72,24 +72,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }
                 break;
-                
+
             case 'delete_zone':
                 $zone_id = intval($_POST['zone_id']);
                 try {
                     $pdo->beginTransaction();
-                    
+
                     // Delete shipping charges
                     $stmt = $pdo->prepare("DELETE FROM shipping_charges WHERE zone_id = ?");
                     $stmt->execute([$zone_id]);
-                    
+
                     // Delete zone locations
                     $stmt = $pdo->prepare("DELETE FROM shipping_zone_locations WHERE zone_id = ?");
                     $stmt->execute([$zone_id]);
-                    
+
                     // Delete zone
                     $stmt = $pdo->prepare("DELETE FROM shipping_zones WHERE id = ?");
                     $stmt->execute([$zone_id]);
-                    
+
                     $pdo->commit();
                     header('Location: shipping.php?success=delete_zone'); exit;
                 } catch (Exception $e) {
@@ -170,6 +170,8 @@ if (isset($_GET['success'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $pageTitle; ?> - EverythingB2C</title>
+
+    <link rel="icon" href="../sitelogo.png" type="image/png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="assets/css/admin.css" rel="stylesheet">
@@ -234,10 +236,10 @@ if (isset($_GET['success'])) {
                                     </div>
                                     <div class="card-body">
                                         <p class="text-muted"><?php echo htmlspecialchars($zone['description']); ?></p>
-                                        
+
                                         <!-- Zone Locations -->
                                         <h6>Locations:</h6>
-                                        <?php 
+                                        <?php
                                         $locations = getShippingZoneLocations($zone['id']);
                                         if (empty($locations)): ?>
                                             <p class="text-muted small">No locations added</p>
@@ -250,10 +252,10 @@ if (isset($_GET['success'])) {
                                                 <?php endforeach; ?>
                                             </div>
                                         <?php endif; ?>
-                                        
+
                                         <!-- Zone Charges -->
                                         <h6>Charges:</h6>
-                                        <?php 
+                                        <?php
                                         $charges = getShippingCharges($zone['id']);
                                         if (empty($charges)): ?>
                                             <p class="text-muted small">No charges configured</p>
@@ -323,12 +325,12 @@ if (isset($_GET['success'])) {
                 <form method="POST">
                     <div class="modal-body">
                         <input type="hidden" name="action" value="add_zone">
-                        
+
                         <div class="mb-3">
                             <label for="name" class="form-label">Zone Name *</label>
                             <input type="text" class="form-control" id="name" name="name" required>
                         </div>
-                        
+
                         <div class="mb-3">
                             <label for="description" class="form-label">Description</label>
                             <textarea class="form-control" id="description" name="description" rows="3"></textarea>
@@ -355,7 +357,7 @@ if (isset($_GET['success'])) {
                     <div class="modal-body">
                         <input type="hidden" name="action" value="add_location">
                         <input type="hidden" name="zone_id" id="location_zone_id">
-                        
+
                         <div class="mb-3">
                             <label for="location_type" class="form-label">Location Type *</label>
                             <select class="form-control" id="location_type" name="location_type" required>
@@ -366,7 +368,7 @@ if (isset($_GET['success'])) {
                                 <option value="pincode">Pincode</option>
                             </select>
                         </div>
-                        
+
                         <div class="mb-3">
                             <label for="location_value" class="form-label">Location Value *</label>
                             <input type="text" class="form-control" id="location_value" name="location_value" required>
@@ -394,7 +396,7 @@ if (isset($_GET['success'])) {
                     <div class="modal-body">
                         <input type="hidden" name="action" value="add_charge">
                         <input type="hidden" name="zone_id" id="charge_zone_id">
-                        
+
                         <div class="mb-3">
                             <label for="charge_type" class="form-label">Charge Type *</label>
                             <select class="form-control" id="charge_type" name="charge_type" required>
@@ -403,13 +405,13 @@ if (isset($_GET['success'])) {
                                 <option value="percentage">Percentage of Order</option>
                             </select>
                         </div>
-                        
+
                         <div class="mb-3">
                             <label for="charge_value" class="form-label">Charge Value *</label>
                             <input type="number" class="form-control" id="charge_value" name="charge_value" step="0.01" min="0" required>
                             <div class="form-text">Enter amount in ₹ for fixed, or percentage (e.g., 5 for 5%)</div>
                         </div>
-                        
+
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
@@ -551,4 +553,4 @@ if (isset($_GET['success'])) {
         }
     </script>
 </body>
-</html> 
+</html>

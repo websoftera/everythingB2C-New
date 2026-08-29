@@ -27,15 +27,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_seller'])) {
         'bank_name' => trim($_POST['bank_name'] ?? ''),
         'commission_percentage' => floatval($_POST['commission_percentage'] ?? 10)
     ];
-    
+
     $result = createSeller($userId, $businessName, $businessData);
-    
+
     if ($result['success']) {
         $_SESSION['success_message'] = 'Seller created successfully!';
     } else {
         $_SESSION['error_message'] = 'Error creating seller: ' . $result['message'];
     }
-    
+
     header('Location: manage_sellers.php');
     exit;
 }
@@ -44,13 +44,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_seller'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
     $sellerId = intval($_POST['seller_id']);
     $isActive = intval($_POST['is_active']);
-    
+
     if (updateSellerStatus($sellerId, $isActive)) {
         $_SESSION['success_message'] = 'Seller status updated successfully!';
     } else {
         $_SESSION['error_message'] = 'Error updating seller status.';
     }
-    
+
     header('Location: manage_sellers.php');
     exit;
 }
@@ -61,7 +61,7 @@ $pageTitle = 'Manage Sellers';
 $sellers = getAllSellers();
 
 // Get all users who are not sellers (for creating new sellers)
-$stmt = $pdo->prepare("SELECT id, name, email FROM users 
+$stmt = $pdo->prepare("SELECT id, name, email FROM users
                        WHERE user_role = 'customer' ORDER BY name ASC");
 $stmt->execute();
 $availableUsers = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -73,6 +73,8 @@ $availableUsers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $pageTitle; ?> - EverythingB2C</title>
+
+    <link rel="icon" href="../sitelogo.png" type="image/png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
@@ -100,8 +102,8 @@ $availableUsers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <?php if (isset($_SESSION['success_message'])): ?>
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <?php 
-            echo htmlspecialchars($_SESSION['success_message']); 
+            <?php
+            echo htmlspecialchars($_SESSION['success_message']);
             unset($_SESSION['success_message']);
             ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -110,8 +112,8 @@ $availableUsers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <?php if (isset($_SESSION['error_message'])): ?>
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <?php 
-            echo htmlspecialchars($_SESSION['error_message']); 
+            <?php
+            echo htmlspecialchars($_SESSION['error_message']);
             unset($_SESSION['error_message']);
             ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -168,24 +170,24 @@ $availableUsers = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </td>
                             <td>
                                 <div class="btn-group btn-group-sm">
-                                    <a href="seller_details.php?id=<?php echo $seller['id']; ?>" 
+                                    <a href="seller_details.php?id=<?php echo $seller['id']; ?>"
                                        class="btn btn-info" title="View Details">
                                         <i class="fas fa-eye"></i>
                                     </a>
-                                    <a href="seller_products.php?seller_id=<?php echo $seller['id']; ?>" 
+                                    <a href="seller_products.php?seller_id=<?php echo $seller['id']; ?>"
                                        class="btn btn-primary" title="View Products">
                                         <i class="fas fa-box"></i>
                                     </a>
-                                    <a href="seller_orders.php?seller_id=<?php echo $seller['id']; ?>" 
+                                    <a href="seller_orders.php?seller_id=<?php echo $seller['id']; ?>"
                                        class="btn btn-success" title="View Orders">
                                         <i class="fas fa-shopping-cart"></i>
                                     </a>
-                                    <button type="button" class="btn btn-warning" 
+                                    <button type="button" class="btn btn-warning"
                                             onclick="editSeller(<?php echo $seller['id']; ?>)" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </button>
-                                    <button type="button" class="btn <?php echo $seller['is_active'] ? 'btn-danger' : 'btn-success'; ?>" 
-                                            onclick="toggleSellerStatus(<?php echo $seller['id']; ?>, <?php echo $seller['is_active'] ? 0 : 1; ?>)" 
+                                    <button type="button" class="btn <?php echo $seller['is_active'] ? 'btn-danger' : 'btn-success'; ?>"
+                                            onclick="toggleSellerStatus(<?php echo $seller['id']; ?>, <?php echo $seller['is_active'] ? 0 : 1; ?>)"
                                             title="<?php echo $seller['is_active'] ? 'Deactivate' : 'Activate'; ?>">
                                         <i class="fas fa-<?php echo $seller['is_active'] ? 'ban' : 'check'; ?>"></i>
                                     </button>
@@ -227,7 +229,7 @@ $availableUsers = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <input type="text" name="business_name" class="form-control" required>
                         </div>
                     </div>
-                    
+
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Business Type</label>
@@ -244,7 +246,7 @@ $availableUsers = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <input type="text" name="gst_number" class="form-control" placeholder="27XXXXXXXXXXXXX">
                         </div>
                     </div>
-                    
+
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">PAN Number</label>
@@ -255,12 +257,12 @@ $availableUsers = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <input type="number" name="commission_percentage" class="form-control" value="10" step="0.01" min="0" max="100">
                         </div>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label class="form-label">Business Address</label>
                         <textarea name="business_address" class="form-control" rows="2"></textarea>
                     </div>
-                    
+
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Business Email</label>
@@ -271,9 +273,9 @@ $availableUsers = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <input type="text" name="business_phone" class="form-control">
                         </div>
                     </div>
-                    
+
                     <h6 class="mt-3 mb-3">Bank Details</h6>
-                    
+
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Account Holder Name</label>
@@ -284,7 +286,7 @@ $availableUsers = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <input type="text" name="bank_account_number" class="form-control">
                         </div>
                     </div>
-                    
+
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">IFSC Code</label>

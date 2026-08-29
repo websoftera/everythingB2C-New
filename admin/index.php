@@ -43,7 +43,7 @@ $stats['total_orders'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
 // Recent orders
 $stmt = $pdo->query("SELECT o.*, os.name as status_name, os.color as status_color, u.name as user_name FROM orders o
                      LEFT JOIN order_statuses os ON o.order_status_id = os.id
-                     LEFT JOIN users u ON o.user_id = u.id 
+                     LEFT JOIN users u ON o.user_id = u.id
                      ORDER BY o.created_at DESC LIMIT 5");
 $recent_orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -60,6 +60,8 @@ $pageTitle = 'Admin Dashboard';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $pageTitle; ?> - EverythingB2C</title>
+
+    <link rel="icon" href="../sitelogo.png" type="image/png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="assets/css/admin.css" rel="stylesheet">
@@ -261,4 +263,4 @@ function getStatusColor($status) {
         default: return 'secondary';
     }
 }
-?> 
+?>

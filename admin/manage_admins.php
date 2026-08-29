@@ -14,13 +14,13 @@ $error = '';
 // Handle actions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
-    
+
     if ($action === 'add_admin') {
         $name = trim($_POST['admin_name'] ?? '');
         $email = trim($_POST['admin_email'] ?? '');
         $password = trim($_POST['admin_password'] ?? '');
         $roleId = intval($_POST['admin_role'] ?? 0);
-        
+
         if (empty($name) || empty($email) || empty($password) || $roleId === 0) {
             $error = 'All fields are required';
         } elseif (strlen($password) < 6) {
@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $email = trim($_POST['admin_email'] ?? '');
         $password = trim($_POST['admin_password'] ?? '');
         $roleId = intval($_POST['admin_role'] ?? 0);
-        
+
         if (empty($name) || empty($email) || $roleId === 0) {
             $error = 'Name, email, and role are required';
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -93,6 +93,8 @@ if (isset($_GET['edit'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $pageTitle; ?> - EverythingB2C Admin</title>
+
+    <link rel="icon" href="../sitelogo.png" type="image/png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="assets/css/admin.css" rel="stylesheet">
@@ -151,21 +153,21 @@ if (isset($_GET['edit'])) {
                     <div class="row">
                         <div class="col-md-12">
                 <h2 class="mb-4"><i class="fas fa-users-cog"></i> Manage Admin Users</h2>
-                
+
                 <?php if ($message): ?>
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         <i class="fas fa-check-circle"></i> <?php echo htmlspecialchars($message); ?>
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 <?php endif; ?>
-                
+
                 <?php if ($error): ?>
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <i class="fas fa-exclamation-circle"></i> <?php echo htmlspecialchars($error); ?>
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 <?php endif; ?>
-                
+
                 <div class="row">
                     <div class="col-md-8">
                         <div class="form-section">
@@ -210,7 +212,7 @@ if (isset($_GET['edit'])) {
                             <?php endforeach; ?>
                         </div>
                     </div>
-                    
+
                     <div class="col-md-4">
                         <div id="edit-form">
                             <?php if ($selectedAdmin): ?>
@@ -220,35 +222,35 @@ if (isset($_GET['edit'])) {
                                         <form method="POST">
                                             <input type="hidden" name="action" value="update_admin">
                                             <input type="hidden" name="admin_id" value="<?php echo $selectedAdmin['id']; ?>">
-                                            
+
                                             <div class="mb-3">
                                                 <label for="admin_name" class="form-label">Name*</label>
                                                 <input type="text" class="form-control" id="admin_name" name="admin_name" value="<?php echo htmlspecialchars($selectedAdmin['name']); ?>" required>
                                             </div>
-                                            
+
                                             <div class="mb-3">
                                                 <label for="admin_email" class="form-label">Email *</label>
                                                 <input type="email" class="form-control" id="admin_email" name="admin_email" value="<?php echo htmlspecialchars($selectedAdmin['email']); ?>" required>
                                             </div>
-                                            
+
                                             <div class="mb-3">
                                                 <label for="admin_password" class="form-label">Password (leave empty to keep current)</label>
                                                 <input type="password" class="form-control" id="admin_password" name="admin_password">
                                             </div>
-                                            
+
                                             <div class="mb-3">
                                                 <label for="admin_role" class="form-label">Role *</label>
                                                 <select class="form-control" id="admin_role" name="admin_role" required>
                                                     <option value="">Select Role</option>
                                                     <?php foreach ($roles as $role): ?>
-                                                        <option value="<?php echo $role['id']; ?>" 
+                                                        <option value="<?php echo $role['id']; ?>"
                                                             <?php echo $selectedAdmin['role_id'] == $role['id'] ? 'selected' : ''; ?>>
                                                             <?php echo htmlspecialchars($role['name']); ?>
                                                         </option>
                                                     <?php endforeach; ?>
                                                 </select>
                                             </div>
-                                            
+
                                             <button type="submit" class="btn btn-primary w-100">
                                                 <i class="fas fa-save"></i> Update Admin
                                             </button>
@@ -264,23 +266,23 @@ if (isset($_GET['edit'])) {
                                     <div class="card-body">
                                         <form method="POST">
                                             <input type="hidden" name="action" value="add_admin">
-                                            
+
                                             <div class="mb-3">
                                                 <label for="admin_name" class="form-label">Name *</label>
                                                 <input type="text" class="form-control" id="admin_name" name="admin_name" required>
                                             </div>
-                                            
+
                                             <div class="mb-3">
                                                 <label for="admin_email" class="form-label">Email *</label>
                                                 <input type="email" class="form-control" id="admin_email" name="admin_email" required>
                                             </div>
-                                            
+
                                             <div class="mb-3">
                                                 <label for="admin_password" class="form-label">Password *</label>
                                                 <input type="password" class="form-control" id="admin_password" name="admin_password" required>
                                                 <small class="text-muted">Min 6 characters</small>
                                             </div>
-                                            
+
                                             <div class="mb-3">
                                                 <label for="admin_role" class="form-label">Role *</label>
                                                 <select class="form-control" id="admin_role" name="admin_role" required>
@@ -292,7 +294,7 @@ if (isset($_GET['edit'])) {
                                                     <?php endforeach; ?>
                                                 </select>
                                             </div>
-                                            
+
                                             <button type="submit" class="btn btn-success w-100">
                                                 <i class="fas fa-plus"></i> Add Admin User
                                             </button>
@@ -306,7 +308,7 @@ if (isset($_GET['edit'])) {
             </div>
         </div>
     </div>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
