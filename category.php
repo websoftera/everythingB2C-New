@@ -7,6 +7,7 @@ header("Pragma: no-cache");
 require_once 'config/database.php';
 require_once 'includes/functions.php';
 ensureProductPackageQuantitySchema($pdo);
+ensureProductCategoryAssignmentsSchema($pdo);
 
 // Get category from slug
 $slug = isset($_GET['slug']) ? $_GET['slug'] : '';
@@ -80,8 +81,8 @@ if ($selectedCategory !== null && $selectedCategory !== '') {
   }
   $categoryIds = array_unique($allCategoryIds);
   $placeholders = str_repeat('?,', count($categoryIds) - 1) . '?';
-  $whereConditions[] = "p.category_id IN ($placeholders)";
-  $params = array_merge($params, $categoryIds);
+  $whereConditions[] = "(p.category_id IN ($placeholders) OR EXISTS (SELECT 1 FROM product_category_assignments pca WHERE pca.product_id = p.id AND pca.category_id IN ($placeholders)))";
+  $params = array_merge($params, $categoryIds, $categoryIds);
 }
 elseif ($selectedCategory === '') {
 // "All Categories" selected - show all products (no category filter)
@@ -91,8 +92,8 @@ else {
   // Default to current page category and its descendants
   $categoryIds = getAllDescendantCategoryIdsRecursive($pdo, $category['id']);
   $placeholders = str_repeat('?,', count($categoryIds) - 1) . '?';
-  $whereConditions[] = "p.category_id IN ($placeholders)";
-  $params = array_merge($params, $categoryIds);
+  $whereConditions[] = "(p.category_id IN ($placeholders) OR EXISTS (SELECT 1 FROM product_category_assignments pca WHERE pca.product_id = p.id AND pca.category_id IN ($placeholders)))";
+  $params = array_merge($params, $categoryIds, $categoryIds);
 }
 
 // Price filter
