@@ -2759,7 +2759,7 @@ endforeach; ?>
   transform: translateX(-50%) !important;
   display: flex !important;
   gap: 8px !important;
-  z-index: 1 !important;
+  z-index: 3 !important;
 }
 
 .custom-carousel .carousel-indicators .indicator {
