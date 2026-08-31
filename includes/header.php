@@ -764,8 +764,9 @@ function renderCategoryMenu($tree, $level = 0) {
         echo '<li class="' . $liClass . '">';
         
         if ($hasChildren) {
+            $megaColumnCount = min(3, max(1, count($cat['children'])));
             echo '<a class="nav-link navigationtext dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">' . htmlspecialchars($cat['name']) . '</a>';
-            echo '<ul class="dropdown-menu category-mega-menu">';
+            echo '<ul class="dropdown-menu category-mega-menu" style="--mega-columns: ' . $megaColumnCount . '">';
             echo '<li class="category-mega-heading">';
             echo '<span class="category-mega-eyebrow">Browse categories</span>';
             echo '<a class="category-mega-view-all" href="' . $base_url . 'category.php?slug=' . rawurlencode($cat['slug']) . '">View all ' . htmlspecialchars($cat['name']) . ' <span aria-hidden="true">&rarr;</span></a>';
