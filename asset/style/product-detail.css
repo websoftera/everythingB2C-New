@@ -224,6 +224,7 @@
 /* Wishlist Button */
 .wishlist {
     position: relative;
+    z-index: 1;
     width: 36px;
     height: 36px;
     display: flex;
@@ -232,6 +233,8 @@
 }
 
 .wishlist-label {
+    position: relative;
+    z-index: 1;
     font-size: 24px;
     color: #fff;
     cursor: pointer;
@@ -241,6 +244,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+/* Keep the product-detail heart below header dropdowns and mega menus. */
+.product-page-container .price-buttons1 .wishlist .header-wishlist-icon {
+    position: relative;
+    z-index: 1;
 }
 
 .heart-checkbox {

@@ -956,7 +956,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         function formatUnitLine(value) {
-            return '(' + formatPriceValue(value) + ' / <?php echo addslashes(getProductUnitLabel($product)); ?>)';
+            const unitPrice = Number(value || 0).toLocaleString('en-IN', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2
+            });
+            return '(₹ ' + unitPrice + ' / <?php echo addslashes(getProductUnitLabel($product)); ?>)';
         }
 
         function getVariationUnitPrice(variation) {
