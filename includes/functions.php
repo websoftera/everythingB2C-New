@@ -981,7 +981,8 @@ function getProductUnitPrice(array $product) {
 }
 
 function formatProductUnitLine(array $product, $withParentheses = false) {
-    $line = '&#8377; ' . number_format(getProductUnitPrice($product), 0, '.', '') . ' / ' . htmlspecialchars(getProductUnitLabel($product), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $unitPrice = rtrim(rtrim(number_format(getProductUnitPrice($product), 2, '.', ''), '0'), '.');
+    $line = '&#8377; ' . $unitPrice . ' / ' . htmlspecialchars(getProductUnitLabel($product), ENT_QUOTES | ENT_HTML5, 'UTF-8');
     return $withParentheses ? '(' . $line . ')' : $line;
 }
 
