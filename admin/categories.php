@@ -2,6 +2,7 @@
 session_start();
 require_once '../config/database.php';
 require_once '../includes/functions.php';
+ensureCategoryParentAssignmentsSchema($pdo);
 
 // Check if admin is logged in
 if (!isset($_SESSION['admin_id'])) {
@@ -22,6 +23,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $slug = createSlug($name);
                 $description = trim($_POST['description']);
                 $parent_id = isset($_POST['parent_id']) && $_POST['parent_id'] !== '' ? intval($_POST['parent_id']) : null;
+                $additional_parent_ids = isset($_POST['parent_ids']) && is_array($_POST['parent_ids'])
+                    ? array_map('intval', $_POST['parent_ids'])
+                    : [];
                 if (empty($name)) {
                     $_SESSION['error_message'] = 'Category name is required.';
                 } else {
@@ -32,6 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $stmt = $pdo->prepare("INSERT INTO categories (name, slug, description, parent_id) VALUES (?, ?, ?, ?)");
                         $stmt->execute([$name, $slug, $description, $parent_id]);
                         $category_id = $pdo->lastInsertId();
+                        saveCategoryParentAssignments($pdo, $category_id, $parent_id, $additional_parent_ids);
 
                         // Handle image upload
                         if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
@@ -45,7 +50,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $pdo->commit();
                         $_SESSION['success_message'] = 'Category added successfully!';
                     } catch (Exception $e) {
-                        $pdo->rollBack();
+                        if ($pdo->inTransaction()) {
+                            $pdo->rollBack();
+                        }
                         $_SESSION['error_message'] = 'Error adding category: ' . $e->getMessage();
                     }
                 }
@@ -59,6 +66,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $slug = createSlug($name);
                 $description = trim($_POST['description']);
                 $parent_id = isset($_POST['parent_id']) && $_POST['parent_id'] !== '' ? intval($_POST['parent_id']) : null;
+                $additional_parent_ids = isset($_POST['parent_ids']) && is_array($_POST['parent_ids'])
+                    ? array_map('intval', $_POST['parent_ids'])
+                    : [];
 
                 if (empty($name)) {
                     $_SESSION['error_message'] = 'Category name is required.';
@@ -69,6 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         // Update category
                         $stmt = $pdo->prepare("UPDATE categories SET name = ?, slug = ?, description = ?, parent_id = ? WHERE id = ?");
                         $stmt->execute([$name, $slug, $description, $parent_id, $id]);
+                        saveCategoryParentAssignments($pdo, $id, $parent_id, $additional_parent_ids);
 
                         // Handle image upload
                         if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
@@ -82,7 +93,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $pdo->commit();
                         $_SESSION['success_message'] = 'Category updated successfully!';
                     } catch (Exception $e) {
-                        $pdo->rollBack();
+                        if ($pdo->inTransaction()) {
+                            $pdo->rollBack();
+                        }
                         $_SESSION['error_message'] = 'Error updating category: ' . $e->getMessage();
                     }
                 }
@@ -101,6 +114,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if ($product_count > 0) {
                         $_SESSION['error_message'] = 'Cannot delete category with existing products.';
                     } else {
+                        $stmt = $pdo->prepare("DELETE FROM category_parent_assignments WHERE category_id = ? OR parent_id = ?");
+                        $stmt->execute([$id, $id]);
                         $stmt = $pdo->prepare("DELETE FROM categories WHERE id = ?");
                         $stmt->execute([$id]);
                         $_SESSION['success_message'] = 'Category deleted successfully!';
@@ -122,9 +137,17 @@ $stmt = $pdo->query("SELECT c.*, COUNT(p.id) as product_count
                      GROUP BY c.id
                      ORDER BY c.name");
 $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$categoryParentMap = getCategoryParentAssignmentMap($pdo);
+foreach ($categories as &$categoryRow) {
+    $categoryRow['parent_ids'] = $categoryParentMap[(int)$categoryRow['id']] ?? [];
+}
+unset($categoryRow);
 
 // Fetch all categories for parent selection (excluding the category being edited)
 $allCategories = $pdo->query("SELECT id, name, parent_id FROM categories ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
+$mainParentCategories = array_values(array_filter($allCategories, function ($category) {
+    return empty($category['parent_id']);
+}));
 
 // Helper functions
 function createSlug($string) {
@@ -171,6 +194,75 @@ $categoryTree = buildCategoryTree($categories);
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="assets/css/admin.css" rel="stylesheet">
     <link rel="stylesheet" href="./asset/style/style.css">
+    <style>
+        .category-form-modal {
+            max-width: 500px;
+        }
+        .category-form-modal .modal-content {
+            max-height: calc(100vh - 2rem);
+            overflow: hidden;
+            border: 0;
+            border-radius: 10px;
+            box-shadow: 0 14px 38px rgba(15, 23, 42, .2);
+        }
+        .category-form-modal form {
+            display: flex;
+            min-height: 0;
+            flex: 1 1 auto;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .category-form-modal .modal-header {
+            flex: 0 0 auto;
+            padding: .8rem 1rem;
+            background: #fff;
+        }
+        .category-form-modal .modal-body {
+            min-height: 0;
+            overflow-y: auto;
+            padding: .8rem 1rem;
+            scrollbar-width: thin;
+            scrollbar-color: #aeb8c7 transparent;
+        }
+        .category-form-modal .modal-body::-webkit-scrollbar {
+            width: 6px;
+        }
+        .category-form-modal .modal-body::-webkit-scrollbar-thumb {
+            background: #aeb8c7;
+            border-radius: 10px;
+        }
+        .category-form-modal .modal-body .mb-3 {
+            margin-bottom: .65rem !important;
+        }
+        .category-form-modal .form-label {
+            margin-bottom: .25rem;
+            font-weight: 500;
+        }
+        .category-form-modal .form-text {
+            margin-top: .2rem;
+            font-size: .76rem;
+            line-height: 1.25;
+        }
+        .category-form-modal .additional-parent-list {
+            max-height: 100px;
+            overflow-y: auto;
+            background: #f8fafc;
+        }
+        .category-form-modal .modal-footer {
+            flex: 0 0 auto;
+            padding: .65rem 1rem;
+            background: #fff;
+            box-shadow: 0 -5px 16px rgba(15, 23, 42, .05);
+        }
+        @media (max-width: 575.98px) {
+            .category-form-modal {
+                margin: .5rem;
+            }
+            .category-form-modal .modal-content {
+                max-height: calc(100vh - 1rem);
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="everythingb2c-admin-container">
@@ -285,7 +377,7 @@ $categoryTree = buildCategoryTree($categories);
 
     <!-- Add Category Modal -->
     <div class="modal fade" id="addCategoryModal" tabindex="-1">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered category-form-modal">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Add New Category</h5>
@@ -301,7 +393,7 @@ $categoryTree = buildCategoryTree($categories);
                         </div>
 
                         <div class="mb-3">
-                            <label for="parent_id" class="form-label">Parent Category</label>
+                            <label for="parent_id" class="form-label">Primary Parent Category</label>
                             <select class="form-control" id="parent_id" name="parent_id">
                                 <option value="">None (Main Category)</option>
                                 <?php
@@ -322,11 +414,25 @@ $categoryTree = buildCategoryTree($categories);
                                 displayCategoryOptions($categoryTree);
                                 ?>
                             </select>
+                            <div class="form-text">Used for the primary breadcrumb and existing category structure.</div>
+                        </div>
+
+                        <div class="mb-3" id="additional_parent_categories_add">
+                            <label class="form-label">Show Under Additional Main Categories</label>
+                            <div class="border rounded p-2 additional-parent-list">
+                                <?php foreach ($mainParentCategories as $mainCategory): ?>
+                                    <label class="d-flex align-items-center gap-2 py-1 mb-0">
+                                        <input class="form-check-input mt-0 additional-parent-checkbox" type="checkbox" name="parent_ids[]" value="<?php echo (int)$mainCategory['id']; ?>">
+                                        <span><?php echo htmlspecialchars($mainCategory['name']); ?></span>
+                                    </label>
+                                <?php endforeach; ?>
+                            </div>
+                            <div class="form-text">Optional. The same category and products will appear under every checked main category.</div>
                         </div>
 
                         <div class="mb-3">
                             <label for="description" class="form-label">Description</label>
-                            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                            <textarea class="form-control" id="description" name="description" rows="2"></textarea>
                         </div>
 
                         <div class="mb-3">
@@ -335,10 +441,10 @@ $categoryTree = buildCategoryTree($categories);
                             <div class="form-text">Upload an image for this category (optional)</div>
                         </div>
                     </div>
-                                                <div class="modal-footer">
-                                <button type="button" class="everythingb2c-btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                <button type="submit" class="everythingb2c-btn-primary">Add Category</button>
-                            </div>
+                    <div class="modal-footer">
+                        <button type="button" class="everythingb2c-btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="everythingb2c-btn-primary">Add Category</button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -346,7 +452,7 @@ $categoryTree = buildCategoryTree($categories);
 
     <!-- Edit Category Modal -->
     <div class="modal fade" id="editCategoryModal" tabindex="-1">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered category-form-modal">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Edit Category</h5>
@@ -363,7 +469,7 @@ $categoryTree = buildCategoryTree($categories);
                         </div>
 
                         <div class="mb-3">
-                            <label for="edit_parent_id" class="form-label">Parent Category</label>
+                            <label for="edit_parent_id" class="form-label">Primary Parent Category</label>
                             <select class="form-control" id="edit_parent_id" name="parent_id">
                                 <option value="">None (Main Category)</option>
                                 <?php
@@ -387,11 +493,25 @@ $categoryTree = buildCategoryTree($categories);
                                 displayCategoryOptionsForEdit($categoryTree);
                                 ?>
                             </select>
+                            <div class="form-text">Used for the primary breadcrumb and existing category structure.</div>
+                        </div>
+
+                        <div class="mb-3" id="additional_parent_categories_edit">
+                            <label class="form-label">Show Under Additional Main Categories</label>
+                            <div class="border rounded p-2 additional-parent-list">
+                                <?php foreach ($mainParentCategories as $mainCategory): ?>
+                                    <label class="d-flex align-items-center gap-2 py-1 mb-0">
+                                        <input class="form-check-input mt-0 edit-additional-parent-checkbox" type="checkbox" name="parent_ids[]" value="<?php echo (int)$mainCategory['id']; ?>">
+                                        <span><?php echo htmlspecialchars($mainCategory['name']); ?></span>
+                                    </label>
+                                <?php endforeach; ?>
+                            </div>
+                            <div class="form-text">Optional. Select other main menus where this same category should appear.</div>
                         </div>
 
                         <div class="mb-3">
                             <label for="edit_description" class="form-label">Description</label>
-                            <textarea class="form-control" id="edit_description" name="description" rows="3"></textarea>
+                            <textarea class="form-control" id="edit_description" name="description" rows="2"></textarea>
                         </div>
 
                         <div class="mb-3">
@@ -401,10 +521,10 @@ $categoryTree = buildCategoryTree($categories);
                             <div id="current_image_preview" class="mt-2"></div>
                         </div>
                     </div>
-                                                <div class="modal-footer">
-                                <button type="button" class="everythingb2c-btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                <button type="submit" class="everythingb2c-btn-primary">Update Category</button>
-                            </div>
+                    <div class="modal-footer">
+                        <button type="button" class="everythingb2c-btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="everythingb2c-btn-primary">Update Category</button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -424,7 +544,6 @@ $categoryTree = buildCategoryTree($categories);
             document.getElementById('edit_id').value = category.id;
             document.getElementById('edit_name').value = category.name;
             document.getElementById('edit_description').value = category.description || '';
-            document.getElementById('edit_parent_id').value = category.parent_id || '';
 
             // Update the edit dropdown to exclude the current category
             const editParentSelect = document.getElementById('edit_parent_id');
@@ -434,6 +553,12 @@ $categoryTree = buildCategoryTree($categories);
             const categories = <?php echo json_encode($allCategories); ?>;
             const categoryTree = buildCategoryTreeForJS(categories);
             displayCategoryOptionsForEditJS(categoryTree, category.id);
+            editParentSelect.value = category.parent_id || '';
+            syncAdditionalParentCheckboxes(
+                editParentSelect,
+                '.edit-additional-parent-checkbox',
+                Array.isArray(category.parent_ids) ? category.parent_ids : []
+            );
 
             // Show current image preview
             const previewDiv = document.getElementById('current_image_preview');
@@ -512,6 +637,39 @@ $categoryTree = buildCategoryTree($categories);
                 }
             });
         }
+
+        function syncAdditionalParentCheckboxes(primarySelect, checkboxSelector, selectedIds = null) {
+            const primaryId = String(primarySelect.value || '');
+            const selectedLookup = selectedIds === null
+                ? null
+                : new Set(selectedIds.map(id => String(id)));
+
+            document.querySelectorAll(checkboxSelector).forEach(checkbox => {
+                if (selectedLookup !== null) {
+                    checkbox.checked = selectedLookup.has(String(checkbox.value)) && String(checkbox.value) !== primaryId;
+                }
+                checkbox.disabled = !primaryId || String(checkbox.value) === primaryId;
+                if (checkbox.disabled) checkbox.checked = false;
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const addPrimarySelect = document.getElementById('parent_id');
+            const editPrimarySelect = document.getElementById('edit_parent_id');
+
+            if (addPrimarySelect) {
+                syncAdditionalParentCheckboxes(addPrimarySelect, '.additional-parent-checkbox', []);
+                addPrimarySelect.addEventListener('change', function () {
+                    syncAdditionalParentCheckboxes(addPrimarySelect, '.additional-parent-checkbox');
+                });
+            }
+
+            if (editPrimarySelect) {
+                editPrimarySelect.addEventListener('change', function () {
+                    syncAdditionalParentCheckboxes(editPrimarySelect, '.edit-additional-parent-checkbox');
+                });
+            }
+        });
     </script>
 </body>
 </html>

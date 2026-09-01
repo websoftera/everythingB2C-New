@@ -18,6 +18,8 @@ ensureProductUnitSchema($pdo);
 ensureProductUnitOptionsSchema($pdo);
 ensureProductPackageQuantitySchema($pdo);
 ensureProductCategoryAssignmentsSchema($pdo);
+ensureCategoryParentAssignmentsSchema($pdo);
+ensureProductCategoryParentVisibilitySchema($pdo);
 $return_to = $_GET['return_to'] ?? $_POST['return_to'] ?? 'products.php';
 if (strpos($return_to, 'products.php') !== 0) {
     $return_to = 'products.php';
@@ -113,10 +115,12 @@ $attributeOptions = getProductAttributeOptions($pdo);
 $productVariations = getProductVariations($pdo, $product_id);
 $selectedProductAttributes = getSelectedAttributesFromVariations($productVariations);
 $selectedProductCategoryIds = array_values(array_diff(getProductAssignedCategoryIds($pdo, $product_id), [(int)$product['category_id']]));
+$selectedProductParentVisibility = getProductCategoryParentVisibility($pdo, $product_id);
 
 // Get all categories for dropdown with hierarchical structure
 $allCategories = getAllCategoriesWithProductCount();
-$categoryTree = buildCategoryTree($allCategories);
+$categoryTree = buildCategoryTreeWithMultipleParents($allCategories);
+$postedCategoryPathSelection = parseProductCategoryPaths($_POST['category_paths'] ?? []);
 
 if (isset($_SESSION['success_message'])) {
     $success_message = $_SESSION['success_message'];
@@ -144,11 +148,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $unit_label = sanitizeProductUnitOption($_POST['unit_label'] ?? 'No.');
     $unit_label = $unit_label !== '' && $unit_label !== '__add_new_unit__' ? $unit_label : 'No.';
 
-    // Keep the existing primary category when checked; otherwise use the first checked category.
-    $selected_category_ids = isset($_POST['category_ids']) && is_array($_POST['category_ids']) ? array_values(array_unique(array_map('intval', $_POST['category_ids']))) : [];
+    // Each checked path identifies both the category and the main menu where it appears.
+    $parsed_category_paths = parseProductCategoryPaths($_POST['category_paths'] ?? []);
+    $selected_category_ids = $parsed_category_paths['category_ids'];
+    if (!$selected_category_ids && isset($_POST['category_ids']) && is_array($_POST['category_ids'])) {
+        $selected_category_ids = array_values(array_unique(array_map('intval', $_POST['category_ids'])));
+    }
     $posted_primary_category_id = intval($_POST['parent_category_id'] ?? 0);
     $category_id = in_array($posted_primary_category_id, $selected_category_ids, true) ? $posted_primary_category_id : intval($selected_category_ids[0] ?? 0);
     $additional_category_ids = array_values(array_diff($selected_category_ids, [$category_id]));
+    $category_parent_visibility = $parsed_category_paths['visibility'];
 
     $stock_quantity = isset($_POST['stock_quantity']) ? (int)round((float)$_POST['stock_quantity']) : 0;
     $package_quantity = isset($_POST['package_quantity']) ? (int)round((float)$_POST['package_quantity']) : 1;
@@ -186,6 +195,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = $pdo->prepare("UPDATE products SET name = ?, slug = ?, description = ?, mrp = ?, selling_price = ?, pay_per_unit = ?, unit_label = ?, discount_percentage = ?, gst_rate = ?, category_id = ?, stock_quantity = ?, package_quantity = ?, max_quantity_per_order = ?, is_active = ?, is_featured = ?, is_discounted = ?, sku = ?, hsn = ? WHERE id = ?");
             $stmt->execute([$name, $slug, $description, $mrp, $selling_price, $pay_per_unit, $unit_label, $discount_percentage, $gst_rate, $category_id, $stock_quantity, $package_quantity, $max_quantity_per_order, $is_active, $is_featured, $is_discounted, $sku, $hsn, $product_id]);
             saveProductCategoryAssignments($pdo, $product_id, $category_id, $additional_category_ids);
+            saveProductCategoryParentVisibility($pdo, $product_id, $selected_category_ids, $category_parent_visibility);
 
             // Handle main image upload
             if (isset($_FILES['main_image']) && $_FILES['main_image']['error'] === UPLOAD_ERR_OK) {
@@ -241,7 +251,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
 
         } catch (Exception $e) {
-            $pdo->rollBack();
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
             $error_message = 'Error updating product: ' . $e->getMessage();
         }
     }
@@ -760,12 +772,24 @@ function uploadImage($file, $folder) {
                                                 <input type="text" class="form-control" id="edit_name" name="name" value="<?php echo htmlspecialchars($product['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8'); ?>" required>
                                             </div>
                                             <div class="col-md-6">
-                                                <label class="form-label">Categories *</label>
+                                                <label class="form-label">Categories *
+                                                    <span class="text-primary ms-1" title="Open a main category, then tick the exact category path where this product should appear." style="cursor:help" aria-label="Category selection help">
+                                                        <i class="fas fa-info-circle" aria-hidden="true"></i>
+                                                    </span>
+                                                </label>
                                                 <input type="hidden" id="parent_category_id" name="parent_category_id" value="<?php echo (int)$product['category_id']; ?>">
                                                 <details class="border rounded bg-white product-category-dropdown">
                                                     <summary class="px-3 py-2 product-category-summary" style="cursor:pointer">Select main categories and subcategories</summary>
                                                     <div class="border-top py-2 product-category-menu">
-                                                        <?php renderProductCategoryCheckboxes($categoryTree, $_POST['category_ids'] ?? array_merge([(int)$product['category_id']], $selectedProductCategoryIds)); ?>
+                                                        <?php
+                                                        $formCategoryIds = $_SERVER['REQUEST_METHOD'] === 'POST'
+                                                            ? $postedCategoryPathSelection['category_ids']
+                                                            : array_merge([(int)$product['category_id']], $selectedProductCategoryIds);
+                                                        $formCategoryVisibility = $_SERVER['REQUEST_METHOD'] === 'POST'
+                                                            ? $postedCategoryPathSelection['visibility']
+                                                            : $selectedProductParentVisibility;
+                                                        renderProductCategoryCheckboxes($categoryTree, $formCategoryIds, 0, $formCategoryVisibility);
+                                                        ?>
                                                     </div>
                                                 </details>
                                                 <div class="text-danger small mt-1 d-none product-category-error">Please select at least one category.</div>
@@ -1483,7 +1507,7 @@ function uploadImage($file, $folder) {
                 const selectedMainCategories = mainCheckboxes.filter(function(checkbox) { return checkbox.checked; });
                 const selectedSubcategories = checkboxes.filter(function(checkbox) { return checkbox.checked && !checkbox.disabled; });
                 const selected = selectedMainCategories.concat(selectedSubcategories);
-                const selectedIds = selected.map(function(checkbox) { return checkbox.value; });
+                const selectedIds = selected.map(function(checkbox) { return checkbox.dataset.categoryId || checkbox.value; });
                 if (!selectedIds.includes(primaryInput.value)) {
                     primaryInput.value = selectedIds[0] || '';
                 }
@@ -1521,7 +1545,7 @@ function uploadImage($file, $folder) {
             });
             groups.forEach(function(group) {
                 if (group.querySelector('.product-category-checkbox:checked')) {
-                    const mainCheckbox = mainCheckboxes.find(function(checkbox) { return checkbox.value === group.dataset.mainCategory; });
+                    const mainCheckbox = mainCheckboxes.find(function(checkbox) { return (checkbox.dataset.categoryId || checkbox.value) === group.dataset.mainCategory; });
                     if (mainCheckbox) mainCheckbox.checked = true;
                 }
             });
