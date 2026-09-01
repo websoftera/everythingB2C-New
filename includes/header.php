@@ -44,7 +44,7 @@ if (isLoggedIn()) {
 }
 
 $categories = getAllCategoriesWithRecursiveProductCount();
-$categoryTree = buildCategoryTree($categories);
+$categoryTree = buildCategoryTreeWithMultipleParents($categories);
 $currentUser = getCurrentUser();
 
 // Get cart count for header
@@ -699,12 +699,14 @@ if (!function_exists('renderCategoryDropdown')) {
 <!-- Mobile Category Offcanvas Menu -->
 <?php
 if (!function_exists('renderMobileOffcanvasAccordion')) {
-    function renderMobileOffcanvasAccordion($tree, $parentId = 'mobileCategoryAccordion', $level = 0) {
+    function renderMobileOffcanvasAccordion($tree, $parentId = 'mobileCategoryAccordion', $level = 0, $rootParentSlug = '') {
         global $base_url;
         foreach ($tree as $index => $cat) {
             $collapseId = 'collapseCat_' . $level . '_' . $index . '_' . substr(md5($cat['slug']), 0, 5);
             $headingId = 'headingCat_' . $level . '_' . $index . '_' . substr(md5($cat['slug']), 0, 5);
             $hasChildren = !empty($cat['children']);
+            $currentRootSlug = $level === 0 ? $cat['slug'] : $rootParentSlug;
+            $parentQuery = $level > 0 && $currentRootSlug !== '' ? '&amp;parent=' . rawurlencode($currentRootSlug) : '';
             
             echo '<div class="accordion-item border-0 border-bottom">';
             if ($hasChildren) {
@@ -716,17 +718,17 @@ if (!function_exists('renderMobileOffcanvasAccordion')) {
                 
                 echo '<div id="' . $collapseId . '" class="accordion-collapse collapse" aria-labelledby="' . $headingId . '" data-bs-parent="#' . $parentId . '">';
                 echo '<div class="accordion-body p-0 bg-light">';
-                echo '<a href="' . $base_url . 'category.php?slug=' . $cat['slug'] . '" class="d-block py-2 px-4 text-dark text-decoration-none border-bottom" style="font-size: 0.9rem; font-weight: 500;">View All ' . htmlspecialchars($cat['name']) . ' &rarr;</a>';
+                echo '<a href="' . $base_url . 'category.php?slug=' . $cat['slug'] . $parentQuery . '" class="d-block py-2 px-4 text-dark text-decoration-none border-bottom" style="font-size: 0.9rem; font-weight: 500;">View All ' . htmlspecialchars($cat['name']) . ' &rarr;</a>';
                 
                 // Render children
                 echo '<div class="accordion accordion-flush" id="childAccordion_' . $collapseId . '">';
-                renderMobileOffcanvasAccordion($cat['children'], 'childAccordion_' . $collapseId, $level + 1);
+                renderMobileOffcanvasAccordion($cat['children'], 'childAccordion_' . $collapseId, $level + 1, $currentRootSlug);
                 echo '</div>';
                 
                 echo '</div>';
                 echo '</div>';
             } else {
-                echo '<a href="' . $base_url . 'category.php?slug=' . $cat['slug'] . '" class="d-block py-3 px-3 text-dark text-decoration-none" style="font-size: 0.95rem; font-weight: 600;">' . htmlspecialchars($cat['name']) . '</a>';
+                echo '<a href="' . $base_url . 'category.php?slug=' . $cat['slug'] . $parentQuery . '" class="d-block py-3 px-3 text-dark text-decoration-none" style="font-size: 0.95rem; font-weight: 600;">' . htmlspecialchars($cat['name']) . '</a>';
             }
             echo '</div>';
         }
@@ -772,7 +774,7 @@ function renderCategoryMenu($tree, $level = 0) {
             echo '<a class="category-mega-view-all" href="' . $base_url . 'category.php?slug=' . rawurlencode($cat['slug']) . '">View all ' . htmlspecialchars($cat['name']) . ' <span aria-hidden="true">&rarr;</span></a>';
             echo '</li>';
             echo '<li><div class="category-mega-grid">';
-            renderMegaSubcategoryGroups($cat['children']);
+            renderMegaSubcategoryGroups($cat['children'], $cat['slug']);
             echo '</div></li>';
             echo '</ul>';
         } else {
@@ -783,7 +785,7 @@ function renderCategoryMenu($tree, $level = 0) {
     }
 }
 
-function renderMegaSubcategoryGroups($subcategories) {
+function renderMegaSubcategoryGroups($subcategories, $parentSlug = '') {
     global $base_url;
     foreach ($subcategories as $subcat) {
         $hasChildren = !empty($subcat['children']);
@@ -793,7 +795,8 @@ function renderMegaSubcategoryGroups($subcategories) {
             $imageUrl = preg_match('#^https?://#i', $imagePath) ? $imagePath : $base_url . ltrim($imagePath, './\\');
         }
         echo '<section class="category-mega-group">';
-        echo '<a class="category-mega-title" href="' . $base_url . 'category.php?slug=' . rawurlencode($subcat['slug']) . '">';
+        $parentQuery = $parentSlug !== '' ? '&amp;parent=' . rawurlencode($parentSlug) : '';
+        echo '<a class="category-mega-title" href="' . $base_url . 'category.php?slug=' . rawurlencode($subcat['slug']) . $parentQuery . '">';
         echo '<span class="category-mega-icon" aria-hidden="true"><span class="category-mega-fallback">&#8250;</span>';
         if ($imageUrl !== '') {
             echo '<img src="' . htmlspecialchars($imageUrl, ENT_QUOTES | ENT_HTML5, 'UTF-8') . '" alt="" loading="lazy" decoding="async" onerror="this.remove()">';
@@ -803,7 +806,7 @@ function renderMegaSubcategoryGroups($subcategories) {
         if ($hasChildren) {
             echo '<div class="category-mega-children">';
             foreach ($subcat['children'] as $child) {
-                echo '<a href="' . $base_url . 'category.php?slug=' . rawurlencode($child['slug']) . '">' . htmlspecialchars($child['name']) . '</a>';
+                echo '<a href="' . $base_url . 'category.php?slug=' . rawurlencode($child['slug']) . $parentQuery . '">' . htmlspecialchars($child['name']) . '</a>';
             }
             echo '</div>';
         }

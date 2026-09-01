@@ -8,22 +8,36 @@ require_once 'config/database.php';
 require_once 'includes/functions.php';
 ensureProductPackageQuantitySchema($pdo);
 ensureProductCategoryAssignmentsSchema($pdo);
+ensureProductCategoryParentVisibilitySchema($pdo);
 
 // Get category from slug
 $slug = isset($_GET['slug']) ? $_GET['slug'] : '';
 $pdo = $GLOBALS['pdo'];
 
 // Function to get all descendant category IDs recursively
-function getAllDescendantCategoryIdsRecursive($pdo, $parentId)
+function getAllDescendantCategoryIdsRecursive($pdo, $parentId, array $path = [])
 {
+  static $schemaReady = false;
+  if (!$schemaReady) {
+    ensureCategoryParentAssignmentsSchema($pdo);
+    $schemaReady = true;
+  }
+  $parentId = (int)$parentId;
+  if (isset($path[$parentId])) {
+    return [];
+  }
+  $path[$parentId] = true;
   $descendants = [$parentId];
 
-  $stmt = $pdo->prepare('SELECT id FROM categories WHERE parent_id = ?');
-  $stmt->execute([$parentId]);
+  $stmt = $pdo->prepare('SELECT DISTINCT c.id
+                         FROM categories c
+                         LEFT JOIN category_parent_assignments cpa ON cpa.category_id = c.id
+                         WHERE c.parent_id = ? OR cpa.parent_id = ?');
+  $stmt->execute([$parentId, $parentId]);
   $children = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
   foreach ($children as $childId) {
-    $descendants = array_merge($descendants, getAllDescendantCategoryIdsRecursive($pdo, $childId));
+    $descendants = array_merge($descendants, getAllDescendantCategoryIdsRecursive($pdo, $childId, $path));
   }
 
   return $descendants;
@@ -37,6 +51,18 @@ $category = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$category) {
   header('Location: index.php');
   exit;
+}
+
+$contextParentId = 0;
+$contextParentSlug = isset($_GET['parent']) ? trim((string)$_GET['parent']) : '';
+if ($contextParentSlug !== '') {
+  $parentStmt = $pdo->prepare('SELECT id FROM categories WHERE slug = ? LIMIT 1');
+  $parentStmt->execute([$contextParentSlug]);
+  $candidateParentId = (int)$parentStmt->fetchColumn();
+  $categoryParentIds = getCategoryParentIds($pdo, (int)$category['id']);
+  if ($candidateParentId > 0 && in_array($candidateParentId, $categoryParentIds, true)) {
+    $contextParentId = $candidateParentId;
+  }
 }
 
 $pageTitle = $category['name'];
@@ -67,6 +93,8 @@ $siteMaxPrice = $priceRow['max_price'] ?: 10000;
 // Build the WHERE clause
 $whereConditions = ['p.is_active = 1'];
 $params = [];
+$visibilityScopeCategoryIds = [];
+$visibilityParentId = 0;
 
 // Category filtering - if a category is selected, include all its descendants
 if ($selectedCategory !== null && $selectedCategory !== '') {
@@ -94,6 +122,32 @@ else {
   $placeholders = str_repeat('?,', count($categoryIds) - 1) . '?';
   $whereConditions[] = "(p.category_id IN ($placeholders) OR EXISTS (SELECT 1 FROM product_category_assignments pca WHERE pca.product_id = p.id AND pca.category_id IN ($placeholders)))";
   $params = array_merge($params, $categoryIds, $categoryIds);
+  $visibilityScopeCategoryIds = array_values($categoryIds);
+  if ($contextParentId > 0) {
+    $visibilityParentId = $contextParentId;
+  } elseif (empty($category['parent_id'])) {
+    $visibilityParentId = (int)$category['id'];
+  }
+}
+
+// Respect product visibility when a shared subcategory is opened from a
+// specific parent mega-menu path. Products without saved visibility rows keep
+// the legacy behavior and remain visible from every parent.
+if ($visibilityParentId > 0 && $visibilityScopeCategoryIds) {
+  $visibilityPlaceholders = implode(',', array_fill(0, count($visibilityScopeCategoryIds), '?'));
+  $whereConditions[] = "(
+    NOT EXISTS (
+      SELECT 1 FROM product_category_parent_visibility pcpv_any
+      WHERE pcpv_any.product_id = p.id AND pcpv_any.category_id IN ($visibilityPlaceholders)
+    )
+    OR EXISTS (
+      SELECT 1 FROM product_category_parent_visibility pcpv
+      WHERE pcpv.product_id = p.id
+        AND pcpv.category_id IN ($visibilityPlaceholders)
+        AND pcpv.parent_id = ?
+    )
+  )";
+  $params = array_merge($params, $visibilityScopeCategoryIds, $visibilityScopeCategoryIds, [$visibilityParentId]);
 }
 
 // Price filter
@@ -194,7 +248,7 @@ $subcategories = getSubcategoriesByParentId($category['id']);
             <div class="categories-container" id="slider">
                 <?php foreach ($subcategories as $subcat): ?>
                     <div class="category-item">
-                        <a href="category.php?slug=<?php echo $subcat['slug']; ?>">
+                        <a href="category.php?slug=<?php echo $subcat['slug']; ?>&amp;parent=<?php echo rawurlencode($category['slug']); ?>">
                             <div class="category-illustration">
                                 <?php $subcatImage = !empty($subcat['image']) ? ltrim($subcat['image'], './') : ''; ?>
                                 <?php if (!empty($subcatImage)): ?>

@@ -394,13 +394,18 @@ function getAllCategoriesWithRecursiveProductCountOptimized() {
 }
 
 // Helper function to recursively count products in a category and all its subcategories
-function getRecursiveProductCount($categoryId) {
+function getRecursiveProductCount($categoryId, array &$visited = []) {
     global $pdo;
 
     // Validate category ID
     if (!$categoryId || !is_numeric($categoryId)) {
         return 0;
     }
+    $categoryId = (int)$categoryId;
+    if (isset($visited[$categoryId])) {
+        return 0;
+    }
+    $visited[$categoryId] = true;
 
     // Get direct products in this category
     $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM products WHERE category_id = ? AND is_active = 1");
@@ -408,14 +413,18 @@ function getRecursiveProductCount($categoryId) {
     $directCount = (int)$stmt->fetch(PDO::FETCH_ASSOC)['count'];
 
     // Get all subcategories
-    $stmt = $pdo->prepare("SELECT id FROM categories WHERE parent_id = ?");
-    $stmt->execute([$categoryId]);
+    ensureCategoryParentAssignmentsSchema($pdo);
+    $stmt = $pdo->prepare("SELECT DISTINCT c.id
+                           FROM categories c
+                           LEFT JOIN category_parent_assignments cpa ON cpa.category_id = c.id
+                           WHERE c.parent_id = ? OR cpa.parent_id = ?");
+    $stmt->execute([$categoryId, $categoryId]);
     $subcategories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Recursively count products in subcategories
     $subcategoryCount = 0;
     foreach ($subcategories as $subcategory) {
-        $subcategoryCount += getRecursiveProductCount($subcategory['id']);
+        $subcategoryCount += getRecursiveProductCount($subcategory['id'], $visited);
     }
 
     return $directCount + $subcategoryCount;
@@ -431,8 +440,13 @@ function getParentCategories() {
 // Function to get subcategories by parent category ID
 function getSubcategoriesByParentId($parentId) {
     global $pdo;
-    $stmt = $pdo->prepare("SELECT * FROM categories WHERE parent_id = ? ORDER BY name");
-    $stmt->execute([$parentId]);
+    ensureCategoryParentAssignmentsSchema($pdo);
+    $stmt = $pdo->prepare("SELECT DISTINCT c.*
+                           FROM categories c
+                           LEFT JOIN category_parent_assignments cpa ON cpa.category_id = c.id
+                           WHERE c.parent_id = ? OR cpa.parent_id = ?
+                           ORDER BY c.name");
+    $stmt->execute([$parentId, $parentId]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
@@ -827,6 +841,183 @@ function ensureProductCategoryAssignmentsSchema(PDO $pdo) {
     }
 }
 
+function ensureCategoryParentAssignmentsSchema(PDO $pdo) {
+    static $schemaReady = false;
+    if ($schemaReady) {
+        return true;
+    }
+
+    try {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS category_parent_assignments (
+            category_id INT NOT NULL,
+            parent_id INT NOT NULL,
+            is_primary TINYINT(1) NOT NULL DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (category_id, parent_id),
+            INDEX idx_category_parent_parent (parent_id),
+            INDEX idx_category_parent_primary (category_id, is_primary)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+        $pdo->exec("INSERT IGNORE INTO category_parent_assignments (category_id, parent_id, is_primary)
+                    SELECT id, parent_id, 1 FROM categories WHERE parent_id IS NOT NULL AND parent_id > 0");
+        $schemaReady = true;
+        return true;
+    } catch (PDOException $e) {
+        return false;
+    }
+}
+
+function getCategoryParentAssignmentMap(PDO $pdo) {
+    if (!ensureCategoryParentAssignmentsSchema($pdo)) {
+        return [];
+    }
+
+    try {
+        $rows = $pdo->query("SELECT category_id, parent_id FROM category_parent_assignments ORDER BY is_primary DESC, parent_id ASC")
+            ->fetchAll(PDO::FETCH_ASSOC);
+        $map = [];
+        foreach ($rows as $row) {
+            $map[(int)$row['category_id']][] = (int)$row['parent_id'];
+        }
+        return $map;
+    } catch (PDOException $e) {
+        return [];
+    }
+}
+
+function getCategoryParentIds(PDO $pdo, $categoryId) {
+    $map = getCategoryParentAssignmentMap($pdo);
+    return $map[(int)$categoryId] ?? [];
+}
+
+function saveCategoryParentAssignments(PDO $pdo, $categoryId, $primaryParentId, array $additionalParentIds = []) {
+    ensureCategoryParentAssignmentsSchema($pdo);
+    $categoryId = (int)$categoryId;
+    $primaryParentId = (int)$primaryParentId;
+    $parentIds = $primaryParentId > 0
+        ? array_values(array_unique(array_filter(array_map('intval', array_merge([$primaryParentId], $additionalParentIds)))))
+        : [];
+    $parentIds = array_values(array_filter($parentIds, function ($parentId) use ($categoryId) {
+        return $parentId > 0 && $parentId !== $categoryId;
+    }));
+
+    $pdo->prepare("DELETE FROM category_parent_assignments WHERE category_id = ?")->execute([$categoryId]);
+    if (!$parentIds) {
+        return;
+    }
+
+    $stmt = $pdo->prepare("INSERT INTO category_parent_assignments (category_id, parent_id, is_primary) VALUES (?, ?, ?)");
+    foreach ($parentIds as $parentId) {
+        $stmt->execute([$categoryId, $parentId, $parentId === $primaryParentId ? 1 : 0]);
+    }
+}
+
+function ensureProductCategoryParentVisibilitySchema(PDO $pdo) {
+    static $schemaReady = false;
+    if ($schemaReady) {
+        return true;
+    }
+
+    try {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS product_category_parent_visibility (
+            product_id INT NOT NULL,
+            category_id INT NOT NULL,
+            parent_id INT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (product_id, category_id, parent_id),
+            INDEX idx_product_parent_visibility_category (category_id, parent_id),
+            INDEX idx_product_parent_visibility_product (product_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+        $schemaReady = true;
+        return true;
+    } catch (PDOException $e) {
+        return false;
+    }
+}
+
+function getProductCategoryParentVisibility(PDO $pdo, $productId) {
+    if (!ensureProductCategoryParentVisibilitySchema($pdo)) {
+        return [];
+    }
+    try {
+        $stmt = $pdo->prepare("SELECT category_id, parent_id FROM product_category_parent_visibility WHERE product_id = ?");
+        $stmt->execute([(int)$productId]);
+        $visibility = [];
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $visibility[(int)$row['category_id']][] = (int)$row['parent_id'];
+        }
+        return $visibility;
+    } catch (PDOException $e) {
+        return [];
+    }
+}
+
+function saveProductCategoryParentVisibility(PDO $pdo, $productId, array $selectedCategoryIds, array $visibilitySelections = []) {
+    ensureProductCategoryParentVisibilitySchema($pdo);
+    $productId = (int)$productId;
+    $selectedLookup = array_fill_keys(array_map('intval', $selectedCategoryIds), true);
+    $parentMap = getCategoryParentAssignmentMap($pdo);
+
+    $pdo->prepare("DELETE FROM product_category_parent_visibility WHERE product_id = ?")->execute([$productId]);
+    $stmt = $pdo->prepare("INSERT INTO product_category_parent_visibility (product_id, category_id, parent_id) VALUES (?, ?, ?)");
+
+    foreach ($parentMap as $categoryId => $allowedParentIds) {
+        $categoryId = (int)$categoryId;
+        $allowedParentIds = array_values(array_unique(array_map('intval', $allowedParentIds)));
+        if (!isset($selectedLookup[$categoryId]) || count($allowedParentIds) < 2) {
+            continue;
+        }
+
+        $requestedParentIds = isset($visibilitySelections[$categoryId]) && is_array($visibilitySelections[$categoryId])
+            ? array_map('intval', $visibilitySelections[$categoryId])
+            : $allowedParentIds;
+        $parentIds = array_values(array_intersect($allowedParentIds, $requestedParentIds));
+        if (!$parentIds) {
+            $parentIds = $allowedParentIds;
+        }
+
+        foreach ($parentIds as $parentId) {
+            $stmt->execute([$productId, $categoryId, $parentId]);
+        }
+    }
+}
+
+function renderProductCategoryParentVisibilityControls(PDO $pdo, array $selectedVisibility = [], $fieldName = 'category_parent_visibility') {
+    $categories = getAllCategories();
+    $categoryLookup = [];
+    foreach ($categories as $category) {
+        $categoryLookup[(int)$category['id']] = $category;
+    }
+
+    $parentMap = getCategoryParentAssignmentMap($pdo);
+    $sharedCategories = array_filter($parentMap, function ($parentIds) {
+        return count(array_unique(array_map('intval', $parentIds))) > 1;
+    });
+
+    echo '<div class="product-parent-visibility mt-3 border rounded p-2" style="background:#f8fbff;border-color:#cfe2ff!important"' . (!$sharedCategories ? ' hidden' : '') . '>';
+    echo '<div class="small fw-semibold text-dark mb-1">Step 2: Choose website menus</div>';
+    echo '<div class="small text-muted mb-2">Select where this product should be visible on the website.</div>';
+    foreach ($sharedCategories as $categoryId => $parentIds) {
+        $categoryId = (int)$categoryId;
+        if (!isset($categoryLookup[$categoryId])) continue;
+        $selectedParentIds = array_key_exists($categoryId, $selectedVisibility)
+            ? array_map('intval', $selectedVisibility[$categoryId])
+            : array_map('intval', $parentIds);
+        echo '<div class="product-parent-visibility-row bg-white border rounded p-2 mb-2" data-category-id="' . $categoryId . '" hidden>';
+        echo '<div class="small mb-2"><span class="text-muted">Selected category:</span> <strong>' . htmlspecialchars($categoryLookup[$categoryId]['name']) . '</strong></div>';
+        echo '<div class="small fw-semibold mb-1">Show this product under:</div>';
+        foreach (array_unique(array_map('intval', $parentIds)) as $parentId) {
+            if (!isset($categoryLookup[$parentId])) continue;
+            $checked = in_array($parentId, $selectedParentIds, true) ? ' checked' : '';
+            echo '<label class="d-inline-flex align-items-center gap-1 me-3 mb-1 small">';
+            echo '<input class="form-check-input mt-0" type="checkbox" name="' . htmlspecialchars($fieldName) . '[' . $categoryId . '][]" value="' . $parentId . '"' . $checked . '>';
+            echo '<span>' . htmlspecialchars($categoryLookup[$parentId]['name']) . '</span></label>';
+        }
+        echo '</div>';
+    }
+    echo '</div>';
+}
+
 function getProductAssignedCategoryIds(PDO $pdo, $productId) {
     ensureProductCategoryAssignmentsSchema($pdo);
     try {
@@ -850,37 +1041,73 @@ function saveProductCategoryAssignments(PDO $pdo, $productId, $primaryCategoryId
     }
 }
 
-function renderProductCategoryCheckboxes(array $categories, array $selectedIds = [], $level = 0) {
+function renderProductCategoryCheckboxes(array $categories, array $selectedIds = [], $level = 0, array $selectedVisibility = [], $rootParentId = null, $parentMap = null) {
+    global $pdo;
+    if ($parentMap === null) {
+        $parentMap = getCategoryParentAssignmentMap($pdo);
+    }
     $selectedLookup = array_fill_keys(array_map('intval', $selectedIds), true);
+
     foreach ($categories as $category) {
         $categoryId = (int)$category['id'];
         if ($level === 0) {
+            $rootParentId = $categoryId;
             $checked = isset($selectedLookup[$categoryId]) ? ' checked' : '';
             echo '<div class="d-flex align-items-center gap-2 px-3 py-2 fw-semibold text-dark product-main-category-row" data-main-category="' . $categoryId . '" style="font-size:15px;background:#eef4ff;border-top:1px solid #d7e4fb;border-bottom:1px solid #d7e4fb;cursor:pointer">';
-            echo '<input class="form-check-input mt-0 product-main-category-checkbox" type="checkbox" name="category_ids[]" value="' . $categoryId . '" data-category-name="' . htmlspecialchars($category['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8') . '"' . $checked . '>';
+            echo '<input class="form-check-input mt-0 product-main-category-checkbox" type="checkbox" name="category_paths[]" value="' . $categoryId . ':' . $categoryId . '" data-category-id="' . $categoryId . '" data-category-name="' . htmlspecialchars($category['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8') . '"' . $checked . '>';
             echo '<span class="flex-grow-1">' . htmlspecialchars($category['name']) . '</span>';
             echo '<span class="badge rounded-pill" style="background:#dbeafe;color:#1d4ed8;font-size:.65rem;letter-spacing:.04em">MAIN</span>';
             echo '</div>';
             echo '<div class="product-subcategory-group ms-3 me-2 my-1 py-1" data-main-category="' . $categoryId . '" style="background:#fbfdff;border-left:3px solid #6ea8fe" hidden>';
             if (!empty($category['children'])) {
-                renderProductCategoryCheckboxes($category['children'], $selectedIds, 1);
+                renderProductCategoryCheckboxes($category['children'], $selectedIds, 1, $selectedVisibility, $rootParentId, $parentMap);
             } else {
                 echo '<div class="text-muted small px-3 py-2">No subcategories available.</div>';
             }
             echo '</div>';
             continue;
-        } else {
-            $checked = isset($selectedLookup[$categoryId]) ? ' checked' : '';
-            $indent = 12 + (($level - 1) * 20);
-            echo '<div class="d-flex align-items-center gap-2 py-1 product-subcategory-row" style="padding-left:' . $indent . 'px">';
-            echo '<input class="form-check-input mt-0 product-category-checkbox" type="checkbox" name="category_ids[]" value="' . $categoryId . '" data-category-name="' . htmlspecialchars($category['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8') . '"' . $checked . '>';
-            echo '<span><span class="text-muted me-1">' . ($level > 1 ? '&mdash;' : '&#8627;') . '</span>' . htmlspecialchars($category['name']) . '</span>';
-            echo '</div>';
         }
+
+        $isChecked = isset($selectedLookup[$categoryId]);
+        $assignedParents = array_values(array_unique(array_map('intval', $parentMap[$categoryId] ?? [])));
+        if ($isChecked && count($assignedParents) > 1 && array_key_exists($categoryId, $selectedVisibility)) {
+            $isChecked = in_array((int)$rootParentId, array_map('intval', $selectedVisibility[$categoryId]), true);
+        }
+        $checked = $isChecked ? ' checked' : '';
+        $indent = 12 + (($level - 1) * 20);
+        echo '<div class="d-flex align-items-center gap-2 py-1 product-subcategory-row" style="padding-left:' . $indent . 'px">';
+        echo '<input class="form-check-input mt-0 product-category-checkbox" type="checkbox" name="category_paths[]" value="' . (int)$rootParentId . ':' . $categoryId . '" data-category-id="' . $categoryId . '" data-parent-category-id="' . (int)$rootParentId . '" data-category-name="' . htmlspecialchars($category['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8') . '"' . $checked . '>';
+        echo '<span><span class="text-muted me-1">' . ($level > 1 ? '&mdash;' : '&#8627;') . '</span>' . htmlspecialchars($category['name']) . '</span>';
+        echo '</div>';
+
         if (!empty($category['children'])) {
-            renderProductCategoryCheckboxes($category['children'], $selectedIds, $level + 1);
+            renderProductCategoryCheckboxes($category['children'], $selectedIds, $level + 1, $selectedVisibility, $rootParentId, $parentMap);
         }
     }
+}
+
+function parseProductCategoryPaths(array $paths) {
+    $categoryIds = [];
+    $visibility = [];
+    foreach ($paths as $path) {
+        $parts = explode(':', (string)$path, 2);
+        if (count($parts) !== 2) continue;
+        $parentId = (int)$parts[0];
+        $categoryId = (int)$parts[1];
+        if ($parentId < 1 || $categoryId < 1) continue;
+        $categoryIds[] = $categoryId;
+        if ($parentId !== $categoryId) {
+            $visibility[$categoryId][] = $parentId;
+        }
+    }
+    foreach ($visibility as &$parentIds) {
+        $parentIds = array_values(array_unique(array_map('intval', $parentIds)));
+    }
+    unset($parentIds);
+    return [
+        'category_ids' => array_values(array_unique(array_map('intval', $categoryIds))),
+        'visibility' => $visibility,
+    ];
 }
 
 function sanitizeProductUnitOption($label) {
@@ -2222,6 +2449,44 @@ function buildCategoryTree(array $categories, $parentId = null, $level = 0) {
             }
             $branch[] = $category;
         }
+    }
+    return $branch;
+}
+
+// Build navigation trees where one category may be shown under multiple parents.
+// categories.parent_id remains the primary parent for breadcrumbs and legacy code.
+function buildCategoryTreeWithMultipleParents(array $categories, $parentId = null, $level = 0, $parentMap = null, array $path = []) {
+    global $pdo;
+    if ($parentMap === null) {
+        $parentMap = getCategoryParentAssignmentMap($pdo);
+    }
+
+    $branch = [];
+    foreach ($categories as $category) {
+        $categoryId = (int)$category['id'];
+        $assignedParents = $parentMap[$categoryId] ?? [];
+        if (!$assignedParents && !empty($category['parent_id'])) {
+            $assignedParents = [(int)$category['parent_id']];
+        }
+
+        $matchesParent = $parentId === null
+            ? empty($assignedParents)
+            : in_array((int)$parentId, $assignedParents, true);
+        if (!$matchesParent || isset($path[$categoryId])) {
+            continue;
+        }
+
+        $nextPath = $path;
+        $nextPath[$categoryId] = true;
+        $category['level'] = $level;
+        $category['children'] = buildCategoryTreeWithMultipleParents(
+            $categories,
+            $categoryId,
+            $level + 1,
+            $parentMap,
+            $nextPath
+        );
+        $branch[] = $category;
     }
     return $branch;
 }
