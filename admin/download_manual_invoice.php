@@ -38,6 +38,7 @@ $company = [
 
 $logoPath = realpath(__DIR__ . '/../uploads/logo_pdf.png') ?: realpath(__DIR__ . '/../logo.webp');
 $logoSrc = $logoPath ? $logoPath : '';
+$signatureSrc = realpath(__DIR__ . '/assets/images/authorized-signature.png');
 $line = function ($label, $value) {
     return '<tr><td class="meta-label">' . htmlspecialchars($label) . '</td><td>' . htmlspecialchars($value ?: '-') . '</td></tr>';
 };
@@ -78,7 +79,8 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 9.2px; color: #2c2f
 .top-table, .box-table, .items-table, .bank-table { width:100%; border-collapse: collapse; }
 .top-left { width: 39%; vertical-align: top; padding-left: 1px; padding-top: 1px; }
 .top-right { width: 61%; vertical-align: top; text-align: center; }
-.logo { height: 31px; max-width: 160px; margin-bottom: 8px; }
+.logo { width: 180px; height: auto; margin-bottom: 8px; }
+.signature { width: 130px; height: auto; }
 .company-name { font-size: 11px; font-weight: 800; margin-top: 2px; line-height: 1.05; color: #111; }
 .company-address { line-height: 1.14; }
 .pdf-label, .company-label, .meta-label, .inner-title, .inner-body b, .bank-body b, .words-row td, .sign {
@@ -201,7 +203,11 @@ $html .= '<b>ACCOUNT NUMBER</b> - 000000000000<br>';
 $html .= '<b>IFSC CODE</b> - BANK0000000<br>';
 $html .= '<b>Address</b> - Pune, Maharashtra';
 $html .= '</td></tr></table></td>';
-$html .= '<td class="bank-cell sign"><br><br><br><br>' . $bold('For, EVERYTHINGB2C (Authorized Signatory)') . '</td>';
+$html .= '<td class="bank-cell sign">';
+if ($signatureSrc) {
+    $html .= '<img src="' . htmlspecialchars($signatureSrc) . '" class="signature" alt="Authorized signature"><br>';
+}
+$html .= $bold('For, EVERYTHINGB2C (Authorized Signatory)') . '</td>';
 $html .= '</tr></table>';
 
 $html .= '</body></html>';
