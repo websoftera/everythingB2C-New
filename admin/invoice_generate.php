@@ -29,7 +29,7 @@ function manualInvoiceValidMobile($value, $required = true) {
     if ($value === '') {
         return !$required;
     }
-    return preg_match('/^[0-9+\-\s]{8,15}$/', $value) === 1;
+    return preg_match('/^[6-9][0-9]{9}$/D', $value) === 1;
 }
 
 function manualInvoiceValidDateValue($value, $required = false) {
@@ -213,7 +213,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_invoice'])) {
         }
 
         if (!manualInvoiceValidMobile($_POST['mobile_no'] ?? '', true)) {
-            throw new Exception('Enter a valid mobile number.');
+            throw new Exception('Enter a 10-digit mobile number starting with 6, 7, 8 or 9.');
         }
 
         if (trim($_POST['bill_to_name'] ?? '') === '' || !manualInvoiceHasLetter($_POST['bill_to_name'] ?? '') || trim($_POST['bill_to_mobile'] ?? '') === '' || trim($_POST['bill_to_address'] ?? '') === '') {
@@ -221,11 +221,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_invoice'])) {
         }
 
         if (!manualInvoiceValidMobile($_POST['bill_to_mobile'] ?? '', true)) {
-            throw new Exception('Enter a valid Bill To mobile number.');
+            throw new Exception('Bill To mobile number must be 10 digits starting with 6, 7, 8 or 9.');
         }
 
         if (!manualInvoiceValidMobile($_POST['ship_to_mobile'] ?? '', false)) {
-            throw new Exception('Enter a valid Ship To mobile number.');
+            throw new Exception('Ship To mobile number must be 10 digits starting with 6, 7, 8 or 9.');
         }
 
         if (trim($_POST['ship_to_name'] ?? '') !== '' && !manualInvoiceHasLetter($_POST['ship_to_name'])) {
@@ -442,15 +442,17 @@ foreach ($editingItems as $item) {
             border-color: #86b7fe;
             box-shadow: 0 0 0 .25rem rgba(13, 110, 253, .25);
         }
+        #invoiceProductRows { overflow-x: auto; padding-bottom: 4px; }
         .manual-invoice-product-row {
             display: grid;
-            grid-template-columns: minmax(190px, 1.7fr) 92px minmax(100px, 1fr) minmax(100px, 1fr) minmax(92px, .85fr) minmax(110px, 1fr) minmax(120px, 1fr) 86px 82px;
+            grid-template-columns: minmax(190px, 2.2fr) 76px minmax(100px, 1.2fr) minmax(70px, 1fr) minmax(65px, 1fr) minmax(85px, 1fr) minmax(90px, 1.1fr) 65px 48px;
+            min-width: 930px;
             gap: 14px 12px;
             align-items: start;
             padding: 14px;
             border: 1px solid #dbe3ef;
             border-radius: 6px;
-            background: #fff;
+            background: #f8f9fc;
         }
         .manual-invoice-field {
             min-width: 0;
@@ -459,15 +461,13 @@ foreach ($editingItems as $item) {
         }
         .manual-invoice-product-row .form-label { margin-bottom: 8px; white-space: nowrap; }
         .manual-invoice-product-row .invalid-feedback {
-            display: block;
-            visibility: hidden;
-            min-height: 20px;
+            display: none;
             margin-top: 4px;
-            white-space: nowrap;
+            white-space: normal;
         }
         .manual-invoice-page .was-validated .manual-invoice-product-row .form-control:invalid ~ .invalid-feedback,
         .manual-invoice-page .was-validated .manual-invoice-product-row .form-select:invalid ~ .invalid-feedback {
-            visibility: visible;
+            display: block;
         }
         .manual-invoice-product-row + .manual-invoice-product-row { margin-top: 12px; }
         .manual-invoice-image-box {
@@ -488,15 +488,6 @@ foreach ($editingItems as $item) {
         .action-btn { width: 31px; height: 31px; display: inline-flex; align-items: center; justify-content: center; }
         .invoice-actions { display: flex; gap: 6px; align-items: center; }
         .invoice-actions form { margin: 0; }
-        @media (max-width: 1400px) {
-            .manual-invoice-product-row { grid-template-columns: repeat(3, minmax(180px, 1fr)); }
-        }
-        @media (max-width: 992px) {
-            .manual-invoice-product-row { grid-template-columns: repeat(2, minmax(160px, 1fr)); }
-        }
-        @media (max-width: 768px) {
-            .manual-invoice-product-row { grid-template-columns: 1fr; }
-        }
     </style>
 </head>
 <body>
@@ -544,8 +535,8 @@ foreach ($editingItems as $item) {
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">Mobile No.</label>
-                                <input type="tel" inputmode="numeric" name="mobile_no" class="form-control phone-field" value="<?php echo htmlspecialchars($formInvoice['mobile_no']); ?>" pattern="[0-9+\-\s]{8,15}" required>
-                                <div class="invalid-feedback">Enter a valid mobile number.</div>
+                                <input type="tel" inputmode="numeric" name="mobile_no" class="form-control phone-field" value="<?php echo htmlspecialchars($formInvoice['mobile_no']); ?>" pattern="[6-9][0-9]{9}" maxlength="10" autocomplete="tel-national" title="Enter a 10-digit mobile number starting with 6, 7, 8 or 9." required>
+                                <div class="invalid-feedback">Enter a 10-digit mobile number starting with 6, 7, 8 or 9.</div>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">E-Way Bill No.</label>
@@ -599,13 +590,13 @@ foreach ($editingItems as $item) {
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Bill To Mobile No.</label>
-                                <input type="tel" inputmode="numeric" name="bill_to_mobile" class="form-control phone-field" value="<?php echo htmlspecialchars($formInvoice['bill_to_mobile']); ?>" pattern="[0-9+\-\s]{8,15}" required>
-                                <div class="invalid-feedback">Bill To mobile number is required.</div>
+                                <input type="tel" inputmode="numeric" name="bill_to_mobile" class="form-control phone-field" value="<?php echo htmlspecialchars($formInvoice['bill_to_mobile']); ?>" pattern="[6-9][0-9]{9}" maxlength="10" autocomplete="tel-national" title="Enter a 10-digit mobile number starting with 6, 7, 8 or 9." required>
+                                <div class="invalid-feedback">Bill To mobile number must be 10 digits starting with 6, 7, 8 or 9.</div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Ship To Mobile No.</label>
-                                <input type="tel" inputmode="numeric" name="ship_to_mobile" class="form-control phone-field" value="<?php echo htmlspecialchars($formInvoice['ship_to_mobile']); ?>" pattern="[0-9+\-\s]{8,15}">
-                                <div class="invalid-feedback">Enter a valid Ship To mobile number.</div>
+                                <input type="tel" inputmode="numeric" name="ship_to_mobile" class="form-control phone-field" value="<?php echo htmlspecialchars($formInvoice['ship_to_mobile']); ?>" pattern="[6-9][0-9]{9}" maxlength="10" autocomplete="tel-national" title="Enter a 10-digit mobile number starting with 6, 7, 8 or 9.">
+                                <div class="invalid-feedback">Ship To mobile number must be 10 digits starting with 6, 7, 8 or 9.</div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Bill To Address</label>
@@ -918,9 +909,13 @@ invoiceNumberField.addEventListener('input', () => {
 validateInvoiceNumber();
 
 manualInvoiceForm.querySelectorAll('.phone-field').forEach(input => {
-    input.addEventListener('input', () => {
-        input.value = input.value.replace(/[^0-9+\-\s]/g, '');
-    });
+    const validateMobile = () => {
+        const value = input.value;
+        const valid = (value === '' && !input.required) || /^[6-9][0-9]{9}$/.test(value);
+        input.setCustomValidity(valid ? '' : 'Enter a 10-digit mobile number starting with 6, 7, 8 or 9.');
+    };
+    input.addEventListener('input', validateMobile);
+    validateMobile();
 });
 
 manualInvoiceForm.querySelectorAll('.text-name-field').forEach(input => {
