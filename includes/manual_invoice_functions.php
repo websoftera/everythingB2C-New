@@ -67,6 +67,14 @@ function ensureManualInvoiceSchema(PDO $pdo) {
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
         ");
 
+        foreach (['manual_invoices' => ['tax_type' => "VARCHAR(20) NOT NULL DEFAULT 'within_state'", 'igst_total' => 'DECIMAL(12,2) NOT NULL DEFAULT 0'], 'manual_invoice_items' => ['igst_amount' => 'DECIMAL(12,2) NOT NULL DEFAULT 0']] as $table => $columns) {
+            foreach ($columns as $column => $definition) {
+                $check = $pdo->query("SHOW COLUMNS FROM `$table` LIKE '$column'");
+                if (!$check->fetch(PDO::FETCH_ASSOC)) {
+                    $pdo->exec("ALTER TABLE `$table` ADD COLUMN `$column` $definition");
+                }
+            }
+        }
         ensureManualInvoicePermission($pdo);
     } catch (Exception $e) {
         error_log('Manual invoice schema migration failed: ' . $e->getMessage());
@@ -191,7 +199,10 @@ function deleteManualInvoice(PDO $pdo, $invoiceId) {
     return $stmt->execute([(int)$invoiceId]);
 }
 
-function calculateManualInvoiceItem(array $item) {
+function calculateManualInvoiceItem(array $item, $taxType = 'within_state') {
+    if (!in_array($taxType, ['within_state', 'out_of_state'], true)) {
+        throw new InvalidArgumentException('Invalid invoice tax type.');
+    }
     $qty = max(0, (float)($item['quantity'] ?? 0));
     $price = max(0, (float)($item['item_price'] ?? 0));
     $gstRate = max(0, (float)($item['gst_rate'] ?? 0));
@@ -204,7 +215,13 @@ function calculateManualInvoiceItem(array $item) {
     $item['gst_rate'] = $gstRate;
     $item['taxable_value'] = $taxable;
     $item['cgst_amount'] = round($gst / 2, 2);
-    $item['sgst_amount'] = round($gst / 2, 2);
+    // Allocate the remaining paise to SGST so both taxes reconcile with the total.
+    $item['sgst_amount'] = round($gst - $item['cgst_amount'], 2);
+    $item['igst_amount'] = $taxType === 'out_of_state' ? $gst : 0;
+    if ($taxType === 'out_of_state') {
+        $item['cgst_amount'] = 0;
+        $item['sgst_amount'] = 0;
+    }
     $item['total_price'] = $total;
 
     return $item;

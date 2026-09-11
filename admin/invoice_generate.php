@@ -141,6 +141,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_invoice'])) {
         $cgstTotal = 0;
         $sgstTotal = 0;
         $grandTotal = 0;
+        $igstTotal = 0;
+        $taxType = $_POST['tax_type'] ?? 'within_state';
+        if (!in_array($taxType, ['within_state', 'out_of_state'], true)) {
+            throw new Exception('Please select a valid tax type.');
+        }
 
         if (!manualInvoiceValidDocumentNumber($invoiceNo)) {
             throw new Exception('Invoice number must contain letters/numbers and cannot start with 0, be 00, or end with only zeros.');
@@ -189,11 +194,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_invoice'])) {
                 'item_price' => $itemPrice,
                 'quantity' => (int)$quantity,
                 'sort_order' => $index,
-            ]);
+            ], $taxType);
 
             $prepared['item_mrp'] = max(0, (float)$prepared['item_mrp']);
             $preparedItems[] = $prepared;
             $taxableTotal += $prepared['taxable_value'];
+            $igstTotal += $prepared['igst_amount'];
             $cgstTotal += $prepared['cgst_amount'];
             $sgstTotal += $prepared['sgst_amount'];
             $grandTotal += $prepared['total_price'];
@@ -299,12 +305,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_invoice'])) {
             $invoiceId = (int)$pdo->lastInsertId();
         }
 
+        $pdo->prepare('UPDATE manual_invoices SET tax_type = ?, igst_total = ? WHERE id = ?')->execute([$taxType, $igstTotal, $invoiceId]);
+
         $itemStmt = $pdo->prepare("
             INSERT INTO manual_invoice_items (
                 invoice_id, product_id, product_name, product_image, hsn, unit, gst_rate,
                 item_mrp, item_price, quantity, taxable_value, cgst_amount, sgst_amount,
-                total_price, sort_order
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                total_price, sort_order, igst_amount
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
 
         foreach ($preparedItems as $item) {
@@ -324,6 +332,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_invoice'])) {
                 $item['sgst_amount'],
                 $item['total_price'],
                 $item['sort_order'],
+                $item['igst_amount'],
             ]);
         }
 
@@ -517,6 +526,14 @@ foreach ($editingItems as $item) {
                         </div>
                     </div>
                     <div class="card-body">
+                        <div class="mb-3">
+                            <label for="invoiceTaxType" class="form-label">Tax Type</label>
+                            <select id="invoiceTaxType" name="tax_type" class="form-select" style="width: 240px; max-width: 100%;" required>
+                                <option value="within_state" <?php echo (($_POST['tax_type'] ?? $formInvoice['tax_type'] ?? 'within_state') === 'within_state') ? 'selected' : ''; ?>>Within State</option>
+                                <option value="out_of_state" <?php echo (($_POST['tax_type'] ?? $formInvoice['tax_type'] ?? 'within_state') === 'out_of_state') ? 'selected' : ''; ?>>Out of State</option>
+                            </select>
+
+                        </div>
                         <div class="row g-3">
                             <div class="col-md-3">
                                 <label class="form-label">Invoice No.</label>
