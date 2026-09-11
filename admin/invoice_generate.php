@@ -681,7 +681,7 @@ foreach ($editingItems as $item) {
                                         <td><?php echo date('d-m-Y', strtotime($invoice['invoice_date'])); ?></td>
                                         <td><?php echo date('d-m-Y', strtotime($invoice['created_at'])); ?></td>
                                         <td><?php echo (int)$invoice['item_count']; ?></td>
-                                        <td>Rs. <?php echo number_format((float)$invoice['grand_total'], 2); ?></td>
+                                        <td>Rs. <?php echo preg_replace('/\.00$/', '', number_format((float)$invoice['grand_total'], 2)); ?></td>
                                         <td>
                                             <div class="invoice-actions">
                                                 <a class="btn btn-sm btn-outline-primary action-btn" href="invoice_generate.php?edit=<?php echo (int)$invoice['id']; ?>" title="Edit Invoice">

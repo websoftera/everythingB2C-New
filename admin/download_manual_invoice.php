@@ -25,11 +25,11 @@ if (!$invoice) {
 $items = getManualInvoiceItems($pdo, $invoiceId);
 
 $company = [
-    'name' => 'EVERYTHINGB2C',
-    'address' => 'Shop 12, D, Media Park, Bhagwan Tatyasaheb Kawade Rd,<br>Dombi Wadi, R, Pune, Maharashtra 411001',
-    'gst' => '27AAABC1711H1ZF',
+    'name' => 'INPROTECH',
+    'address' => 'A-98, Shree Lal Duplex, Opposite Khodiyar Dairy,<br>Makrand Desai Road, Rangavdhutpura, Diwalipura, Vadodara - 390007',
+    'gst' => '24AVEPS9404M1Z5',
     'msme' => '',
-    'mobile' => '+91 878 040 6230',
+    'mobile' => '7218430068',
     'email' => 'info@everythingb2c.in',
     'web' => 'www.everythingb2c.in',
     'logo' => '../logo.webp',
@@ -77,19 +77,23 @@ $html = '<html><head><style>
 body { font-family: Arial, Helvetica, sans-serif; font-size: 9.2px; color: #2c2f36; line-height: 1.12; }
 .title { text-align:center; font-size: 15px; font-weight: 800; margin: 0 0 17px; letter-spacing: .2px; color: #111; }
 .top-table, .box-table, .items-table, .bank-table { width:100%; border-collapse: collapse; }
-.top-left { width: 39%; vertical-align: top; padding-left: 1px; padding-top: 1px; }
-.top-right { width: 61%; vertical-align: top; text-align: center; }
-.logo { width: 180px; height: auto; margin-bottom: 8px; }
+.top-left { width: 52%; vertical-align: top; padding-left: 1px; padding-top: 1px; line-height: 1.45; }
+.header-gap { width: 3%; }
+.top-right { width: 45%; vertical-align: top; text-align: center; }
+.logo { width: 240px; height: auto; margin-bottom: 8px; }
 .signature { width: 130px; height: auto; }
-.company-name { font-size: 11px; font-weight: 800; margin-top: 2px; line-height: 1.05; color: #111; }
-.company-address { line-height: 1.14; }
+.company-name { font-size: 11px; font-weight: 800; margin-top: 2px; margin-bottom: 4px; line-height: 1.45; color: #111; }
+.company-gst { line-height: 1.45; }
+.gst-gap { font-size: 2px; line-height: 1; }
+.company-address { font-size: 9.2px; line-height: 1.45; margin-top: 0; margin-bottom: 4px; }
 .pdf-label, .company-label, .meta-label, .inner-title, .inner-body b, .bank-body b, .words-row td, .sign {
     color: #000;
     font-weight: 800;
 }
-.meta-table { width: 92%; margin-left: auto; margin-right: auto; border-collapse: separate; border-spacing: 2px 2px; }
-.meta-table td { border: 1px solid #4e73df; padding: 5.4px 7px; line-height: 1.08; text-align: left; }
-.meta-label { width: 29%; background: #f1f5ff; }
+.meta-table { width: 100%; margin-left: auto; margin-right: auto; border-collapse: separate; border-spacing: 2px 2px; }
+.meta-table td { border: 1px solid #4e73df; height: 28px; padding: 0 7px; vertical-align: middle; line-height: 1.08; text-align: left; }
+.meta-table td { width: 28%; }
+.meta-table td.meta-label { width: 22%; background: #f1f5ff; white-space: nowrap; font-size: 8px; padding-left: 4px; padding-right: 4px; }
 .divider { border-top: 1px solid #777; margin: 12px 0 8px; }
 .box-cell { border: 1px solid #4e73df; vertical-align: top; padding: 0; width: 50%; }
 .inner-box { width: 100%; border-collapse: collapse; }
@@ -119,15 +123,15 @@ if ($logoSrc) {
     $html .= '<img src="' . htmlspecialchars($logoSrc) . '" class="logo">';
 }
 $html .= '<div class="company-name">' . htmlspecialchars($company['name']) . '</div>';
-$html .= '<div class="company-address">' . $company['address'] . '</div><br>';
-$html .= $bold('GST:') . ' ' . htmlspecialchars($company['gst']) . '<br>';
+$html .= '<span class="gst-gap"><br></span><div class="company-gst">' . $bold('GSTIN No. -') . ' ' . htmlspecialchars($company['gst']) . '</div><span class="gst-gap"><br></span>';
+$html .= '<div class="company-address">' . $bold('Address:') . ' ' . $company['address'] . '</div>';
 if ($company['msme']) {
     $html .= $bold('MSME - UDYAM:') . ' ' . htmlspecialchars($company['msme']) . '<br>';
 }
-$html .= '<br>' . $bold('Mobile:') . ' ' . htmlspecialchars($company['mobile']) . '<br>';
+$html .= $bold('Mobile:') . ' ' . htmlspecialchars($company['mobile']) . '<br>';
 $html .= $bold('Email:') . ' ' . htmlspecialchars($company['email']) . '<br>';
 $html .= $bold('Web:') . ' ' . htmlspecialchars($company['web']);
-$html .= '</td><td class="top-right">';
+$html .= '</td><td class="header-gap"></td><td class="top-right">';
 $html .= '<table class="meta-table">';
 $html .= '<tr><td class="meta-label">' . $bold('Invoice No:') . '</td><td>' . htmlspecialchars($invoice['invoice_no']) . '</td><td class="meta-label">' . $bold('Date:') . '</td><td>' . htmlspecialchars($date($invoice['invoice_date'])) . '</td></tr>';
 $html .= '<tr><td class="meta-label">' . $bold('E-Way Bill No:') . '</td><td>' . htmlspecialchars($invoice['eway_bill_no'] ?: '-') . '</td><td class="meta-label">' . $bold('Date:') . '</td><td>' . htmlspecialchars($date($invoice['eway_bill_date'])) . '</td></tr>';
@@ -197,17 +201,17 @@ $html .= '</tbody></table>';
 
 $html .= '<br><table class="bank-table"><tr>';
 $html .= '<td class="bank-cell"><table class="inner-box"><tr><td class="inner-title bank-title">' . $bold('Bank Account Details:') . '</td></tr><tr><td class="bank-body">';
-$html .= '<b>ACCOUNT NAME</b> - EVERYTHINGB2C<br>';
+$html .= '<b>ACCOUNT NAME</b> - INPROTECH<br>';
 $html .= '<b>Type of Account</b> - CURRENT<br>';
-$html .= '<b>ACCOUNT NUMBER</b> - 000000000000<br>';
-$html .= '<b>IFSC CODE</b> - BANK0000000<br>';
-$html .= '<b>Address</b> - Pune, Maharashtra';
+$html .= '<b>ACCOUNT NUMBER</b> - 50200091758435<br>';
+$html .= '<b>IFSC CODE</b> - HDFC0001712<br>';
+$html .= '<b>BANK</b> - HDFC';
 $html .= '</td></tr></table></td>';
 $html .= '<td class="bank-cell sign">';
 if ($signatureSrc) {
     $html .= '<img src="' . htmlspecialchars($signatureSrc) . '" class="signature" alt="Authorized signature"><br>';
 }
-$html .= $bold('For, EVERYTHINGB2C (Authorized Signatory)') . '</td>';
+$html .= $bold('For, INPROTECH (Authorized Signatory)') . '</td>';
 $html .= '</tr></table>';
 
 $html .= '</body></html>';
