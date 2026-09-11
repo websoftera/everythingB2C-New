@@ -23,6 +23,20 @@ if (!$invoice) {
 }
 
 $items = getManualInvoiceItems($pdo, $invoiceId);
+// Reconcile historical invoice snapshots too, without changing stored invoices or stock.
+$isInterstate = ($invoice['tax_type'] ?? 'within_state') === 'out_of_state';
+$invoice['igst_total'] = 0;
+$invoice['taxable_total'] = 0;
+$invoice['cgst_total'] = 0;
+$invoice['sgst_total'] = 0;
+foreach ($items as &$invoiceItem) {
+    $invoiceItem = calculateManualInvoiceItem($invoiceItem, $isInterstate ? 'out_of_state' : 'within_state');
+    $invoice['igst_total'] += $invoiceItem['igst_amount'];
+    $invoice['taxable_total'] += $invoiceItem['taxable_value'];
+    $invoice['cgst_total'] += $invoiceItem['cgst_amount'];
+    $invoice['sgst_total'] += $invoiceItem['sgst_amount'];
+}
+unset($invoiceItem);
 
 $company = [
     'name' => 'INPROTECH',
@@ -161,15 +175,16 @@ $html .= '<div class="section-title">' . $bold('Invoice Details') . '</div>';
 $html .= '<table class="items-table"><thead><tr>
     <th style="width:4%;">' . $bold('Sr.') . '</th>
     <th style="width:8%;">' . $bold('Product<br>Photo') . '</th>
-    <th style="width:19%;">' . $bold('Product Name') . '</th>
+    <th style="width:' . ($isInterstate ? 27 : 19) . '%;">' . $bold('Product Name') . '</th>
     <th style="width:10%;">' . $bold('HSN<br>Code') . '</th>
     <th style="width:6%;">' . $bold('Unit') . '</th>
     <th style="width:8%;">' . $bold('Price /<br>Unit') . '</th>
     <th style="width:6%;">' . $bold('Qty.') . '</th>
     <th style="width:10%;">' . $bold('Taxable<br>Value') . '</th>
     <th style="width:8%;">' . $bold('GST<br>Rate') . '</th>
-    <th style="width:8%;">' . $bold('CGST<br>Amount') . '</th>
-    <th style="width:8%;">' . $bold('SGST<br>Amount') . '</th>
+    ' . ($isInterstate
+        ? '<th style="width:8%;">' . $bold('IGST<br>Amount') . '</th>'
+        : '<th style="width:8%;">' . $bold('CGST<br>Amount') . '</th><th style="width:8%;">' . $bold('SGST<br>Amount') . '</th>') . '
     <th style="width:9%;">' . $bold('Total Price') . '</th>
 </tr></thead><tbody>';
 
@@ -186,17 +201,21 @@ foreach ($items as $item) {
     $html .= '<td class="text-center">' . rtrim(rtrim(number_format((float)$item['quantity'], 2), '0'), '.') . '</td>';
     $html .= '<td class="text-right">' . $fmt($item['taxable_value']) . '</td>';
     $html .= '<td class="text-center">' . $fmt($item['gst_rate']) . '%</td>';
+    if ($isInterstate) {
+        $html .= '<td class="text-right">' . $fmt($item['igst_amount']) . '</td>';
+    } else {
     $html .= '<td class="text-right">' . $fmt($item['cgst_amount']) . '</td>';
     $html .= '<td class="text-right">' . $fmt($item['sgst_amount']) . '</td>';
+    }
     $html .= '<td class="text-right">' . $fmt($item['total_price']) . '</td>';
     $html .= '</tr>';
     $sr++;
 }
 
-$html .= '<tr class="total-row"><td colspan="7"></td><td class="text-right">' . $fmt($invoice['taxable_total']) . '</td><td></td><td class="text-right">' . $fmt($invoice['cgst_total']) . '</td><td class="text-right">' . $fmt($invoice['sgst_total']) . '</td><td class="text-right">' . $fmt($invoice['grand_total']) . '</td></tr>';
+$html .= '<tr class="total-row"><td colspan="7"></td><td class="text-right">' . $fmt($invoice['taxable_total']) . '</td><td></td><td class="text-right">' . ($isInterstate ? $fmt($invoice['igst_total']) : $fmt($invoice['cgst_total']) . '</td><td class="text-right">' . $fmt($invoice['sgst_total'])) . '</td><td class="text-right">' . $fmt($invoice['grand_total']) . '</td></tr>';
 $roundOffDisplay = abs($roundOff) < 0.005 ? '' : $fmt($roundOff);
-$html .= '<tr><td colspan="11" class="text-left">' . $bold('Round Off') . '</td><td class="text-right">' . $roundOffDisplay . '</td></tr>';
-$html .= '<tr class="words-row"><td colspan="11" class="text-left">' . $bold('Grand Total in Words - ' . htmlspecialchars(manualInvoiceAmountWords($displayGrandTotal)) . ' Rupees Only') . '</td><td class="text-right">' . $bold($fmt($displayGrandTotal)) . '</td></tr>';
+$html .= '<tr><td colspan="' . ($isInterstate ? 10 : 11) . '" class="text-left">' . $bold('Round Off') . '</td><td class="text-right">' . $roundOffDisplay . '</td></tr>';
+$html .= '<tr class="words-row"><td colspan="' . ($isInterstate ? 10 : 11) . '" class="text-left">' . $bold('Grand Total in Words - ' . htmlspecialchars(manualInvoiceAmountWords($displayGrandTotal)) . ' Rupees Only') . '</td><td class="text-right">' . $bold($fmt($displayGrandTotal)) . '</td></tr>';
 $html .= '</tbody></table>';
 
 $html .= '<br><table class="bank-table"><tr>';
