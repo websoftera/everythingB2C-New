@@ -40,7 +40,7 @@ unset($invoiceItem);
 
 $company = [
     'name' => 'INPROTECH',
-    'address' => 'A-98, Shree Lal Duplex, Opposite Khodiyar Dairy,<br>Makrand Desai Road, Rangavdhutpura, Diwalipura, Vadodara - 390007',
+    'address' => 'A-98, Shree Lal Duplex, Opposite Khodiyar Dairy, Makrand Desai Road, Rangavdhutpura, Diwalipura, Vadodara - 390007',
     'gst' => '24AVEPS9404M1Z5',
     'msme' => '',
     'mobile' => '7218430068',
@@ -88,36 +88,37 @@ $hasShipTo = trim((string)($invoice['ship_to_name'] ?? '')) !== ''
 
 $html = '<html><head><style>
 @page { margin: 12mm 13mm; }
-body { font-family: Arial, Helvetica, sans-serif; font-size: 9.2px; color: #2c2f36; line-height: 1.12; }
-.title { text-align:center; font-size: 15px; font-weight: 800; margin: 0 0 17px; letter-spacing: .2px; color: #111; }
+body { font-family: mulish, sans-serif !important; font-size: 9pt; color: #111; line-height: 1.25; }
+.title { text-align:center; font-size: 11pt; font-weight: 800; margin: 0 0 17px; letter-spacing: .2px; color: #111; }
 .top-table, .box-table, .items-table, .bank-table { width:100%; border-collapse: collapse; }
-.top-left { width: 52%; vertical-align: top; padding-left: 1px; padding-top: 1px; line-height: 1.45; }
-.header-gap { width: 3%; }
-.top-right { width: 45%; vertical-align: top; text-align: center; }
-.logo { width: 240px; height: auto; margin-bottom: 8px; }
+.top-left { width: 45%; vertical-align: top; padding-left: 1px; padding-top: 1px; line-height: 1.45; }
+.header-gap { width: 5%; }
+.top-right { width: 50%; vertical-align: bottom; text-align: center; }
+.logo { width: 241px; height: auto; margin-bottom: 8px; }
 .signature { width: 130px; height: auto; }
-.company-name { font-size: 11px; font-weight: 800; margin-top: 2px; margin-bottom: 4px; line-height: 1.45; color: #111; }
+.company-name { font-size: 11pt; font-weight: 800; margin-top: 2px; margin-bottom: 4px; line-height: 1.45; color: #111; }
 .company-gst { line-height: 1.45; }
 .gst-gap { font-size: 2px; line-height: 1; }
-.company-address { font-size: 9.2px; line-height: 1.45; margin-top: 0; margin-bottom: 4px; }
+.company-address { font-size: 9pt; line-height: 1.45; margin-top: 0; margin-bottom: 4px; }
 .pdf-label, .company-label, .meta-label, .inner-title, .inner-body b, .bank-body b, .words-row td, .sign {
     color: #000;
     font-weight: 800;
 }
 .meta-table { width: 100%; margin-left: auto; margin-right: auto; border-collapse: separate; border-spacing: 2px 2px; }
-.meta-table td { border: 1px solid #4e73df; height: 28px; padding: 0 7px; vertical-align: middle; line-height: 1.08; text-align: left; }
-.meta-table td { width: 28%; }
-.meta-table td.meta-label { width: 22%; background: #f1f5ff; white-space: nowrap; font-size: 8px; padding-left: 4px; padding-right: 4px; }
+.meta-table td { border: 1px solid #4e73df; height: 34px; font-size: 9pt; padding: 3px 4px; vertical-align: middle; line-height: 1.08; text-align: left; }
+.meta-table td { width: 27%; }
+.meta-table td.meta-label { width: 28%; background: #f1f5ff; white-space: nowrap; font-size: 9pt; padding-left: 4px; padding-right: 4px; }
+.meta-table td.meta-short { width: 18%; }
 .divider { border-top: 1px solid #777; margin: 12px 0 8px; }
 .box-cell { border: 1px solid #4e73df; vertical-align: top; padding: 0; width: 50%; }
 .inner-box { width: 100%; border-collapse: collapse; }
-.inner-title { background: #f1f5ff; border-bottom: 1px solid #4e73df; padding: 5px 8px; line-height: 1.05; }
-.bank-title { font-size: 7.7px; font-weight: 800; text-align: center; color: #111; }
+.inner-title { font-size: 11pt; background: #f1f5ff; border-bottom: 1px solid #4e73df; padding: 5px 8px; line-height: 1.05; }
+.bank-title { font-size: 11pt; font-weight: 800; text-align: center; color: #111; }
 .inner-body { padding: 8px 10px; line-height: 1.28; height: 74px; vertical-align: top; }
-.section-title { font-size: 16px; font-weight: bold; margin: 13px 0 7px; color: #000; }
-.items-table th, .items-table td { border: 1px solid #4e73df; padding: 4.5px 4px; vertical-align: middle; text-align: center; }
-.items-table th { font-size: 7.7px; font-weight: 800; text-align: center; background: #f1f5ff; line-height: 1.05; color: #111; }
-.items-table td { font-size: 8.2px; line-height: 1.18; }
+.section-title { font-size: 11pt; font-weight: bold; margin: 13px 0 7px; color: #000; }
+.items-table th, .items-table td { border: 1px solid #4e73df; padding: 6px 3px; vertical-align: middle; text-align: center; }
+.items-table th { font-size: 9pt; font-weight: 800; text-align: center; background: #f1f5ff; line-height: 1.05; color: #111; }
+.items-table td { font-size: 9pt; line-height: 1.18; }
 .text-center { text-align: center; }
 .text-left { text-align: left; }
 .text-right { text-align: right; }
@@ -127,8 +128,8 @@ body { font-family: Arial, Helvetica, sans-serif; font-size: 9.2px; color: #2c2f
 .total-row td { font-weight: 800; background: #f8fbff; }
 .words-row td { background: #f1f5ff; }
 .bank-cell { border: 1px solid #4e73df; vertical-align: top; padding: 0; width: 50%; }
-.bank-body { padding: 8px 10px; height: 85px; line-height: 1.28; vertical-align: top; color: #000; }
-.sign { text-align:center; vertical-align: bottom; padding-bottom: 17px; }
+.bank-body { font-size: 9pt; padding: 8px 10px; height: 85px; line-height: 1.28; vertical-align: top; color: #000; }
+.sign { font-size: 9pt; text-align:center; vertical-align: bottom; padding-bottom: 17px; }
 </style></head><body>';
 
 $html .= '<div class="title"><b style="color:#000;font-weight:bold;">TAX INVOICE</b></div>';
@@ -136,7 +137,7 @@ $html .= '<table class="top-table"><tr><td class="top-left">';
 if ($logoSrc) {
     $html .= '<img src="' . htmlspecialchars($logoSrc) . '" class="logo">';
 }
-$html .= '<div class="company-name">' . htmlspecialchars($company['name']) . '</div>';
+$html .= '<div class="company-name"><b>' . htmlspecialchars($company['name']) . '</b></div>';
 $html .= '<span class="gst-gap"><br></span><div class="company-gst">' . $bold('GSTIN No. -') . ' ' . htmlspecialchars($company['gst']) . '</div><span class="gst-gap"><br></span>';
 $html .= '<div class="company-address">' . $bold('Address:') . ' ' . $company['address'] . '</div>';
 if ($company['msme']) {
@@ -147,12 +148,12 @@ $html .= $bold('Email:') . ' ' . htmlspecialchars($company['email']) . '<br>';
 $html .= $bold('Web:') . ' ' . htmlspecialchars($company['web']);
 $html .= '</td><td class="header-gap"></td><td class="top-right">';
 $html .= '<table class="meta-table">';
-$html .= '<tr><td class="meta-label">' . $bold('Invoice No:') . '</td><td>' . htmlspecialchars($invoice['invoice_no']) . '</td><td class="meta-label">' . $bold('Date:') . '</td><td>' . htmlspecialchars($date($invoice['invoice_date'])) . '</td></tr>';
-$html .= '<tr><td class="meta-label">' . $bold('E-Way Bill No:') . '</td><td>' . htmlspecialchars($invoice['eway_bill_no'] ?: '-') . '</td><td class="meta-label">' . $bold('Date:') . '</td><td>' . htmlspecialchars($date($invoice['eway_bill_date'])) . '</td></tr>';
-$html .= '<tr><td class="meta-label">' . $bold('Buyer PO No:') . '</td><td>' . htmlspecialchars($invoice['buyer_po_no'] ?: '-') . '</td><td class="meta-label">' . $bold('Date:') . '</td><td>' . htmlspecialchars($date($invoice['buyer_po_date'])) . '</td></tr>';
-$html .= '<tr><td class="meta-label">' . $bold('Buyer Name:') . '</td><td>' . htmlspecialchars($invoice['customer_name']) . '</td><td class="meta-label">' . $bold('Mobile:') . '</td><td>' . htmlspecialchars($invoice['mobile_no'] ?: '-') . '</td></tr>';
-$html .= '<tr><td class="meta-label">' . $bold('Payment Terms:') . '</td><td>' . htmlspecialchars($invoice['payment_terms'] ?: '-') . '</td><td class="meta-label">' . $bold('Date:') . '</td><td>' . htmlspecialchars($date($invoice['payment_date'])) . '</td></tr>';
-$html .= '<tr><td class="meta-label">' . $bold('Transporter') . '</td><td>' . htmlspecialchars($invoice['transporter'] ?: '-') . '</td><td class="meta-label">' . $bold('LR No.:') . '</td><td>' . htmlspecialchars($invoice['lr_no'] ?: '-') . '</td></tr>';
+$html .= '<tr><td class="meta-label">' . $bold('Invoice No:') . '</td><td>' . htmlspecialchars($invoice['invoice_no']) . '</td><td class="meta-label meta-short">' . $bold('Date:') . '</td><td>' . htmlspecialchars($date($invoice['invoice_date'])) . '</td></tr>';
+$html .= '<tr><td class="meta-label">' . $bold('E-Way Bill No:') . '</td><td>' . htmlspecialchars($invoice['eway_bill_no'] ?: '-') . '</td><td class="meta-label meta-short">' . $bold('Date:') . '</td><td>' . htmlspecialchars($date($invoice['eway_bill_date'])) . '</td></tr>';
+$html .= '<tr><td class="meta-label">' . $bold('Buyer PO No:') . '</td><td>' . htmlspecialchars($invoice['buyer_po_no'] ?: '-') . '</td><td class="meta-label meta-short">' . $bold('Date:') . '</td><td>' . htmlspecialchars($date($invoice['buyer_po_date'])) . '</td></tr>';
+$html .= '<tr><td class="meta-label">' . $bold('Buyer Name:') . '</td><td>' . htmlspecialchars($invoice['customer_name']) . '</td><td class="meta-label meta-short">' . $bold('Mobile:') . '</td><td>' . htmlspecialchars($invoice['mobile_no'] ?: '-') . '</td></tr>';
+$html .= '<tr><td class="meta-label">' . $bold('Payment Terms:') . '</td><td>' . htmlspecialchars($invoice['payment_terms'] ?: '-') . '</td><td class="meta-label meta-short">' . $bold('Date:') . '</td><td>' . htmlspecialchars($date($invoice['payment_date'])) . '</td></tr>';
+$html .= '<tr><td class="meta-label">' . $bold('Transporter') . '</td><td>' . htmlspecialchars($invoice['transporter'] ?: '-') . '</td><td class="meta-label meta-short">' . $bold('LR No.:') . '</td><td>' . htmlspecialchars($invoice['lr_no'] ?: '-') . '</td></tr>';
 $html .= '</table></td></tr></table>';
 
 $html .= '<div class="divider"></div>';
@@ -247,6 +248,10 @@ try {
         'margin_top' => 12,
         'margin_bottom' => 12,
         'tempDir' => sys_get_temp_dir(),
+        'default_font' => 'mulish',
+        'fontDir' => array_merge((new \Mpdf\Config\ConfigVariables())->getDefaults()['fontDir'], [__DIR__ . '/../assets/fonts/mulish']),
+        'fontdata' => array_merge((new \Mpdf\Config\FontVariables())->getDefaults()['fontdata'], ['mulish' => ['R' => 'Mulish-Regular.ttf', 'B' => 'Mulish-Bold.ttf']]),
+        'shrink_tables_to_fit' => 1,
     ]);
     $mpdf->showImageErrors = false;
     $mpdf->WriteHTML($html);
