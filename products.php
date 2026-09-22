@@ -25,22 +25,6 @@ $priceRow = $priceStmt->fetch(PDO::FETCH_ASSOC);
 $siteMinPrice = $priceRow['min_price'] ?: 0;
 $siteMaxPrice = $priceRow['max_price'] ?: 10000;
 
-// Function to get all descendant category IDs recursively
-function getAllDescendantCategoryIdsRecursive($pdo, $parentId)
-{
-  $descendants = [$parentId];
-
-  $stmt = $pdo->prepare('SELECT id FROM categories WHERE parent_id = ?');
-  $stmt->execute([$parentId]);
-  $children = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
-  foreach ($children as $childId) {
-    $descendants = array_merge($descendants, getAllDescendantCategoryIdsRecursive($pdo, $childId));
-  }
-
-  return $descendants;
-}
-
 // Build the WHERE clause
 $whereConditions = ['p.is_active = 1'];
 $params = [];

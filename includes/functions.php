@@ -277,6 +277,45 @@ function getAllCategories() {
 }
 
 // Function to get all categories with real-time product counts
+function getCategoryFilterProductCounts(array $categories) {
+    global $pdo;
+    ensureProductCategoryAssignmentsSchema($pdo);
+    $parents = getCategoryParentAssignmentMap($pdo);
+    foreach ($categories as $category) {
+        if (!empty($category['parent_id'])) {
+            $parents[(int)$category['id']][] = (int)$category['parent_id'];
+        }
+    }
+
+    // Sets prevent double counting products assigned to several descendants.
+    $productsByCategory = [];
+    $rows = $pdo->query("SELECT id AS product_id, category_id FROM products WHERE is_active = 1
+        UNION SELECT p.id, pca.category_id FROM products p
+        INNER JOIN product_category_assignments pca ON pca.product_id = p.id
+        WHERE p.is_active = 1");
+    foreach ($rows as $row) {
+        $pending = [(int)$row['category_id']];
+        $visited = [];
+        while ($pending) {
+            $categoryId = array_pop($pending);
+            if (!$categoryId || isset($visited[$categoryId])) {
+                continue;
+            }
+            $visited[$categoryId] = true;
+            $productsByCategory[$categoryId][(int)$row['product_id']] = true;
+            foreach ($parents[$categoryId] ?? [] as $parentId) {
+                $pending[] = (int)$parentId;
+            }
+        }
+    }
+
+    $counts = [];
+    foreach ($categories as $category) {
+        $counts[$category['id']] = count($productsByCategory[$category['id']] ?? []);
+    }
+    return $counts;
+}
+
 function getAllCategoriesWithProductCount() {
     global $pdo;
     $stmt = $pdo->query("SELECT c.*, COUNT(p.id) as product_count
@@ -813,6 +852,35 @@ function ensureProductUnitSchema(PDO $pdo) {
     } catch (PDOException $e) {
         // Keep older installs working even if this lightweight migration cannot run here.
     }
+}
+
+// Function to get all descendant category IDs recursively
+function getAllDescendantCategoryIdsRecursive($pdo, $parentId, array $path = [])
+{
+  static $schemaReady = false;
+  if (!$schemaReady) {
+    ensureCategoryParentAssignmentsSchema($pdo);
+    $schemaReady = true;
+  }
+  $parentId = (int)$parentId;
+  if (isset($path[$parentId])) {
+    return [];
+  }
+  $path[$parentId] = true;
+  $descendants = [$parentId];
+
+  $stmt = $pdo->prepare('SELECT DISTINCT c.id
+                         FROM categories c
+                         LEFT JOIN category_parent_assignments cpa ON cpa.category_id = c.id
+                         WHERE c.parent_id = ? OR cpa.parent_id = ?');
+  $stmt->execute([$parentId, $parentId]);
+  $children = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+  foreach ($children as $childId) {
+    $descendants = array_merge($descendants, getAllDescendantCategoryIdsRecursive($pdo, $childId, $path));
+  }
+
+  return $descendants;
 }
 
 function ensureProductCategoryAssignmentsSchema(PDO $pdo) {

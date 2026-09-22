@@ -14,35 +14,6 @@ ensureProductCategoryParentVisibilitySchema($pdo);
 $slug = isset($_GET['slug']) ? $_GET['slug'] : '';
 $pdo = $GLOBALS['pdo'];
 
-// Function to get all descendant category IDs recursively
-function getAllDescendantCategoryIdsRecursive($pdo, $parentId, array $path = [])
-{
-  static $schemaReady = false;
-  if (!$schemaReady) {
-    ensureCategoryParentAssignmentsSchema($pdo);
-    $schemaReady = true;
-  }
-  $parentId = (int)$parentId;
-  if (isset($path[$parentId])) {
-    return [];
-  }
-  $path[$parentId] = true;
-  $descendants = [$parentId];
-
-  $stmt = $pdo->prepare('SELECT DISTINCT c.id
-                         FROM categories c
-                         LEFT JOIN category_parent_assignments cpa ON cpa.category_id = c.id
-                         WHERE c.parent_id = ? OR cpa.parent_id = ?');
-  $stmt->execute([$parentId, $parentId]);
-  $children = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
-  foreach ($children as $childId) {
-    $descendants = array_merge($descendants, getAllDescendantCategoryIdsRecursive($pdo, $childId, $path));
-  }
-
-  return $descendants;
-}
-
 // Get category details
 $stmt = $pdo->prepare('SELECT * FROM categories WHERE slug = ?');
 $stmt->execute([$slug]);
