@@ -22,6 +22,12 @@ if (!isset($_GET['min_price']) && !isset($_GET['max_price'])) {
 
 // Get all categories for filter
 $categories = getAllCategories();
+$categoryFilterCounts = getCategoryFilterProductCounts($categories);
+foreach ($categories as &$filterCategory) {
+    $filterCategory['product_count'] = $categoryFilterCounts[$filterCategory['id']] ?? 0;
+}
+unset($filterCategory);
+$allCategoryProductCount = (int)$pdo->query('SELECT COUNT(*) FROM products WHERE is_active = 1')->fetchColumn();
 $categoryTree = buildCategoryTree($categories);
 ?>
 
@@ -69,7 +75,7 @@ $categoryTree = buildCategoryTree($categories);
           <h5>Categories</h5>
           <div class="form-group">
             <select name="category" id="sidebarCategorySelect" class="form-control" onchange="document.getElementById('sidebarFilterForm').dispatchEvent(new Event('submit'))">
-              <option value="">All Categories</option>
+              <option value="">All Categories (<?php echo $allCategoryProductCount; ?>)</option>
               <?php 
               // Re-use current function if existing
               if (!function_exists('renderCategoriesWithSubcategories')) {
@@ -82,7 +88,7 @@ $categoryTree = buildCategoryTree($categories);
                               if (isset($_GET['category']) && $_GET['category'] == $cat['id']) {
                                   $output .= ' selected';
                               }
-                              $output .= '>' . $indent . htmlspecialchars($cat['name']) . '</option>';
+                              $output .= '>' . $indent . htmlspecialchars($cat['name']) . ' (' . (int)$cat['product_count'] . ')</option>';
                               $output .= renderCategoriesWithSubcategories($categories, $cat['id'], $level + 1);
                           }
                       }
@@ -162,7 +168,7 @@ $categoryTree = buildCategoryTree($categories);
                                 
                                 $output .= '<label class="mob-radio-item" style="' . $indentStyle . '">';
                                 $output .= '<input type="checkbox" name="category[]" value="' . $cat['id'] . '" ' . $checked . '>';
-                                $output .= '<span class="mob-radio-label">' . htmlspecialchars($cat['name']) . '</span>';
+                                $output .= '<span class="mob-radio-label">' . htmlspecialchars($cat['name']) . ' (' . (int)$cat['product_count'] . ')</span>';
                                 $output .= '<span class="mob-radio-circle"></span>';
                                 $output .= '</label>';
                                 
