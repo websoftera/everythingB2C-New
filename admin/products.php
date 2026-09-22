@@ -26,13 +26,26 @@ $category_filter = $_GET['category'] ?? $_POST['category'] ?? '';
 $status_filter = $_GET['status'] ?? $_POST['status'] ?? '';
 $reorder_mode = isset($_GET['reorder']) && $_GET['reorder'] === '1' && $category_filter !== '';
 
+// Match primary and additional assignments, including descendant categories.
+$categoryCondition = '';
+$categoryParams = [];
+if ($category_filter !== '') {
+    ensureProductCategoryAssignmentsSchema($pdo);
+    $categoryIds = array_values(array_unique(getAllDescendantCategoryIdsRecursive($pdo, (int)$category_filter)));
+    $placeholders = implode(',', array_fill(0, count($categoryIds), '?'));
+    $categoryCondition = "(p.category_id IN ($placeholders) OR EXISTS (
+        SELECT 1 FROM product_category_assignments pca
+        WHERE pca.product_id = p.id AND pca.category_id IN ($placeholders)
+    ))";
+    $categoryParams = array_merge($categoryIds, $categoryIds);
+}
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'update_product_order_ajax') {
     header('Content-Type: application/json');
 
     if (!empty($_POST['product_order']) && is_array($_POST['product_order']) && $category_filter !== '') {
-        $stmt = $pdo->prepare("UPDATE products SET sort_order = ? WHERE id = ? AND category_id = ?");
+        $stmt = $pdo->prepare("UPDATE products p SET sort_order = ? WHERE p.id = ? AND $categoryCondition");
         foreach (array_values($_POST['product_order']) as $index => $productId) {
-            $stmt->execute([$index + 1, (int)$productId, (int)$category_filter]);
+            $stmt->execute(array_merge([$index + 1, (int)$productId], $categoryParams));
         }
 
         echo json_encode(['success' => true, 'message' => 'New order saved successfully!']);
@@ -48,9 +61,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
     $orderSaved = $category_filter !== '';
 
     if (!empty($_POST['product_order']) && is_array($_POST['product_order']) && $category_filter !== '') {
-        $stmt = $pdo->prepare("UPDATE products SET sort_order = ? WHERE id = ? AND category_id = ?");
+        $stmt = $pdo->prepare("UPDATE products p SET sort_order = ? WHERE p.id = ? AND $categoryCondition");
         foreach (array_values($_POST['product_order']) as $index => $productId) {
-            $stmt->execute([$index + 1, (int)$productId, (int)$category_filter]);
+            $stmt->execute(array_merge([$index + 1, (int)$productId], $categoryParams));
         }
     }
 
@@ -111,9 +124,9 @@ if ($search) {
     $params[] = "%$search%";
 }
 
-if ($category_filter) {
-    $where_conditions[] = "p.category_id = ?";
-    $params[] = $category_filter;
+if ($category_filter !== '') {
+    $where_conditions[] = $categoryCondition;
+    $params = array_merge($params, $categoryParams);
 }
 
 if ($status_filter !== '') {
@@ -130,9 +143,10 @@ $stmt->execute($params);
 $total_products = $stmt->fetchColumn();
 
 // Pagination
-$page = max(1, $_GET['page'] ?? 1);
+$page = max(1, (int)($_GET['page'] ?? 1));
 $per_page = 20;
 $total_pages = ceil($total_products / $per_page);
+$page = min($page, max(1, (int)$total_pages));
 $offset = ($page - 1) * $per_page;
 $order_clause = $category_filter
     ? "ORDER BY CASE WHEN p.sort_order IS NULL OR p.sort_order = 0 THEN 1 ELSE 0 END, p.sort_order ASC, p.created_at DESC"
