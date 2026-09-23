@@ -12,6 +12,7 @@ $maxPrice = isset($_GET['max_price']) ? floatval($_GET['max_price']) : 0;
 
 $where = ['p.is_active = 1'];
 $params = [];
+appendBrandFilter($pdo, $where, $params, $_GET['brand'] ?? []);
 if ($search !== '') {
     $where[] = '(p.name LIKE ? OR p.description LIKE ?)';
     $params[] = "%$search%";

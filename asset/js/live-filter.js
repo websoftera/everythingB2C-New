@@ -103,6 +103,32 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
 
+        const brandSelect = form.querySelector('select[name="brand[]"]');
+        if (brandSelect) {
+            brandSelect.addEventListener('change', function () {
+                filterForms.forEach(otherForm => {
+                    otherForm.querySelectorAll('input[name="brand[]"]').forEach(other => {
+                        other.checked = other.value === brandSelect.value;
+                    });
+                });
+                triggerFilter();
+            });
+        }
+        // Keep brand selections aligned when switching between desktop and mobile.
+        form.querySelectorAll('input[name="brand[]"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                filterForms.forEach(otherForm => {
+                    otherForm.querySelectorAll('input[name="brand[]"]').forEach(other => {
+                        if (other.value === checkbox.value) other.checked = checkbox.checked;
+                    });
+                });
+                const selected = Array.from(form.querySelectorAll('input[name="brand[]"]:checked')).map(input => input.value);
+                const desktopBrand = document.getElementById('sidebarBrandSelect');
+                if (desktopBrand) desktopBrand.value = selected[0] || '';
+                triggerFilter();
+            });
+        });
+
         // 3. Category Checkboxes (Mobile)
         if (categoryCheckboxes.length > 0) {
             categoryCheckboxes.forEach(checkbox => {

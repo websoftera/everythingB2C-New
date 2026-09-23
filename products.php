@@ -28,6 +28,7 @@ $siteMaxPrice = $priceRow['max_price'] ?: 10000;
 // Build the WHERE clause
 $whereConditions = ['p.is_active = 1'];
 $params = [];
+appendBrandFilter($pdo, $whereConditions, $params, $_GET['brand'] ?? []);
 
 // Category filtering - if a category is selected, include all its descendants
 if ($selectedCategory !== null && $selectedCategory !== '') {
