@@ -111,7 +111,7 @@ $categoryTree = buildCategoryTree($categories);
 
         <?php if ($filterBrands): ?>
         <div class="filter-section">
-          <h5><label for="sidebarBrandSelect">Brands</label></h5>
+          <h5><label for="sidebarBrandSelect">Brand</label></h5>
           <div class="form-group">
             <select name="brand[]" id="sidebarBrandSelect" class="form-control">
               <option value="">All Brands</option>
