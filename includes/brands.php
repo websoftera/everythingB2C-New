@@ -1,7 +1,8 @@
 <?php
 // Read-only schema detection keeps storefronts usable before deployment migration.
-function brandsSchemaReady($pdo) {
+function brandsSchemaReady($pdo, $refresh = false) {
     static $ready = null;
+    if ($refresh) $ready = null;
     if ($ready !== null) return $ready;
     try {
         $pdo->query('SELECT brand_id FROM products LIMIT 0');

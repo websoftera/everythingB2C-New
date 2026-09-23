@@ -13,12 +13,20 @@ $pageTitle = 'Brands';
 $_SESSION['brand_csrf'] = $_SESSION['brand_csrf'] ?? bin2hex(random_bytes(32));
 $error = '';
 $name = '';
-$ready = brandsSchemaReady($pdo);
+try {
+    require_once __DIR__ . '/../includes/brands_migration.php';
+    migrateBrandsSchema($pdo);
+    $ready = brandsSchemaReady($pdo, true);
+} catch (Throwable $e) {
+    error_log('Automatic brands migration failed: ' . $e->getMessage());
+    $ready = false;
+    $error = 'Brand setup could not complete. Please check that the website database user has CREATE and ALTER permissions, then reload this page. Contact your hosting support if it continues.';
+}
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         if (!hash_equals($_SESSION['brand_csrf'], (string)($_POST['csrf'] ?? ''))) throw new RuntimeException('Please refresh the page and try again.');
         if (!canAccess('add_product')) throw new RuntimeException('You do not have permission to create brands.');
-        if (!$ready) throw new RuntimeException('Please run the brands database migration first.');
+        if (!$ready) throw new RuntimeException('Brand setup is not complete. Please reload this page or contact your hosting support.');
         $name = trim((string)($_POST['name'] ?? ''));
         if ($name === '' || mb_strlen($name) > 150) throw new RuntimeException('Enter a brand name of 1 to 150 characters.');
         $duplicate = $pdo->prepare('SELECT id FROM brands WHERE name = ?');
@@ -70,7 +78,6 @@ $brands = getBrands($pdo);
 <div class="everythingb2c-main-content">
 <?php include 'includes/header.php'; ?>
 <div class="container-fluid p-4">
-<?php if (!$ready): ?><div class="alert alert-warning">Run database/migrate_brands.php from the command line to enable brands.</div><?php endif; ?>
 <?php if ($error): ?><div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div><?php endif; ?>
 <?php if (isset($_SESSION['brand_success'])): ?><div class="alert alert-success"><?php echo htmlspecialchars($_SESSION['brand_success']); unset($_SESSION['brand_success']); ?></div><?php endif; ?>
 <?php if ($ready && canAccess('add_product')): ?>

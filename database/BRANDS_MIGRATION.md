@@ -1,6 +1,8 @@
 # Brands migration
 
-Run before using Brands in the admin dashboard:
+After deploying all changed files (including includes/brands_migration.php), sign in and open Admin > Brands. The page automatically creates the missing brand table, product column, index, and foreign key using the website database connection. Existing products and brand assignments are preserved. Setup runs only after the admin authentication and product-view permission checks. Concurrent setup requests are serialized with a database lock. The database account needs CREATE and ALTER privileges; failures are logged and the page displays a setup error that can be retried by reloading.
+
+The command-line migration remains available as an optional deployment step:
 
 ```sh
 php database/migrate_brands.php

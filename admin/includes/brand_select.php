@@ -8,6 +8,6 @@
         <?php endforeach; ?>
     </select>
     <?php if (!brandsSchemaReady($pdo)): ?>
-        <small class="text-muted">Run the brands migration to enable brand selection.</small>
+        <small class="text-muted">Open the admin Brands page to enable brand selection automatically.</small>
     <?php endif; ?>
 </div>
