@@ -2,6 +2,8 @@
 // Sidebar Filter Component
 // This component provides a responsive sidebar filter for all pages
 
+$filterBrands = getBrands($pdo);
+$currentBrandIds = selectedBrandIds($_GET['brand'] ?? []);
 // Get current page filters
 $currentCategory = isset($_GET['category']) ? intval($_GET['category']) : null;
 $currentSubcategory = isset($_GET['subcategory']) ? intval($_GET['subcategory']) : null;
@@ -56,11 +58,17 @@ $categoryTree = buildCategoryTree($categories);
     <!-- Desktop View (Unchanged to maintain existing UI) -->
     <div class="desktop-filter-view d-none d-lg-block">
       <form method="get" id="sidebarFilterForm" class="sidebar-filter-form" action="<?php echo $_SERVER['REQUEST_URI']; ?>">
+        <?php foreach (['parent', 'featured', 'discounted', 'subcategory', 'min_price', 'max_price'] as $contextKey): ?>
+          <?php if (isset($_GET[$contextKey]) && is_scalar($_GET[$contextKey])): ?>
+            <input type="hidden" name="<?php echo $contextKey; ?>" value="<?php echo htmlspecialchars((string)$_GET[$contextKey], ENT_QUOTES, 'UTF-8'); ?>">
+          <?php endif; ?>
+        <?php endforeach; ?>
         <!-- Preserve essential page parameters -->
         <?php if (isset($_GET['slug'])): ?>
           <input type="hidden" name="slug" value="<?php echo htmlspecialchars($_GET['slug']); ?>">
         <?php endif; ?>
         
+        <input type="hidden" name="sort" value="<?php echo htmlspecialchars($currentSort, ENT_QUOTES, 'UTF-8'); ?>">
         <!-- Search Filter -->
         <div class="filter-section">
           <h5>Search</h5>
@@ -101,6 +109,19 @@ $categoryTree = buildCategoryTree($categories);
           </div>
         </div>
 
+        <?php if ($filterBrands): ?>
+        <div class="filter-section">
+          <h5><label for="sidebarBrandSelect">Brands</label></h5>
+          <div class="form-group">
+            <select name="brand[]" id="sidebarBrandSelect" class="form-control">
+              <option value="">All Brands</option>
+              <?php foreach ($filterBrands as $filterBrand): ?>
+                <option value="<?php echo (int)$filterBrand['id']; ?>" <?php echo (int)$filterBrand['id'] === ($currentBrandIds[0] ?? null) ? 'selected' : ''; ?>><?php echo htmlspecialchars($filterBrand['name'], ENT_QUOTES, 'UTF-8'); ?></option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+        </div>
+        <?php endif; ?>
         <!-- Price Range Filter - COMMENTED OUT FOR DESKTOP -->
         <!--
         <div class="filter-section">
@@ -123,16 +144,23 @@ $categoryTree = buildCategoryTree($categories);
     <!-- Mobile View (DMart Style - Tabs & Content Layout) -->
     <div class="mobile-filter-layout d-lg-none">
       <form method="get" id="mobileFilterForm" class="sidebar-filter-form" action="<?php echo $_SERVER['REQUEST_URI']; ?>">
+        <?php foreach (['parent', 'featured', 'discounted', 'subcategory', 'min_price', 'max_price'] as $contextKey): ?>
+          <?php if (isset($_GET[$contextKey]) && is_scalar($_GET[$contextKey])): ?>
+            <input type="hidden" name="<?php echo $contextKey; ?>" value="<?php echo htmlspecialchars((string)$_GET[$contextKey], ENT_QUOTES, 'UTF-8'); ?>">
+          <?php endif; ?>
+        <?php endforeach; ?>
         <!-- Preserve essential page parameters -->
         <?php if (isset($_GET['slug'])): ?>
           <input type="hidden" name="slug" value="<?php echo htmlspecialchars($_GET['slug']); ?>">
         <?php endif; ?>
         
+        <input type="hidden" name="q" value="<?php echo htmlspecialchars($currentSearch, ENT_QUOTES, 'UTF-8'); ?>">
         <div class="mobile-filter-body">
           <!-- Left Navigation -->
           <div class="mobile-filter-side-nav">
             <button type="button" class="mob-nav-item active" data-target="mob-sec-category">Category</button>
 
+            <?php if ($filterBrands): ?><button type="button" class="mob-nav-item" data-target="mob-sec-brand">Brand</button><?php endif; ?>
             <button type="button" class="mob-nav-item" data-target="mob-sec-sort">Sort</button>
           </div>
 
@@ -186,6 +214,19 @@ $categoryTree = buildCategoryTree($categories);
 
 
             <!-- Sort Pane -->
+            <?php if ($filterBrands): ?>
+            <div class="mob-filter-pane" id="mob-sec-brand">
+              <div class="mob-options-list">
+                <?php foreach ($filterBrands as $filterBrand): ?>
+                <label class="mob-radio-item">
+                  <input type="checkbox" name="brand[]" value="<?php echo (int)$filterBrand['id']; ?>" <?php echo in_array((int)$filterBrand['id'], $currentBrandIds, true) ? 'checked' : ''; ?>>
+                  <span class="mob-radio-label"><?php echo htmlspecialchars($filterBrand['name'], ENT_QUOTES, 'UTF-8'); ?></span>
+                  <span class="mob-radio-circle"></span>
+                </label>
+                <?php endforeach; ?>
+              </div>
+            </div>
+            <?php endif; ?>
             <div class="mob-filter-pane" id="mob-sec-sort">
               <div class="mob-options-list">
                 <label class="mob-radio-item">
@@ -919,7 +960,7 @@ select.form-control {
   .sidebar-filter-panel {
     margin: 0 auto 25px auto;
     padding: 15px 20px;
-    max-width: 800px; /* narrowed max-width for compact view */
+    max-width: 1100px; /* narrowed max-width for compact view */
     display: flex;
     justify-content: center; /* Center the form contents */
   }
@@ -1223,6 +1264,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Toggle Content Pane active status
         mobPanes.forEach(p => p.classList.remove('active'));
         const targetId = this.getAttribute('data-target');
+        const searchBox = document.querySelector('.mob-filter-search-container');
+        if (searchBox) searchBox.style.display = targetId === 'mob-sec-category' ? '' : 'none';
         const targetPane = document.getElementById(targetId);
         if (targetPane) {
           targetPane.classList.add('active');
@@ -1240,8 +1283,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Uncheck all radios and checkboxes
         mobForm.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(r => r.checked = false);
         // Clear Search
-        const searchIn = mobForm.querySelector('.mob-search-input');
+        const searchIn = mobForm.querySelector('input[name="q"], .mob-search-input');
         if (searchIn) searchIn.value = '';
+        mobForm.querySelectorAll('input[name="min_price"], input[name="max_price"], input[name="subcategory"], input[name="featured"], input[name="discounted" ]').forEach(i => i.value = '');
         // Clear Price Inputs
         mobForm.querySelectorAll('.price-input').forEach(i => i.value = '');
         

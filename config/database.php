@@ -6,7 +6,8 @@ $databaseConfig = $isLocal ? [
     'host' => 'localhost',
     'user' => 'root',
     'pass' => '',
-    'name' => 'everythingb2c',
+    // Recovered from the September 23 local data copy; original database retained.
+    'name' => 'everythingb2c_recovered_20260923',
 ] : [
     'host' => 'localhost',
     'user' => 'u728317772_everythingb2c',

@@ -43,7 +43,12 @@ if (isLoggedIn()) {
     $wishlistCount = count($headerWishlistItems);
 }
 
-$categories = getAllCategoriesWithRecursiveProductCount();
+$categories = getAllCategories();
+$menuProductCounts = getCategoryFilterProductCounts($categories);
+foreach ($categories as &$menuCategory) {
+    $menuCategory['product_count'] = $menuProductCounts[$menuCategory['id']] ?? 0;
+}
+unset($menuCategory);
 $categoryTree = buildCategoryTreeWithMultipleParents($categories);
 $currentUser = getCurrentUser();
 
@@ -713,6 +718,9 @@ if (!function_exists('renderMobileOffcanvasAccordion')) {
                 echo '<h2 class="accordion-header" id="' . $headingId . '">';
                 echo '<button class="accordion-button collapsed py-3 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#' . $collapseId . '" aria-expanded="false" aria-controls="' . $collapseId . '" style="font-size: 0.95rem; font-weight: 600; box-shadow: none;">';
                 echo htmlspecialchars($cat['name']);
+                if ($level > 0) {
+                    echo ' <span class="category-menu-count">(' . number_format((int)$cat['product_count']) . ')</span>';
+                }
                 echo '</button>';
                 echo '</h2>';
                 
@@ -728,7 +736,11 @@ if (!function_exists('renderMobileOffcanvasAccordion')) {
                 echo '</div>';
                 echo '</div>';
             } else {
-                echo '<a href="' . $base_url . 'category.php?slug=' . $cat['slug'] . $parentQuery . '" class="d-block py-3 px-3 text-dark text-decoration-none" style="font-size: 0.95rem; font-weight: 600;">' . htmlspecialchars($cat['name']) . '</a>';
+                echo '<a href="' . $base_url . 'category.php?slug=' . $cat['slug'] . $parentQuery . '" class="d-block py-3 px-3 text-dark text-decoration-none" style="font-size: 0.95rem; font-weight: 600;">' . htmlspecialchars($cat['name']);
+                if ($level > 0) {
+                    echo ' <span class="category-menu-count">(' . number_format((int)$cat['product_count']) . ')</span>';
+                }
+                echo '</a>';
             }
             echo '</div>';
         }
@@ -801,12 +813,12 @@ function renderMegaSubcategoryGroups($subcategories, $parentSlug = '') {
         if ($imageUrl !== '') {
             echo '<img src="' . htmlspecialchars($imageUrl, ENT_QUOTES | ENT_HTML5, 'UTF-8') . '" alt="" loading="lazy" decoding="async" onerror="this.remove()">';
         }
-        echo '</span><span class="category-mega-title-text">' . htmlspecialchars($subcat['name']) . '</span>';
+        echo '</span><span class="category-mega-title-text">' . htmlspecialchars($subcat['name']) . ' <span class="category-menu-count">(' . number_format((int)$subcat['product_count']) . ')</span></span>';
         echo '</a>';
         if ($hasChildren) {
             echo '<div class="category-mega-children">';
             foreach ($subcat['children'] as $child) {
-                echo '<a href="' . $base_url . 'category.php?slug=' . rawurlencode($child['slug']) . $parentQuery . '">' . htmlspecialchars($child['name']) . '</a>';
+                echo '<a href="' . $base_url . 'category.php?slug=' . rawurlencode($child['slug']) . $parentQuery . '">' . htmlspecialchars($child['name']) . ' <span class="category-menu-count">(' . number_format((int)$child['product_count']) . ')</span></a>';
             }
             echo '</div>';
         }

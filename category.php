@@ -64,6 +64,7 @@ $siteMaxPrice = $priceRow['max_price'] ?: 10000;
 // Build the WHERE clause
 $whereConditions = ['p.is_active = 1'];
 $params = [];
+appendBrandFilter($pdo, $whereConditions, $params, $_GET['brand'] ?? []);
 $visibilityScopeCategoryIds = [];
 $visibilityParentId = 0;
 

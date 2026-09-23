@@ -4,21 +4,6 @@ require_once 'includes/functions.php';
 ensureProductPackageQuantitySchema($pdo);
 require_once 'includes/header.php';
 
-// Function to get all descendant category IDs recursively
-function getAllDescendantCategoryIdsRecursive($pdo, $parentId) {
-    $descendants = [$parentId];
-    
-    $stmt = $pdo->prepare('SELECT id FROM categories WHERE parent_id = ?');
-    $stmt->execute([$parentId]);
-    $children = $stmt->fetchAll(PDO::FETCH_COLUMN);
-    
-    foreach ($children as $childId) {
-        $descendants = array_merge($descendants, getAllDescendantCategoryIdsRecursive($pdo, $childId));
-    }
-    
-    return $descendants;
-}
-
 $pdo = $GLOBALS['pdo'];
 
 // Fetch all categories and build tree
@@ -47,6 +32,7 @@ $siteMaxPrice = $priceRow['max_price'] ?: 10000;
 // Build the WHERE clause
 $whereConditions = ['p.is_active = 1'];
 $params = [];
+appendBrandFilter($pdo, $whereConditions, $params, $_GET['brand'] ?? []);
 
 // Category filtering - if a category is selected, include all its descendants
 if ($selectedCategory !== null && $selectedCategory !== '') {

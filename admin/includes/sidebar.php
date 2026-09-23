@@ -37,6 +37,13 @@ require_once __DIR__ . '/../../includes/functions.php';
             </li>
             <?php endif; ?>
 
+            <?php if (canAccess('view_products')): ?>
+            <li class="everythingb2c-nav-item">
+                <a class="everythingb2c-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'brands.php' ? 'active' : ''; ?>" href="brands.php">
+                    <i class="fas fa-copyright everythingb2c-nav-icon"></i> Brands
+                </a>
+            </li>
+            <?php endif; ?>
             <!-- Product Attributes -->
             <?php if (canAccess('view_products')): ?>
             <li class="everythingb2c-nav-item">

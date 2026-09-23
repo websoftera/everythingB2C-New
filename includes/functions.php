@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/brands.php';
 
 // Set default timezone for India
 date_default_timezone_set('Asia/Kolkata');
