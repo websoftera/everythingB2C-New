@@ -201,14 +201,14 @@ $products = array_slice($allProducts, $offset, $itemsPerPage);
 <!-- Breadcrumb Navigation -->
 <?php
 $breadcrumbs = generateBreadcrumb($pageTitle, $categoryPath);
-echo renderBreadcrumb($breadcrumbs);
+echo '<div class="category-page-breadcrumb">' . renderBreadcrumb($breadcrumbs) . '</div>';
 
 // Fetch subcategories
 $subcategories = getSubcategoriesByParentId($category['id']);
 ?>
 <!-- Subcategories Slider Section (Same design as Home Page) -->
 <?php if (!empty($subcategories)): ?>
-<section class="popular-categories-section subcategories-section">
+<section class="popular-categories-section subcategories-section" style="--mobile-subcategory-columns: <?php echo count($subcategories) > 2 ? 3 : 2; ?>;">
     <div class="categories-card">
         <div class="category-products-header">
             <h2 class="category-products-title">Subcategories</h2>
@@ -537,6 +537,51 @@ endif; ?>
 
 /* ===== MOBILE OVERRIDES — must appear LAST to win !important cascade ===== */
 @media (max-width: 767px) {
+  .category-page-breadcrumb .breadcrumb-nav {
+    margin-bottom: 0 !important;
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+  }
+  .category-page-breadcrumb .breadcrumb {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+  .subcategories-section .categories-container {
+    gap: 8px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+  .subcategories-section .category-item {
+    width: calc((100% - (var(--mobile-subcategory-columns) - 1) * 8px) / var(--mobile-subcategory-columns));
+    min-width: 0;
+  }
+  .subcategories-section .category-item a { padding: 6px; }
+  .subcategories-section .category-illustration {
+    width: 100%;
+    height: 68px;
+    aspect-ratio: auto;
+    margin-bottom: 5px;
+  }
+  .subcategories-section .category-label { margin-bottom: 2px; }
+  .subcategories-section {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+  .category-container {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+  .category-container .mobile-filter-toggles,
+  .category-container .sidebar-filter-container {
+    margin-top: 2px !important;
+    padding-top: 2px !important;
+  }
+  .category-container .products-container { padding-top: 4px; }
+  .category-container .sidebar-filter-container { margin-bottom: 0; }
   /* Reduce side padding so 2-col cards have maximum width */
   .container-fluid {
     padding-left: 1px !important;

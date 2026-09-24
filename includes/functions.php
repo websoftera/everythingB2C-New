@@ -271,6 +271,21 @@ function getCartSummary() {
 }
 
 // Function to get all categories
+// Apply the saved main-category order without changing child category ordering.
+function orderMainCategoryTree(array $tree) {
+    $order = json_decode(getSiteSetting('main_category_order', '[]'), true);
+    if (!is_array($order) || !$order) {
+        return $tree;
+    }
+    $positions = array_flip(array_map('intval', $order));
+    $original = array_flip(array_column($tree, 'id'));
+    usort($tree, function ($a, $b) use ($positions, $original) {
+        return ($positions[$a['id']] ?? PHP_INT_MAX) <=> ($positions[$b['id']] ?? PHP_INT_MAX)
+            ?: $original[$a['id']] <=> $original[$b['id']];
+    });
+    return $tree;
+}
+
 function getAllCategories() {
     global $pdo;
     $stmt = $pdo->query("SELECT * FROM categories ORDER BY name");

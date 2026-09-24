@@ -50,6 +50,11 @@ foreach ($categories as &$menuCategory) {
 }
 unset($menuCategory);
 $categoryTree = buildCategoryTreeWithMultipleParents($categories);
+$categoryTree = orderMainCategoryTree($categoryTree);
+// Hide empty main categories in all header menus, including the mobile menu.
+$categoryTree = array_values(array_filter($categoryTree, function ($category) {
+    return (int)($category['product_count'] ?? 0) > 0;
+}));
 $currentUser = getCurrentUser();
 
 // Get cart count for header
