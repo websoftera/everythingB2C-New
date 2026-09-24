@@ -13,6 +13,31 @@ if (!isset($_SESSION['admin_id'])) {
 $pageTitle = 'Categories Management';
 $success_message = '';
 $error_message = '';
+if (empty($_SESSION['category_order_token'])) {
+    $_SESSION['category_order_token'] = bin2hex(random_bytes(32));
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'reorder') {
+    header('Content-Type: application/json');
+    if (!is_string($_POST['token'] ?? null) || !hash_equals($_SESSION['category_order_token'], $_POST['token'])) {
+        http_response_code(403);
+        echo json_encode(['success' => false]);
+        exit;
+    }
+    $order = json_decode($_POST['order'] ?? '', true);
+    $mainIds = array_map('intval', $pdo->query('SELECT id FROM categories WHERE parent_id IS NULL OR parent_id = 0')->fetchAll(PDO::FETCH_COLUMN));
+    if (!is_array($order) || array_filter($order, function ($id) { return !is_int($id); })
+        || count($order) !== count($mainIds) || count(array_unique($order)) !== count($order)
+        || array_diff($order, $mainIds)) {
+        http_response_code(400);
+        echo json_encode(['success' => false]);
+        exit;
+    }
+    $saved = setSiteSetting('main_category_order', json_encode($order));
+    if (!$saved) http_response_code(500);
+    echo json_encode(['success' => (bool)$saved]);
+    exit;
+}
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -131,9 +156,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Get categories with product counts
-$stmt = $pdo->query("SELECT c.*, COUNT(p.id) as product_count
+ensureProductCategoryAssignmentsSchema($pdo);
+$stmt = $pdo->query("SELECT c.*, COUNT(pc.product_id) as product_count
                      FROM categories c
-                     LEFT JOIN products p ON c.id = p.category_id
+                     LEFT JOIN (
+                         SELECT id AS product_id, category_id FROM products
+                         UNION
+                         SELECT p.id AS product_id, pca.category_id
+                         FROM products p
+                         INNER JOIN product_category_assignments pca ON pca.product_id = p.id
+                     ) pc ON c.id = pc.category_id
                      GROUP BY c.id
                      ORDER BY c.name");
 $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -180,6 +212,7 @@ function uploadImage($file, $folder) {
 }
 
 $categoryTree = buildCategoryTree($categories);
+$categoryTree = orderMainCategoryTree($categoryTree);
 ?>
 
 <!DOCTYPE html>
@@ -195,6 +228,13 @@ $categoryTree = buildCategoryTree($categories);
     <link href="assets/css/admin.css" rel="stylesheet">
     <link rel="stylesheet" href="./asset/style/style.css">
     <style>
+        .category-move-handle { cursor: grab; touch-action: none; }
+        .category-move-handle:active { cursor: grabbing; }
+        .category-name-toggle { background: none; border: 0; padding: 0; color: inherit; font: inherit; font-weight: inherit; text-align: left; cursor: pointer; }
+        .category-name-toggle:focus-visible { outline: 2px solid #4e73df; outline-offset: 4px; }
+        .category-order-group tr[hidden] { display: none !important; }
+        .category-order-group.dragging { opacity: .45; }
+        .category-order-group.drop-target { outline: 2px solid #4e73df; }
         .category-form-modal {
             max-width: 500px;
         }
@@ -301,6 +341,7 @@ $categoryTree = buildCategoryTree($categories);
                             <h5 class="mb-0">Categories (<?php echo count($categories); ?>)</h5>
                         </div>
                         <div class="everythingb2c-card-body">
+                            <p class="text-muted small">Click a main category name to show or hide its subcategories. Drag the Move handle to reorder main categories in the header menus. <span id="categoryOrderStatus" role="status" aria-live="polite"></span></p>
                             <?php if (empty($categories)): ?>
                                 <div class="text-center py-4">
                                     <i class="fas fa-tags fa-3x text-muted mb-3"></i>
@@ -312,6 +353,7 @@ $categoryTree = buildCategoryTree($categories);
                                     <table class="everythingb2c-table everythingb2c-categories-table">
                                         <thead>
                                             <tr>
+                                                <th>Move</th>
                                                 <th>Image</th>
                                                 <th>Name</th>
                                                 <th>Slug</th>
@@ -321,11 +363,15 @@ $categoryTree = buildCategoryTree($categories);
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
                                             <?php
                                             function displayCategories($categories, $level = 0) {
                                                 foreach ($categories as $category) {
-                                                    echo '<tr>';
+                                                    echo $level > 0 ? '<tr class="category-child-row" hidden>' : '<tr>';
+                                                    echo '<td>';
+                                                    if ($level === 0) {
+                                                        echo '<button type="button" draggable="true" class="btn btn-sm text-secondary category-move-handle" aria-label="Move ' . htmlspecialchars($category['name'], ENT_QUOTES, 'UTF-8') . '" title="Drag to move; use Up/Down arrow keys to reorder"><i class="fas fa-grip-vertical" aria-hidden="true"></i></button>';
+                                                    }
+                                                    echo '</td>';
                                                     echo '<td>';
                                                     if ($category['image']) {
                                                         echo '<img src="../' . $category['image'] . '" alt="' . htmlspecialchars($category['name']) . '" class="img-preview">';
@@ -335,7 +381,13 @@ $categoryTree = buildCategoryTree($categories);
                                                     echo '</td>';
                                                     echo '<td>';
                                                     echo '<strong style="padding-left: ' . ($level * 20) . 'px">';
+                                                    if ($level === 0 && !empty($category['children'])) {
+                                                        echo '<button type="button" class="category-name-toggle" aria-expanded="false"><i class="fas fa-chevron-right me-2" aria-hidden="true"></i>';
+                                                    }
                                                     echo htmlspecialchars($category['name']);
+                                                    if ($level === 0 && !empty($category['children'])) {
+                                                        echo '</button>';
+                                                    }
                                                     echo '</strong>';
                                                     if ($category['parent_id']) {
                                                         echo '<span class="badge bg-secondary ms-2">Sub-category</span>';
@@ -362,9 +414,12 @@ $categoryTree = buildCategoryTree($categories);
                                                 }
                                             }
 
-                                            displayCategories($categoryTree);
+                                            foreach ($categoryTree as $mainCategory) {
+                                                echo '<tbody class="category-order-group" data-category-id="' . (int)$mainCategory['id'] . '">';
+                                                displayCategories([$mainCategory]);
+                                                echo '</tbody>';
+                                            }
                                             ?>
-                                        </tbody>
                                     </table>
                                 </div>
                             <?php endif; ?>
@@ -540,6 +595,90 @@ $categoryTree = buildCategoryTree($categories);
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/js/admin.js"></script>
     <script>
+        const orderTable = document.querySelector('.everythingb2c-categories-table');
+        const orderStatus = document.getElementById('categoryOrderStatus');
+        let draggedGroup = null;
+        let savingOrder = false;
+        let previousGroups = [];
+        const getGroups = () => Array.from(orderTable.querySelectorAll('.category-order-group'));
+        async function saveCategoryOrder() {
+            savingOrder = true;
+            orderStatus.textContent = 'Saving order…';
+            try {
+                const response = await fetch('categories.php', {
+                    method: 'POST',
+                    body: new URLSearchParams({
+                        action: 'reorder',
+                        token: <?php echo json_encode($_SESSION['category_order_token']); ?>,
+                        order: JSON.stringify(getGroups().map(group => Number(group.dataset.categoryId)))
+                    })
+                });
+                const result = await response.json();
+                if (!response.ok || !result.success) throw new Error('Save failed');
+                orderStatus.textContent = 'Order saved.';
+            } catch (error) {
+                previousGroups.forEach(group => orderTable.appendChild(group));
+                orderStatus.textContent = 'Could not save order. Please refresh and try again.';
+            } finally {
+                savingOrder = false;
+            }
+        }
+        if (orderTable) {
+            orderTable.addEventListener('click', event => {
+                const toggle = event.target.closest('.category-name-toggle');
+                if (!toggle) return;
+                const expanded = toggle.getAttribute('aria-expanded') !== 'true';
+                toggle.setAttribute('aria-expanded', String(expanded));
+                toggle.querySelector('i').className = expanded ? 'fas fa-chevron-down me-2' : 'fas fa-chevron-right me-2';
+                toggle.closest('tbody').querySelectorAll('.category-child-row').forEach(row => {
+                    row.hidden = !expanded;
+                });
+            });
+            orderTable.addEventListener('dragstart', event => {
+                const handle = event.target.closest('.category-move-handle');
+                if (!handle || savingOrder) { event.preventDefault(); return; }
+                previousGroups = getGroups();
+                draggedGroup = handle.closest('tbody');
+                draggedGroup.classList.add('dragging');
+                event.dataTransfer.effectAllowed = 'move';
+                event.dataTransfer.setData('text/plain', draggedGroup.dataset.categoryId);
+            });
+            orderTable.addEventListener('dragover', event => {
+                if (!draggedGroup) return;
+                const target = event.target.closest('.category-order-group');
+                if (!target || target === draggedGroup) return;
+                event.preventDefault();
+                event.dataTransfer.dropEffect = 'move';
+                getGroups().forEach(group => group.classList.toggle('drop-target', group === target));
+            });
+            orderTable.addEventListener('drop', event => {
+                const target = event.target.closest('.category-order-group');
+                if (!draggedGroup || !target || target === draggedGroup) return;
+                event.preventDefault();
+                const groups = getGroups();
+                orderTable.insertBefore(draggedGroup, groups.indexOf(draggedGroup) < groups.indexOf(target) ? target.nextSibling : target);
+                saveCategoryOrder();
+            });
+            orderTable.addEventListener('dragend', () => {
+                getGroups().forEach(group => group.classList.remove('dragging', 'drop-target'));
+                draggedGroup = null;
+            });
+            orderTable.addEventListener('keydown', event => {
+                const handle = event.target.closest('.category-move-handle');
+                if (!handle || !['ArrowUp', 'ArrowDown'].includes(event.key)) return;
+                event.preventDefault();
+                if (savingOrder) return;
+                previousGroups = getGroups();
+                const group = handle.closest('tbody');
+                const index = previousGroups.indexOf(group);
+                const target = previousGroups[index + (event.key === 'ArrowUp' ? -1 : 1)];
+                if (!target) return;
+                orderTable.insertBefore(group, event.key === 'ArrowUp' ? target : target.nextSibling);
+                handle.focus();
+                saveCategoryOrder();
+            });
+        }
+
         function editCategory(category) {
             document.getElementById('edit_id').value = category.id;
             document.getElementById('edit_name').value = category.name;

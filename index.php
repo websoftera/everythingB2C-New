@@ -8,7 +8,6 @@ $showPopup = shouldShowDeliveryPopup();
 $popupSettings = getPopupSettings();
 
 // Get data from database
-$categories = getAllCategoriesWithRecursiveProductCount();
 $featuredProducts = getFeaturedProducts(8);
 $discountedProducts = getDiscountedProducts(8);
 
@@ -30,10 +29,8 @@ else {
 
 
 
-// Filter to only main categories (parent_id is NULL)
-$main_categories = array_filter($categories, function ($cat) {
-  return empty($cat['parent_id']);
-});
+// Reuse the header's ordered main categories with active products, including descendants.
+$main_categories = $categoryTree;
 
 // Fetch active banners for the slider
 $bannersList = [];
