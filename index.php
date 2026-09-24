@@ -31,6 +31,12 @@ else {
 
 // Reuse the header's ordered main categories with active products, including descendants.
 $main_categories = $categoryTree;
+$mobileCategoryOrder = array_flip([
+    'office-stationery',
+    'school-stationary',
+    'industrial-safety-products',
+    'packing-materials',
+]);
 
 // Fetch active banners for the slider
 $bannersList = [];
@@ -150,6 +156,16 @@ if (empty($bannersList)) {
 
 <!-- Product Categories Section -->
 <section class="popular-categories-section home-categories-section">
+    <style>
+        @media (max-width: 767.98px) {
+            .home-categories-section #slider {
+                grid-auto-flow: row !important;
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            }
+            .home-categories-section #slider > .desktop-only-category { display: none !important; }
+            .home-categories-section #slider > .mobile-featured-category { order: var(--mobile-category-order); }
+        }
+    </style>
     <div class="categories-card">
         <div class="category-products-header">
             <h2 class="category-products-title">Product Categories</h2>
@@ -161,7 +177,7 @@ if (empty($bannersList)) {
             </button>
             <div class="categories-container" id="slider">
             <?php foreach ($main_categories as $category): ?>
-                    <div class="category-item">
+                    <div class="category-item<?php echo isset($mobileCategoryOrder[$category['slug']]) ? ' mobile-featured-category' : ' desktop-only-category'; ?>" style="--mobile-category-order: <?php echo $mobileCategoryOrder[$category['slug']] ?? 4; ?>;">
                     <a href="category.php?slug=<?php echo $category['slug']; ?>">
                             <div class="category-illustration">
                                 <?php $categoryImage = !empty($category['image']) ? ltrim($category['image'], './') : ''; ?>
