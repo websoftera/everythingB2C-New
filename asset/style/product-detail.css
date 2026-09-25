@@ -1,4 +1,18 @@
 /* Product Detail Page Styles */
+@media (max-width: 767px) {
+    .product-page-breadcrumb .breadcrumb-nav {
+        margin-bottom: 0 !important;
+        padding-top: 6px !important;
+        padding-bottom: 6px !important;
+    }
+
+    .product-page-breadcrumb .breadcrumb {
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+    }
+}
 
 /* Main Container for alignment */
 .product-page-container {

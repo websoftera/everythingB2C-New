@@ -2758,6 +2758,15 @@ input[type="checkbox"]:checked+.heart-icon,
 
 /* Compact desktop category mega menu */
 @media (min-width: 992px) {
+  .category-navbar {
+    position: relative;
+  }
+
+  .category-navbar > .container-fluid,
+  .category-navbar .navbar-collapse,
+  .category-navbar .category-list {
+    position: static;
+  }
   .category-navbar .category-list > .nav-item.dropdown {
     position: relative;
   }
@@ -2765,30 +2774,23 @@ input[type="checkbox"]:checked+.heart-icon,
   .category-navbar .category-mega-menu {
     z-index: 1200 !important;
     isolation: isolate;
-    left: 50% !important;
+    top: 100%;
+    left: var(--mega-left-offset, 0px) !important;
     right: auto !important;
     width: max-content;
     min-width: min(360px, calc(100vw - 40px));
     max-width: min(880px, calc(100vw - 40px));
-    max-height: min(430px, calc(100vh - 190px));
+    max-height: none;
     margin-top: 0 !important;
     padding: 18px 20px 20px;
-    overflow-x: hidden;
-    overflow-y: auto;
-    transform: translateX(-50%);
+    overflow: visible;
+    transform: none;
     border: 1px solid #e2e8f0;
     border-top: 3px solid #9fbe1b;
     border-radius: 0 0 12px 12px;
     box-shadow: 0 18px 42px rgba(15, 23, 42, .16);
     scrollbar-width: thin;
     scrollbar-color: #b7c0cc #f4f7fa;
-  }
-
-  /* Keep right-side menus inside the viewport while preserving the hover path. */
-  .category-navbar .category-list > .nav-item.dropdown:nth-last-child(-n + 3) > .category-mega-menu {
-    left: auto !important;
-    right: 0 !important;
-    transform: none;
   }
 
   .category-navbar .category-mega-menu::-webkit-scrollbar {
@@ -2836,7 +2838,7 @@ input[type="checkbox"]:checked+.heart-icon,
 
   .category-mega-grid {
     display: grid;
-    grid-template-columns: repeat(var(--mega-columns, 3), minmax(190px, max-content));
+    grid-template-columns: repeat(var(--mega-columns, 3), minmax(0, 1fr));
     gap: 8px 18px;
   }
 

@@ -785,7 +785,7 @@ function renderCategoryMenu($tree, $level = 0) {
         if ($hasChildren) {
             $megaColumnCount = min(3, max(1, count($cat['children'])));
             echo '<a class="nav-link navigationtext dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">' . htmlspecialchars($cat['name']) . '</a>';
-            echo '<ul class="dropdown-menu category-mega-menu" style="--mega-columns: ' . $megaColumnCount . '">';
+            echo '<ul class="dropdown-menu category-mega-menu" data-category-slug="' . htmlspecialchars($cat['slug'], ENT_QUOTES, 'UTF-8') . '" style="--mega-columns: ' . $megaColumnCount . '">';
             echo '<li class="category-mega-heading">';
             echo '<span class="category-mega-eyebrow">Browse categories</span>';
             echo '<a class="category-mega-view-all" href="' . $base_url . 'category.php?slug=' . rawurlencode($cat['slug']) . '">View all ' . htmlspecialchars($cat['name']) . ' <span aria-hidden="true">&rarr;</span></a>';
@@ -856,6 +856,35 @@ renderCategoryMenu($categoryTree);
     </nav>
 </div>
 <!-- Bootstrap Bundle removed (in footer) -->
+<script>
+  // Keep full menu columns; later menus extend left when space on the right runs out.
+  document.querySelectorAll('.category-navbar .category-list > .dropdown').forEach(item => {
+    const menu = item.querySelector('.category-mega-menu');
+    if (!menu) return;
+    const alignMenu = () => {
+      if (window.innerWidth < 992) return;
+      menu.style.setProperty('--mega-left-offset', '0px');
+      const bounds = menu.getBoundingClientRect();
+      if (!bounds.width) return;
+      const viewportWidth = document.documentElement.clientWidth;
+      const itemBounds = item.getBoundingClientRect();
+      let desiredLeft = bounds.right > viewportWidth - 20
+        ? itemBounds.right - bounds.width
+        : itemBounds.left;
+      // Center large three-column menus like Packing Materials.
+      const columns = Number(menu.style.getPropertyValue('--mega-columns')) || 1;
+      if (columns >= 3) {
+        desiredLeft = (viewportWidth - bounds.width) / 2;
+      }
+      const fittedLeft = Math.max(20, Math.min(desiredLeft, viewportWidth - 20 - bounds.width));
+      menu.style.setProperty('--mega-left-offset', (fittedLeft - bounds.left) + 'px');
+    };
+    item.addEventListener('mouseenter', alignMenu);
+    item.addEventListener('focusin', () => requestAnimationFrame(alignMenu));
+    item.addEventListener('shown.bs.dropdown', alignMenu);
+    window.addEventListener('resize', alignMenu);
+  });
+</script>
 <script>
   // Global base URL for JavaScript
   window.BASE_URL = '<?php echo $base_url; ?>';

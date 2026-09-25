@@ -58,6 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $pdo->beginTransaction();
 
                         // Insert category
+                        $slug = uniqueCategorySlug($pdo, $name);
                         $stmt = $pdo->prepare("INSERT INTO categories (name, slug, description, parent_id) VALUES (?, ?, ?, ?)");
                         $stmt->execute([$name, $slug, $description, $parent_id]);
                         $category_id = $pdo->lastInsertId();
@@ -102,6 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $pdo->beginTransaction();
 
                         // Update category
+                        $slug = uniqueCategorySlug($pdo, $name, $id);
                         $stmt = $pdo->prepare("UPDATE categories SET name = ?, slug = ?, description = ?, parent_id = ? WHERE id = ?");
                         $stmt->execute([$name, $slug, $description, $parent_id, $id]);
                         saveCategoryParentAssignments($pdo, $id, $parent_id, $additional_parent_ids);
@@ -182,6 +184,29 @@ $mainParentCategories = array_values(array_filter($allCategories, function ($cat
 }));
 
 // Helper functions
+function uniqueCategorySlug(PDO $pdo, $name, $excludeId = 0) {
+    // Keep existing links stable when only other category details are edited.
+    if ($excludeId) {
+        $current = $pdo->prepare('SELECT name, slug FROM categories WHERE id = ?');
+        $current->execute([$excludeId]);
+        $category = $current->fetch(PDO::FETCH_ASSOC);
+        if ($category && $category['name'] === $name) {
+            return $category['slug'];
+        }
+    }
+    $base = createSlug($name) ?: 'category';
+    $slug = $base;
+    $suffix = 2;
+    $exists = $pdo->prepare('SELECT id FROM categories WHERE slug = ? AND id <> ? LIMIT 1');
+    while (true) {
+        $exists->execute([$slug, $excludeId]);
+        if (!$exists->fetchColumn()) {
+            return $slug;
+        }
+        $slug = $base . '-' . $suffix++;
+    }
+}
+
 function createSlug($string) {
     $slug = strtolower(trim($string));
     $slug = preg_replace('/[^a-z0-9-]/', '-', $slug);

@@ -3,8 +3,10 @@ $pageTitle = 'All Categories';
 require_once 'includes/header.php';
 require_once 'includes/functions.php';
 
-// Get all categories with recursive product counts (including subcategories)
-$all_categories_with_products = getAllCategoriesWithRecursiveProductCount();
+// Reuse the header's active-product counts, including descendant assignments.
+$all_categories_with_products = array_filter($categories, function ($cat) {
+    return (int)($cat['product_count'] ?? 0) > 0;
+});
 
 // Get filter parameters for sidebar
 $selectedCategory = isset($_GET['category']) ? $_GET['category'] : '';
@@ -12,9 +14,7 @@ $searchTerm = isset($_GET['q']) ? trim($_GET['q']) : '';
 
 // By default, only show main parent categories (not subcategories)
 if (empty($selectedCategory) && empty($searchTerm)) {
-    $display_list = array_filter($all_categories_with_products, function ($cat) {
-        return empty($cat['parent_id']);
-    });
+    $display_list = $categoryTree;
 }
 else {
     // If we're filtering by name or by a specific ID, we search against ALL categories including subcategories

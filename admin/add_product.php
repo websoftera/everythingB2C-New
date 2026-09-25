@@ -9,6 +9,7 @@ if (!isset($_SESSION['admin_id'])) {
     header('Location: login.php');
     exit;
 }
+ensureDiscountSelectionSchema();
 
 $pageTitle = 'Add New Product';
 $success_message = '';
@@ -124,6 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([$name, $slug, $description, $mrp, $selling_price, $pay_per_unit, $unit_label, $discount_percentage, $gst_type, $gst_rate, $category_id, $stock_quantity, $package_quantity, $max_quantity_per_order, $is_active, $is_featured, $is_discounted, $sku, $hsn]);
 
             $product_id = $pdo->lastInsertId();
+            recordProductDiscountSelection($product_id, $is_discounted);
             saveProductBrand($pdo, $product_id, $brand_id);
             saveProductCategoryAssignments($pdo, $product_id, $category_id, $additional_category_ids);
             saveProductCategoryParentVisibility($pdo, $product_id, $selected_category_ids, $category_parent_visibility);

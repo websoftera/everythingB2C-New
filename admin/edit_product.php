@@ -9,6 +9,7 @@ if (!isset($_SESSION['admin_id'])) {
     header('Location: login.php');
     exit;
 }
+ensureDiscountSelectionSchema();
 
 $pageTitle = 'Edit Product';
 $success_message = '';
@@ -196,6 +197,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $discount_percentage = calculateDiscountPercentage($mrp, $selling_price);
 
             // Update product
+            recordProductDiscountSelection($product_id, $is_discounted);
             $stmt = $pdo->prepare("UPDATE products SET name = ?, slug = ?, description = ?, mrp = ?, selling_price = ?, pay_per_unit = ?, unit_label = ?, discount_percentage = ?, gst_rate = ?, category_id = ?, stock_quantity = ?, package_quantity = ?, max_quantity_per_order = ?, is_active = ?, is_featured = ?, is_discounted = ?, sku = ?, hsn = ? WHERE id = ?");
             $stmt->execute([$name, $slug, $description, $mrp, $selling_price, $pay_per_unit, $unit_label, $discount_percentage, $gst_rate, $category_id, $stock_quantity, $package_quantity, $max_quantity_per_order, $is_active, $is_featured, $is_discounted, $sku, $hsn, $product_id]);
             saveProductBrand($pdo, $product_id, $brand_id);

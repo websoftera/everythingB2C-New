@@ -29,6 +29,12 @@ foreach ($categories as &$filterCategory) {
     $filterCategory['product_count'] = $categoryFilterCounts[$filterCategory['id']] ?? 0;
 }
 unset($filterCategory);
+// Keep both desktop and mobile filters limited to categories with active products.
+$categories = array_values(array_filter($categories, function ($category) {
+    return (int)$category['product_count'] > 0;
+}));
+// Both filter renderers walk this list by parent, preserving child grouping.
+$categories = orderMainCategoryTree($categories);
 $allCategoryProductCount = (int)$pdo->query('SELECT COUNT(*) FROM products WHERE is_active = 1')->fetchColumn();
 $categoryTree = buildCategoryTree($categories);
 ?>
@@ -68,7 +74,6 @@ $categoryTree = buildCategoryTree($categories);
           <input type="hidden" name="slug" value="<?php echo htmlspecialchars($_GET['slug']); ?>">
         <?php endif; ?>
         
-        <input type="hidden" name="sort" value="<?php echo htmlspecialchars($currentSort, ENT_QUOTES, 'UTF-8'); ?>">
         <!-- Search Filter -->
         <div class="filter-section">
           <h5>Search</h5>
@@ -92,7 +97,7 @@ $categoryTree = buildCategoryTree($categories);
                       $indent = str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $level);
                       foreach ($categories as $cat) {
                           if ($cat['parent_id'] == $parentId) {
-                              $output .= '<option value="' . $cat['id'] . '"';
+                              $output .= '<option value="' . $cat['id'] . '" class="' . ($level === 0 ? 'filter-main-category' : 'filter-subcategory') . '"';
                               if (isset($_GET['category']) && $_GET['category'] == $cat['id']) {
                                   $output .= ' selected';
                               }
@@ -122,6 +127,16 @@ $categoryTree = buildCategoryTree($categories);
           </div>
         </div>
         <?php endif; ?>
+        <div class="filter-section">
+          <h5><label for="sidebarSortSelect">Sort</label></h5>
+          <div class="form-group">
+            <select name="sort" id="sidebarSortSelect" class="form-control">
+              <?php foreach (['newest' => 'Newest First', 'oldest' => 'Oldest First', 'price_low' => 'Price: Low to High', 'price_high' => 'Price: High to Low'] as $sortValue => $sortLabel): ?>
+                <option value="<?php echo $sortValue; ?>" <?php echo $currentSort === $sortValue ? 'selected' : ''; ?>><?php echo $sortLabel; ?></option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+        </div>
         <!-- Price Range Filter - COMMENTED OUT FOR DESKTOP -->
         <!--
         <div class="filter-section">
@@ -196,7 +211,7 @@ $categoryTree = buildCategoryTree($categories);
                                 
                                 $output .= '<label class="mob-radio-item" style="' . $indentStyle . '">';
                                 $output .= '<input type="checkbox" name="category[]" value="' . $cat['id'] . '" ' . $checked . '>';
-                                $output .= '<span class="mob-radio-label">' . htmlspecialchars($cat['name']) . ' (' . (int)$cat['product_count'] . ')</span>';
+                                $output .= '<span class="mob-radio-label ' . ($level === 0 ? 'filter-main-category' : 'filter-subcategory') . '">' . htmlspecialchars($cat['name']) . ' (' . (int)$cat['product_count'] . ')</span>';
                                 $output .= '<span class="mob-radio-circle"></span>';
                                 $output .= '</label>';
                                 
@@ -267,6 +282,14 @@ $categoryTree = buildCategoryTree($categories);
 </div>
 
 <style>
+  #sidebarCategorySelect option.filter-main-category,
+  .sidebar-filter-container .mob-radio-label.filter-main-category {
+    font-weight: 700 !important;
+  }
+  #sidebarCategorySelect option.filter-subcategory,
+  .sidebar-filter-container .mob-radio-label.filter-subcategory {
+    font-weight: 400 !important;
+  }
 /* Sidebar Filter Styles */
 .sidebar-filter-container {
   position: relative;
@@ -959,8 +982,8 @@ select.form-control {
   /* Horizontal Filter Layout container */
   .sidebar-filter-panel {
     margin: 0 auto 25px auto;
-    padding: 15px 20px;
-    max-width: 1100px; /* narrowed max-width for compact view */
+    padding: 15px 10px;
+    max-width: 1400px;
     display: flex;
     justify-content: center; /* Center the form contents */
   }
@@ -1026,6 +1049,25 @@ select.form-control {
     justify-content: center;
     flex: none; /* Prevent buttons from stretching vertically or horizontally weirdly */
   }
+  .sidebar-filter-panel > .desktop-filter-view {
+    width: 100%;
+    min-width: 0;
+  }
+  #sidebarFilterForm {
+    flex-wrap: wrap;
+    gap: 12px 16px;
+  }
+  #sidebarFilterForm .filter-section {
+    flex: 1 1 210px;
+    min-width: 0;
+  }
+  #sidebarFilterForm .form-group {
+    flex: 1;
+    min-width: 0;
+  }
+  #sidebarFilterForm .form-control { width: 100%; }
+  #sidebarFilterForm h5 label { margin-bottom: 0; }
+  #sidebarFilterForm .filter-actions { flex: 0 0 auto; }
 }
 </style>
 

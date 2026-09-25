@@ -9,7 +9,7 @@ $popupSettings = getPopupSettings();
 
 // Get data from database
 $featuredProducts = getFeaturedProducts(8);
-$discountedProducts = getDiscountedProducts(8);
+$discountedProducts = getDiscountedProducts(10);
 
 // Get user's wishlist for quick lookup
 $wishlist_ids = [];
