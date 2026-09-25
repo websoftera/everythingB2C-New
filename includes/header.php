@@ -650,7 +650,16 @@ if (!function_exists('renderCategoryDropdown')) {
             </a>
 
             <!-- User Account / Login -->
-            <div class="dropdown user-auth-dropdown me-1 me-lg-3">
+            <div class="desktop-account-links d-none d-lg-flex align-items-center me-lg-3">
+                <a class="desktop-customer-link" href="<?php echo $base_url . (isLoggedIn() ? 'myaccount.php' : 'login.php'); ?>">
+                    <i class="fas fa-user" aria-hidden="true"></i><span>Customer</span>
+                </a>
+                <span class="desktop-account-divider" aria-hidden="true"></span>
+                <a class="desktop-seller-link" href="<?php echo $base_url; ?>seller/login.php">
+                    <i class="fas fa-user" aria-hidden="true"></i><span>Seller</span>
+                </a>
+            </div>
+            <div class="dropdown user-auth-dropdown me-1 me-lg-3 d-lg-none">
               <?php if (isLoggedIn()): ?>
                 <a href="#" title="Account" class="text-decoration-none user-account-link d-flex align-items-center dropdown-toggle" role="button" aria-expanded="false">
                   <i class="fas fa-user user-account-icon me-1 me-lg-2"></i>
