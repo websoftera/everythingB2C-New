@@ -2758,6 +2758,10 @@ input[type="checkbox"]:checked+.heart-icon,
 
 /* Compact desktop category mega menu */
 @media (min-width: 992px) {
+  .category-navbar .navbar-nav.category-list {
+    column-gap: 12px;
+  }
+
   .category-navbar {
     position: relative;
   }
