@@ -574,13 +574,10 @@ function getFeaturedProducts($limit = 8) {
 // Function to get discounted products
 function ensureDiscountSelectionSchema() {
     global $pdo;
-    static $ready = false;
-    if ($ready) return;
     $pdo->exec('CREATE TABLE IF NOT EXISTS product_discount_selections (
         product_id INT NOT NULL PRIMARY KEY,
         selected_at DATETIME(6) NOT NULL
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4');
-    $ready = true;
 }
 
 function recordProductDiscountSelection($productId, $selected) {
@@ -589,7 +586,6 @@ function recordProductDiscountSelection($productId, $selected) {
         $pdo->prepare('DELETE FROM product_discount_selections WHERE product_id = ?')->execute([$productId]);
         return;
     }
-    // Saving a checked product promotes it even if it was already discounted.
     $pdo->prepare('INSERT INTO product_discount_selections (product_id, selected_at) VALUES (?, NOW(6))
         ON DUPLICATE KEY UPDATE selected_at = VALUES(selected_at)')->execute([$productId]);
 }
@@ -597,13 +593,13 @@ function recordProductDiscountSelection($productId, $selected) {
 function getDiscountedProducts($limit = 8) {
     global $pdo;
     ensureProductPackageQuantitySchema($pdo);
-    ensureDiscountSelectionSchema();
     $limit = $limit === null ? null : max(0, (int)$limit);
+    ensureDiscountSelectionSchema();
     $sql = "SELECT p.*, c.name as category_name FROM products p
             LEFT JOIN categories c ON p.category_id = c.id
-            LEFT JOIN product_discount_selections ds ON ds.product_id = p.id
             WHERE p.is_discounted = 1 AND p.is_active = 1
-            ORDER BY ds.selected_at DESC, p.id DESC";
+            ORDER BY (SELECT ds.selected_at FROM product_discount_selections ds WHERE ds.product_id = p.id) DESC,
+                     p.created_at DESC, p.id DESC";
     if ($limit !== null) {
         $sql .= ' LIMIT ' . $limit;
     }
