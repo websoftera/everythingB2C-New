@@ -49,7 +49,7 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
 ?>
 
 <!-- Breadcrumb Navigation -->
-<div class="container-fluid" style="padding: 0 15px;">
+<div class="container-fluid product-page-breadcrumb" style="padding: 0 15px;">
     <?php
     $breadcrumbs = generateBreadcrumb(strip_tags($pageTitle), $categoryPath, strip_tags($product['name']));
     echo renderBreadcrumb($breadcrumbs);

@@ -29,6 +29,12 @@ foreach ($categories as &$filterCategory) {
     $filterCategory['product_count'] = $categoryFilterCounts[$filterCategory['id']] ?? 0;
 }
 unset($filterCategory);
+// Keep both desktop and mobile filters limited to categories with active products.
+$categories = array_values(array_filter($categories, function ($category) {
+    return (int)$category['product_count'] > 0;
+}));
+// Both filter renderers walk this list by parent, preserving child grouping.
+$categories = orderMainCategoryTree($categories);
 $allCategoryProductCount = (int)$pdo->query('SELECT COUNT(*) FROM products WHERE is_active = 1')->fetchColumn();
 $categoryTree = buildCategoryTree($categories);
 ?>
