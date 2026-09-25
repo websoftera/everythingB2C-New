@@ -3,6 +3,22 @@
   function initSearchBlock(searchInput, searchBtn, resultsPopup) {
     if (!searchInput || !searchBtn || !resultsPopup) return;
     let debounceTimeout = null;
+    if (resultsPopup.id === 'headerSearchResultsPopup') {
+      const form = searchInput.closest('form');
+      const alignResults = () => {
+        if (window.innerWidth < 992 || !form) return;
+        const fieldBounds = searchInput.getBoundingClientRect();
+        const buttonBounds = searchBtn.getBoundingClientRect();
+        const formBounds = form.getBoundingClientRect();
+        resultsPopup.style.setProperty('left', (fieldBounds.left - formBounds.left) + 'px', 'important');
+        resultsPopup.style.setProperty('width', (buttonBounds.right - fieldBounds.left) + 'px', 'important');
+      };
+      searchInput.addEventListener('input', alignResults);
+      searchInput.addEventListener('focus', alignResults);
+      window.addEventListener('resize', alignResults);
+      if (form && window.ResizeObserver) new ResizeObserver(alignResults).observe(form);
+      alignResults();
+    }
 
     // Debounced AJAX search
     function doSearch() {

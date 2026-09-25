@@ -934,7 +934,7 @@ renderCategoryMenu($categoryTree);
   };
 </script>
 <script src="<?php echo $base_url; ?>popup/popup.js?v=<?php echo b2c_asset_version('popup/popup.js'); ?>"></script>
-<script src="<?php echo $base_url; ?>popup/searchbar.js"></script>
+<script src="<?php echo $base_url; ?>popup/searchbar.js?v=<?php echo b2c_asset_version('popup/searchbar.js'); ?>"></script>
 <script src="<?php echo $base_url; ?>js/real-time-max-quantity.js?v=<?php echo b2c_asset_version('js/real-time-max-quantity.js'); ?>"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
