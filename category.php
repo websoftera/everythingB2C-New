@@ -189,7 +189,7 @@ else {
 }
 
 // Pagination
-$itemsPerPage = 15;
+$itemsPerPage = 40;
 $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $totalPages = ceil($totalProducts / $itemsPerPage);
 $offset = ($currentPage - 1) * $itemsPerPage;
