@@ -144,6 +144,9 @@ $sql = "SELECT p.*, c.name as category_name FROM products p LEFT JOIN categories
 
 // Add sorting
 switch ($sortBy) {
+  case 'discount_high':
+    $sql .= ' ORDER BY CASE WHEN p.mrp > 0 AND p.selling_price > 0 AND p.selling_price < p.mrp THEN (p.mrp - p.selling_price) / p.mrp ELSE 0 END DESC, p.id DESC';
+    break;
   case 'oldest':
     $sql .= ' ORDER BY p.created_at ASC';
     break;
@@ -208,7 +211,7 @@ $subcategories = getSubcategoriesByParentId($category['id']);
 ?>
 <!-- Subcategories Slider Section (Same design as Home Page) -->
 <?php if (!empty($subcategories)): ?>
-<section class="popular-categories-section subcategories-section" style="--mobile-subcategory-columns: <?php echo count($subcategories) > 2 ? 3 : 2; ?>;">
+<section class="popular-categories-section subcategories-section<?php echo count($subcategories) <= 8 ? ' subcategories-no-desktop-scroll' : ''; ?>" style="--mobile-subcategory-columns: <?php echo count($subcategories) > 2 ? 3 : 2; ?>;">
     <div class="categories-card">
         <div class="category-products-header">
             <h2 class="category-products-title">Subcategories</h2>
@@ -397,6 +400,23 @@ endif; ?>
 
 <style>
 /* Category Page Layout Styles */
+@media (min-width: 992px) {
+  .subcategories-no-desktop-scroll .category-nav-btn {
+    display: none !important;
+  }
+  .subcategories-section .categories-container {
+    gap: 12px;
+  }
+  .subcategories-section .category-item {
+    flex: 0 0 calc((100% - 84px) / 8);
+    width: calc((100% - 84px) / 8);
+    min-width: 0;
+  }
+  .subcategories-section .category-label {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
 .products-container {
   padding: 20px 0;
 }

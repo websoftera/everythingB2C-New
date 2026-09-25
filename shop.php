@@ -76,6 +76,9 @@ if ($whereConditions) {
 
 // Add sorting
 switch ($sortBy) {
+    case 'discount_high':
+        $sql .= ' ORDER BY CASE WHEN p.mrp > 0 AND p.selling_price > 0 AND p.selling_price < p.mrp THEN (p.mrp - p.selling_price) / p.mrp ELSE 0 END DESC, p.id DESC';
+        break;
     case 'oldest':
         $sql .= ' ORDER BY p.created_at ASC';
         break;
