@@ -87,7 +87,7 @@ $countStmt->execute($params);
 $totalProducts = $countStmt->fetchColumn();
 
 // Pagination
-$productsPerPage = 15;
+$productsPerPage = 40;
 $currentPage = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
 $totalPages = ceil($totalProducts / $productsPerPage);
 $offset = ($currentPage - 1) * $productsPerPage;
