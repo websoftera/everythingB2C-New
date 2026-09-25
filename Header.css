@@ -2764,6 +2764,17 @@ input[type="checkbox"]:checked+.heart-icon,
   color: #fff !important;
 }
 
+@media (min-width: 992px) {
+  .desktop-account-links { gap: 12px; flex-shrink: 0; }
+  .desktop-account-links a { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; font-size: 13px; font-weight: 600; white-space: nowrap; }
+  .desktop-account-links .desktop-customer-link { color: #008cba; }
+  .desktop-account-links .desktop-customer-link i { color: #9fbe1b; }
+  .desktop-account-links .desktop-seller-link { color: #9fbe1b; }
+  .desktop-account-links .desktop-seller-link i { color: #008cba; }
+  .desktop-account-links i { font-size: 22px; }
+  .desktop-account-divider { height: 22px; width: 1px; background: #ccc; }
+}
+
 /* Compact desktop category mega menu */
 @media (min-width: 992px) {
   .category-navbar .navbar-nav.category-list {

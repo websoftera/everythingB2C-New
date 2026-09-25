@@ -3570,7 +3570,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         function startAutoPlay() {
             if (autoPlayInterval) clearInterval(autoPlayInterval);
-            autoPlayInterval = setInterval(nextSlide, 5000);
+            // Extra banners stay visible until the user navigates with an arrow.
+            if (carouselItems.length < 2 || currentIndex >= 2) return;
+            autoPlayInterval = setInterval(() => {
+                if (currentIndex < 2) showSlide((currentIndex + 1) % 2);
+            }, 5000);
         }
         
         function stopAutoPlay() {
@@ -3600,6 +3604,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Event listeners for indicators
         indicators.forEach((indicator, index) => {
+            if (index >= 2) {
+                indicator.disabled = true;
+                indicator.setAttribute('aria-disabled', 'true');
+                return;
+            }
             indicator.addEventListener('click', () => {
                 stopAutoPlay();
                 showSlide(index);
@@ -3625,6 +3634,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         function handleSwipe() {
+            // Additional banners are reached only with Previous/Next buttons.
+            if (currentIndex >= 2 || carouselItems.length < 2) return;
             const swipeThreshold = 50;
             const diff = touchStartX - touchEndX;
             
@@ -3632,12 +3643,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (diff > 0) {
                     // Swipe left - next slide
                     stopAutoPlay();
-                    nextSlide();
+                    showSlide((currentIndex + 1) % 2);
                     startAutoPlay();
                 } else {
                     // Swipe right - previous slide
                     stopAutoPlay();
-                    prevSlide();
+                    showSlide((currentIndex + 1) % 2);
                     startAutoPlay();
                 }
             }
