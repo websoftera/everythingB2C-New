@@ -95,6 +95,9 @@ $offset = ($currentPage - 1) * $productsPerPage;
 // Build ORDER BY clause
 $orderBy = 'CASE WHEN p.sort_order IS NULL OR p.sort_order = 0 THEN 1 ELSE 0 END, p.sort_order ASC, p.created_at DESC';
 switch ($sortBy) {
+  case 'discount_high':
+    $orderBy = 'CASE WHEN p.mrp > 0 AND p.selling_price > 0 AND p.selling_price < p.mrp THEN (p.mrp - p.selling_price) / p.mrp ELSE 0 END DESC, p.id DESC';
+    break;
   case 'oldest':
     $orderBy = 'p.created_at ASC';
     break;

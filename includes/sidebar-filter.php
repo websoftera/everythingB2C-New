@@ -131,7 +131,7 @@ $categoryTree = buildCategoryTree($categories);
           <h5><label for="sidebarSortSelect">Sort</label></h5>
           <div class="form-group">
             <select name="sort" id="sidebarSortSelect" class="form-control">
-              <?php foreach (['newest' => 'Newest First', 'oldest' => 'Oldest First', 'price_low' => 'Price: Low to High', 'price_high' => 'Price: High to Low'] as $sortValue => $sortLabel): ?>
+              <?php foreach (['newest' => 'Newest First', 'oldest' => 'Oldest First', 'price_low' => 'Price: Low to High', 'price_high' => 'Price: High to Low', 'discount_high' => 'Discount %: High to Low'] as $sortValue => $sortLabel): ?>
                 <option value="<?php echo $sortValue; ?>" <?php echo $currentSort === $sortValue ? 'selected' : ''; ?>><?php echo $sortLabel; ?></option>
               <?php endforeach; ?>
             </select>
@@ -262,6 +262,11 @@ $categoryTree = buildCategoryTree($categories);
                 <label class="mob-radio-item">
                   <input type="radio" name="sort" value="price_high" <?php if ($currentSort == 'price_high') echo 'checked'; ?>>
                   <span class="mob-radio-label">Price: High to Low</span>
+                  <span class="mob-radio-circle"></span>
+                </label>
+                <label class="mob-radio-item">
+                  <input type="radio" name="sort" value="discount_high" <?php if ($currentSort == 'discount_high') echo 'checked'; ?>>
+                  <span class="mob-radio-label">Discount %: High to Low</span>
                   <span class="mob-radio-circle"></span>
                 </label>
               </div>
@@ -981,11 +986,20 @@ select.form-control {
 
   /* Horizontal Filter Layout container */
   .sidebar-filter-panel {
-    margin: 0 auto 25px auto;
-    padding: 15px 10px;
+    margin: 0 auto 24px auto;
+    padding: 8px 10px;
     max-width: 1400px;
     display: flex;
     justify-content: center; /* Center the form contents */
+  }
+
+  .category-container,
+  .products-list-page-container {
+    margin-top: 8px !important;
+  }
+  .category-container .products-container,
+  .products-list-page-container .products-container {
+    padding-top: 4px;
   }
 
   /* Hide Header label on desktop (Filters) */

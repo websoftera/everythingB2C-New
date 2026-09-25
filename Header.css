@@ -2756,6 +2756,14 @@ input[type="checkbox"]:checked+.heart-icon,
   padding: 4px 0;
 }
 
+#categoryDropdownDesktop,
+#categoryDropdownDesktop:hover,
+#categoryDropdownDesktop:focus,
+#categoryDropdownDesktop[aria-expanded="true"],
+#categoryDropdownDesktop #selectedCategoryDesktop {
+  color: #fff !important;
+}
+
 /* Compact desktop category mega menu */
 @media (min-width: 992px) {
   .category-navbar .navbar-nav.category-list {

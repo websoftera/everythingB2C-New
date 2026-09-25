@@ -33,7 +33,7 @@ else {
 $main_categories = $categoryTree;
 $mobileCategoryOrder = array_flip([
     'office-stationery',
-    'school-stationary',
+    'school-stationery',
     'industrial-safety-products',
     'packing-materials',
 ]);
@@ -89,6 +89,33 @@ if (empty($bannersList)) {
 </style>
 
 <!-- Hero Section -->
+<style>
+@media (max-width: 767.98px) {
+  .hero-slider-section #heroCarousel {
+    height: clamp(120px, 32vw, 220px) !important;
+  }
+  .hero-slider-section #heroCarousel .carousel-inner,
+  .hero-slider-section #heroCarousel .carousel-item,
+  .hero-slider-section #heroCarousel .carousel-image {
+    height: 100% !important;
+    max-height: none !important;
+  }
+  .hero-slider-section #heroCarousel .carousel-image {
+    object-fit: cover !important;
+    object-position: center !important;
+  }
+  #heroCarousel .carousel-control-prev,
+  #heroCarousel .carousel-control-next {
+    width: 28px !important;
+    height: 28px !important;
+  }
+  #heroCarousel .carousel-control-prev-icon,
+  #heroCarousel .carousel-control-next-icon {
+    width: 13px !important;
+    height: 13px !important;
+  }
+}
+</style>
 <section class="hero-slider-section">
     <div id="heroCarousel" class="custom-carousel">
         <div class="carousel-inner">
@@ -120,7 +147,22 @@ if (empty($bannersList)) {
 </section>
 
 <!-- How We Work Section -->
-    <div class="container hero-container">
+<style>
+    .hero-slider-section { margin-bottom: 0 !important; padding-bottom: 0 !important; }
+    .hero-container.home-how-we-work {
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        padding-top: 6px !important;
+        padding-bottom: 6px !important;
+    }
+    .home-how-we-work .hero-button { display: table !important; margin: 0 auto !important; }
+    .home-how-we-work + section { margin-top: 0 !important; padding-top: 0 !important; }
+    .home-how-we-work + section .process-container { margin-top: 0 !important; }
+    @media (min-width: 768px) {
+        .home-how-we-work + section .process-container { padding-top: 0 !important; }
+    }
+</style>
+    <div class="container hero-container home-how-we-work">
         <h5 class="hero-button">HOW WE WORK</h5>
     </div>
 
