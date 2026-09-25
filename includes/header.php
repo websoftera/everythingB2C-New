@@ -572,13 +572,23 @@ $displayStyle = ($isCheckoutPage || $isCartPage) ? 'none' : ($cartCount > 0 ? 'f
 // Category dropdown render helper (used in search bar and elsewhere)
 if (!function_exists('renderCategoryDropdown')) {
     function renderCategoryDropdown($tree, $level = 0) {
+        static $branchNumber = 0;
         foreach ($tree as $cat) {
             $indent = str_repeat('&nbsp;&nbsp;&nbsp;', $level);
             if (!empty($cat['children'])) {
-                echo '<li><a class="dropdown-item category-option" href="#" data-category="' . $cat['slug'] . '">' . $indent . '<strong>' . htmlspecialchars($cat['name']) . '</strong></a></li>';
+                $branchId = 'header-search-category-' . ++$branchNumber;
+                echo '<li class="header-search-category-branch">';
+                echo '<button type="button" class="dropdown-item header-search-category-toggle" aria-expanded="false" aria-controls="' . $branchId . '"><strong>' . htmlspecialchars($cat['name']) . '</strong><span aria-hidden="true">&#8250;</span></button>';
+                echo '<ul id="' . $branchId . '" class="header-search-category-children" hidden>';
+                echo '<li><a class="dropdown-item category-option" href="#" data-category="' . htmlspecialchars($cat['slug'], ENT_QUOTES, 'UTF-8') . '">All ' . htmlspecialchars($cat['name']) . '</a></li>';
                 renderCategoryDropdown($cat['children'], $level + 1);
+                echo '</ul></li>';
             } else {
-                echo '<li><a class="dropdown-item category-option" href="#" data-category="' . $cat['slug'] . '">' . $indent . htmlspecialchars($cat['name']) . '</a></li>';
+                $categoryLabel = htmlspecialchars($cat['name']);
+                if ($level === 0) {
+                    $categoryLabel = '<strong>' . $categoryLabel . '</strong>';
+                }
+                echo '<li><a class="dropdown-item category-option" href="#" data-category="' . $cat['slug'] . '">' . $indent . $categoryLabel . '</a></li>';
             }
         }
     }
@@ -590,7 +600,7 @@ if (!function_exists('renderCategoryDropdown')) {
     <div class="container-fluid d-flex align-items-center flex-nowrap" style="gap: 8px; z-index: 2000; position: relative; overflow: visible !important;">
         <!-- Logo -->
         <a class="navbar-brand m-0" href="<?php echo $base_url; ?>index.php" style="flex-shrink: 0;">
-            <img src="<?php echo $base_url; ?>logo.webp" alt="everythingb2c" class="img-fluid" style="max-height: 60px;">
+            <img src="<?php echo $base_url; ?>asset/images/header-logo.webp?v=<?php echo b2c_asset_version('asset/images/header-logo.webp'); ?>" alt="everythingb2c" class="img-fluid" style="max-height: 60px;">
         </a>
 
         <!-- Desktop: Search Bar — fills all space between logo and icons -->
@@ -856,6 +866,33 @@ renderCategoryMenu($categoryTree);
     </nav>
 </div>
 <!-- Bootstrap Bundle removed (in footer) -->
+<style>
+  .header-search-category-toggle { display: flex !important; align-items: center; justify-content: space-between; gap: 12px; }
+  .dropdown-desktop .dropdown-item strong { font-size: inherit !important; }
+  .header-search-category-toggle > span[aria-hidden="true"] { font-size: calc(1em + 1px); font-weight: 700; }
+  .header-search-category-children { list-style: none; padding: 0 0 0 12px; margin: 0; }
+  .header-search-category-children[hidden] { display: none !important; }
+  .header-search-category-toggle[aria-expanded="true"] > span { transform: rotate(90deg); }
+</style>
+<script>
+  document.querySelectorAll('.header-search-category-toggle').forEach(toggle => {
+    toggle.addEventListener('click', event => {
+      event.preventDefault();
+      event.stopPropagation();
+      const expanded = toggle.getAttribute('aria-expanded') !== 'true';
+      const branch = toggle.closest('.header-search-category-branch');
+      Array.from(branch.parentElement.children).forEach(sibling => {
+        if (sibling === branch) return;
+        sibling.querySelectorAll('.header-search-category-toggle').forEach(other => {
+          other.setAttribute('aria-expanded', 'false');
+          document.getElementById(other.getAttribute('aria-controls')).hidden = true;
+        });
+      });
+      toggle.setAttribute('aria-expanded', String(expanded));
+      document.getElementById(toggle.getAttribute('aria-controls')).hidden = !expanded;
+    });
+  });
+</script>
 <script>
   // Keep full menu columns; later menus extend left when space on the right runs out.
   document.querySelectorAll('.category-navbar .category-list > .dropdown').forEach(item => {
