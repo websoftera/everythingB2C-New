@@ -150,8 +150,9 @@ if (empty($bannersList)) {
 <style>
     section.home-benefits {
         background: #fff;
+        border-top: 1px solid #dedede;
         border-bottom: 1px solid #dedede;
-        padding: 18px 20px !important;
+        padding: 10px 20px !important;
     }
     .home-benefits-list {
         display: grid;
@@ -239,14 +240,20 @@ if (empty($bannersList)) {
     .hero-container.home-how-we-work {
         margin-top: 0 !important;
         margin-bottom: 0 !important;
-        padding-top: 6px !important;
-        padding-bottom: 6px !important;
+        padding-top: 17px !important;
+        padding-bottom: 17px !important;
     }
     .home-how-we-work .hero-button { display: table !important; margin: 0 auto !important; }
     .home-how-we-work + section { margin-top: 0 !important; padding-top: 0 !important; }
     .home-how-we-work + section .process-container { margin-top: 0 !important; }
     @media (min-width: 768px) {
         .home-how-we-work + section .process-container { padding-top: 0 !important; }
+    }
+    @media (max-width: 767.98px) {
+        .hero-container.home-how-we-work {
+            padding-top: 17px !important;
+            padding-bottom: 17px !important;
+        }
     }
 </style>
     <div class="container hero-container home-how-we-work">
@@ -513,66 +520,6 @@ endforeach; ?>
         </button>
 </div>
     </div>
-</section>
-
-<section class="service-section">
-  <div class="container">
-    <div class="service-cards">
-      
-      <div class="service-card free-shipping">
-        <div class="service-inner">
-          <div class="service-icon">
-            <img src="asset/icons/free_shipping.png" alt="Free Shipping" loading="lazy" decoding="async">
-          </div>
-          <div class="service-divider"></div>
-          <div class="service-text">
-            <div class="service-title">FREE</div>
-            <div class="service-subtitle">Shipping</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="service-card lower-price">
-        <div class="service-inner">
-          <div class="service-icon">
-            <img src="asset/icons/lower_price_icon.png" alt="Lower Price" loading="lazy" decoding="async">
-          </div>
-          <div class="service-divider"></div>
-          <div class="service-text">
-            <div class="service-title">LOWER</div>
-            <div class="service-subtitle">Price</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="service-card cod-service">
-        <div class="service-inner">
-          <div class="service-icon">
-            <img src="asset/icons/COD.png" alt="COD Service" loading="lazy" decoding="async">
-          </div>
-          <div class="service-divider"></div>
-          <div class="service-text">
-            <div class="service-title">COD</div>
-            <div class="service-subtitle">Services</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="service-card return-policy">
-        <div class="service-inner">
-          <div class="service-icon">
-            <img src="asset/icons/return_policy.png" alt="Return Policy" loading="lazy" decoding="async">
-          </div>
-          <div class="service-divider"></div>
-          <div class="service-text">
-            <div class="service-title">RETURN</div>
-            <div class="service-subtitle">Policy</div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
 </section>
 
 <!-- Include Footer -->
@@ -2749,7 +2696,7 @@ endforeach; ?>
   position: relative !important;
   width: 100% !important;
   height: auto !important;
-  min-height: 300px !important;
+  min-height: 0 !important;
   max-height: 400px !important;
   overflow: hidden !important;
   background-color: transparent !important;
