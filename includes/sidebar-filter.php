@@ -87,7 +87,7 @@ $categoryTree = buildCategoryTree($categories);
         <div class="filter-section">
           <h5>Categories</h5>
           <div class="form-group">
-            <select name="category" id="sidebarCategorySelect" class="form-control" onchange="document.getElementById('sidebarFilterForm').dispatchEvent(new Event('submit'))">
+            <select name="category" id="sidebarCategorySelect" class="form-control d-none" onchange="document.getElementById('sidebarFilterForm').dispatchEvent(new Event('submit'))">
               <option value="">All Categories (<?php echo $allCategoryProductCount; ?>)</option>
               <?php 
               // Re-use current function if existing
@@ -111,6 +111,26 @@ $categoryTree = buildCategoryTree($categories);
               echo renderCategoriesWithSubcategories($categories);
               ?>
             </select>
+            <button type="button" id="filterCategoryTrigger" class="form-control" popovertarget="filterCategoryMenu" aria-expanded="false">All Categories <span aria-hidden="true">▾</span></button>
+            <div id="filterCategoryMenu" popover>
+              <button type="button" data-filter-category="">All Categories (<?php echo $allCategoryProductCount; ?>)</button>
+              <?php
+              $renderFilterBranches = function ($tree) use (&$renderFilterBranches) {
+                  foreach ($tree as $node) {
+                      $label = htmlspecialchars($node['name'], ENT_QUOTES, 'UTF-8') . ' (' . (int)$node['product_count'] . ')';
+                      if (!empty($node['children'])) {
+                          echo '<details><summary>' . $label . '<span aria-hidden="true">›</span></summary><div class="filter-category-children">';
+                          echo '<button type="button" data-filter-category="' . (int)$node['id'] . '">All ' . $label . '</button>';
+                          $renderFilterBranches($node['children']);
+                          echo '</div></details>';
+                      } else {
+                          echo '<button type="button" data-filter-category="' . (int)$node['id'] . '">' . $label . '</button>';
+                      }
+                  }
+              };
+              $renderFilterBranches($categoryTree);
+              ?>
+            </div>
           </div>
         </div>
 
@@ -135,6 +155,7 @@ $categoryTree = buildCategoryTree($categories);
                 <option value="<?php echo $sortValue; ?>" <?php echo $currentSort === $sortValue ? 'selected' : ''; ?>><?php echo $sortLabel; ?></option>
               <?php endforeach; ?>
             </select>
+
           </div>
         </div>
         <!-- Price Range Filter - COMMENTED OUT FOR DESKTOP -->
@@ -287,6 +308,16 @@ $categoryTree = buildCategoryTree($categories);
 </div>
 
 <style>
+  #filterCategoryTrigger { display: flex; justify-content: space-between; align-items: center; gap: 12px; text-align: left; background: #fff; }
+  #filterCategoryMenu { position: fixed; inset: auto; margin: 0; padding: 6px 0; width: 240px; max-width: calc(100vw - 24px); max-height: 50vh; overflow-y: auto; border: 1px solid #ddd; border-radius: 6px; background: white; box-shadow: 0 8px 24px #0002; }
+  #filterCategoryMenu button, #filterCategoryMenu summary { display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 6px 12px; border: 0; background: transparent; color: #333; text-align: left; font-family: inherit; font-size: 12px; line-height: 1.5; cursor: pointer; list-style: none; }
+  #filterCategoryMenu summary { font-weight: 600; gap: 12px; }
+  #filterCategoryMenu > button { font-weight: 600; }
+  #filterCategoryMenu summary > span { font-size: 20px; font-weight: 700; line-height: 18px; flex-shrink: 0; }
+  #filterCategoryMenu summary::-webkit-details-marker { display: none; }
+  #filterCategoryMenu details[open] > summary > span { transform: rotate(90deg); }
+  #filterCategoryMenu button:hover, #filterCategoryMenu summary:hover { background: #f1f5f8; }
+  #filterCategoryMenu .filter-category-children { padding-left: 12px; }
   #sidebarCategorySelect option.filter-main-category,
   .sidebar-filter-container .mob-radio-label.filter-main-category {
     font-weight: 700 !important;
@@ -1234,6 +1265,31 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       }
     });
+  }
+
+  const categorySelect = document.getElementById('sidebarCategorySelect');
+  const categoryTrigger = document.getElementById('filterCategoryTrigger');
+  const categoryMenu = document.getElementById('filterCategoryMenu');
+  if (categorySelect && categoryTrigger && categoryMenu) {
+    categoryTrigger.firstChild.textContent = categorySelect.selectedOptions[0].textContent.trim() + ' ';
+    categoryMenu.addEventListener('beforetoggle', event => {
+      const open = event.newState === 'open';
+      categoryTrigger.setAttribute('aria-expanded', String(open));
+      if (open) {
+        const rect = categoryTrigger.getBoundingClientRect();
+        categoryMenu.style.left = Math.max(12, Math.min(rect.left, window.innerWidth - 252)) + 'px';
+        categoryMenu.style.top = rect.bottom + 4 + 'px';
+        categoryMenu.style.maxHeight = Math.max(100, window.innerHeight - rect.bottom - 20) + 'px';
+      }
+    });
+    categoryMenu.addEventListener('click', event => {
+      const option = event.target.closest('[data-filter-category]');
+      if (!option) return;
+      categorySelect.value = option.dataset.filterCategory;
+      categoryMenu.hidePopover();
+      categorySelect.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+    window.addEventListener('resize', () => categoryMenu.hidePopover());
   }
 
   // Handle form submission to maintain current page context

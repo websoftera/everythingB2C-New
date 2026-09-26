@@ -92,27 +92,30 @@ if (empty($bannersList)) {
 <style>
 @media (max-width: 767.98px) {
   .hero-slider-section #heroCarousel {
-    height: clamp(120px, 32vw, 220px) !important;
+    height: auto !important;
+    min-height: 0 !important;
+    background-color: #f5f5f5 !important;
   }
   .hero-slider-section #heroCarousel .carousel-inner,
   .hero-slider-section #heroCarousel .carousel-item,
   .hero-slider-section #heroCarousel .carousel-image {
-    height: 100% !important;
+    height: auto !important;
     max-height: none !important;
   }
   .hero-slider-section #heroCarousel .carousel-image {
-    object-fit: cover !important;
+    object-fit: contain !important;
     object-position: center !important;
+    transform: none !important;
   }
   #heroCarousel .carousel-control-prev,
   #heroCarousel .carousel-control-next {
-    width: 28px !important;
-    height: 28px !important;
+    width: 20px !important;
+    height: 20px !important;
   }
   #heroCarousel .carousel-control-prev-icon,
   #heroCarousel .carousel-control-next-icon {
-    width: 13px !important;
-    height: 13px !important;
+    width: 10px !important;
+    height: 10px !important;
   }
 }
 </style>
@@ -121,7 +124,12 @@ if (empty($bannersList)) {
         <div class="carousel-inner">
             <?php foreach ($bannersList as $index => $banner): ?>
             <div class="carousel-item <?php echo $index === 0 ? 'active' : ''; ?>">
-                <img src="<?php echo htmlspecialchars($banner['image_path']); ?>" alt="<?php echo htmlspecialchars($banner['title'] ?? 'Banner ' . ($index + 1)); ?>" class="carousel-image" <?php echo $index === 0 ? 'fetchpriority="high"' : 'loading="lazy"'; ?>>
+                <picture>
+                    <?php if (!empty($banner['mobile_image_path'])): ?>
+                        <source media="(max-width: 767.98px)" srcset="<?php echo htmlspecialchars($banner['mobile_image_path']); ?>">
+                    <?php endif; ?>
+                    <img src="<?php echo htmlspecialchars($banner['image_path']); ?>" alt="<?php echo htmlspecialchars($banner['title'] ?? 'Banner ' . ($index + 1)); ?>" class="carousel-image" <?php echo $index === 0 ? 'fetchpriority="high"' : 'loading="lazy"'; ?>>
+                </picture>
                 <div class="carousel-caption d-block <?php echo $index === 0 ? 'text-start' : 'text-end'; ?>">
                     <!-- Optional caption content -->
                 </div>

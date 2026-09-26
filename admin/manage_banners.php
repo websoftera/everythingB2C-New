@@ -14,11 +14,15 @@ try {
     $pdo->exec("CREATE TABLE IF NOT EXISTS banners (
         id INT AUTO_INCREMENT PRIMARY KEY,
         image_path VARCHAR(255) NOT NULL,
+        mobile_image_path VARCHAR(255) DEFAULT NULL,
         title VARCHAR(255) DEFAULT NULL,
         is_active TINYINT DEFAULT 1,
         order_index INT DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )");
+    if (!$pdo->query("SHOW COLUMNS FROM banners LIKE 'mobile_image_path'")->fetch()) {
+        $pdo->exec("ALTER TABLE banners ADD COLUMN mobile_image_path VARCHAR(255) DEFAULT NULL AFTER image_path");
+    }
 } catch (PDOException $e) {
     die("Database error: " . $e->getMessage());
 }
@@ -35,15 +39,19 @@ function uploadBannerImage($fileInputName, &$errorMessage)
         return null;
     }
 
-    $allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-    $fileType = $_FILES[$fileInputName]['type'];
+    $allowedTypes = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp', 'image/gif' => 'gif'];
+    $fileType = (new finfo(FILEINFO_MIME_TYPE))->file($_FILES[$fileInputName]['tmp_name']);
 
-    if (!in_array($fileType, $allowedTypes)) {
+    if (!isset($allowedTypes[$fileType]) || !getimagesize($_FILES[$fileInputName]['tmp_name'])) {
         $errorMessage = "Only JPG, PNG, WEBP, and GIF files are allowed.";
         return null;
     }
 
-    $fileName = uniqid() . '-' . basename($_FILES[$fileInputName]["name"]);
+    if ($_FILES[$fileInputName]['size'] > 2 * 1024 * 1024) {
+        $errorMessage = 'Each banner image must be 2MB or smaller.';
+        return null;
+    }
+    $fileName = bin2hex(random_bytes(16)) . '.' . $allowedTypes[$fileType];
     $targetFilePath = $targetDir . $fileName;
 
     if (!move_uploaded_file($_FILES[$fileInputName]["tmp_name"], $targetFilePath)) {
@@ -78,8 +86,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $dbPath = uploadBannerImage('banner_image', $uploadError);
 
         if ($dbPath) {
-            $stmt = $pdo->prepare("INSERT INTO banners (image_path, title, order_index) VALUES (?, ?, ?)");
-            if ($stmt->execute([$dbPath, $title, $order_index])) {
+            $mobilePath = null;
+            if (isset($_FILES['mobile_banner_image']) && $_FILES['mobile_banner_image']['error'] !== UPLOAD_ERR_NO_FILE) {
+                $mobilePath = uploadBannerImage('mobile_banner_image', $uploadError);
+                if (!$mobilePath) {
+                    unlink('../' . $dbPath);
+                    $_SESSION['error_message'] = $uploadError;
+                    header('Location: manage_banners.php');
+                    exit;
+                }
+            }
+            $stmt = $pdo->prepare("INSERT INTO banners (image_path, mobile_image_path, title, order_index) VALUES (?, ?, ?, ?)");
+            if ($stmt->execute([$dbPath, $mobilePath, $title, $order_index])) {
                 $_SESSION['success_message'] = "Banner added successfully.";
             } else {
                 $_SESSION['error_message'] = "Failed to insert banner data.";
@@ -96,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $id = (int)($_POST['banner_id'] ?? 0);
         $title = sanitizeInput($_POST['edit_title'] ?? '');
 
-        $stmt = $pdo->prepare("SELECT image_path FROM banners WHERE id = ?");
+        $stmt = $pdo->prepare("SELECT image_path, mobile_image_path FROM banners WHERE id = ?");
         $stmt->execute([$id]);
         $banner = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -117,15 +135,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 exit;
             }
 
-            $oldFilePath = "../" . $imagePath;
-            if (file_exists($oldFilePath)) {
-                unlink($oldFilePath);
-            }
             $imagePath = $newImagePath;
         }
 
-        $stmt = $pdo->prepare("UPDATE banners SET image_path = ?, title = ? WHERE id = ?");
-        if ($stmt->execute([$imagePath, $title, $id])) {
+        $mobilePath = !empty($_POST['remove_mobile_image']) ? null : $banner['mobile_image_path'];
+        if (isset($_FILES['edit_mobile_banner_image']) && $_FILES['edit_mobile_banner_image']['error'] !== UPLOAD_ERR_NO_FILE) {
+            $uploadError = '';
+            $mobilePath = uploadBannerImage('edit_mobile_banner_image', $uploadError);
+            if (!$mobilePath) {
+                if ($imagePath !== $banner['image_path']) unlink('../' . $imagePath);
+                $_SESSION['error_message'] = $uploadError;
+                header('Location: manage_banners.php');
+                exit;
+            }
+        }
+        $stmt = $pdo->prepare("UPDATE banners SET image_path = ?, mobile_image_path = ?, title = ? WHERE id = ?");
+        if ($stmt->execute([$imagePath, $mobilePath, $title, $id])) {
+            foreach (['image_path' => $imagePath, 'mobile_image_path' => $mobilePath] as $key => $newPath) {
+                if (!empty($banner[$key]) && $banner[$key] !== $newPath && is_file('../' . $banner[$key])) unlink('../' . $banner[$key]);
+            }
             $_SESSION['success_message'] = "Banner updated successfully.";
         } else {
             $_SESSION['error_message'] = "Failed to update banner.";
@@ -141,11 +169,14 @@ if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
     $id = $_GET['delete'];
 
     // Get image path to delete file
-    $stmt = $pdo->prepare("SELECT image_path FROM banners WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT image_path, mobile_image_path FROM banners WHERE id = ?");
     $stmt->execute([$id]);
     $banner = $stmt->fetch();
 
     if ($banner) {
+        if (!empty($banner['mobile_image_path']) && is_file('../' . $banner['mobile_image_path'])) {
+            unlink('../' . $banner['mobile_image_path']);
+        }
         $filePath = "../" . $banner['image_path'];
         if (file_exists($filePath)) {
             unlink($filePath);
@@ -258,6 +289,7 @@ $pageTitle = 'Manage Banners';
                                         <tr>
                                             <th style="width: 48px;">Move</th>
                                             <th style="width: 100px;">Preview</th>
+                                            <th>Mobile Preview</th>
                                             <th>Title</th>
                                             <th>Status</th>
                                             <th>Date Added</th>
@@ -267,7 +299,7 @@ $pageTitle = 'Manage Banners';
                                     <tbody id="bannerTableBody">
                                         <?php if (empty($banners)): ?>
                                             <tr>
-                                                <td colspan="6" class="text-center">No banners found. Replace homepage hardcoded images by adding a new banner here.</td>
+                                                <td colspan="7" class="text-center">No banners found. Replace homepage hardcoded images by adding a new banner here.</td>
                                             </tr>
                                         <?php else: ?>
                                             <?php foreach ($banners as $banner): ?>
@@ -280,6 +312,11 @@ $pageTitle = 'Manage Banners';
                                                     </td>
                                                     <td>
                                                         <img src="../<?php echo htmlspecialchars($banner['image_path']); ?>" alt="Banner" class="img-fluid rounded" style="max-height: 50px;">
+                                                    </td>
+                                                    <td>
+                                                        <?php if (!empty($banner['mobile_image_path'])): ?>
+                                                            <img src="../<?php echo htmlspecialchars($banner['mobile_image_path']); ?>" alt="Mobile banner" style="max-width: 110px; max-height: 70px;">
+                                                        <?php else: ?><small class="text-muted">Uses desktop image</small><?php endif; ?>
                                                     </td>
                                                     <td><?php echo htmlspecialchars($banner['title']); ?></td>
                                                     <td>
@@ -299,7 +336,8 @@ $pageTitle = 'Manage Banners';
                                                             data-bs-target="#editBannerModal"
                                                             data-banner-id="<?php echo $banner['id']; ?>"
                                                             data-banner-title="<?php echo htmlspecialchars($banner['title'], ENT_QUOTES); ?>"
-                                                            data-banner-image="../<?php echo htmlspecialchars($banner['image_path'], ENT_QUOTES); ?>">
+                                                            data-banner-image="../<?php echo htmlspecialchars($banner['image_path'], ENT_QUOTES); ?>"
+                                                            data-banner-mobile="<?php echo !empty($banner['mobile_image_path']) ? '../' . htmlspecialchars($banner['mobile_image_path'], ENT_QUOTES) : ''; ?>">
                                                             <i class="fas fa-edit"></i>
                                                         </button>
                                                         <a href="manage_banners.php?delete=<?php echo $banner['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this banner?');" title="Delete">
@@ -351,9 +389,19 @@ $pageTitle = 'Manage Banners';
                         </div>
 
                         <div class="mb-3">
-                            <label for="edit_banner_image" class="form-label">Replace Image (Optional)</label>
+                            <label for="edit_banner_image" class="form-label">Replace Desktop Image (Optional)</label>
                             <input type="file" class="form-control" id="edit_banner_image" name="edit_banner_image" accept="image/*">
                             <div class="form-text">Leave blank to keep the current image.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_mobile_banner_image" class="form-label">Mobile Image (Optional)</label>
+                            <img id="edit_mobile_banner_preview" alt="Current mobile banner" class="img-fluid mb-2" style="max-height: 120px;" hidden>
+                            <input type="file" class="form-control" id="edit_mobile_banner_image" name="edit_mobile_banner_image" accept="image/jpeg,image/png,image/webp,image/gif">
+                            <div class="form-text">Recommended: 800 × 370px, max 2MB. Leave blank to keep the current mobile image. Without one, mobile uses the desktop image.</div>
+                            <div class="form-check mt-2">
+                                <input type="checkbox" class="form-check-input" id="remove_mobile_image" name="remove_mobile_image" value="1">
+                                <label class="form-check-label" for="remove_mobile_image">Remove mobile image and use desktop image</label>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -383,9 +431,14 @@ $pageTitle = 'Manage Banners';
                         </div>
 
                         <div class="mb-3">
-                            <label for="banner_image" class="form-label">Upload Image <span class="text-danger">*</span></label>
+                            <label for="banner_image" class="form-label">Desktop Image <span class="text-danger">*</span></label>
                             <input type="file" class="form-control" id="banner_image" name="banner_image" accept="image/*" required>
                             <div class="form-text">Recommended size: 1920x600 pixels. Max size: 2MB.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="mobile_banner_image" class="form-label">Mobile Image (Optional)</label>
+                            <input type="file" class="form-control" id="mobile_banner_image" name="mobile_banner_image" accept="image/jpeg,image/png,image/webp,image/gif">
+                            <div class="form-text">Recommended: 800 × 370px, max 2MB. If not uploaded, mobile uses the desktop image.</div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -474,6 +527,12 @@ $pageTitle = 'Manage Banners';
                     document.getElementById('edit_title').value = button.dataset.bannerTitle || '';
                     document.getElementById('edit_banner_preview').src = button.dataset.bannerImage || '';
                     document.getElementById('edit_banner_image').value = '';
+                    document.getElementById('edit_mobile_banner_image').value = '';
+                    document.getElementById('remove_mobile_image').checked = false;
+                    var mobilePreview = document.getElementById('edit_mobile_banner_preview');
+                    mobilePreview.hidden = !button.dataset.bannerMobile;
+                    if (button.dataset.bannerMobile) mobilePreview.src = button.dataset.bannerMobile;
+                    else mobilePreview.removeAttribute('src');
                 });
             });
         });

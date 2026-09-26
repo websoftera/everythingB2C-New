@@ -596,6 +596,40 @@ if (!function_exists('renderCategoryDropdown')) {
 ?>
 
 <!-- NAVBAR START -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const row = document.querySelector('nav.navbar.sticky-top > .container-fluid');
+    const cart = row && row.querySelector('.cart-icon');
+    if (!cart) return;
+    function fitMobileCart() {
+        row.classList.remove('mobile-header-overflow');
+        if (window.innerWidth < 992 && cart.getBoundingClientRect().right > row.getBoundingClientRect().right) {
+            row.classList.add('mobile-header-overflow');
+        }
+    }
+    fitMobileCart();
+    window.addEventListener('resize', fitMobileCart);
+    window.addEventListener('load', fitMobileCart);
+    if (document.fonts) document.fonts.ready.then(fitMobileCart);
+});
+</script>
+<style>
+@media (max-width: 991.98px) {
+    /* Only shrink the logo when the mobile row runs out of room for the cart. */
+    body nav.navbar.sticky-top > .container-fluid.mobile-header-overflow > .navbar-brand {
+        flex-shrink: 1 !important;
+        min-width: 0 !important;
+    }
+    body nav.navbar.sticky-top > .container-fluid.mobile-header-overflow > .navbar-brand img {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+    body nav.navbar.sticky-top {
+        padding-top: 2px !important;
+        padding-bottom: 2px !important;
+    }
+}
+</style>
 <nav class="navbar navbar-expand-lg sticky-top bg-white" style="overflow: visible;">
     <div class="container-fluid d-flex align-items-center flex-nowrap" style="gap: 8px; z-index: 2000; position: relative; overflow: visible !important;">
         <!-- Logo -->
@@ -788,6 +822,14 @@ if (!function_exists('renderMobileOffcanvasAccordion')) {
 
 
 <!-- Desktop Category Navigation -->
+<style>
+html body .category-navbar .category-list > .nav-item:hover > .nav-link,
+html body .category-navbar .category-list > .nav-item:focus-within > .nav-link,
+html body .category-navbar .category-list > .nav-item > .nav-link[aria-expanded="true"] {
+    color: #fff !important;
+    background-color: #9fbe1b !important;
+}
+</style>
 <div class="second-navbar d-none d-lg-block">
     <nav class="navbar navbar-expand-lg navbar-light bg-light category-navbar">
         <div class="container-fluid">
