@@ -104,6 +104,27 @@ function deleteServiceablePincode($id) {
 }
 
 /**
+ * Delete only the explicitly selected IDs in one statement and return the count.
+ */
+function deleteServiceablePincodes($ids) {
+    global $pdo;
+
+    if (!is_array($ids) || empty($ids) || array_keys($ids) !== range(0, count($ids) - 1)) {
+        throw new InvalidArgumentException('A list of pincode IDs is required.');
+    }
+    foreach ($ids as $id) {
+        if ((!is_string($id) && !is_int($id)) || filter_var($id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) === false) {
+            throw new InvalidArgumentException('Invalid pincode ID.');
+        }
+    }
+    $ids = array_values(array_unique(array_map('intval', $ids)));
+    $placeholders = implode(',', array_fill(0, count($ids), '?'));
+    $stmt = $pdo->prepare("DELETE FROM serviceable_pincodes WHERE id IN ($placeholders)");
+    $stmt->execute($ids);
+    return $stmt->rowCount();
+}
+
+/**
  * Toggle pincode active status
  */
 function togglePincodeStatus($id) {
