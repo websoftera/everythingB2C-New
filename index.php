@@ -183,7 +183,7 @@ if (empty($bannersList)) {
         top: 50%;
         transform: translateY(-50%);
         height: 24px;
-        border-left: 2px solid #888;
+        border-left: 1px solid #dedede;
     }
     .home-benefits-icon {
         display: flex;
@@ -200,6 +200,9 @@ if (empty($bannersList)) {
         max-width: 72px;
         margin: 0;
         object-fit: contain;
+    }
+    .home-benefits .home-benefits-icon img[src$="free-shipping.webp"] {
+        transform: scale(0.8);
     }
     @media (max-width: 991.98px) {
         .home-benefits-list { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 20px; }
@@ -2843,7 +2846,7 @@ endforeach; ?>
 /* Enhanced carousel indicators */
 .custom-carousel .carousel-indicators {
   position: absolute !important;
-  bottom: 20px !important;
+  bottom: -5px !important;
   left: 50% !important;
   transform: translateX(-50%) !important;
   display: flex !important;
