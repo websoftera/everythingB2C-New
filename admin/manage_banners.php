@@ -2,6 +2,7 @@
 session_start();
 require_once '../config/database.php';
 require_once '../includes/functions.php';
+require_once '../includes/banner_button.php';
 
 // Check if admin is logged in
 if (!isset($_SESSION['admin_id'])) {
@@ -22,6 +23,9 @@ try {
     )");
     if (!$pdo->query("SHOW COLUMNS FROM banners LIKE 'mobile_image_path'")->fetch()) {
         $pdo->exec("ALTER TABLE banners ADD COLUMN mobile_image_path VARCHAR(255) DEFAULT NULL AFTER image_path");
+    }
+    if (!$pdo->query("SHOW COLUMNS FROM banners LIKE 'button_config'")->fetch()) {
+        $pdo->exec("ALTER TABLE banners ADD COLUMN button_config TEXT DEFAULT NULL");
     }
 } catch (PDOException $e) {
     die("Database error: " . $e->getMessage());
@@ -64,6 +68,14 @@ function uploadBannerImage($fileInputName, &$errorMessage)
 
 // Processing Form Submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    if (in_array($_POST['action'], ['add', 'edit'], true)) {
+        try { $buttonConfig = json_encode(validateBannerButton($_POST['button'] ?? []), JSON_UNESCAPED_SLASHES); }
+        catch (InvalidArgumentException $e) {
+            $_SESSION['error_message'] = $e->getMessage();
+            header('Location: manage_banners.php');
+            exit;
+        }
+    }
 
     if ($_POST['action'] === 'update_order') {
         if (isset($_POST['display_order']) && is_array($_POST['display_order'])) {
@@ -96,8 +108,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     exit;
                 }
             }
-            $stmt = $pdo->prepare("INSERT INTO banners (image_path, mobile_image_path, title, order_index) VALUES (?, ?, ?, ?)");
-            if ($stmt->execute([$dbPath, $mobilePath, $title, $order_index])) {
+            $stmt = $pdo->prepare("INSERT INTO banners (image_path, mobile_image_path, title, order_index, button_config) VALUES (?, ?, ?, ?, ?)");
+            if ($stmt->execute([$dbPath, $mobilePath, $title, $order_index, $buttonConfig])) {
                 $_SESSION['success_message'] = "Banner added successfully.";
             } else {
                 $_SESSION['error_message'] = "Failed to insert banner data.";
@@ -149,8 +161,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 exit;
             }
         }
-        $stmt = $pdo->prepare("UPDATE banners SET image_path = ?, mobile_image_path = ?, title = ? WHERE id = ?");
-        if ($stmt->execute([$imagePath, $mobilePath, $title, $id])) {
+        $stmt = $pdo->prepare("UPDATE banners SET image_path = ?, mobile_image_path = ?, title = ?, button_config = ? WHERE id = ?");
+        if ($stmt->execute([$imagePath, $mobilePath, $title, $buttonConfig, $id])) {
             foreach (['image_path' => $imagePath, 'mobile_image_path' => $mobilePath] as $key => $newPath) {
                 if (!empty($banner[$key]) && $banner[$key] !== $newPath && is_file('../' . $banner[$key])) unlink('../' . $banner[$key]);
             }
@@ -218,6 +230,39 @@ $pageTitle = 'Manage Banners';
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="assets/css/admin.css" rel="stylesheet">
     <style>
+        .banner-button-fields .banner-button-main-fields > *,
+        .banner-button-fields .banner-button-placement-fields > * { min-width: 0; }
+        .banner-button-fields .form-control { width: 100%; min-width: 0; }
+        .banner-button-fields .banner-button-placement-fields > label { font-size: .9rem; }
+        #editBannerModal .modal-dialog,
+        #addBannerModal .modal-dialog { max-width: 900px; }
+        #editBannerModal .modal-content,
+        #addBannerModal .modal-content { max-height: calc(100vh - 2rem); }
+        #editBannerModal .modal-body,
+        #addBannerModal .modal-body { overflow-y: auto; }
+        #addBannerModal .modal-footer { position: sticky; bottom: 0; z-index: 2; background: #fff; }
+        #editBannerModal .modal-footer { position: sticky; bottom: 0; z-index: 2; background: #fff; }
+        #editBannerModal .banner-button-fields { padding: .65rem !important; margin-bottom: .75rem !important; }
+        #addBannerModal .banner-button-fields { padding: .65rem !important; margin-bottom: .75rem !important; }
+        #editBannerModal .banner-button-fields .form-text { margin-top: .35rem; }
+        #addBannerModal .banner-button-fields .form-text { margin-top: .35rem; }
+        #editBannerModal .banner-button-preview,
+        #addBannerModal .banner-button-preview { display: none !important; }
+        #editBannerModal .form-control { padding-top: .35rem; padding-bottom: .35rem; }
+        #addBannerModal .form-control { padding-top: .35rem; padding-bottom: .35rem; }
+        #editBannerModal .mb-3 { margin-bottom: .75rem !important; }
+        #addBannerModal .mb-3 { margin-bottom: .75rem !important; }
+        #editBannerModal .banner-image-previews img { display: block; width: 100%; height: 96px; object-fit: contain; background: #f6f7f8; }
+        #addBannerModal .banner-image-previews img { display: block; width: 100%; height: 96px; object-fit: contain; background: #f6f7f8; }
+        #editBannerModal .banner-image-previews img[hidden],
+        #addBannerModal .banner-image-previews img[hidden] { display: none !important; }
+        #editBannerModal #edit_mobile_banner_fallback[hidden] { display: none !important; }
+        @media (max-width: 575.98px) {
+            #editBannerModal .modal-dialog { margin: .5rem; }
+            #addBannerModal .modal-dialog { margin: .5rem; }
+            #editBannerModal .banner-image-previews img { height: 76px; }
+            #addBannerModal .banner-image-previews img { height: 76px; }
+        }
         .banner-drag-handle {
             cursor: move;
             color: #6c757d;
@@ -337,7 +382,8 @@ $pageTitle = 'Manage Banners';
                                                             data-banner-id="<?php echo $banner['id']; ?>"
                                                             data-banner-title="<?php echo htmlspecialchars($banner['title'], ENT_QUOTES); ?>"
                                                             data-banner-image="../<?php echo htmlspecialchars($banner['image_path'], ENT_QUOTES); ?>"
-                                                            data-banner-mobile="<?php echo !empty($banner['mobile_image_path']) ? '../' . htmlspecialchars($banner['mobile_image_path'], ENT_QUOTES) : ''; ?>">
+                                                            data-banner-mobile="<?php echo !empty($banner['mobile_image_path']) ? '../' . htmlspecialchars($banner['mobile_image_path'], ENT_QUOTES) : ''; ?>"
+                                                            data-banner-button="<?php echo htmlspecialchars(json_encode(getBannerButton($banner['button_config'] ?? null)), ENT_QUOTES, 'UTF-8'); ?>">
                                                             <i class="fas fa-edit"></i>
                                                         </button>
                                                         <a href="manage_banners.php?delete=<?php echo $banner['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this banner?');" title="Delete">
@@ -365,7 +411,7 @@ $pageTitle = 'Manage Banners';
 
     <!-- Edit Banner Modal -->
     <div class="modal fade" id="editBannerModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <form action="manage_banners.php" method="POST" enctype="multipart/form-data">
                     <div class="modal-header">
@@ -375,38 +421,38 @@ $pageTitle = 'Manage Banners';
                     <div class="modal-body">
                         <input type="hidden" name="action" value="edit">
                         <input type="hidden" name="banner_id" id="edit_banner_id">
+                        <?php include 'includes/banner-button-fields.php'; ?>
 
                         <div class="mb-3">
                             <label for="edit_title" class="form-label">Banner Title (Optional)</label>
                             <input type="text" class="form-control" id="edit_title" name="edit_title">
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Current Image</label>
-                            <div>
-                                <img src="" alt="Current banner" id="edit_banner_preview" class="img-fluid rounded border" style="max-height: 120px;">
+                        <div class="row g-2 mb-3 banner-image-previews">
+                            <div class="col-6">
+                                <label class="form-label">Desktop Image</label>
+                                <img src="" alt="Current desktop banner" id="edit_banner_preview" class="rounded border">
+                                <label for="edit_banner_image" class="form-label mt-2 mb-1">Replace desktop image</label>
+                                <input type="file" class="form-control" id="edit_banner_image" name="edit_banner_image" accept="image/*">
+                                <div class="form-text">Leave empty to keep the current image.</div>
                             </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="edit_banner_image" class="form-label">Replace Desktop Image (Optional)</label>
-                            <input type="file" class="form-control" id="edit_banner_image" name="edit_banner_image" accept="image/*">
-                            <div class="form-text">Leave blank to keep the current image.</div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="edit_mobile_banner_image" class="form-label">Mobile Image (Optional)</label>
-                            <img id="edit_mobile_banner_preview" alt="Current mobile banner" class="img-fluid mb-2" style="max-height: 120px;" hidden>
-                            <input type="file" class="form-control" id="edit_mobile_banner_image" name="edit_mobile_banner_image" accept="image/jpeg,image/png,image/webp,image/gif">
-                            <div class="form-text">Recommended: 800 × 370px, max 2MB. Leave blank to keep the current mobile image. Without one, mobile uses the desktop image.</div>
-                            <div class="form-check mt-2">
-                                <input type="checkbox" class="form-check-input" id="remove_mobile_image" name="remove_mobile_image" value="1">
-                                <label class="form-check-label" for="remove_mobile_image">Remove mobile image and use desktop image</label>
+                            <div class="col-6">
+                                <label class="form-label">Mobile Image</label>
+                                <img id="edit_mobile_banner_preview" alt="Current mobile banner" class="rounded border" hidden>
+                                <div id="edit_mobile_banner_fallback" class="border rounded d-flex align-items-center justify-content-center text-muted small" style="height:96px;background:#f6f7f8;">Uses desktop image</div>
+                                <label for="edit_mobile_banner_image" class="form-label mt-2 mb-1">Replace mobile image</label>
+                                <input type="file" class="form-control" id="edit_mobile_banner_image" name="edit_mobile_banner_image" accept="image/jpeg,image/png,image/webp,image/gif">
+                                <div class="form-text">Leave empty to keep the current image.</div>
+                                <div class="form-check mt-2">
+                                    <input type="checkbox" class="form-check-input" id="remove_mobile_image" name="remove_mobile_image" value="1">
+                                    <label class="form-check-label" for="remove_mobile_image">Use desktop image instead</label>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Update Banner</button>
+                        <button type="submit" class="btn btn-primary">Save Banner</button>
                     </div>
                 </form>
             </div>
@@ -415,7 +461,7 @@ $pageTitle = 'Manage Banners';
 
     <!-- Add Banner Modal -->
     <div class="modal fade" id="addBannerModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <form action="manage_banners.php" method="POST" enctype="multipart/form-data">
                     <div class="modal-header">
@@ -424,21 +470,26 @@ $pageTitle = 'Manage Banners';
                     </div>
                     <div class="modal-body">
                         <input type="hidden" name="action" value="add">
+                        <?php include 'includes/banner-button-fields.php'; ?>
 
                         <div class="mb-3">
                             <label for="title" class="form-label">Banner Title (Optional)</label>
                             <input type="text" class="form-control" id="title" name="title">
                         </div>
 
-                        <div class="mb-3">
-                            <label for="banner_image" class="form-label">Desktop Image <span class="text-danger">*</span></label>
-                            <input type="file" class="form-control" id="banner_image" name="banner_image" accept="image/*" required>
-                            <div class="form-text">Recommended size: 1920x600 pixels. Max size: 2MB.</div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="mobile_banner_image" class="form-label">Mobile Image (Optional)</label>
-                            <input type="file" class="form-control" id="mobile_banner_image" name="mobile_banner_image" accept="image/jpeg,image/png,image/webp,image/gif">
-                            <div class="form-text">Recommended: 800 × 370px, max 2MB. If not uploaded, mobile uses the desktop image.</div>
+                        <div class="row g-2 mb-3 banner-image-previews">
+                            <div class="col-6">
+                                <label class="form-label" for="banner_image">Desktop Image <span class="text-danger">*</span></label>
+                                <img id="add_banner_preview" class="rounded border mb-2" alt="Desktop banner preview" hidden>
+                                <input type="file" class="form-control" id="banner_image" name="banner_image" accept="image/*" required>
+                                <div class="form-text">Required. Recommended: 1920 × 600px, max 2MB.</div>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label" for="mobile_banner_image">Mobile Image (Optional)</label>
+                                <img id="add_mobile_banner_preview" class="rounded border mb-2" alt="Mobile banner preview" hidden>
+                                <input type="file" class="form-control" id="mobile_banner_image" name="mobile_banner_image" accept="image/jpeg,image/png,image/webp,image/gif">
+                                <div class="form-text">Optional. Recommended: 800 × 370px, max 2MB. Without one, mobile uses the desktop image.</div>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -454,6 +505,38 @@ $pageTitle = 'Manage Banners';
     <script src="assets/js/admin.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            function updateButtonPreview(form, imageSrc) {
+                var preview = form.querySelector('.banner-button-preview');
+                if (imageSrc) { preview.querySelector('img').src = imageSrc; preview.hidden = false; }
+                var button = preview.querySelector('span');
+                button.style.display = form.elements['button[enabled]'].checked ? 'flex' : 'none';
+                button.textContent = form.elements['button[text]'].value;
+                ['left', 'top', 'width', 'height'].forEach(function (key) { button.style[key] = form.elements['button[' + key + ']'].value + '%'; });
+            }
+            document.querySelectorAll('.banner-button-fields').forEach(function (fields) {
+                var form = fields.closest('form');
+                fields.addEventListener('input', function () { updateButtonPreview(form); });
+                form.querySelector('input[name="banner_image"], input[name="edit_banner_image"]').addEventListener('change', function () {
+                    if (!this.files[0]) return;
+                    var reader = new FileReader();
+                    reader.onload = function () { updateButtonPreview(form, reader.result); };
+                    reader.readAsDataURL(this.files[0]);
+                });
+            });
+            [
+                ['banner_image', 'add_banner_preview'],
+                ['mobile_banner_image', 'add_mobile_banner_preview']
+            ].forEach(function (previewPair) {
+                var input = document.getElementById(previewPair[0]);
+                var preview = document.getElementById(previewPair[1]);
+                if (!input || !preview) return;
+                input.addEventListener('change', function () {
+                    if (!this.files[0]) { preview.removeAttribute('src'); preview.hidden = true; return; }
+                    var reader = new FileReader();
+                    reader.onload = function () { preview.src = reader.result; preview.hidden = false; };
+                    reader.readAsDataURL(this.files[0]);
+                });
+            });
             var tableBody = document.getElementById('bannerTableBody');
             var draggedRow = null;
 
@@ -527,10 +610,19 @@ $pageTitle = 'Manage Banners';
                     document.getElementById('edit_title').value = button.dataset.bannerTitle || '';
                     document.getElementById('edit_banner_preview').src = button.dataset.bannerImage || '';
                     document.getElementById('edit_banner_image').value = '';
+                    var editForm = document.getElementById('edit_banner_id').form;
+                    var settings = JSON.parse(button.dataset.bannerButton);
+                    Object.keys(settings).forEach(function (key) {
+                        var field = editForm.elements['button[' + key + ']'];
+                        if (key === 'enabled') field.checked = settings[key]; else field.value = settings[key];
+                    });
+                    updateButtonPreview(editForm, button.dataset.bannerImage);
                     document.getElementById('edit_mobile_banner_image').value = '';
                     document.getElementById('remove_mobile_image').checked = false;
                     var mobilePreview = document.getElementById('edit_mobile_banner_preview');
+                    var mobileFallback = document.getElementById('edit_mobile_banner_fallback');
                     mobilePreview.hidden = !button.dataset.bannerMobile;
+                    mobileFallback.hidden = !!button.dataset.bannerMobile;
                     if (button.dataset.bannerMobile) mobilePreview.src = button.dataset.bannerMobile;
                     else mobilePreview.removeAttribute('src');
                 });
