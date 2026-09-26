@@ -624,6 +624,31 @@ endif; ?>
     min-width: 42% !important;
   }
 }
+/* Keep the subcategory background flush with the breadcrumb and page edges. */
+.category-page-breadcrumb .breadcrumb-nav {
+  margin-bottom: 0 !important;
+}
+section.subcategories-section {
+  margin: 0 !important;
+  width: 100%;
+  max-width: none;
+  border-radius: 0 !important;
+}
+.subcategories-section .categories-card {
+  border-radius: 0 !important;
+}
+@media (min-width: 992px) {
+  .container-fluid.category-container {
+    margin-top: 0 !important;
+    padding-top: 25px !important;
+  }
+  .category-container .sidebar-filter-panel {
+    margin-bottom: 0 !important;
+  }
+  .category-container .products-container {
+    padding-top: 25px !important;
+  }
+}
 </style>
 
-<?php include 'includes/footer.php'; ?> 
+<?php include 'includes/footer.php'; ?>
