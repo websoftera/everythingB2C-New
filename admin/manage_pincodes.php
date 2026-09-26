@@ -14,6 +14,7 @@ checkAdminPermission('manage_pincodes');
 
 $message = '';
 $error = '';
+$_SESSION['pincode_csrf'] = $_SESSION['pincode_csrf'] ?? bin2hex(random_bytes(32));
 
 // Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -42,6 +43,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ];
                 updatePopupSettings($settings);
                 $message = "Settings updated successfully.";
+                break;
+
+            case 'delete_selected_pincodes':
+                if (!is_string($_POST['csrf'] ?? null) || !hash_equals($_SESSION['pincode_csrf'], $_POST['csrf'])) {
+                    $error = 'Please refresh the page and try again.';
+                    break;
+                }
+                $selectedIds = is_string($_POST['selected_ids'] ?? null)
+                    ? json_decode($_POST['selected_ids'], true) : null;
+                try {
+                    $deleted = deleteServiceablePincodes($selectedIds);
+                    $message = $deleted > 0
+                        ? "Successfully deleted {$deleted} pincode(s)."
+                        : 'The selected pincodes have already been deleted.';
+                } catch (InvalidArgumentException $e) {
+                    $error = 'Please select valid pincodes to delete.';
+                } catch (Exception $e) {
+                    error_log('Bulk pincode deletion failed: ' . $e->getMessage());
+                    $error = 'Unable to delete the selected pincodes. Please try again.';
+                }
                 break;
 
             case 'delete_pincode':
@@ -252,11 +273,27 @@ try {
                                 <i class="fas fa-info-circle"></i> No serviceable pincodes added yet.
                             </div>
                         <?php else: ?>
+                            <form method="POST" id="bulk-delete-pincodes" class="d-flex flex-wrap align-items-center gap-3 mb-3">
+                                <input type="hidden" name="action" value="delete_selected_pincodes">
+                                <input type="hidden" name="csrf" value="<?php echo htmlspecialchars($_SESSION['pincode_csrf']); ?>">
+                                <input type="hidden" name="selected_ids" id="selected-pincode-ids" value="[]">
+                                <div class="form-check mb-0">
+                                    <input type="checkbox" class="form-check-input" id="select-all-pincodes">
+                                    <label class="form-check-label" for="select-all-pincodes">Select all</label>
+                                </div>
+                                <span id="pincode-selection-count" class="text-muted" aria-live="polite">0 selected</span>
+                                <button type="submit" class="btn btn-danger ms-auto" id="delete-selected-pincodes" disabled>
+                                    <i class="fas fa-trash" aria-hidden="true"></i> Delete selected
+                                </button>
+                            </form>
                             <div class="row">
                                 <?php foreach ($pincodes as $pincode): ?>
                                     <div class="col-md-6 col-lg-4 mb-3">
                                         <div class="pincode-card">
                                             <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <input type="checkbox" class="form-check-input pincode-select me-2"
+                                                       value="<?php echo (int) $pincode['id']; ?>"
+                                                       aria-label="Select pincode <?php echo htmlspecialchars($pincode['pincode']); ?>">
                                                 <div class="flex-grow-1">
                                                     <h6 class="mb-1"><strong><?php echo htmlspecialchars($pincode['pincode']); ?></strong></h6>
                                                     <small class="text-muted">
@@ -300,5 +337,37 @@ try {
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const bulkDeleteForm = document.getElementById('bulk-delete-pincodes');
+        if (bulkDeleteForm) {
+            const selectAll = document.getElementById('select-all-pincodes');
+            const checkboxes = Array.from(document.querySelectorAll('.pincode-select'));
+            const deleteButton = document.getElementById('delete-selected-pincodes');
+            const selectedIds = () => checkboxes.filter(checkbox => checkbox.checked).map(checkbox => checkbox.value);
+            const updateSelection = () => {
+                const count = selectedIds().length;
+                document.getElementById('pincode-selection-count').textContent = `${count} selected`;
+                selectAll.checked = count === checkboxes.length;
+                selectAll.indeterminate = count > 0 && count < checkboxes.length;
+                deleteButton.disabled = count === 0;
+            };
+            selectAll.addEventListener('change', () => {
+                checkboxes.forEach(checkbox => { checkbox.checked = selectAll.checked; });
+                updateSelection();
+            });
+            checkboxes.forEach(checkbox => checkbox.addEventListener('change', updateSelection));
+            bulkDeleteForm.addEventListener('submit', event => {
+                const ids = selectedIds();
+                if (!ids.length || !confirm(`Delete ${ids.length} selected pincode(s)? Delivery will no longer be available for these pincodes. This cannot be undone.`)) {
+                    event.preventDefault();
+                    return;
+                }
+                document.getElementById('selected-pincode-ids').value = JSON.stringify(ids);
+                deleteButton.disabled = true;
+            });
+            window.addEventListener('pageshow', updateSelection);
+            updateSelection();
+        }
+    </script>
 </body>
 </html>

@@ -146,6 +146,93 @@ if (empty($bannersList)) {
     </div>
 </section>
 
+<!-- Shopping benefits -->
+<style>
+    section.home-benefits {
+        background: #fff;
+        border-bottom: 1px solid #dedede;
+        padding: 18px 20px !important;
+    }
+    .home-benefits-list {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 !important;
+        list-style: none;
+    }
+    .home-benefits-item {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        min-width: 0;
+        margin: 0 !important;
+        padding: 0 12px;
+        color: #555;
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 1.4;
+    }
+    .home-benefits-item + .home-benefits-item::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        height: 24px;
+        border-left: 2px solid #888;
+    }
+    .home-benefits-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: auto;
+        height: 42px;
+        flex: 0 0 auto;
+    }
+    .home-benefits .home-benefits-icon img {
+        display: block;
+        width: auto;
+        height: 42px;
+        max-width: 72px;
+        margin: 0;
+        object-fit: contain;
+    }
+    @media (max-width: 991.98px) {
+        .home-benefits-list { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 20px; }
+        .home-benefits-item:nth-child(4)::before { display: none; }
+    }
+    @media (max-width: 575.98px) {
+        section.home-benefits { padding: 18px 10px !important; }
+        .home-benefits-list { row-gap: 18px; }
+        .home-benefits-item { flex-direction: column; gap: 7px; padding: 0 4px; text-align: center; font-size: 11px; }
+        .home-benefits-icon { width: 64px; height: 36px; }
+        .home-benefits .home-benefits-icon img { height: 36px; max-width: 64px; }
+        .home-benefits-item + .home-benefits-item::before { display: none; }
+    }
+</style>
+<section class="home-benefits" aria-label="Shopping benefits">
+    <ul class="home-benefits-list">
+        <?php foreach ([
+            ['lowest-price.webp', 'Lowest Price'],
+            ['Cash-on-delivery.webp', 'Pay on Delivery'],
+            ['same-day-delivery.webp', 'Same Day Delivery'],
+            ['free-shipping.webp', 'Free Shipping*'],
+            ['return-policy.webp', 'Easy Returns'],
+            ['local-seller.webp', 'Local Sellers'],
+        ] as [$benefitIcon, $benefitLabel]): ?>
+            <li class="home-benefits-item">
+                <span class="home-benefits-icon" aria-hidden="true">
+                    <img src="<?php echo htmlspecialchars($base_url . 'asset/images/' . $benefitIcon); ?>" alt="" height="42" decoding="async">
+                </span>
+                <span><?php echo htmlspecialchars($benefitLabel); ?></span>
+            </li>
+        <?php endforeach; ?>
+    </ul>
+</section>
+
 <!-- How We Work Section -->
 <style>
     .hero-slider-section { margin-bottom: 0 !important; padding-bottom: 0 !important; }

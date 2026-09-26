@@ -31,10 +31,10 @@ if ($popupEnabled !== '1') {
         
         <div class="delivery-popup-content">
             <div class="delivery-message">
-                <?php echo htmlspecialchars($popupSettings['popup_message'] ?? 'We Deliver Orders In Maharashtra, Gujarat, Bangalore, And Hyderabad Only.'); ?>
+                <?php echo htmlspecialchars($popupSettings['popup_message'] ?? 'We Deliver Orders in Vadodara Only.'); ?>
             </div>
             <div class="delivery-instruction">
-                <?php echo htmlspecialchars($popupSettings['popup_instruction'] ?? 'Please Enter Your Pincode To Check Delivery Availability.'); ?>
+                <?php echo htmlspecialchars($popupSettings['popup_instruction'] ?? 'Please Enter PIN Code to Check Delivery Availability.'); ?>
             </div>
             
             <div class="delivery-input-section">
@@ -42,7 +42,7 @@ if ($popupEnabled !== '1') {
                     <input type="text" id="pincodeInput" class="delivery-pincode-input" 
                            placeholder="Enter your pincode" maxlength="6" pattern="[0-9]{6}">
                     <button type="button" class="delivery-check-btn" onclick="checkDeliveryPincode()">
-                        Check
+                        CHECK
                     </button>
                 </div>
                 <button type="button" class="delivery-start-shopping-btn" onclick="startShopping()">
@@ -215,6 +215,14 @@ if ($popupEnabled !== '1') {
     background-color: #9FBF1C;
 }
 
+.delivery-popup .delivery-check-btn,
+.delivery-popup .delivery-start-shopping-btn {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
 .delivery-result {
     margin-top: 15px;
     padding: 12px;
@@ -246,7 +254,22 @@ if ($popupEnabled !== '1') {
 </style>
 
 <script>
+let deliveryRequestVersion = 0;
+
+function resetDeliveryPopup() {
+    deliveryRequestVersion++;
+    document.getElementById('pincodeInput').value = '';
+    const result = document.getElementById('deliveryResult');
+    result.style.display = 'none';
+    result.className = 'delivery-result';
+    result.querySelector('.delivery-result-message').textContent = '';
+    const button = document.querySelector('.delivery-check-btn');
+    button.textContent = 'CHECK';
+    button.disabled = false;
+}
+
 function closeDeliveryPopup() {
+    resetDeliveryPopup();
     document.getElementById('deliveryPopup').style.display = 'none';
     fetch('ajax/mark_popup_shown.php', {
         method: 'POST',
@@ -256,6 +279,7 @@ function closeDeliveryPopup() {
 }
 
 function checkDeliveryPincode() {
+    const requestVersion = ++deliveryRequestVersion;
     const input = document.getElementById('pincodeInput');
     const pincode = input.value.trim();
     const resultDiv = document.getElementById('deliveryResult');
@@ -280,6 +304,7 @@ function checkDeliveryPincode() {
     })
     .then(response => response.json())
     .then(data => {
+        if (requestVersion !== deliveryRequestVersion) return;
         if (data.success) {
             resultDiv.className = `delivery-result ${data.status}`;
             resultMessage.textContent = data.message;
@@ -290,12 +315,14 @@ function checkDeliveryPincode() {
         resultDiv.style.display = 'block';
     })
     .catch(error => {
+        if (requestVersion !== deliveryRequestVersion) return;
         resultDiv.className = 'delivery-result error';
         resultMessage.textContent = 'Network error.';
         resultDiv.style.display = 'block';
     })
     .finally(() => {
-        checkBtn.textContent = originalText;
+        if (requestVersion !== deliveryRequestVersion) return;
+        checkBtn.textContent = 'CHECK';
         checkBtn.disabled = false;
     });
 }
@@ -323,6 +350,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Handle open_pincode param
     if (new URLSearchParams(window.location.search).get('open_pincode') === '1') {
+        resetDeliveryPopup();
         const popup = document.getElementById('deliveryPopup');
         if (popup) popup.style.display = 'flex';
         history.replaceState(null, '', window.location.pathname);

@@ -26,10 +26,10 @@ $isServiceable = isPincodeServiceable($pincode);
 $settings = getPopupSettings();
 
 if ($isServiceable) {
-    $message = $settings['service_available_message'] ?? 'Great! We deliver to your area.';
+    $message = $settings['service_available_message'] ?? 'We Provide Delivery to Your Area';
     $status = 'success';
 } else {
-    $message = $settings['service_unavailable_message'] ?? 'We are not providing service to this area.';
+    $message = $settings['service_unavailable_message'] ?? 'We Don’t Provide Delivery to Your Area';
     $status = 'error';
 }
 

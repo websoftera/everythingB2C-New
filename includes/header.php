@@ -1080,10 +1080,8 @@ function openPincodePopup(e) {
     e.preventDefault();
     const popup = document.getElementById('deliveryPopup');
     if (popup) {
+        resetDeliveryPopup();
         popup.style.display = 'flex';
-        // Clear any previous result when manually opening
-        const result = document.getElementById('pincodeResult');
-        if (result) result.innerHTML = '';
     } else {
         // Redirect to home page and auto-open pincode popup
         location.href = '<?php echo $base_url; ?>index.php?open_pincode=1';
