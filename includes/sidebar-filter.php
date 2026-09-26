@@ -309,7 +309,7 @@ $categoryTree = buildCategoryTree($categories);
 
 <style>
   #filterCategoryTrigger { display: flex; justify-content: space-between; align-items: center; gap: 12px; text-align: left; background: #fff; }
-  #filterCategoryMenu { position: fixed; inset: auto; margin: 0; padding: 6px 0; width: 240px; max-width: calc(100vw - 24px); max-height: 50vh; overflow-y: auto; border: 1px solid #ddd; border-radius: 6px; background: white; box-shadow: 0 8px 24px #0002; }
+  #filterCategoryMenu { position: fixed; inset: auto; margin: 0; padding: 6px 0; width: 240px; max-width: calc(100vw - 24px); max-height: 50vh; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; border: 1px solid #ddd; border-radius: 6px; background: white; box-shadow: 0 8px 24px #0002; z-index: 2000; }
   #filterCategoryMenu button, #filterCategoryMenu summary { display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 6px 12px; border: 0; background: transparent; color: #333; text-align: left; font-family: inherit; font-size: 12px; line-height: 1.5; cursor: pointer; list-style: none; }
   #filterCategoryMenu summary { font-weight: 600; gap: 12px; }
   #filterCategoryMenu > button { font-weight: 600; }
@@ -1272,14 +1272,40 @@ document.addEventListener('DOMContentLoaded', function() {
   const categoryMenu = document.getElementById('filterCategoryMenu');
   if (categorySelect && categoryTrigger && categoryMenu) {
     categoryTrigger.firstChild.textContent = categorySelect.selectedOptions[0].textContent.trim() + ' ';
+    const positionCategoryMenu = () => {
+      if (!categoryMenu.matches(':popover-open')) return;
+      const rect = categoryTrigger.getBoundingClientRect();
+      const viewportPadding = 12;
+      const stickyHeader = document.querySelector('nav.navbar.sticky-top');
+      let headerBottom = stickyHeader ? stickyHeader.getBoundingClientRect().bottom : 0;
+      const categoryHeader = document.querySelector('.second-navbar');
+      if (categoryHeader) {
+        const categoryHeaderRect = categoryHeader.getBoundingClientRect();
+        if (categoryHeaderRect.bottom > 0 && categoryHeaderRect.top <= headerBottom + 2) {
+          headerBottom = Math.max(headerBottom, categoryHeaderRect.bottom);
+        }
+      }
+      // Match native select menus: close once scrolling carries the control behind the sticky header.
+      if (rect.bottom <= headerBottom) {
+        categoryMenu.hidePopover();
+        return;
+      }
+      const width = Math.min(240, window.innerWidth - viewportPadding * 2);
+      const left = Math.max(viewportPadding, Math.min(rect.left, window.innerWidth - width - viewportPadding));
+      const menuTop = Math.max(rect.bottom + 4, headerBottom + 4);
+      const below = Math.max(0, window.innerHeight - menuTop - viewportPadding);
+      const above = Math.max(0, rect.top - headerBottom - 8);
+      const placeBelow = below >= Math.min(220, above) || below >= above;
+      const availableHeight = Math.max(80, placeBelow ? below : above);
+      categoryMenu.style.left = left + 'px';
+      categoryMenu.style.top = (placeBelow ? menuTop : Math.max(headerBottom + viewportPadding, rect.top - Math.min(categoryMenu.scrollHeight, availableHeight) - 4)) + 'px';
+      categoryMenu.style.maxHeight = availableHeight + 'px';
+    };
     categoryMenu.addEventListener('beforetoggle', event => {
       const open = event.newState === 'open';
       categoryTrigger.setAttribute('aria-expanded', String(open));
       if (open) {
-        const rect = categoryTrigger.getBoundingClientRect();
-        categoryMenu.style.left = Math.max(12, Math.min(rect.left, window.innerWidth - 252)) + 'px';
-        categoryMenu.style.top = rect.bottom + 4 + 'px';
-        categoryMenu.style.maxHeight = Math.max(100, window.innerHeight - rect.bottom - 20) + 'px';
+        requestAnimationFrame(positionCategoryMenu);
       }
     });
     categoryMenu.addEventListener('click', event => {
@@ -1289,7 +1315,8 @@ document.addEventListener('DOMContentLoaded', function() {
       categoryMenu.hidePopover();
       categorySelect.dispatchEvent(new Event('change', { bubbles: true }));
     });
-    window.addEventListener('resize', () => categoryMenu.hidePopover());
+    window.addEventListener('resize', positionCategoryMenu);
+    window.addEventListener('scroll', positionCategoryMenu, true);
   }
 
   // Handle form submission to maintain current page context

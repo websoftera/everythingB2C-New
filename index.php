@@ -2,6 +2,7 @@
 $pageTitle = 'everythingb2c';
 require_once 'includes/header.php';
 require_once 'includes/delivery_popup_functions.php';
+require_once 'includes/banner_button.php';
 
 // Check if popup should be shown
 $showPopup = shouldShowDeliveryPopup();
@@ -123,13 +124,17 @@ if (empty($bannersList)) {
     <div id="heroCarousel" class="custom-carousel">
         <div class="carousel-inner">
             <?php foreach ($bannersList as $index => $banner): ?>
-            <div class="carousel-item <?php echo $index === 0 ? 'active' : ''; ?>">
+            <?php $bannerButton = getBannerButton($banner['button_config'] ?? null); ?>
+            <div class="carousel-item <?php echo $index === 0 ? 'active' : ''; ?>"<?php echo $bannerButton['enabled'] ? ' data-mobile-banner-url="' . htmlspecialchars($bannerButton['url'], ENT_QUOTES, 'UTF-8') . '" role="link" tabindex="0"' : ''; ?>>
                 <picture>
                     <?php if (!empty($banner['mobile_image_path'])): ?>
                         <source media="(max-width: 767.98px)" srcset="<?php echo htmlspecialchars($banner['mobile_image_path']); ?>">
                     <?php endif; ?>
                     <img src="<?php echo htmlspecialchars($banner['image_path']); ?>" alt="<?php echo htmlspecialchars($banner['title'] ?? 'Banner ' . ($index + 1)); ?>" class="carousel-image" <?php echo $index === 0 ? 'fetchpriority="high"' : 'loading="lazy"'; ?>>
                 </picture>
+                <?php if ($bannerButton['enabled']): ?>
+                    <a class="banner-action-button" href="<?php echo htmlspecialchars($bannerButton['url'], ENT_QUOTES, 'UTF-8'); ?>" style="left:<?php echo $bannerButton['left']; ?>%;top:<?php echo $bannerButton['top']; ?>%;width:<?php echo $bannerButton['width']; ?>%;height:<?php echo $bannerButton['height']; ?>%;"><?php echo htmlspecialchars($bannerButton['text']); ?></a>
+                <?php endif; ?>
                 <div class="carousel-caption d-block <?php echo $index === 0 ? 'text-start' : 'text-end'; ?>">
                     <!-- Optional caption content -->
                 </div>
@@ -156,6 +161,14 @@ if (empty($bannersList)) {
 
 <!-- Shopping benefits -->
 <style>
+    #heroCarousel .banner-action-button { position:absolute;z-index:5;display:flex;align-items:center;justify-content:center;background:#008fbe;color:#fff;border-radius:999px;font-size:clamp(12px,1.2vw,24px);font-weight:600;line-height:1.2;text-decoration:none;text-align:center;padding:2px 6px; }
+    #heroCarousel .banner-action-button:hover { background:#007da7; }
+    #heroCarousel .banner-action-button:focus-visible { outline:3px solid #222;outline-offset:2px; }
+    #heroCarousel .carousel-item:not(.active) .banner-action-button { visibility:hidden;pointer-events:none; }
+    @media(max-width:767.98px) {
+        #heroCarousel .banner-action-button { display:none; }
+        #heroCarousel .carousel-item[data-mobile-banner-url] picture { cursor:pointer; }
+    }
     section.home-benefits {
         background: #fff;
         border-top: 1px solid #dedede;
@@ -3698,6 +3711,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         }
+
+        function openMobileBannerLink(event) {
+            if (!window.matchMedia('(max-width: 767.98px)').matches || !event.target.closest('picture')) return;
+            const slide = event.target.closest('.carousel-item.active[data-mobile-banner-url]');
+            if (!slide) return;
+            window.location.assign(slide.dataset.mobileBannerUrl);
+        }
+
+        heroCarousel.addEventListener('click', openMobileBannerLink);
+        heroCarousel.addEventListener('keydown', (event) => {
+            if ((event.key === 'Enter' || event.key === ' ') && event.target.matches('.carousel-item.active[data-mobile-banner-url]')) {
+                event.preventDefault();
+                window.location.assign(event.target.dataset.mobileBannerUrl);
+            }
+        });
         
         // The first slide is ready immediately; later slides use native lazy loading.
         initializeCarousel();

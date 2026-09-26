@@ -603,13 +603,29 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!cart) return;
     function fitMobileCart() {
         row.classList.remove('mobile-header-overflow');
-        if (window.innerWidth < 992 && cart.getBoundingClientRect().right > row.getBoundingClientRect().right) {
+        row.style.removeProperty('--mobile-logo-max-width');
+        if (window.innerWidth >= 992) return;
+        const logo = row.querySelector('.navbar-brand');
+        const viewportRight = window.visualViewport
+            ? window.visualViewport.offsetLeft + window.visualViewport.width
+            : document.documentElement.clientWidth;
+        let rightEdge = Math.min(viewportRight, document.documentElement.clientWidth, row.getBoundingClientRect().right);
+        for (let parent = row.parentElement; parent; parent = parent.parentElement) {
+            const overflow = getComputedStyle(parent).overflowX;
+            if (overflow !== 'visible') rightEdge = Math.min(rightEdge, parent.getBoundingClientRect().right);
+        }
+        const overflow = cart.getBoundingClientRect().right - (rightEdge - 12);
+        if (overflow > 0) {
+            row.style.setProperty('--mobile-logo-max-width', Math.max(0, logo.getBoundingClientRect().width - overflow) + 'px');
             row.classList.add('mobile-header-overflow');
         }
     }
     fitMobileCart();
     window.addEventListener('resize', fitMobileCart);
     window.addEventListener('load', fitMobileCart);
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', fitMobileCart);
+    row.querySelectorAll('img').forEach(image => image.addEventListener('load', fitMobileCart));
+    if (window.ResizeObserver) new ResizeObserver(fitMobileCart).observe(row);
     if (document.fonts) document.fonts.ready.then(fitMobileCart);
 });
 </script>
@@ -619,6 +635,7 @@ document.addEventListener('DOMContentLoaded', function () {
     body nav.navbar.sticky-top > .container-fluid.mobile-header-overflow > .navbar-brand {
         flex-shrink: 1 !important;
         min-width: 0 !important;
+        max-width: var(--mobile-logo-max-width) !important;
     }
     body nav.navbar.sticky-top > .container-fluid.mobile-header-overflow > .navbar-brand img {
         max-width: 100% !important;
