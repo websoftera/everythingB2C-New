@@ -25,11 +25,16 @@ echo renderBreadcrumb($breadcrumbs);
                 <div class="about-section">
                     <h2>Our Story</h2>
                     <p>
-                        everythingb2c.in was founded with a simple yet powerful vision: to make quality products accessible to everyone. We understand that businesses and individuals need reliable suppliers who can deliver consistent quality, competitive pricing, and excellent service.
+                        <strong>EverythingB2C is a local eCommerce marketplace created to connect local businesses with local customers.</strong> We are starting our journey in <strong>Vadodara</strong> with a simple objective: to help local businesses sell online while making it easier for customers to discover and purchase products from businesses around them.
                     </p>
                     <p>
-                        Starting as a small venture, we have grown into a trusted name in the B2C marketplace, serving thousands of satisfied customers across India. Our journey has been marked by continuous innovation, customer-centric approach, and unwavering commitment to quality.
+                        At the same time, EverythingB2C helps customers get products at <strong>competitive prices</strong> by allowing them to compare prices from multiple local sellers. Since our operations are managed locally, sellers can benefit from lower platform fees, reduced packaging costs, and optimized logistics. This creates a <strong>win-win situation for both sellers and buyers.</strong>
                     </p>
+                    <p>
+                        <strong>EverythingB2C provides the marketplace, technology, and pickup &amp; delivery support</strong>, allowing local sellers to focus on their products and customers while we take care of order fulfilment and delivery.
+                    </p>
+                    <p><strong>Local Sellers. Local Buyers. Better Savings. Faster Delivery.</strong></p>
+                    <p><strong>An eCommerce startup founded by technocrats and IIM Calcutta alumni.</strong></p>
                 </div>
 
                 <div class="about-section">
@@ -79,12 +84,12 @@ echo renderBreadcrumb($breadcrumbs);
                 <div class="about-section">
                     <h2>Our Product Categories</h2>
                     <ul class="category-list">
-                        <li><strong>Office Stationery:</strong> Complete range of office supplies for all your business needs</li>
-                        <li><strong>Personal Care:</strong> Quality personal care products for daily hygiene and wellness</li>
-                        <li><strong>Cleaning & Household:</strong> Effective cleaning solutions and household essentials</li>
-                        <li><strong>Diapers & Wipes:</strong> Safe and comfortable baby care products</li>
-                        <li><strong>Home & Garden:</strong> Products to beautify and maintain your living spaces</li>
-                        <li><strong>Kitchen Essentials:</strong> Everything you need for your kitchen and cooking needs</li>
+                        <li><strong>Office Stationery:</strong> A complete range of office supplies for your everyday business needs.</li>
+                        <li><strong>School Stationery:</strong> Essential stationery and supplies for students, teachers, and classrooms.</li>
+                        <li><strong>Industrial Safety Products:</strong> Protective equipment and safety essentials for workplaces and industry.</li>
+                        <li><strong>Packaging Material:</strong> Reliable packaging supplies for storing, protecting, and shipping products.</li>
+                        <li><strong>Personal Care:</strong> Everyday personal care products for hygiene and wellness.</li>
+                        <li><strong>Home &amp; Garden:</strong> Useful products to care for and improve your home and outdoor spaces.</li>
                     </ul>
                 </div>
 
@@ -92,20 +97,22 @@ echo renderBreadcrumb($breadcrumbs);
                     <h2>Why Choose everythingb2c?</h2>
                     <div class="why-choose-us">
                         <div class="reason-item">
-                            <h3>Trusted by Thousands</h3>
-                            <p>Join thousands of satisfied customers who trust us for their regular purchases.</p>
+                            <h3>For Buyers</h3>
+                            <ul>
+                                <li>Shop from local sellers</li>
+                                <li>Competitive prices</li>
+                                <li>Same-day delivery*</li>
+                                <li>Easy returns</li>
+                            </ul>
                         </div>
                         <div class="reason-item">
-                            <h3>Quality Guarantee</h3>
-                            <p>We stand behind every product we sell with our quality guarantee and return policy.</p>
-                        </div>
-                        <div class="reason-item">
-                            <h3>Easy Returns</h3>
-                            <p>Hassle-free return policy within 7 days if you're not completely satisfied.</p>
-                        </div>
-                        <div class="reason-item">
-                            <h3>Regular Updates</h3>
-                            <p>We continuously add new products and categories to serve your evolving needs.</p>
+                            <h3>For Sellers</h3>
+                            <ul>
+                                <li>Reach local customers</li>
+                                <li>EverythingB2C pickup</li>
+                                <li>Easy online selling</li>
+                                <li>Introductory 0% platform fee*</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -114,8 +121,8 @@ echo renderBreadcrumb($breadcrumbs);
                     <h2>Contact Information</h2>
                     <div class="contact-details">
                         <p><strong>Email:</strong> <a href="mailto:info@everythingb2c.in">info@everythingb2c.in</a></p>
-                        <p><strong>Phone:</strong> <a href="tel:+918780406230">+91 878 040 6230</a></p>
-                        <p><strong>Business Hours:</strong> Monday to Saturday, 9:00 AM - 6:00 PM</p>
+                        <p><strong>Phone:</strong> <a href="tel:+916355837347">+91 63558 37347</a></p>
+                        <p><strong>Business Hours:</strong> Monday to Saturday, 9:00 AM - 9:00 PM</p>
                     </div>
                 </div>
             </div>
@@ -243,7 +250,7 @@ echo renderBreadcrumb($breadcrumbs);
 
 .why-choose-us {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 20px;
     margin-top: 20px;
 }
@@ -263,11 +270,25 @@ echo renderBreadcrumb($breadcrumbs);
     margin-bottom: 10px;
 }
 
-.reason-item p {
+.reason-item ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+}
+
+.reason-item li {
     color: #666;
     font-size: 15px;
     line-height: 1.7;
-    margin: 0;
+    margin: 0 0 8px;
+}
+
+.reason-item li::before {
+    content: "✓";
+    color: var(--site-blue);
+    font-weight: 700;
+    margin-right: 9px;
 }
 
 .contact-details {

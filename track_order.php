@@ -503,8 +503,8 @@ include 'includes/header.php';
                     <div class="track-card p-3 text-center bg-white border-0 shadow-sm">
                         <h6 class="fw-bold mb-2 small">Need Assistance?</h6>
                         <p class="extra-small text-muted mb-3">Our support team is here.</p>
-                        <a href="tel:+918780406230" class="btn btn-outline-primary w-100 rounded-pill mb-2 fw-bold extra-small py-2">
-                            <i class="fas fa-phone-alt me-2"></i>+91 878 040 6230
+                        <a href="tel:+916355837347" class="btn btn-outline-primary w-100 rounded-pill mb-2 fw-bold extra-small py-2">
+                            <i class="fas fa-phone-alt me-2"></i>+91 63558 37347
                         </a>
                         <a href="mailto:info@everythingb2c.in" class="btn btn-outline-primary w-100 rounded-pill fw-bold extra-small py-2">
                             <i class="fas fa-envelope me-2"></i>info@everythingb2c.in

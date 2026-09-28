@@ -41,7 +41,7 @@
             <h3>Connect With Us</h3>
             <div class="footer-connect-inline">
                 <span class="contact-info-inline">
-                    <i class="fas fa-phone"></i> <a href="tel:+918780406230">+91 878 040 6230</a>
+                    <i class="fas fa-phone"></i> <a href="tel:+916355837347">+91 63558 37347</a>
                 </span>
                 <span class="separator">|</span>
                 <span class="contact-info-inline">
