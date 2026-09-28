@@ -88,7 +88,7 @@ function handleCreateDTDCOrder() {
         'shipper_city' => 'Mumbai',
         'shipper_state' => 'Maharashtra',
         'shipper_pincode' => '400001',
-        'shipper_phone' => '+91-8780406230',
+        'shipper_phone' => '+91-6355837347',
         'declared_value' => $order['total_amount'],
         'collectable_amount' => $order['payment_method'] === 'cod' ? $order['total_amount'] : 0,
         'weight' => calculateOrderWeight($orderItems),

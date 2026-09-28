@@ -324,7 +324,7 @@ class DTDCAPI {
             'shipper_city' => $orderData['shipper_city'] ?? 'Mumbai',
             'shipper_state' => $orderData['shipper_state'] ?? 'Maharashtra',
             'shipper_pincode' => $orderData['shipper_pincode'] ?? '400001',
-            'shipper_phone' => $orderData['shipper_phone'] ?? '+91-8780406230',
+            'shipper_phone' => $orderData['shipper_phone'] ?? '+91-6355837347',
             'product_code' => $this->config['defaults']['product_code'],
             'sub_product_code' => $this->config['defaults']['sub_product_code'],
             'service_type' => $this->config['defaults']['service_type'],

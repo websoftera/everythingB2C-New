@@ -153,7 +153,7 @@ echo renderBreadcrumb($breadcrumbs);
                         </ul>
                         
                         <p><strong>How to register?</strong></p>
-                        <p>Currently, seller registration is handled by our administration team. Please contact us at <a href="mailto:info@everythingb2c.in">info@everythingb2c.in</a> or call us at <a href="tel:+918780406230">+91 878 040 6230</a> to upgrade your customer account to a seller account.</p>
+                        <p>Currently, seller registration is handled by our administration team. Please contact us at <a href="mailto:info@everythingb2c.in">info@everythingb2c.in</a> or call us at <a href="tel:+916355837347">+91 63558 37347</a> to upgrade your customer account to a seller account.</p>
                         
                         <div class="text-center">
                             <a href="../index.php" class="btn btn-outline-secondary mt-3">

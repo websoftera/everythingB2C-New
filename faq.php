@@ -181,8 +181,8 @@ echo renderBreadcrumb($breadcrumbs);
                             <p>You can reach our customer support team through:</p>
                             <ul>
                                 <li><strong>Email:</strong> info@everythingb2c.in</li>
-                                <li><strong>Phone:</strong> +91 878 040 6230</li>
-                                <li><strong>Business Hours:</strong> Monday to Saturday, 9:00 AM - 6:00 PM</li>
+                                <li><strong>Phone:</strong> +91 63558 37347</li>
+                                <li><strong>Business Hours:</strong> Monday to Saturday, 9:00 AM - 9:00 PM</li>
                             </ul>
                         </div>
                     </div>
@@ -200,7 +200,7 @@ echo renderBreadcrumb($breadcrumbs);
                     <p>If you couldn't find the answer to your question, please don't hesitate to contact us. Our customer support team is here to help!</p>
                     <div class="contact-info">
                         <p><strong>Email:</strong> <a href="mailto:info@everythingb2c.in">info@everythingb2c.in</a></p>
-                        <p><strong>Phone:</strong> <a href="tel:+918780406230">+91 878 040 6230</a></p>
+                        <p><strong>Phone:</strong> <a href="tel:+916355837347">+91 63558 37347</a></p>
                     </div>
                 </div>
             </div>
