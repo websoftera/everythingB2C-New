@@ -4,9 +4,19 @@ require_once 'includes/functions.php';
 
 $pageTitle = 'My Account';
 
+// Preserve the product page when a guest signs in to write a review.
+if (isset($_GET['review_product'])) {
+    $reviewProductSlug = (string)$_GET['review_product'];
+    if (preg_match('/^[A-Za-z0-9_-]{1,200}$/', $reviewProductSlug)) {
+        $_SESSION['redirect_after_login'] = 'product.php?slug=' . rawurlencode($reviewProductSlug) . '#write-product-review';
+    }
+}
+
 // Redirect if already logged in
 if (isLoggedIn()) {
-    header('Location: myaccount.php'); // Should probably go to an account dashboard
+    $redirect = $_SESSION['redirect_after_login'] ?? 'myaccount.php';
+    unset($_SESSION['redirect_after_login']);
+    header('Location: ' . $redirect);
     exit;
 }
 

@@ -22,7 +22,7 @@ if ($popupEnabled !== '1') {
     <div class="delivery-popup">
         <div class="delivery-popup-header">
             <div class="delivery-logo">
-                <img src="<?php echo $base_url; ?>asset/images/logo.webp" alt="everythingb2c logo" class="site-logo">
+                <img src="<?php echo $base_url; ?>asset/images/header-logo.webp?v=<?php echo b2c_asset_version('asset/images/header-logo.webp'); ?>" alt="everythingb2c logo" class="site-logo">
             </div>
             <button class="delivery-popup-close" onclick="closeDeliveryPopup()">
                 <i class="fas fa-times"></i>
@@ -105,9 +105,9 @@ if ($popupEnabled !== '1') {
 }
 
 .site-logo {
-    height: 50px;
+    height: 65px;
     width: auto;
-    max-width: 250px;
+    max-width: 300px;
 }
 
 .delivery-popup-close {
