@@ -171,7 +171,11 @@ if (empty($bannersList)) {
     #heroCarousel .mobile-banner-link { display:none; }
     @media(max-width:767.98px) {
         #heroCarousel .banner-action-button { display:none; }
-        #heroCarousel .mobile-banner-link { position:absolute;inset:0;z-index:4;display:block;cursor:pointer; }
+        #heroCarousel .mobile-banner-link { position:absolute;inset:0;z-index:6;display:block;cursor:pointer;touch-action:manipulation; }
+        #heroCarousel .carousel-caption { pointer-events:none; }
+        #heroCarousel .carousel-control-prev,
+        #heroCarousel .carousel-control-next,
+        #heroCarousel .carousel-indicators { z-index:7; }
     }
     section.home-benefits {
         background: #fff;
