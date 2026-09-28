@@ -28,6 +28,14 @@ require_once __DIR__ . '/../../includes/functions.php';
             </li>
             <?php endif; ?>
             
+            <?php if (isset($_SESSION['admin_id']) && hasPermission('manage_reviews', $_SESSION['admin_id'])): ?>
+            <li class="everythingb2c-nav-item">
+                <a class="everythingb2c-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'reviews.php' ? 'active' : ''; ?>" href="reviews.php">
+                    <i class="fas fa-star everythingb2c-nav-icon"></i> Reviews
+                </a>
+            </li>
+            <?php endif; ?>
+
             <!-- Products -->
             <?php if (canAccess('view_products')): ?>
             <li class="everythingb2c-nav-item">

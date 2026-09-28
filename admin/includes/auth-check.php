@@ -35,19 +35,16 @@ function checkAdminPermission($requiredPermission, $requireAll = false) {
         exit;
     }
     
-    // Get admin permissions from session or database
+    // Refresh permissions for each protected request so role changes and new
+    // migrations take effect without requiring an old session to be rebuilt.
     $adminId = $_SESSION['admin_id'];
-    $permissions = $_SESSION['admin_permissions'] ?? [];
-    
-    // If no permissions in session, fetch from database
-    if (empty($permissions)) {
-        $role = getAdminRole($adminId);
-        if ($role) {
-            $rolePermissions = getRolePermissions($role['id']);
-            $permissions = array_column($rolePermissions, 'code');
-            $_SESSION['admin_permissions'] = $permissions;
-        }
+    $role = getAdminRole($adminId);
+    $permissions = [];
+    if ($role) {
+        $rolePermissions = getRolePermissions($role['id']);
+        $permissions = array_column($rolePermissions, 'code');
     }
+    $_SESSION['admin_permissions'] = $permissions;
     
     // Normalize to array
     if (!is_array($requiredPermission)) {

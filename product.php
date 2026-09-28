@@ -1,5 +1,9 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once 'includes/functions.php';
+require_once 'includes/product_reviews.php';
 
 // Get product slug from URL
 $slug = $_GET['slug'] ?? '';
@@ -15,6 +19,68 @@ $product = getProductBySlug($slug);
 if (!$product) {
     header('Location: index.php');
     exit;
+}
+
+$reviewNotice = $_SESSION['product_review_notice'] ?? '';
+unset($_SESSION['product_review_notice']);
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && ($_POST['action'] ?? '') === 'submit_product_review') {
+    try {
+        if (!isLoggedIn()) {
+            $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'] . '#write-product-review';
+            header('Location: login.php');
+            exit;
+        }
+        if (!verifyProductReviewCsrfToken($_POST['review_csrf'] ?? null)) {
+            throw new RuntimeException('Your session expired. Refresh the page and try again.');
+        }
+        $customerId = (int)$_SESSION['user_id'];
+        $customerCheck = $pdo->prepare("SELECT 1 FROM users WHERE id = ? AND user_role = 'customer' AND is_active = 1 LIMIT 1");
+        $customerCheck->execute([$customerId]);
+        if (!$customerCheck->fetchColumn()) {
+            throw new RuntimeException('Please sign in with a customer account to submit a review.');
+        }
+        $existingReview = $pdo->prepare('SELECT id FROM product_reviews WHERE product_id = ? AND customer_id = ? LIMIT 1');
+        $existingReview->execute([(int)$product['id'], $customerId]);
+        if ($existingReview->fetchColumn()) {
+            throw new RuntimeException('You have already submitted a review for this product.');
+        }
+
+        saveAdminProductReview($pdo, [
+            'product_id' => (int)$product['id'],
+            'customer_id' => $customerId,
+            'rating' => $_POST['rating'] ?? null,
+            'review_title' => $_POST['review_title'] ?? '',
+            'review_content' => $_POST['review_content'] ?? '',
+            'seller_code' => '',
+            'is_verified' => 0,
+            'status' => 'pending',
+        ]);
+        $_SESSION['product_review_notice'] = 'Thank you. Your review was submitted and is awaiting approval.';
+    } catch (Throwable $e) {
+        $_SESSION['product_review_notice'] = $e instanceof InvalidArgumentException || $e instanceof RuntimeException
+            ? $e->getMessage()
+            : 'Unable to submit your review right now. Please try again.';
+        if (!($e instanceof InvalidArgumentException || $e instanceof RuntimeException)) {
+            error_log('Customer product review submission failed: ' . $e->getMessage());
+        }
+    }
+    header('Location: product.php?slug=' . rawurlencode((string)$product['slug']) . '#write-product-review');
+    exit;
+}
+
+$reviewSummary = getPublicProductReviewSummary($pdo, (int)$product['id']);
+$productReviews = getPublicProductReviews($pdo, (int)$product['id'], 20);
+$customerReview = null;
+$canSubmitProductReview = false;
+if (isLoggedIn()) {
+    $reviewAccount = $pdo->prepare("SELECT 1 FROM users WHERE id = ? AND user_role = 'customer' AND is_active = 1 LIMIT 1");
+    $reviewAccount->execute([(int)$_SESSION['user_id']]);
+    $canSubmitProductReview = (bool)$reviewAccount->fetchColumn();
+    if ($canSubmitProductReview) {
+        $customerReviewStmt = $pdo->prepare('SELECT status FROM product_reviews WHERE product_id = ? AND customer_id = ? LIMIT 1');
+        $customerReviewStmt->execute([(int)$product['id'], (int)$_SESSION['user_id']]);
+        $customerReview = $customerReviewStmt->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
 }
 
 $pageTitle = strip_tags($product['name']);
@@ -777,6 +843,138 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
             <?php endif; ?>
         </div>
     </div>
+
+    <section class="product-reviews" aria-labelledby="product-reviews-title">
+        <div class="product-reviews-heading">
+            <div><h2 id="product-reviews-title">Customer Reviews</h2><p>What customers say about this product</p></div>
+            <div class="product-reviews-summary">
+                <strong><?php echo number_format($reviewSummary['average_rating'], 1); ?>/5</strong>
+                <span class="review-stars" aria-label="Average rating <?php echo htmlspecialchars((string)$reviewSummary['average_rating']); ?> out of 5"><?php echo str_repeat('★', (int)round($reviewSummary['average_rating'])) . str_repeat('☆', 5 - (int)round($reviewSummary['average_rating'])); ?></span>
+                <small>Based on <?php echo (int)$reviewSummary['total_reviews']; ?> <?php echo $reviewSummary['total_reviews'] === 1 ? 'review' : 'reviews'; ?></small>
+            </div>
+        </div>
+        <?php if ($productReviews): ?>
+            <div class="product-review-carousel" data-review-carousel aria-label="Customer review carousel">
+              <div class="product-review-viewport">
+                <div class="product-review-track">
+                <?php foreach ($productReviews as $review): ?>
+                    <article class="product-review-card">
+                        <div class="review-card-rating" aria-label="<?php echo (int)$review['rating']; ?> out of 5 stars"><?php echo str_repeat('★', (int)$review['rating']) . str_repeat('☆', 5 - (int)$review['rating']); ?></div>
+                        <h3><?php echo htmlspecialchars($review['review_title'], ENT_QUOTES, 'UTF-8'); ?></h3>
+                        <p><?php echo nl2br(htmlspecialchars($review['review_content'], ENT_QUOTES, 'UTF-8')); ?></p>
+                        <div class="product-review-meta"><span>Seller Code: <?php echo htmlspecialchars($review['seller_code'], ENT_QUOTES, 'UTF-8'); ?></span>
+                            <?php if (!empty($review['is_verified'])): ?><span class="verified-review"><i class="fas fa-check-circle"></i> Verified Purchase</span><?php endif; ?>
+                            <time datetime="<?php echo htmlspecialchars($review['created_at'], ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars(date('M j, Y', strtotime($review['created_at'])), ENT_QUOTES, 'UTF-8'); ?></time>
+                        </div>
+                    </article>
+                <?php endforeach; ?>
+                </div>
+              </div>
+              <div class="product-review-carousel-controls">
+                <button type="button" class="review-carousel-arrow" data-review-prev aria-label="Previous reviews">&#8592;</button>
+                <span data-review-page aria-live="polite"></span>
+                <button type="button" class="review-carousel-arrow" data-review-next aria-label="Next reviews">&#8594;</button>
+              </div>
+            </div>
+        <?php else: ?><div class="product-reviews-empty">No approved reviews yet.</div><?php endif; ?>
+
+        <div class="write-product-review" id="write-product-review">
+            <h3>Write a Review</h3>
+            <?php if ($reviewNotice): ?><div class="review-submit-notice" role="status"><?php echo htmlspecialchars($reviewNotice, ENT_QUOTES, 'UTF-8'); ?></div><?php endif; ?>
+            <?php if ($customerReview): ?>
+                <p class="product-review-login-note">You have already submitted a review for this product. Its current status is <strong><?php echo htmlspecialchars(ucfirst($customerReview['status']), ENT_QUOTES, 'UTF-8'); ?></strong>.</p>
+            <?php elseif (!isLoggedIn()): ?>
+                <p class="product-review-login-note"><a href="login.php?review_product=<?php echo rawurlencode((string)$product['slug']); ?>">Sign in</a> to your customer account to submit a review.</p>
+            <?php elseif (!$canSubmitProductReview): ?>
+                <p class="product-review-login-note">Reviews can be submitted from a customer account.</p>
+            <?php else: ?>
+                <form method="post" action="product.php?slug=<?php echo rawurlencode((string)$product['slug']); ?>#write-product-review" class="product-review-form">
+                    <input type="hidden" name="action" value="submit_product_review">
+                    <input type="hidden" name="review_csrf" value="<?php echo htmlspecialchars(getProductReviewCsrfToken(), ENT_QUOTES, 'UTF-8'); ?>">
+                    <label>Rating <select name="rating" required><option value="">Select rating</option><?php for ($rating = 5; $rating >= 1; $rating--): ?><option value="<?php echo $rating; ?>"><?php echo $rating; ?> star<?php echo $rating > 1 ? 's' : ''; ?></option><?php endfor; ?></select></label>
+                    <label>Review title <input type="text" name="review_title" maxlength="200" required placeholder="Summarize your experience"></label>
+                    <label>Your review <textarea name="review_content" rows="4" maxlength="10000" required placeholder="What did you think about this product?"></textarea></label>
+                    <p class="product-review-login-note">Your review will be checked by our team before it appears. Seller Code and Verified Purchase are managed by an admin.</p>
+                    <button type="submit">Submit Review</button>
+                </form>
+            <?php endif; ?>
+        </div>
+    </section>
+
+    <style>
+      .product-reviews{max-width:1460px;margin:30px auto;padding:24px;background:#fff;border:1px solid #e6eaf0;border-radius:12px;box-shadow:0 8px 28px rgba(25,45,75,.05)}
+      .product-reviews-heading{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:0 0 18px;border-bottom:1px solid #edf0f4}
+      .product-reviews-heading>div:first-child{flex:1;min-width:0;margin:0;padding:0;text-align:left!important}
+      .product-reviews-heading h2{display:block;width:auto;margin:0!important;padding:0!important;text-align:left!important;color:#202b3c;font-size:23px;font-weight:700}.product-reviews-heading p{display:block;width:auto;margin:5px 0 0!important;padding:0!important;text-align:left!important;color:#6b7280}
+      .product-reviews-summary{display:grid;text-align:right;gap:2px}.product-reviews-summary strong{font-size:25px;color:#202b3c}.product-reviews-summary small{color:#687385}.review-stars,.review-card-rating{color:#efa900;letter-spacing:2px}
+      .product-review-carousel{padding-top:18px}.product-review-viewport{overflow:hidden;touch-action:pan-y}.product-review-track{display:flex;gap:14px;transition:transform .45s ease;will-change:transform}.product-review-card{flex:0 0 calc(50% - 7px);min-width:0;padding:18px;border:1px solid #e8ecf1;border-radius:10px;background:#fff}
+      .review-card-rating{font-size:17px}.product-review-card h3{margin:9px 0 6px;font-size:17px;color:#263244}.product-review-card>p{margin:0;color:#4c5665;line-height:1.6;overflow-wrap:anywhere}.product-review-meta{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-top:15px;padding-top:12px;border-top:1px solid #f0f2f5;color:#667085;font-size:13px}.product-review-meta time{font-weight:700;color:#455164}.verified-review{color:#188449;font-weight:600}.product-reviews-empty{padding:24px 0;color:#697586}
+      .product-review-carousel-controls{display:flex;justify-content:center;align-items:center;gap:14px;margin-top:16px;color:#667085;font-size:13px}.review-carousel-arrow{width:34px;height:34px;border:1px solid #d5dce5;border-radius:50%;background:#fff;color:#344054;cursor:pointer}.review-carousel-arrow:hover{border-color:#0c79e7;color:#0c79e7}.review-carousel-arrow:focus-visible{outline:2px solid #0c79e7;outline-offset:2px}
+      .product-review-carousel.single-review-page .product-review-carousel-controls{display:none}
+      .write-product-review{margin-top:22px;padding-top:20px;border-top:1px solid #edf0f4}.write-product-review h3{margin:0 0 12px;font-size:19px;color:#263244}.product-review-form{display:grid;gap:12px;max-width:760px}.product-review-form label{display:grid;gap:6px;font-weight:600;color:#344054}.product-review-form input,.product-review-form textarea,.product-review-form select{width:100%;padding:10px 12px;border:1px solid #d0d5dd;border-radius:7px;font:inherit;font-weight:400}.product-review-form button{justify-self:start;border:0;border-radius:7px;background:#0c79e7;color:white;padding:10px 18px;font-weight:700;cursor:pointer}.product-review-form button:hover{background:#0868c8}.review-submit-notice{max-width:760px;padding:10px 13px;border-radius:7px;background:#eaf5ff;color:#155b91;margin-bottom:12px}.product-review-login-note{color:#687385;margin:0 0 12px}
+      @media(max-width:700px){.product-reviews{box-sizing:border-box;width:auto;/* margin:20px 12px; */padding:12px 10px !important}.product-reviews-heading{align-items:flex-start;padding:0 12px 18px}.product-reviews-heading>div{padding:0}.product-review-carousel{padding:18px 0 0}.product-reviews-heading h2{font-size:20px}.product-review-card{flex-basis:100%;padding:12px}.product-reviews-empty{padding-left:12px;padding-right:12px}.write-product-review{padding:12px}.product-review-meta{gap:8px 12px}}
+      @media(prefers-reduced-motion:reduce){.product-review-track{transition:none}}
+    </style>
+
+    <script>
+    (function () {
+      const carousel = document.querySelector('[data-review-carousel]');
+      if (!carousel) return;
+      const viewport = carousel.querySelector('.product-review-viewport');
+      const track = carousel.querySelector('.product-review-track');
+      const cards = Array.from(track.children);
+      const pageLabel = carousel.querySelector('[data-review-page]');
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let index = 0;
+      let visible = 2;
+      let timer = null;
+      let touchStartX = null;
+      let paused = false;
+      const getVisible = () => window.matchMedia('(max-width: 700px)').matches ? 1 : 2;
+      const lastPageStart = () => Math.max(0, Math.ceil(cards.length / visible) - 1) * visible;
+      function render() {
+        visible = getVisible();
+        const lastStart = lastPageStart();
+        if (index > lastStart) index = 0;
+        const card = cards[0];
+        if (!card) return;
+        const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+        track.style.transform = 'translateX(-' + (index * (card.getBoundingClientRect().width + gap)) + 'px)';
+        pageLabel.textContent = (Math.floor(index / visible) + 1) + ' / ' + (lastStart / visible + 1);
+        carousel.classList.toggle('single-review-page', lastStart === 0);
+      }
+      function advance(direction) {
+        const lastStart = lastPageStart();
+        if (!lastStart) return;
+        index += direction * visible;
+        if (index > lastStart) index = 0;
+        if (index < 0) index = lastStart;
+        render();
+      }
+      function stopAutoScroll() { if (timer) { clearInterval(timer); timer = null; } }
+      function startAutoScroll() {
+        stopAutoScroll();
+        if (reducedMotion || lastPageStart() === 0) return;
+        timer = setInterval(function () { if (!paused && !document.hidden) advance(1); }, 5000);
+      }
+      carousel.querySelector('[data-review-prev]').addEventListener('click', function () { advance(-1); });
+      carousel.querySelector('[data-review-next]').addEventListener('click', function () { advance(1); });
+      carousel.addEventListener('mouseenter', function () { paused = true; });
+      carousel.addEventListener('mouseleave', function () { paused = false; });
+      carousel.addEventListener('focusin', function () { paused = true; });
+      carousel.addEventListener('focusout', function (event) { if (!carousel.contains(event.relatedTarget)) paused = false; });
+      viewport.addEventListener('touchstart', function (event) { touchStartX = event.changedTouches[0].clientX; }, { passive: true });
+      viewport.addEventListener('touchend', function (event) {
+        if (touchStartX === null) return;
+        const swipe = event.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(swipe) > 45) advance(swipe < 0 ? 1 : -1);
+        touchStartX = null;
+      }, { passive: true });
+      window.addEventListener('resize', function () { render(); startAutoScroll(); });
+      render();
+      startAutoScroll();
+    })();
+    </script>
 
     <!-- Zoom Modal -->
     <div id="zoomModal" class="zoom-modal">
