@@ -133,6 +133,9 @@ if (empty($bannersList)) {
                     <img src="<?php echo htmlspecialchars($banner['image_path']); ?>" alt="<?php echo htmlspecialchars($banner['title'] ?? 'Banner ' . ($index + 1)); ?>" class="carousel-image" <?php echo $index === 0 ? 'fetchpriority="high"' : 'loading="lazy"'; ?>>
                 </picture>
                 <?php if ($bannerButton['enabled']): ?>
+                    <a class="mobile-banner-link" href="<?php echo htmlspecialchars($bannerButton['url'], ENT_QUOTES, 'UTF-8'); ?>" aria-label="<?php echo htmlspecialchars($bannerButton['text'], ENT_QUOTES, 'UTF-8'); ?>"></a>
+                <?php endif; ?>
+                <?php if ($bannerButton['enabled']): ?>
                     <a class="banner-action-button" href="<?php echo htmlspecialchars($bannerButton['url'], ENT_QUOTES, 'UTF-8'); ?>" style="left:<?php echo $bannerButton['left']; ?>%;top:<?php echo $bannerButton['top']; ?>%;width:<?php echo $bannerButton['width']; ?>%;height:<?php echo $bannerButton['height']; ?>%;"><?php echo htmlspecialchars($bannerButton['text']); ?></a>
                 <?php endif; ?>
                 <div class="carousel-caption d-block <?php echo $index === 0 ? 'text-start' : 'text-end'; ?>">
@@ -165,9 +168,14 @@ if (empty($bannersList)) {
     #heroCarousel .banner-action-button:hover { background:#007da7; }
     #heroCarousel .banner-action-button:focus-visible { outline:3px solid #222;outline-offset:2px; }
     #heroCarousel .carousel-item:not(.active) .banner-action-button { visibility:hidden;pointer-events:none; }
+    #heroCarousel .mobile-banner-link { display:none; }
     @media(max-width:767.98px) {
         #heroCarousel .banner-action-button { display:none; }
-        #heroCarousel .carousel-item[data-mobile-banner-url] picture { cursor:pointer; }
+        #heroCarousel .mobile-banner-link { position:absolute;inset:0;z-index:6;display:block;cursor:pointer;touch-action:manipulation; }
+        #heroCarousel .carousel-caption { pointer-events:none; }
+        #heroCarousel .carousel-control-prev,
+        #heroCarousel .carousel-control-next,
+        #heroCarousel .carousel-indicators { z-index:7; }
     }
     section.home-benefits {
         background: #fff;
@@ -3712,21 +3720,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        function openMobileBannerLink(event) {
-            if (!window.matchMedia('(max-width: 767.98px)').matches || !event.target.closest('picture')) return;
-            const slide = event.target.closest('.carousel-item.active[data-mobile-banner-url]');
-            if (!slide) return;
-            window.location.assign(slide.dataset.mobileBannerUrl);
-        }
-
-        heroCarousel.addEventListener('click', openMobileBannerLink);
-        heroCarousel.addEventListener('keydown', (event) => {
-            if ((event.key === 'Enter' || event.key === ' ') && event.target.matches('.carousel-item.active[data-mobile-banner-url]')) {
-                event.preventDefault();
-                window.location.assign(event.target.dataset.mobileBannerUrl);
-            }
-        });
-        
         // The first slide is ready immediately; later slides use native lazy loading.
         initializeCarousel();
     }

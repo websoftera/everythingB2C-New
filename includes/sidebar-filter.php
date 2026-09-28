@@ -112,7 +112,7 @@ $categoryTree = buildCategoryTree($categories);
               ?>
             </select>
             <button type="button" id="filterCategoryTrigger" class="form-control" popovertarget="filterCategoryMenu" aria-expanded="false">All Categories <span aria-hidden="true">▾</span></button>
-            <div id="filterCategoryMenu" popover>
+            <div id="filterCategoryMenu" class="filter-category-popover-fallback" popover>
               <button type="button" data-filter-category="">All Categories (<?php echo $allCategoryProductCount; ?>)</button>
               <?php
               $renderFilterBranches = function ($tree) use (&$renderFilterBranches) {
@@ -309,7 +309,9 @@ $categoryTree = buildCategoryTree($categories);
 
 <style>
   #filterCategoryTrigger { display: flex; justify-content: space-between; align-items: center; gap: 12px; text-align: left; background: #fff; }
-  #filterCategoryMenu { position: fixed; inset: auto; margin: 0; padding: 6px 0; width: 240px; max-width: calc(100vw - 24px); max-height: 50vh; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; border: 1px solid #ddd; border-radius: 6px; background: white; box-shadow: 0 8px 24px #0002; z-index: 2000; }
+  #filterCategoryMenu { position: fixed; inset: auto; margin: 0; padding: 6px 0; width: 240px; max-width: calc(100vw - 24px); max-height: 50vh; max-height: min(50vh, calc(100dvh - 24px)); overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; touch-action: pan-y; border: 1px solid #ddd; border-radius: 6px; background: white; box-shadow: 0 8px 24px #0002; z-index: 2000; }
+  #filterCategoryMenu.filter-category-popover-fallback { display: none; }
+  #filterCategoryMenu.filter-category-popover-fallback.is-open { display: block; }
   #filterCategoryMenu button, #filterCategoryMenu summary { display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 6px 12px; border: 0; background: transparent; color: #333; text-align: left; font-family: inherit; font-size: 12px; line-height: 1.5; cursor: pointer; list-style: none; }
   #filterCategoryMenu summary { font-weight: 600; gap: 12px; }
   #filterCategoryMenu > button { font-weight: 600; }
@@ -1271,9 +1273,26 @@ document.addEventListener('DOMContentLoaded', function() {
   const categoryTrigger = document.getElementById('filterCategoryTrigger');
   const categoryMenu = document.getElementById('filterCategoryMenu');
   if (categorySelect && categoryTrigger && categoryMenu) {
+    const supportsPopover = typeof categoryMenu.showPopover === 'function';
+    if (supportsPopover) {
+      categoryMenu.classList.remove('filter-category-popover-fallback');
+    } else {
+      categoryTrigger.removeAttribute('popovertarget');
+    }
+    const isCategoryMenuOpen = () => supportsPopover
+      ? categoryMenu.matches(':popover-open')
+      : categoryMenu.classList.contains('is-open');
+    const closeCategoryMenu = () => {
+      if (supportsPopover) {
+        if (isCategoryMenuOpen()) categoryMenu.hidePopover();
+      } else {
+        categoryMenu.classList.remove('is-open');
+      }
+      categoryTrigger.setAttribute('aria-expanded', 'false');
+    };
     categoryTrigger.firstChild.textContent = categorySelect.selectedOptions[0].textContent.trim() + ' ';
     const positionCategoryMenu = () => {
-      if (!categoryMenu.matches(':popover-open')) return;
+      if (!isCategoryMenuOpen()) return;
       const rect = categoryTrigger.getBoundingClientRect();
       const viewportPadding = 12;
       const stickyHeader = document.querySelector('nav.navbar.sticky-top');
@@ -1287,32 +1306,52 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       // Match native select menus: close once scrolling carries the control behind the sticky header.
       if (rect.bottom <= headerBottom) {
-        categoryMenu.hidePopover();
+        closeCategoryMenu();
         return;
       }
       const width = Math.min(240, window.innerWidth - viewportPadding * 2);
       const left = Math.max(viewportPadding, Math.min(rect.left, window.innerWidth - width - viewportPadding));
-      const menuTop = Math.max(rect.bottom + 4, headerBottom + 4);
+      const gap = 4;
+      const menuTop = Math.max(rect.bottom + gap, headerBottom + gap);
       const below = Math.max(0, window.innerHeight - menuTop - viewportPadding);
-      const above = Math.max(0, rect.top - headerBottom - 8);
-      const placeBelow = below >= Math.min(220, above) || below >= above;
-      const availableHeight = Math.max(80, placeBelow ? below : above);
+      const above = Math.max(0, rect.top - headerBottom - gap - viewportPadding);
+      const desiredHeight = Math.min(categoryMenu.scrollHeight, 240);
+      const placeBelow = below >= desiredHeight || below >= above;
+      const availableHeight = placeBelow ? below : above;
       categoryMenu.style.left = left + 'px';
-      categoryMenu.style.top = (placeBelow ? menuTop : Math.max(headerBottom + viewportPadding, rect.top - Math.min(categoryMenu.scrollHeight, availableHeight) - 4)) + 'px';
+      categoryMenu.style.top = (placeBelow ? menuTop : Math.max(headerBottom + viewportPadding, rect.top - availableHeight - gap)) + 'px';
       categoryMenu.style.maxHeight = availableHeight + 'px';
     };
-    categoryMenu.addEventListener('beforetoggle', event => {
-      const open = event.newState === 'open';
-      categoryTrigger.setAttribute('aria-expanded', String(open));
-      if (open) {
-        requestAnimationFrame(positionCategoryMenu);
-      }
-    });
+    if (supportsPopover) {
+      categoryMenu.addEventListener('beforetoggle', event => {
+        const open = event.newState === 'open';
+        categoryTrigger.setAttribute('aria-expanded', String(open));
+        if (open) requestAnimationFrame(positionCategoryMenu);
+      });
+    } else {
+      categoryTrigger.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (isCategoryMenuOpen()) {
+          closeCategoryMenu();
+        } else {
+          categoryMenu.classList.add('is-open');
+          categoryTrigger.setAttribute('aria-expanded', 'true');
+          requestAnimationFrame(positionCategoryMenu);
+        }
+      });
+      document.addEventListener('click', event => {
+        if (!categoryMenu.contains(event.target) && !categoryTrigger.contains(event.target)) closeCategoryMenu();
+      });
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape') closeCategoryMenu();
+      });
+    }
     categoryMenu.addEventListener('click', event => {
       const option = event.target.closest('[data-filter-category]');
       if (!option) return;
       categorySelect.value = option.dataset.filterCategory;
-      categoryMenu.hidePopover();
+      closeCategoryMenu();
       categorySelect.dispatchEvent(new Event('change', { bubbles: true }));
     });
     window.addEventListener('resize', positionCategoryMenu);
