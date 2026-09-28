@@ -235,33 +235,46 @@ $pageTitle = 'Manage Banners';
         .banner-button-fields .form-control { width: 100%; min-width: 0; }
         .banner-button-fields .banner-button-placement-fields > label { font-size: .9rem; }
         #editBannerModal .modal-dialog,
-        #addBannerModal .modal-dialog { max-width: 900px; }
+        #addBannerModal .modal-dialog { width: calc(100vw - 2rem); max-width: 900px; height: auto; max-height: calc(100vh - 1rem); margin: .5rem auto; }
         #editBannerModal .modal-content,
-        #addBannerModal .modal-content { max-height: calc(100vh - 2rem); }
+        #addBannerModal .modal-content { display: flex; flex-direction: column; width: 100%; min-width: 0; height: auto; max-height: calc(100vh - 1rem); }
         #editBannerModal .modal-body,
-        #addBannerModal .modal-body { overflow-y: auto; }
-        #addBannerModal .modal-footer { position: sticky; bottom: 0; z-index: 2; background: #fff; }
-        #editBannerModal .modal-footer { position: sticky; bottom: 0; z-index: 2; background: #fff; }
-        #editBannerModal .banner-button-fields { padding: .65rem !important; margin-bottom: .75rem !important; }
-        #addBannerModal .banner-button-fields { padding: .65rem !important; margin-bottom: .75rem !important; }
-        #editBannerModal .banner-button-fields .form-text { margin-top: .35rem; }
-        #addBannerModal .banner-button-fields .form-text { margin-top: .35rem; }
+        #addBannerModal .modal-body { flex: 1 1 auto; min-width: 0; min-height: 0; overflow-x: hidden; overflow-y: auto; }
+        #editBannerModal .modal-footer,
+        #addBannerModal .modal-footer { flex: 0 0 auto; background: #fff; }
+        #editBannerModal .modal-body,
+        #addBannerModal .modal-body { padding: .75rem; }
+        #editBannerModal .modal-header { padding: .5rem .9rem; }
+        #editBannerModal .modal-body { padding-top: .45rem; padding-bottom: .45rem; }
+        #editBannerModal .modal-footer { padding: .45rem .9rem; }
+        #editBannerModal .banner-button-fields { padding: .4rem !important; margin-bottom: .5rem !important; }
+        #addBannerModal .banner-button-fields { padding: .4rem !important; margin-bottom: .5rem !important; }
+        #editBannerModal .banner-button-fields .form-text { margin-top: .2rem; margin-bottom: .3rem; }
+        #addBannerModal .banner-button-fields .form-text { margin-top: .2rem; margin-bottom: .3rem; }
         #editBannerModal .banner-button-preview,
         #addBannerModal .banner-button-preview { display: none !important; }
         #editBannerModal .form-control { padding-top: .35rem; padding-bottom: .35rem; }
         #addBannerModal .form-control { padding-top: .35rem; padding-bottom: .35rem; }
-        #editBannerModal .mb-3 { margin-bottom: .75rem !important; }
-        #addBannerModal .mb-3 { margin-bottom: .75rem !important; }
-        #editBannerModal .banner-image-previews img { display: block; width: 100%; height: 96px; object-fit: contain; background: #f6f7f8; }
-        #addBannerModal .banner-image-previews img { display: block; width: 100%; height: 96px; object-fit: contain; background: #f6f7f8; }
+        #editBannerModal .mb-3 { margin-bottom: .3rem !important; }
+        #addBannerModal .mb-3 { margin-bottom: .5rem !important; }
+        #editBannerModal .banner-image-previews img { display: block; width: 100%; height: 90px; object-fit: contain; background: #f6f7f8; }
+        #addBannerModal .banner-image-previews img { display: block; width: 100%; height: 90px; object-fit: contain; background: #f6f7f8; }
         #editBannerModal .banner-image-previews img[hidden],
         #addBannerModal .banner-image-previews img[hidden] { display: none !important; }
+        #editBannerModal .banner-image-previews > [class*="col-"],
+        #addBannerModal .banner-image-previews > [class*="col-"] { min-width: 0; }
+        #editBannerModal .banner-image-previews input[type="file"],
+        #addBannerModal .banner-image-previews input[type="file"] { display: block; width: 100%; max-width: 100%; min-width: 0; padding: .2rem; font-size: .78rem; }
         #editBannerModal #edit_mobile_banner_fallback[hidden] { display: none !important; }
+        @media (max-width: 479.98px) {
+            #editBannerModal .banner-image-previews > div,
+            #addBannerModal .banner-image-previews > div { flex: 0 0 100%; max-width: 100%; }
+        }
         @media (max-width: 575.98px) {
-            #editBannerModal .modal-dialog { margin: .5rem; }
-            #addBannerModal .modal-dialog { margin: .5rem; }
-            #editBannerModal .banner-image-previews img { height: 76px; }
-            #addBannerModal .banner-image-previews img { height: 76px; }
+            #editBannerModal .modal-dialog,
+            #addBannerModal .modal-dialog { width: calc(100vw - 1rem); max-width: calc(100vw - 1rem); margin: .5rem auto; }
+            #editBannerModal .banner-image-previews img { height: 96px; }
+            #addBannerModal .banner-image-previews img { height: 96px; }
         }
         .banner-drag-handle {
             cursor: move;
@@ -421,13 +434,6 @@ $pageTitle = 'Manage Banners';
                     <div class="modal-body">
                         <input type="hidden" name="action" value="edit">
                         <input type="hidden" name="banner_id" id="edit_banner_id">
-                        <?php include 'includes/banner-button-fields.php'; ?>
-
-                        <div class="mb-3">
-                            <label for="edit_title" class="form-label">Banner Title (Optional)</label>
-                            <input type="text" class="form-control" id="edit_title" name="edit_title">
-                        </div>
-
                         <div class="row g-2 mb-3 banner-image-previews">
                             <div class="col-6">
                                 <label class="form-label">Desktop Image</label>
@@ -437,18 +443,28 @@ $pageTitle = 'Manage Banners';
                                 <div class="form-text">Leave empty to keep the current image.</div>
                             </div>
                             <div class="col-6">
-                                <label class="form-label">Mobile Image</label>
+                                <div class="d-flex align-items-center justify-content-between gap-2 flex-wrap">
+                                    <label class="form-label mb-1">Mobile Image</label>
+                                    <div class="form-check mb-1">
+                                        <input type="checkbox" class="form-check-input" id="remove_mobile_image" name="remove_mobile_image" value="1">
+                                        <label class="form-check-label" for="remove_mobile_image">Use desktop image instead</label>
+                                    </div>
+                                </div>
                                 <img id="edit_mobile_banner_preview" alt="Current mobile banner" class="rounded border" hidden>
                                 <div id="edit_mobile_banner_fallback" class="border rounded d-flex align-items-center justify-content-center text-muted small" style="height:96px;background:#f6f7f8;">Uses desktop image</div>
                                 <label for="edit_mobile_banner_image" class="form-label mt-2 mb-1">Replace mobile image</label>
                                 <input type="file" class="form-control" id="edit_mobile_banner_image" name="edit_mobile_banner_image" accept="image/jpeg,image/png,image/webp,image/gif">
                                 <div class="form-text">Leave empty to keep the current image.</div>
-                                <div class="form-check mt-2">
-                                    <input type="checkbox" class="form-check-input" id="remove_mobile_image" name="remove_mobile_image" value="1">
-                                    <label class="form-check-label" for="remove_mobile_image">Use desktop image instead</label>
-                                </div>
                             </div>
                         </div>
+
+                        <div class="row align-items-center g-2 mb-2">
+                            <label for="edit_title" class="col-sm-3 col-form-label">Banner Title (Optional)</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="edit_title" name="edit_title">
+                            </div>
+                        </div>
+                        <?php include 'includes/banner-button-fields.php'; ?>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
