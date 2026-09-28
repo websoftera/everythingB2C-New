@@ -2,6 +2,44 @@
 
 const PRODUCT_REVIEW_STATUSES = ['pending', 'approved', 'rejected', 'spam'];
 
+function productReviewsSchemaReady(PDO $pdo): bool {
+    try {
+        $pdo->query('SELECT 1 FROM product_reviews LIMIT 0');
+        return true;
+    } catch (PDOException $e) {
+        $driverCode = $e->errorInfo[1] ?? null;
+        if ($e->getCode() === '42S02' || (int)$driverCode === 1146) {
+            error_log('Product reviews table is missing; run database/migrate_product_reviews.php up.');
+            return false;
+        }
+        throw $e;
+    }
+}
+
+/**
+ * Apply the idempotent reviews migration on the first request after deployment.
+ * This is used by the product page because this project has no checked-in
+ * deployment pipeline or post-deploy hook. Fail closed and let the page render
+ * without reviews if the hosting database user cannot apply DDL.
+ */
+function ensureProductReviewsSchema(PDO $pdo): bool {
+    if (productReviewsSchemaReady($pdo)) {
+        return true;
+    }
+
+    try {
+        require_once __DIR__ . '/../database/product_reviews_migration.php';
+        migrateProductReviewsUp($pdo);
+        return productReviewsSchemaReady($pdo);
+    } catch (Throwable $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        error_log('Automatic product reviews migration failed: ' . $e->getMessage());
+        return false;
+    }
+}
+
 function getProductReviewCsrfToken(): string {
     if (empty($_SESSION['product_reviews_csrf'])) {
         $_SESSION['product_reviews_csrf'] = bin2hex(random_bytes(32));

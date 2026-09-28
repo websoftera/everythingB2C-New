@@ -36,6 +36,28 @@ require_once __DIR__ . '/../../includes/functions.php';
             </li>
             <?php endif; ?>
 
+            <?php
+            $showReviewSetup = false;
+            if (isset($_SESSION['admin_id']) && hasPermission('manage_roles', $_SESSION['admin_id'])) {
+                $reviewTableReady = false;
+                try {
+                    require_once __DIR__ . '/../../config/database.php';
+                    $pdo->query('SELECT 1 FROM product_reviews LIMIT 0');
+                    $reviewTableReady = true;
+                } catch (Throwable $e) {
+                    $reviewTableReady = false;
+                }
+                $showReviewSetup = !$reviewTableReady || !hasPermission('manage_reviews', $_SESSION['admin_id']);
+            }
+            ?>
+            <?php if ($showReviewSetup): ?>
+            <li class="everythingb2c-nav-item">
+                <a class="everythingb2c-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'setup_product_reviews.php' ? 'active' : ''; ?>" href="setup_product_reviews.php">
+                    <i class="fas fa-database everythingb2c-nav-icon"></i> Initialize Reviews
+                </a>
+            </li>
+            <?php endif; ?>
+
             <!-- Products -->
             <?php if (canAccess('view_products')): ?>
             <li class="everythingb2c-nav-item">
