@@ -21,6 +21,10 @@ if (!$product) {
     exit;
 }
 
+// Deployments on this host do not have a post-deploy command hook. Apply the
+// idempotent review migration on the first product request after deployment.
+$reviewsAvailable = ensureProductReviewsSchema($pdo);
+
 $reviewNotice = $_SESSION['product_review_notice'] ?? '';
 unset($_SESSION['product_review_notice']);
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && ($_POST['action'] ?? '') === 'submit_product_review') {
@@ -32,6 +36,9 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && ($_POST['action'] ?? '')
         }
         if (!verifyProductReviewCsrfToken($_POST['review_csrf'] ?? null)) {
             throw new RuntimeException('Your session expired. Refresh the page and try again.');
+        }
+        if (!$reviewsAvailable) {
+            throw new RuntimeException('Reviews are temporarily unavailable while the review system is being set up. Please try again later.');
         }
         $customerId = (int)$_SESSION['user_id'];
         $customerCheck = $pdo->prepare("SELECT 1 FROM users WHERE id = ? AND user_role = 'customer' AND is_active = 1 LIMIT 1");
@@ -68,11 +75,13 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && ($_POST['action'] ?? '')
     exit;
 }
 
-$reviewSummary = getPublicProductReviewSummary($pdo, (int)$product['id']);
-$productReviews = getPublicProductReviews($pdo, (int)$product['id'], 20);
+$reviewSummary = $reviewsAvailable
+    ? getPublicProductReviewSummary($pdo, (int)$product['id'])
+    : ['total_reviews' => 0, 'average_rating' => 0.0];
+$productReviews = $reviewsAvailable ? getPublicProductReviews($pdo, (int)$product['id'], 20) : [];
 $customerReview = null;
 $canSubmitProductReview = false;
-if (isLoggedIn()) {
+if ($reviewsAvailable && isLoggedIn()) {
     $reviewAccount = $pdo->prepare("SELECT 1 FROM users WHERE id = ? AND user_role = 'customer' AND is_active = 1 LIMIT 1");
     $reviewAccount->execute([(int)$_SESSION['user_id']]);
     $canSubmitProductReview = (bool)$reviewAccount->fetchColumn();
@@ -853,16 +862,17 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                 <small>Based on <?php echo (int)$reviewSummary['total_reviews']; ?> <?php echo $reviewSummary['total_reviews'] === 1 ? 'review' : 'reviews'; ?></small>
             </div>
         </div>
-        <?php if ($productReviews): ?>
+        <?php if (!$reviewsAvailable): ?>
+            <div class="product-reviews-empty">Customer reviews are temporarily unavailable.</div>
+        <?php elseif ($productReviews): ?>
             <div class="product-review-carousel" data-review-carousel aria-label="Customer review carousel">
               <div class="product-review-viewport">
                 <div class="product-review-track">
                 <?php foreach ($productReviews as $review): ?>
                     <article class="product-review-card">
                         <div class="review-card-rating" aria-label="<?php echo (int)$review['rating']; ?> out of 5 stars"><?php echo str_repeat('★', (int)$review['rating']) . str_repeat('☆', 5 - (int)$review['rating']); ?></div>
-                        <h3><?php echo htmlspecialchars($review['review_title'], ENT_QUOTES, 'UTF-8'); ?></h3>
                         <p><?php echo nl2br(htmlspecialchars($review['review_content'], ENT_QUOTES, 'UTF-8')); ?></p>
-                        <div class="product-review-meta"><span>Seller Code: <?php echo htmlspecialchars($review['seller_code'], ENT_QUOTES, 'UTF-8'); ?></span>
+                        <div class="product-review-meta"><strong class="seller-review-code">Seller Code: <?php echo htmlspecialchars($review['seller_code'], ENT_QUOTES, 'UTF-8'); ?></strong>
                             <?php if (!empty($review['is_verified'])): ?><span class="verified-review"><i class="fas fa-check-circle"></i> Verified Purchase</span><?php endif; ?>
                             <time datetime="<?php echo htmlspecialchars($review['created_at'], ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars(date('M j, Y', strtotime($review['created_at'])), ENT_QUOTES, 'UTF-8'); ?></time>
                         </div>
@@ -881,7 +891,9 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
         <div class="write-product-review" id="write-product-review">
             <h3>Write a Review</h3>
             <?php if ($reviewNotice): ?><div class="review-submit-notice" role="status"><?php echo htmlspecialchars($reviewNotice, ENT_QUOTES, 'UTF-8'); ?></div><?php endif; ?>
-            <?php if ($customerReview): ?>
+            <?php if (!$reviewsAvailable): ?>
+                <p class="product-review-login-note">Review submissions are temporarily unavailable.</p>
+            <?php elseif ($customerReview): ?>
                 <p class="product-review-login-note">You have already submitted a review for this product. Its current status is <strong><?php echo htmlspecialchars(ucfirst($customerReview['status']), ENT_QUOTES, 'UTF-8'); ?></strong>.</p>
             <?php elseif (!isLoggedIn()): ?>
                 <p class="product-review-login-note"><a href="login.php?review_product=<?php echo rawurlencode((string)$product['slug']); ?>">Sign in</a> to your customer account to submit a review.</p>
@@ -908,7 +920,7 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
       .product-reviews-heading h2{display:block;width:auto;margin:0!important;padding:0!important;text-align:left!important;color:#202b3c;font-size:23px;font-weight:700}.product-reviews-heading p{display:block;width:auto;margin:5px 0 0!important;padding:0!important;text-align:left!important;color:#6b7280}
       .product-reviews-summary{display:grid;text-align:right;gap:2px}.product-reviews-summary strong{font-size:25px;color:#202b3c}.product-reviews-summary small{color:#687385}.review-stars,.review-card-rating{color:#efa900;letter-spacing:2px}
       .product-review-carousel{padding-top:18px}.product-review-viewport{overflow:hidden;touch-action:pan-y}.product-review-track{display:flex;gap:14px;transition:transform .45s ease;will-change:transform}.product-review-card{flex:0 0 calc(50% - 7px);min-width:0;padding:18px;border:1px solid #e8ecf1;border-radius:10px;background:#fff}
-      .review-card-rating{font-size:17px}.product-review-card h3{margin:9px 0 6px;font-size:17px;color:#263244}.product-review-card>p{margin:0;color:#4c5665;line-height:1.6;overflow-wrap:anywhere}.product-review-meta{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-top:15px;padding-top:12px;border-top:1px solid #f0f2f5;color:#667085;font-size:13px}.product-review-meta time{font-weight:700;color:#455164}.verified-review{color:#188449;font-weight:600}.product-reviews-empty{padding:24px 0;color:#697586}
+      .review-card-rating{font-size:17px}.product-review-card>p{margin:0;color:#4c5665;line-height:1.6;overflow-wrap:anywhere}.product-review-meta{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-top:15px;padding-top:12px;border-top:1px solid #f0f2f5;color:#667085;font-size:13px}.product-review-meta time,.seller-review-code{font-weight:700;color:#455164}.verified-review{color:#188449;font-weight:600}.product-reviews-empty{padding:24px 0;color:#697586}
       .product-review-carousel-controls{display:flex;justify-content:center;align-items:center;gap:14px;margin-top:16px;color:#667085;font-size:13px}.review-carousel-arrow{width:34px;height:34px;border:1px solid #d5dce5;border-radius:50%;background:#fff;color:#344054;cursor:pointer}.review-carousel-arrow:hover{border-color:#0c79e7;color:#0c79e7}.review-carousel-arrow:focus-visible{outline:2px solid #0c79e7;outline-offset:2px}
       .product-review-carousel.single-review-page .product-review-carousel-controls{display:none}
       .write-product-review{margin-top:22px;padding-top:20px;border-top:1px solid #edf0f4}.write-product-review h3{margin:0 0 12px;font-size:19px;color:#263244}.product-review-form{display:grid;gap:12px;max-width:760px}.product-review-form label{display:grid;gap:6px;font-weight:600;color:#344054}.product-review-form input,.product-review-form textarea,.product-review-form select{width:100%;padding:10px 12px;border:1px solid #d0d5dd;border-radius:7px;font:inherit;font-weight:400}.product-review-form button{justify-self:start;border:0;border-radius:7px;background:#0c79e7;color:white;padding:10px 18px;font-weight:700;cursor:pointer}.product-review-form button:hover{background:#0868c8}.review-submit-notice{max-width:760px;padding:10px 13px;border-radius:7px;background:#eaf5ff;color:#155b91;margin-bottom:12px}.product-review-login-note{color:#687385;margin:0 0 12px}
