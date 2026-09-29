@@ -2,6 +2,7 @@
 session_start();
 require_once '../config/database.php';
 require_once '../includes/functions.php';
+require_once '../includes/product_seller_fields.php';
 require_once 'includes/product_variation_helpers.php';
 
 // Check if admin is logged in
@@ -10,6 +11,7 @@ if (!isset($_SESSION['admin_id'])) {
     exit;
 }
 ensureDiscountSelectionSchema();
+$productSellerFieldsReady = ensureProductSellerFieldsSchema($pdo);
 
 $pageTitle = 'Add New Product';
 $success_message = '';
@@ -98,10 +100,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $is_discounted = isset($_POST['is_discounted']) ? 1 : 0;
     $sku = trim($_POST['sku']);
     $hsn = isset($_POST['hsn']) ? trim($_POST['hsn']) : null;
+    $sellerFields = normalizeProductSellerFields($_POST);
+    $sellerFieldsError = productSellerFieldsValidationError($sellerFields);
 
     $brand_id = $_POST['brand_id'] ?? '';
     // Validation
-    if (!validProductBrand($brands, $brand_id)) {
+    if (!$productSellerFieldsReady) {
+        $error_message = 'Seller fields could not be initialized. Please check the production database permissions and try again.';
+    } elseif ($sellerFieldsError !== '') {
+        $error_message = $sellerFieldsError;
+    } elseif (!validProductBrand($brands, $brand_id)) {
         $error_message = 'Please select a valid brand.';
     } elseif (empty($name) || empty($description) || $mrp <= 0 || $selling_price <= 0) {
         $error_message = 'Please fill in all required fields with valid values.';
@@ -121,8 +129,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $discount_percentage = calculateDiscountPercentage($mrp, $selling_price);
 
             // Insert product
-            $stmt = $pdo->prepare("INSERT INTO products (name, slug, description, mrp, selling_price, pay_per_unit, unit_label, discount_percentage, gst_type, gst_rate, category_id, stock_quantity, package_quantity, max_quantity_per_order, is_active, is_featured, is_discounted, sku, hsn) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$name, $slug, $description, $mrp, $selling_price, $pay_per_unit, $unit_label, $discount_percentage, $gst_type, $gst_rate, $category_id, $stock_quantity, $package_quantity, $max_quantity_per_order, $is_active, $is_featured, $is_discounted, $sku, $hsn]);
+            $stmt = $pdo->prepare("INSERT INTO products (name, slug, description, mrp, selling_price, pay_per_unit, unit_label, discount_percentage, gst_type, gst_rate, category_id, stock_quantity, package_quantity, max_quantity_per_order, is_active, is_featured, is_discounted, sku, hsn, seller_name, seller_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$name, $slug, $description, $mrp, $selling_price, $pay_per_unit, $unit_label, $discount_percentage, $gst_type, $gst_rate, $category_id, $stock_quantity, $package_quantity, $max_quantity_per_order, $is_active, $is_featured, $is_discounted, $sku, $hsn, $sellerFields['seller_name'], $sellerFields['seller_code']]);
 
             $product_id = $pdo->lastInsertId();
             recordProductDiscountSelection($product_id, $is_discounted);
@@ -696,8 +704,16 @@ function uploadImage($file, $folder) {
 
 
                                         <div class="row">
-                                            <div class="col-md-6">
+                                            <div class="col-md-4">
                                                 <?php include __DIR__ . '/includes/brand_select.php'; ?>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="seller_name" class="form-label">Seller Name</label>
+                                                <input type="text" class="form-control" id="seller_name" name="seller_name" maxlength="255" value="<?php echo htmlspecialchars($_POST['seller_name'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="seller_code" class="form-label">Seller Code</label>
+                                                <input type="text" class="form-control" id="seller_code" name="seller_code" maxlength="40" pattern="[A-Za-z0-9][A-Za-z0-9_-]{0,39}" value="<?php echo htmlspecialchars($_POST['seller_code'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                             </div>
                                         </div>
                                         <div class="row mb-3">

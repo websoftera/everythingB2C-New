@@ -2,6 +2,7 @@
 session_start();
 require_once '../config/database.php';
 require_once '../includes/functions.php';
+require_once '../includes/product_seller_fields.php';
 require_once '../includes/gst_shipping_functions.php';
 
 // Check if admin is logged in
@@ -39,6 +40,7 @@ if ($category_filter !== '') {
     ))";
     $categoryParams = array_merge($categoryIds, $categoryIds);
 }
+ensureProductSellerFieldsSchema($pdo);
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'update_product_order_ajax') {
     header('Content-Type: application/json');
 
@@ -168,7 +170,34 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Get categories for filter with hierarchical structure
 $categories = getAllCategories();
-$parentCategories = getParentCategories();
+$categoryFilterTree = orderMainCategoryTree(buildCategoryTreeWithMultipleParents($categories));
+$categoryNamesById = array_column($categories, 'name', 'id');
+$categoryFilterLabel = $category_filter !== ''
+    ? ($categoryNamesById[(int)$category_filter] ?? 'All Categories')
+    : 'All Categories';
+function renderAdminProductCategoryFilterNodes(array $nodes, int $depth = 0): void {
+    foreach ($nodes as $node) {
+        $id = (int)$node['id'];
+        $name = (string)$node['name'];
+        $children = $node['children'] ?? [];
+        $childrenId = 'product-category-children-' . $id . '-' . $depth;
+        ?>
+        <div class="product-category-filter-node">
+            <div class="product-category-filter-row" style="padding-left: <?php echo min($depth * 14, 56); ?>px">
+                <button type="button" class="product-category-filter-choice" data-category-id="<?php echo $id; ?>" data-category-label="<?php echo htmlspecialchars($name, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($name, ENT_QUOTES, 'UTF-8'); ?></button>
+                <?php if ($children): ?>
+                    <button type="button" class="product-category-filter-toggle" aria-expanded="false" aria-controls="<?php echo htmlspecialchars($childrenId, ENT_QUOTES, 'UTF-8'); ?>" aria-label="Show subcategories of <?php echo htmlspecialchars($name, ENT_QUOTES, 'UTF-8'); ?>"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
+                <?php endif; ?>
+            </div>
+            <?php if ($children): ?>
+                <div class="product-category-filter-children" id="<?php echo htmlspecialchars($childrenId, ENT_QUOTES, 'UTF-8'); ?>" hidden>
+                    <?php renderAdminProductCategoryFilterNodes($children, $depth + 1); ?>
+                </div>
+            <?php endif; ?>
+        </div>
+        <?php
+    }
+}
 $reorderParams = array_filter([
     'search' => $search,
     'category' => $category_filter,
@@ -271,6 +300,24 @@ $returnToProducts = 'products.php' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $
         .products-management-page .filter-card .card-body {
             padding: 18px 20px;
         }
+
+        .product-category-filter { position: relative; }
+        .product-category-filter-trigger { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; text-align: left; }
+        .product-category-filter-menu { display: none; position: absolute; z-index: 1100; top: calc(100% + 4px); left: 0; width: 100%; max-height: 290px; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #bcc6d2 transparent; padding: 5px; background: #fff; border: 1px solid #d6dce5; border-radius: 8px; box-shadow: 0 8px 20px rgba(25,42,70,.12); }
+        .product-category-filter-menu::-webkit-scrollbar { width: 6px; }
+        .product-category-filter-menu::-webkit-scrollbar-track { background: transparent; margin: 5px 0; }
+        .product-category-filter-menu::-webkit-scrollbar-thumb { background: #c4ccd6; border: 1px solid #fff; border-radius: 8px; }
+        .product-category-filter-menu::-webkit-scrollbar-thumb:hover { background: #98a5b5; }
+        .product-category-filter.open .product-category-filter-menu { display: block; }
+        .product-category-filter-menu [hidden] { display: none !important; }
+        .product-category-filter-row { display: flex; align-items: center; gap: 2px; min-height: 32px; }
+        .product-category-filter-choice { flex: 1; min-width: 0; padding: 5px 8px; border: 0; border-radius: 5px; background: transparent; color: #303846; font-size: 14px; line-height: 1.3; text-align: left; }
+        .product-category-filter-choice:hover, .product-category-filter-choice.selected { background: #eaf2ff; color: #0d6efd; }
+        .product-category-filter-toggle { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 27px; width: 27px; height: 27px; padding: 0; border: 0; border-radius: 5px; background: transparent; color: #708094; }
+        .product-category-filter-toggle:hover { background: #f0f3f7; }
+        .product-category-filter-toggle i { font-size: 10px; transition: transform .15s ease; }
+        .product-category-filter-toggle[aria-expanded="true"] i { transform: rotate(90deg); }
+        .product-category-filter-children { margin-left: 8px; border-left: 1px solid #e4e8ee; }
 
         .products-management-page .form-control,
         .products-management-page .form-select {
@@ -472,6 +519,23 @@ $returnToProducts = 'products.php' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $
             border-color: #dc3545;
         }
 
+        /* Keep every product action visible when desktop zoom narrows the layout. */
+        @media (min-width: 992px) and (max-width: 1800px) {
+            .products-table thead th,
+            .products-table tbody td {
+                padding-left: 0.35rem;
+                padding-right: 0.35rem;
+            }
+
+            .product-name-cell { min-width: 175px; max-width: 260px; }
+            .product-sku-cell { min-width: 78px; }
+            .product-category-cell { min-width: 118px; }
+            .product-price-cell { min-width: 88px; }
+            .products-table tbody td:last-child { min-width: 100px; padding-left: 0.25rem; padding-right: 0.25rem; }
+            .products-table .action-buttons { gap: 4px; }
+            .products-table .action-buttons .btn { width: 27px; height: 28px; }
+        }
+
         .products-save-toast {
             position: fixed;
             top: 92px;
@@ -610,26 +674,18 @@ $returnToProducts = 'products.php' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $
                                     </div>
                                 </div>
                                 <div class="col-md-3">
-                                    <select class="form-select" name="category">
-                                        <option value="">All Categories</option>
-                                        <?php foreach ($parentCategories as $parentCategory): ?>
-                                            <optgroup label="<?php echo htmlspecialchars($parentCategory['name']); ?>">
-                                                <option value="<?php echo $parentCategory['id']; ?>"
-                                                        <?php echo $category_filter == $parentCategory['id'] ? 'selected' : ''; ?>>
-                                                    <?php echo htmlspecialchars($parentCategory['name']); ?>
-                                                </option>
-                                                <?php
-                                                $subcategories = getSubcategoriesByParentId($parentCategory['id']);
-                                                foreach ($subcategories as $subcategory):
-                                                ?>
-                                                    <option value="<?php echo $subcategory['id']; ?>"
-                                                            <?php echo $category_filter == $subcategory['id'] ? 'selected' : ''; ?>>
-                                                        &nbsp;&nbsp;&nbsp;&nbsp;→ <?php echo htmlspecialchars($subcategory['name']); ?>
-                                                    </option>
-                                                <?php endforeach; ?>
-                                            </optgroup>
-                                        <?php endforeach; ?>
-                                    </select>
+                                    <div class="product-category-filter" id="productCategoryFilter">
+                                        <input type="hidden" name="category" id="productCategoryFilterValue" value="<?php echo htmlspecialchars((string)$category_filter, ENT_QUOTES, 'UTF-8'); ?>">
+                                        <button type="button" class="form-select product-category-filter-trigger" id="productCategoryFilterTrigger" aria-expanded="false" aria-controls="productCategoryFilterMenu">
+                                            <span id="productCategoryFilterLabel"><?php echo htmlspecialchars($categoryFilterLabel, ENT_QUOTES, 'UTF-8'); ?></span>
+                                        </button>
+                                        <div class="product-category-filter-menu" id="productCategoryFilterMenu">
+                                            <div class="product-category-filter-row">
+                                                <button type="button" class="product-category-filter-choice <?php echo $category_filter === '' ? 'selected' : ''; ?>" data-category-id="" data-category-label="All Categories">All Categories</button>
+                                            </div>
+                                            <?php renderAdminProductCategoryFilterNodes($categoryFilterTree); ?>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="col-md-2">
                                     <select class="form-select" name="status">
@@ -850,6 +906,54 @@ $returnToProducts = 'products.php' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/js/admin.js"></script>
     <script>
+        (function () {
+            var filter = document.getElementById('productCategoryFilter');
+            var trigger = document.getElementById('productCategoryFilterTrigger');
+            var menu = document.getElementById('productCategoryFilterMenu');
+            var valueInput = document.getElementById('productCategoryFilterValue');
+            var label = document.getElementById('productCategoryFilterLabel');
+            if (!filter || !trigger || !menu || !valueInput || !label) return;
+
+            function closeMenu() {
+                filter.classList.remove('open');
+                trigger.setAttribute('aria-expanded', 'false');
+            }
+
+            trigger.addEventListener('click', function () {
+                var isOpen = filter.classList.toggle('open');
+                trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            });
+
+            menu.addEventListener('click', function (event) {
+                var toggle = event.target.closest('.product-category-filter-toggle');
+                if (toggle) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    var children = document.getElementById(toggle.getAttribute('aria-controls'));
+                    var isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+                    toggle.setAttribute('aria-expanded', isExpanded ? 'false' : 'true');
+                    if (children) children.hidden = isExpanded;
+                    return;
+                }
+
+                var choice = event.target.closest('.product-category-filter-choice');
+                if (!choice) return;
+                valueInput.value = choice.dataset.categoryId || '';
+                label.textContent = choice.dataset.categoryLabel || 'All Categories';
+                menu.querySelectorAll('.product-category-filter-choice').forEach(function (item) {
+                    item.classList.toggle('selected', item === choice);
+                });
+                closeMenu();
+            });
+
+            document.addEventListener('click', function (event) {
+                if (!filter.contains(event.target)) closeMenu();
+            });
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape') closeMenu();
+            });
+        })();
+
         function deleteProduct(productId) {
             Swal.fire({
                 title: 'Delete Product?',

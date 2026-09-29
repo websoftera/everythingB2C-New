@@ -1,6 +1,8 @@
 <?php
 require_once 'config/database.php';
 require_once 'includes/functions.php';
+require_once 'includes/product_seller_fields.php';
+ensureProductSellerFieldsSchema($pdo);
 require_once 'includes/header.php';
 
 $pdo = $GLOBALS['pdo'];
@@ -170,6 +172,7 @@ echo renderBreadcrumb($breadcrumbs);
                   </div>
                   <div class="product-details">
                       <h3><?php echo strtoupper(cleanProductName($product['name'])); ?></h3>
+                      <?php echo renderProductSellerLine($product); ?>
                       <div class="price-buttons">
                           <div class="price-btn mrp">
                               <span class="label">MRP</span>

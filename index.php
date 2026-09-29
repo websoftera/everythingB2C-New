@@ -3,6 +3,8 @@ $pageTitle = 'everythingb2c';
 require_once 'includes/header.php';
 require_once 'includes/delivery_popup_functions.php';
 require_once 'includes/banner_button.php';
+require_once 'includes/product_seller_fields.php';
+ensureProductSellerFieldsSchema($pdo);
 
 // Check if popup should be shown
 $showPopup = shouldShowDeliveryPopup();
@@ -416,6 +418,7 @@ foreach ($discountedProducts as $product):
                     <a href="product.php?slug=<?php echo $product['slug']; ?>" class="product-title-link">
                         <h3><?php echo formatProductListName($product['name']); ?></h3>
                     </a>
+                    <?php echo renderProductSellerLine($product); ?>
                     <div class="price-buttons">
                         <div class="price-btn mrp">
                             <span class="label">MRP</span>
@@ -507,6 +510,7 @@ foreach ($featuredProducts as $product):
                     <a href="product.php?slug=<?php echo $product['slug']; ?>" class="product-title-link">
                         <h3><?php echo formatProductListName($product['name']); ?></h3>
                     </a>
+                    <?php echo renderProductSellerLine($product); ?>
                     <div class="price-buttons">
                         <div class="price-btn mrp">
                             <span class="label">MRP</span>

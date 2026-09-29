@@ -4,6 +4,8 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require_once 'includes/functions.php';
 require_once 'includes/product_reviews.php';
+require_once 'includes/product_seller_fields.php';
+ensureProductSellerFieldsSchema($pdo);
 
 // Get product slug from URL
 $slug = $_GET['slug'] ?? '';
@@ -857,8 +859,8 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
         <div class="product-reviews-heading">
             <div><h2 id="product-reviews-title">Customer Reviews</h2><p>What customers say about this product</p></div>
             <div class="product-reviews-summary">
-                <strong><?php echo number_format($reviewSummary['average_rating'], 1); ?>/5</strong>
-                <span class="review-stars" aria-label="Average rating <?php echo htmlspecialchars((string)$reviewSummary['average_rating']); ?> out of 5"><?php echo str_repeat('★', (int)round($reviewSummary['average_rating'])) . str_repeat('☆', 5 - (int)round($reviewSummary['average_rating'])); ?></span>
+                <strong><?php echo number_format($reviewSummary['average_rating'], 0); ?>/5</strong>
+                <span class="review-stars" aria-label="Average rating <?php echo (int)round($reviewSummary['average_rating']); ?> out of 5"><?php echo str_repeat('★', (int)round($reviewSummary['average_rating'])) . str_repeat('☆', 5 - (int)round($reviewSummary['average_rating'])); ?></span>
                 <small>Based on <?php echo (int)$reviewSummary['total_reviews']; ?> <?php echo $reviewSummary['total_reviews'] === 1 ? 'review' : 'reviews'; ?></small>
             </div>
         </div>
@@ -1033,6 +1035,7 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                                     <a href="product.php?slug=<?php echo $relatedProduct['slug']; ?>" class="product-title-link">
                                         <h3><?php echo cleanProductName($relatedProduct['name']); ?></h3>
                                     </a>
+                                    <?php echo renderProductSellerLine($relatedProduct); ?>
 
                                     <div class="price-buttons">
                                         <div class="price-btn mrp">

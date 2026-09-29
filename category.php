@@ -6,6 +6,8 @@ header("Pragma: no-cache");
 
 require_once 'config/database.php';
 require_once 'includes/functions.php';
+require_once 'includes/product_seller_fields.php';
+ensureProductSellerFieldsSchema($pdo);
 ensureProductPackageQuantitySchema($pdo);
 ensureProductCategoryAssignmentsSchema($pdo);
 ensureProductCategoryParentVisibilitySchema($pdo);
@@ -309,6 +311,7 @@ else: ?>
                       <a href="product.php?slug=<?php echo $product['slug']; ?>" class="product-title-link">
                           <h3><?php echo formatProductListName($product['name'], true); ?></h3>
                       </a>
+                      <?php echo renderProductSellerLine($product); ?>
                       <div class="price-buttons">
                           <div class="price-btn mrp">
                               <span class="label">MRP</span>

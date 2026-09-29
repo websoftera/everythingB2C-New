@@ -2,6 +2,7 @@
 session_start();
 require_once '../config/database.php';
 require_once '../includes/functions.php';
+require_once '../includes/product_seller_fields.php';
 require_once 'includes/product_variation_helpers.php';
 
 // Check if admin is logged in
@@ -10,6 +11,7 @@ if (!isset($_SESSION['admin_id'])) {
     exit;
 }
 ensureDiscountSelectionSchema();
+$productSellerFieldsReady = ensureProductSellerFieldsSchema($pdo);
 
 $pageTitle = 'Edit Product';
 $success_message = '';
@@ -106,7 +108,9 @@ $product = array_merge([
     'sku' => '',
     'hsn' => '',
     'pay_per_unit' => null,
-    'unit_label' => 'No.'
+    'unit_label' => 'No.',
+    'seller_name' => null,
+    'seller_code' => null,
 ], $product);
 
 // Get product images
@@ -168,6 +172,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $gst_rate = floatval($_POST['gst_rate']);
     $sku = trim($_POST['sku']);
     $hsn = isset($_POST['hsn']) ? trim($_POST['hsn']) : null;
+    $sellerFields = normalizeProductSellerFields($_POST);
+    $sellerFieldsError = productSellerFieldsValidationError($sellerFields);
 
     // --- FIX: Ensure checkboxes are always set ---
     $is_active = isset($_POST['is_active']) ? 1 : 0;
@@ -177,7 +183,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $brand_id = $_POST['brand_id'] ?? '';
     // Validation
-    if (!validProductBrand($brands, $brand_id)) {
+    if (!$productSellerFieldsReady) {
+        $error_message = 'Seller fields could not be initialized. Please check the production database permissions and try again.';
+    } elseif ($sellerFieldsError !== '') {
+        $error_message = $sellerFieldsError;
+    } elseif (!validProductBrand($brands, $brand_id)) {
         $error_message = 'Please select a valid brand.';
     } elseif (empty($name) || empty($description) || $mrp <= 0 || $selling_price <= 0) {
         $error_message = 'Please fill in all required fields with valid values.';
@@ -198,8 +208,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Update product
             recordProductDiscountSelection($product_id, $is_discounted);
-            $stmt = $pdo->prepare("UPDATE products SET name = ?, slug = ?, description = ?, mrp = ?, selling_price = ?, pay_per_unit = ?, unit_label = ?, discount_percentage = ?, gst_rate = ?, category_id = ?, stock_quantity = ?, package_quantity = ?, max_quantity_per_order = ?, is_active = ?, is_featured = ?, is_discounted = ?, sku = ?, hsn = ? WHERE id = ?");
-            $stmt->execute([$name, $slug, $description, $mrp, $selling_price, $pay_per_unit, $unit_label, $discount_percentage, $gst_rate, $category_id, $stock_quantity, $package_quantity, $max_quantity_per_order, $is_active, $is_featured, $is_discounted, $sku, $hsn, $product_id]);
+            $stmt = $pdo->prepare("UPDATE products SET name = ?, slug = ?, description = ?, mrp = ?, selling_price = ?, pay_per_unit = ?, unit_label = ?, discount_percentage = ?, gst_rate = ?, category_id = ?, stock_quantity = ?, package_quantity = ?, max_quantity_per_order = ?, is_active = ?, is_featured = ?, is_discounted = ?, sku = ?, hsn = ?, seller_name = ?, seller_code = ? WHERE id = ?");
+            $stmt->execute([$name, $slug, $description, $mrp, $selling_price, $pay_per_unit, $unit_label, $discount_percentage, $gst_rate, $category_id, $stock_quantity, $package_quantity, $max_quantity_per_order, $is_active, $is_featured, $is_discounted, $sku, $hsn, $sellerFields['seller_name'], $sellerFields['seller_code'], $product_id]);
             saveProductBrand($pdo, $product_id, $brand_id);
             saveProductCategoryAssignments($pdo, $product_id, $category_id, $additional_category_ids);
             saveProductCategoryParentVisibility($pdo, $product_id, $selected_category_ids, $category_parent_visibility);
@@ -805,8 +815,16 @@ function uploadImage($file, $folder) {
                                         </div>
 
                                         <div class="row">
-                                            <div class="col-md-6">
+                                            <div class="col-md-4">
                                                 <?php include __DIR__ . '/includes/brand_select.php'; ?>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="seller_name" class="form-label">Seller Name</label>
+                                                <input type="text" class="form-control" id="seller_name" name="seller_name" maxlength="255" value="<?php echo htmlspecialchars($_POST['seller_name'] ?? $product['seller_name'], ENT_QUOTES, 'UTF-8'); ?>">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="seller_code" class="form-label">Seller Code</label>
+                                                <input type="text" class="form-control" id="seller_code" name="seller_code" maxlength="40" pattern="[A-Za-z0-9][A-Za-z0-9_-]{0,39}" value="<?php echo htmlspecialchars($_POST['seller_code'] ?? $product['seller_code'], ENT_QUOTES, 'UTF-8'); ?>">
                                             </div>
                                         </div>
                                         <div class="row mb-3">

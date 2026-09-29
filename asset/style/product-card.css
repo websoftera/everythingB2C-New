@@ -200,6 +200,23 @@
     white-space: nowrap !important;
 }
 
+.product-seller-line {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2px 6px;
+    margin-top: -7px;
+    color: #64748b;
+    font-size: 10px;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+.product-seller-line .product-seller-name,
+.product-seller-line .product-seller-code {
+    min-width: 0;
+}
+
 .product-details .product-unit-line + .product-title-link {
     margin-top: -8px !important;
 }

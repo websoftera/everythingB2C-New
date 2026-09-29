@@ -1,6 +1,8 @@
 <?php
 require_once 'config/database.php';
 require_once 'includes/functions.php';
+require_once 'includes/product_seller_fields.php';
+ensureProductSellerFieldsSchema($pdo);
 ensureProductPackageQuantitySchema($pdo);
 require_once 'includes/header.php';
 
@@ -168,6 +170,7 @@ echo renderBreadcrumb($breadcrumbs);
                       <a href="product.php?slug=<?php echo $product['slug']; ?>" class="product-title-link">
                           <h3><?php echo formatProductListName($product['name'], true); ?></h3>
                       </a>
+                      <?php echo renderProductSellerLine($product); ?>
                       <div class="price-buttons">
                           <div class="price-btn mrp">
                               <span class="label">MRP</span>
