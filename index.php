@@ -4,6 +4,7 @@ require_once 'includes/header.php';
 require_once 'includes/delivery_popup_functions.php';
 require_once 'includes/banner_button.php';
 require_once 'includes/product_seller_fields.php';
+require_once 'includes/top_deals.php';
 ensureProductSellerFieldsSchema($pdo);
 
 // Check if popup should be shown
@@ -11,7 +12,7 @@ $showPopup = shouldShowDeliveryPopup();
 $popupSettings = getPopupSettings();
 
 // Get data from database
-$featuredProducts = getFeaturedProducts(8);
+$topDealCategories = getTopDealCategories($pdo);
 $discountedProducts = getDiscountedProducts(10);
 
 // Get user's wishlist for quick lookup
@@ -467,96 +468,68 @@ endforeach; ?>
 </section>
 
 <!-- Featured Products Section -->
+<?php if (!empty($topDealCategories)): ?>
 <section class="featured-products-section">
-    <div class="featured-products-card">
+    <div class="featured-products-card top-deals-card">
         <div class="featured-products-header">
-            <h2 class="featured-products-title">Top 100 Products with Higher Discounts</h2>
+            <h2 class="featured-products-title">Top Deals of the Week</h2>
             <a href="products.php?featured=1" class="view-all-link">View All</a>
         </div>
-        <div class="featured-products-slider-wrapper">
-            <button class="featured-nav-btn prev-btn" aria-label="Scroll Left">
-          <img src="asset/icons/green_arrow.png" alt="Previous">
-        </button>
-            <div class="featured-products-container" id="featured-slider">
-        <?php
-
-
-foreach ($featuredProducts as $product):
-  $inWishlist = in_array($product['id'], $wishlist_ids);
-  $isOutOfStock = ($product['stock_quantity'] <= 0);
-  $packageQuantity = normalizePackageQuantity($product['package_quantity'] ?? 1);
-  $maxQuantity = getProductOrderMaxQuantity($product);
-?>
-            <div class="card product-card" data-id="prod-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>">
-                <?php echo renderProductDiscountBanner($product); ?>
-                <div class="product-info">
-                <div class="product-image">
-                    <a href="product.php?slug=<?php echo $product['slug']; ?>">
-                        <?php if (!empty($product['main_image'])): ?>
-                            <img src="<?php echo htmlspecialchars($product['main_image']); ?>" alt="<?php echo cleanProductName($product['name']); ?>" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='./uploads/products/blank-img.webp';">
-                        <?php
-  else: ?>
-                            <img src="./uploads/products/blank-img.webp" alt="No image available" loading="lazy" decoding="async">
-                        <?php
-  endif; ?>
+        <div class="top-deals-categories-slider">
+            <button type="button" class="top-deals-scroll prev" aria-label="Previous subcategories">&#8249;</button>
+            <div class="top-deals-categories-track" id="top-deals-categories-track">
+                <?php foreach ($topDealCategories as $dealCategory): ?>
+                    <?php
+                    $dealImage = trim((string)($dealCategory['image'] ?? ''));
+                    $dealImage = $dealImage !== '' ? ltrim($dealImage, './\\') : '';
+                    $dealUrl = 'products.php?featured=1&category=' . (int)$dealCategory['id'];
+                    ?>
+                    <a class="top-deals-category-tile" href="<?php echo htmlspecialchars($dealUrl, ENT_QUOTES, 'UTF-8'); ?>">
+                        <span class="top-deals-category-image">
+                            <?php if ($dealImage !== ''): ?>
+                                <img src="./<?php echo htmlspecialchars($dealImage, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($dealCategory['name'], ENT_QUOTES, 'UTF-8'); ?>" loading="lazy" decoding="async" onerror="this.parentElement.innerHTML='<span class=&quot;top-deals-category-placeholder&quot;>＋</span>'">
+                            <?php else: ?>
+                                <span class="top-deals-category-placeholder" aria-hidden="true">＋</span>
+                            <?php endif; ?>
+                        </span>
+                        <span class="top-deals-category-caption">
+                            <span><?php echo htmlspecialchars($dealCategory['name'], ENT_QUOTES, 'UTF-8'); ?></span>
+                            <span>(<?php echo (int)$dealCategory['product_count']; ?>)</span>
+                        </span>
                     </a>
-                    <?php if ($isOutOfStock): ?>
-                        <div class="out-of-stock">OUT OF STOCK</div>
-                    <?php
-  endif; ?>
-                </div>
-                <div class="product-details">
-                    <div class="product-unit-line"><?php echo formatProductUnitLine($product, true); ?></div>
-                    <a href="product.php?slug=<?php echo $product['slug']; ?>" class="product-title-link">
-                        <h3><?php echo formatProductListName($product['name']); ?></h3>
-                    </a>
-                    <?php echo renderProductSellerLine($product); ?>
-                    <div class="price-buttons">
-                        <div class="price-btn mrp">
-                            <span class="label">MRP</span>
-                            <span class="value"><?php echo formatPrice($product['mrp']); ?></span>
-                        </div>
-                        <div class="price-btn pay">
-                            <span class="label">PAY</span>
-                            <span class="value"><?php echo formatPrice($product['selling_price']); ?></span>
-                        </div>
-                        <div class="wishlist">
-                          <input type="checkbox" class="heart-checkbox" id="wishlist-checkbox-featured-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>" <?php if ($inWishlist)
-    echo 'checked'; ?>>
-                          <label for="wishlist-checkbox-featured-<?php echo $product['id']; ?>" class="wishlist-label <?php echo $inWishlist ? 'wishlist-active' : ''; ?>">
-                              <i class="bi <?php echo $inWishlist ? 'bi-heart-fill' : 'bi-heart'; ?> header-wishlist-icon"></i>
-                          </label>
-                        </div>
-                    </div>
-                    <?php if ($isOutOfStock): ?>
-                        <a href="product.php?slug=<?php echo $product['slug']; ?>" class="read-more">READ MORE</a>
-                    <?php
-  else: ?>
-                        <div class="cart-actions d-flex align-items-center">
-                            <div class="quantity-control d-inline-flex align-items-center">
-                                <button type="button" class="btn-qty btn-qty-minus" aria-label="Decrease quantity">-</button>
-                                <input type="number" class="quantity-input" value="<?php echo $packageQuantity; ?>" min="<?php echo $packageQuantity; ?>" step="<?php echo $packageQuantity; ?>" max="<?php echo $maxQuantity; ?>" data-product-id="<?php echo $product['id']; ?>" data-package-quantity="<?php echo $packageQuantity; ?>">
-                                <button type="button" class="btn-qty btn-qty-plus" aria-label="Increase quantity">+</button>
-                            </div>
-                            <button class="add-to-cart add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">
-                                <i class="fas fa-shopping-cart"></i>
-                                ADD TO CART
-                            </button>
-                        </div>
-                    <?php
-  endif; ?>
-                </div>
-                </div>
+                <?php endforeach; ?>
             </div>
-        <?php
-endforeach; ?>
-</div>
-            <button class="featured-nav-btn next-btn" aria-label="Scroll Right">
-          <img src="asset/icons/green_arrow.png" alt="Next" style="transform: rotate(180deg);">
-        </button>
-</div>
+            <button type="button" class="top-deals-scroll next" aria-label="Next subcategories">&#8250;</button>
+        </div>
     </div>
 </section>
+<style>
+  .top-deals-card { background: #eff7c9; }
+  .top-deals-categories-slider { position: relative; padding: 0 16px 14px; }
+  .top-deals-categories-track { display: flex; gap: 12px; overflow-x: auto; scroll-behavior: smooth; scrollbar-width: none; padding: 4px 0; }
+  .top-deals-categories-track::-webkit-scrollbar { display: none; }
+  .top-deals-category-tile { display: flex; flex: 0 0 220px; flex-direction: column; overflow: hidden; border: 1px solid #e1e6d0; border-radius: 10px; background: #fff; color: #263238; text-decoration: none; box-shadow: 0 2px 7px rgba(0,0,0,.08); }
+  .featured-products-card.top-deals-card { background: #eff7c9; }
+  .top-deals-category-image { display: flex; height: 170px; align-items: center; justify-content: center; padding: 12px; }
+  .top-deals-category-image img { width: 100%; height: 100%; object-fit: contain; }
+  .top-deals-category-caption { display: flex; min-height: 48px; align-items: center; justify-content: center; gap: 6px; padding: 8px 12px; color: #222 !important; font-size: 13px !important; font-weight: bold !important; line-height: 1.3; text-align: center; }
+  .top-deals-category-caption > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .top-deals-category-placeholder { color: #a6adb4; font-size: 64px; font-weight: 300; }
+  .top-deals-scroll { position: absolute; z-index: 2; top: 50%; display: flex; width: 36px; height: 36px; align-items: center; justify-content: center; transform: translateY(-50%); border: 1px solid #d8dfca; border-radius: 50%; background: #fff; color: #799a0b; font-size: 28px; line-height: 1; box-shadow: 0 2px 6px rgba(0,0,0,.12); }
+  .top-deals-scroll.prev { left: 0; }
+  .top-deals-scroll.next { right: 0; }
+  @media (max-width: 600px) { .top-deals-categories-slider { padding-right: 12px; padding-left: 12px; } .top-deals-category-tile { flex-basis: 68vw; max-width: 260px; } .top-deals-category-image { height: 150px; } }
+</style>
+<script>
+(() => {
+  const track = document.getElementById('top-deals-categories-track');
+  if (!track) return;
+  const slider = track.closest('.top-deals-categories-slider');
+  slider.querySelector('.top-deals-scroll.prev').addEventListener('click', () => track.scrollBy({left: -track.clientWidth * .8, behavior: 'smooth'}));
+  slider.querySelector('.top-deals-scroll.next').addEventListener('click', () => track.scrollBy({left: track.clientWidth * .8, behavior: 'smooth'}));
+})();
+</script>
+<?php endif; ?>
 
 <!-- Include Footer -->
 

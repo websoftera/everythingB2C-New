@@ -969,7 +969,7 @@ function uploadImage($file, $folder) {
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="checkbox" id="edit_is_featured" name="is_featured"
                                                            <?php echo $product['is_featured'] ? 'checked' : ''; ?>>
-                                                    <label class="form-check-label" for="edit_is_featured">Featured</label>
+                                                    <label class="form-check-label" for="edit_is_featured">Top Deals</label>
                                                 </div>
                                             </div>
                                             <div class="col-md-4">
