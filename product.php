@@ -4,6 +4,8 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require_once 'includes/functions.php';
 require_once 'includes/product_reviews.php';
+require_once 'includes/product_seller_fields.php';
+ensureProductSellerFieldsSchema($pdo);
 
 // Get product slug from URL
 $slug = $_GET['slug'] ?? '';
@@ -638,10 +640,16 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
         }
 
         @media (max-width: 900px) {
+            .product-page-container .product-identifiers {
+                display: block !important;
+                width: auto !important;
+                margin: 0 !important;
+            }
+
             .product-page-container .sku-row,
             .product-page-container .product-hsn {
-                display: inline-block !important;
-                margin: 0 12px 4px 0 !important;
+                display: block !important;
+                margin: 0 0 8px 0 !important;
                 font-size: 14px !important;
                 color: #333 !important;
                 line-height: 18px !important;
@@ -773,7 +781,12 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
         </div>
         <div class="product-info-section modern-info">
             <h2 class="title"><?php echo cleanProductName($product['name']); ?></h2>
-            <p class="sku-row"><strong>SKU:</strong> <?php echo htmlspecialchars($product['sku']); ?></p>
+            <div class="product-identifiers">
+                <?php if (!empty($product['seller_code'])): ?>
+                    <p class="sku-row seller-code-row"><strong>Seller:</strong> <?php echo htmlspecialchars($product['seller_code'], ENT_QUOTES, 'UTF-8'); ?></p>
+                <?php endif; ?>
+                <p class="sku-row"><strong>SKU:</strong> <?php echo htmlspecialchars($product['sku']); ?></p>
+            </div>
             <?php if (!empty($product['hsn'])): ?>
                 <div class="product-hsn"><strong>HSN:</strong> <?php echo htmlspecialchars($product['hsn']); ?></div>
             <?php endif; ?>
@@ -857,8 +870,8 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
         <div class="product-reviews-heading">
             <div><h2 id="product-reviews-title">Customer Reviews</h2><p>What customers say about this product</p></div>
             <div class="product-reviews-summary">
-                <strong><?php echo number_format($reviewSummary['average_rating'], 1); ?>/5</strong>
-                <span class="review-stars" aria-label="Average rating <?php echo htmlspecialchars((string)$reviewSummary['average_rating']); ?> out of 5"><?php echo str_repeat('★', (int)round($reviewSummary['average_rating'])) . str_repeat('☆', 5 - (int)round($reviewSummary['average_rating'])); ?></span>
+                <strong><?php echo number_format($reviewSummary['average_rating'], 0); ?>/5</strong>
+                <span class="review-stars" aria-label="Average rating <?php echo (int)round($reviewSummary['average_rating']); ?> out of 5"><?php echo str_repeat('★', (int)round($reviewSummary['average_rating'])) . str_repeat('☆', 5 - (int)round($reviewSummary['average_rating'])); ?></span>
                 <small>Based on <?php echo (int)$reviewSummary['total_reviews']; ?> <?php echo $reviewSummary['total_reviews'] === 1 ? 'review' : 'reviews'; ?></small>
             </div>
         </div>
@@ -1033,6 +1046,7 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                                     <a href="product.php?slug=<?php echo $relatedProduct['slug']; ?>" class="product-title-link">
                                         <h3><?php echo cleanProductName($relatedProduct['name']); ?></h3>
                                     </a>
+                                    <?php echo renderProductSellerLine($relatedProduct); ?>
 
                                     <div class="price-buttons">
                                         <div class="price-btn mrp">

@@ -25,6 +25,8 @@ CREATE TABLE products (
     name VARCHAR(255) NOT NULL,
     slug VARCHAR(255) UNIQUE NOT NULL,
     sku VARCHAR(100) UNIQUE NOT NULL,
+    seller_name VARCHAR(255) NULL,
+    seller_code VARCHAR(40) NULL,
     hsn VARCHAR(20),
     description TEXT,
     mrp DECIMAL(10,2) NOT NULL,
