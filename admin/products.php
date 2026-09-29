@@ -184,7 +184,7 @@ function renderAdminProductCategoryFilterNodes(array $nodes, int $depth = 0): vo
         ?>
         <div class="product-category-filter-node">
             <div class="product-category-filter-row" style="padding-left: <?php echo min($depth * 14, 56); ?>px">
-                <button type="button" class="product-category-filter-choice" data-category-id="<?php echo $id; ?>" data-category-label="<?php echo htmlspecialchars($name, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($name, ENT_QUOTES, 'UTF-8'); ?></button>
+                <button type="button" class="product-category-filter-choice <?php echo $depth === 0 ? 'is-main-category' : 'is-subcategory'; ?>" data-category-id="<?php echo $id; ?>" data-category-label="<?php echo htmlspecialchars($name, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($name, ENT_QUOTES, 'UTF-8'); ?></button>
                 <?php if ($children): ?>
                     <button type="button" class="product-category-filter-toggle" aria-expanded="false" aria-controls="<?php echo htmlspecialchars($childrenId, ENT_QUOTES, 'UTF-8'); ?>" aria-label="Show subcategories of <?php echo htmlspecialchars($name, ENT_QUOTES, 'UTF-8'); ?>"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
                 <?php endif; ?>
@@ -312,7 +312,10 @@ $returnToProducts = 'products.php' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $
         .product-category-filter-menu [hidden] { display: none !important; }
         .product-category-filter-row { display: flex; align-items: center; gap: 2px; min-height: 32px; }
         .product-category-filter-choice { flex: 1; min-width: 0; padding: 5px 8px; border: 0; border-radius: 5px; background: transparent; color: #303846; font-size: 14px; line-height: 1.3; text-align: left; }
-        .product-category-filter-choice:hover, .product-category-filter-choice.selected { background: #eaf2ff; color: #0d6efd; }
+        .product-category-filter-choice.is-main-category { color: #111; font-weight: 700; }
+        .product-category-filter-choice.is-subcategory { font-weight: 400; }
+        .product-category-filter-choice:hover, .product-category-filter-choice:focus-visible { background: #9abd18; color: #fff; font-weight: 700; }
+        .product-category-filter-choice.selected { background: #9abd18; color: #fff; font-weight: 700; }
         .product-category-filter-toggle { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 27px; width: 27px; height: 27px; padding: 0; border: 0; border-radius: 5px; background: transparent; color: #708094; }
         .product-category-filter-toggle:hover { background: #f0f3f7; }
         .product-category-filter-toggle i { font-size: 10px; transition: transform .15s ease; }
