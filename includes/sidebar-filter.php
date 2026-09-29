@@ -313,12 +313,13 @@ $categoryTree = buildCategoryTree($categories);
   #filterCategoryMenu.filter-category-popover-fallback { display: none; }
   #filterCategoryMenu.filter-category-popover-fallback.is-open { display: block; }
   #filterCategoryMenu button, #filterCategoryMenu summary { display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 6px 12px; border: 0; background: transparent; color: #333; text-align: left; font-family: inherit; font-size: 12px; line-height: 1.5; cursor: pointer; list-style: none; }
-  #filterCategoryMenu summary { font-weight: 600; gap: 12px; }
-  #filterCategoryMenu > button { font-weight: 600; }
+  #filterCategoryMenu summary { color: #111; font-weight: 700; gap: 12px; }
+  #filterCategoryMenu > button { color: #111; font-weight: 700; }
   #filterCategoryMenu summary > span { font-size: 20px; font-weight: 700; line-height: 18px; flex-shrink: 0; }
   #filterCategoryMenu summary::-webkit-details-marker { display: none; }
   #filterCategoryMenu details[open] > summary > span { transform: rotate(90deg); }
-  #filterCategoryMenu button:hover, #filterCategoryMenu summary:hover { background: #f1f5f8; }
+  #filterCategoryMenu button:hover, #filterCategoryMenu summary:hover,
+  #filterCategoryMenu button:focus-visible, #filterCategoryMenu summary:focus-visible { background: #9abd18; color: #fff; font-weight: 700; }
   #filterCategoryMenu .filter-category-children { padding-left: 12px; }
   #sidebarCategorySelect option.filter-main-category,
   .sidebar-filter-container .mob-radio-label.filter-main-category {
@@ -1290,6 +1291,12 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       categoryTrigger.setAttribute('aria-expanded', 'false');
     };
+    // Prevent the page filter popover from sitting on top of the header mega menu.
+    const categoryNavigation = document.querySelector('.second-navbar .category-navbar');
+    if (categoryNavigation) {
+      categoryNavigation.addEventListener('pointerenter', closeCategoryMenu);
+      categoryNavigation.addEventListener('focusin', closeCategoryMenu);
+    }
     categoryTrigger.firstChild.textContent = categorySelect.selectedOptions[0].textContent.trim() + ' ';
     const positionCategoryMenu = () => {
       if (!isCategoryMenuOpen()) return;
@@ -1314,13 +1321,11 @@ document.addEventListener('DOMContentLoaded', function() {
       const gap = 4;
       const menuTop = Math.max(rect.bottom + gap, headerBottom + gap);
       const below = Math.max(0, window.innerHeight - menuTop - viewportPadding);
-      const above = Math.max(0, rect.top - headerBottom - gap - viewportPadding);
-      const desiredHeight = Math.min(categoryMenu.scrollHeight, 240);
-      const placeBelow = below >= desiredHeight || below >= above;
-      const availableHeight = placeBelow ? below : above;
       categoryMenu.style.left = left + 'px';
-      categoryMenu.style.top = (placeBelow ? menuTop : Math.max(headerBottom + viewportPadding, rect.top - availableHeight - gap)) + 'px';
-      categoryMenu.style.maxHeight = availableHeight + 'px';
+      // Keep the category menu attached below its control; when space is tight,
+      // let the menu scroll instead of moving it up to the sticky header.
+      categoryMenu.style.top = menuTop + 'px';
+      categoryMenu.style.maxHeight = Math.min(below, 240) + 'px';
     };
     if (supportsPopover) {
       categoryMenu.addEventListener('beforetoggle', event => {

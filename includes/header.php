@@ -577,7 +577,7 @@ if (!function_exists('renderCategoryDropdown')) {
             $indent = str_repeat('&nbsp;&nbsp;&nbsp;', $level);
             if (!empty($cat['children'])) {
                 $branchId = 'header-search-category-' . ++$branchNumber;
-                echo '<li class="header-search-category-branch">';
+                echo '<li class="header-search-category-branch' . ($level === 0 ? ' header-search-main-category' : '') . '">';
                 echo '<button type="button" class="dropdown-item header-search-category-toggle" aria-expanded="false" aria-controls="' . $branchId . '"><strong>' . htmlspecialchars($cat['name']) . '</strong><span aria-hidden="true">&#8250;</span></button>';
                 echo '<ul id="' . $branchId . '" class="header-search-category-children" hidden>';
                 echo '<li><a class="dropdown-item category-option" href="#" data-category="' . htmlspecialchars($cat['slug'], ENT_QUOTES, 'UTF-8') . '">All ' . htmlspecialchars($cat['name']) . '</a></li>';
@@ -935,8 +935,15 @@ renderCategoryMenu($categoryTree);
 </div>
 <!-- Bootstrap Bundle removed (in footer) -->
 <style>
-  .header-search-category-toggle { display: flex !important; align-items: center; justify-content: space-between; gap: 12px; }
-  .dropdown-desktop .dropdown-item strong { font-size: inherit !important; }
+  .dropdown-desktop .dropdown-menu .dropdown-item { color: #333 !important; border-radius: 4px; }
+  .dropdown-desktop .dropdown-menu .dropdown-item:hover,
+  .dropdown-desktop .dropdown-menu .dropdown-item:focus-visible { background: #9abd18 !important; color: #fff !important; font-weight: 700; }
+  .dropdown-desktop .dropdown-menu > li > .category-option,
+  .dropdown-desktop .header-search-main-category > .header-search-category-toggle,
+  .dropdown-desktop .header-search-main-category > .category-option { color: #111 !important; font-weight: 700 !important; }
+  .dropdown-desktop .header-search-category-children .category-option { font-weight: 400; }
+  .header-search-category-toggle { display: flex !important; align-items: center; justify-content: space-between; gap: 12px; color: inherit !important; }
+  .dropdown-desktop .dropdown-item strong { font-size: inherit !important; font-weight: inherit; }
   .header-search-category-toggle > span[aria-hidden="true"] { font-size: calc(1em + 1px); font-weight: 700; }
   .header-search-category-children { list-style: none; padding: 0 0 0 12px; margin: 0; }
   .header-search-category-children[hidden] { display: none !important; }
