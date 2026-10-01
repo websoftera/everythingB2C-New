@@ -476,7 +476,7 @@ endforeach; ?>
             <a href="products.php?featured=1" class="view-all-link">View All</a>
         </div>
         <div class="top-deals-categories-slider">
-            <button type="button" class="top-deals-scroll prev" aria-label="Previous subcategories">&#8249;</button>
+            <button type="button" class="top-deals-scroll discounted-nav-btn prev-btn prev" aria-label="Previous subcategories"><img src="asset/icons/blue_arrow.png" alt="Previous"></button>
             <div class="top-deals-categories-track" id="top-deals-categories-track">
                 <?php foreach ($topDealCategories as $dealCategory): ?>
                     <?php
@@ -499,14 +499,14 @@ endforeach; ?>
                     </a>
                 <?php endforeach; ?>
             </div>
-            <button type="button" class="top-deals-scroll next" aria-label="Next subcategories">&#8250;</button>
+            <button type="button" class="top-deals-scroll discounted-nav-btn next-btn next" aria-label="Next subcategories"><img src="asset/icons/blue_arrow.png" alt="Next" style="transform: rotate(180deg);"></button>
         </div>
     </div>
 </section>
 <style>
   .top-deals-card { background: #eff7c9; }
-  .top-deals-categories-slider { position: relative; padding: 0 16px 14px; }
-  .top-deals-categories-track { display: flex; gap: 12px; overflow-x: auto; scroll-behavior: smooth; scrollbar-width: none; padding: 4px 0; }
+  .top-deals-categories-slider { display: flex; align-items: center; position: relative; overflow: visible; width: 100%; max-width: 1400px; margin: 0 auto; padding: 0; }
+  .top-deals-categories-track { display: flex; flex: 1 1 auto; gap: 12px; overflow-x: auto; scroll-behavior: smooth; scrollbar-width: none; padding: 15px 10px; box-sizing: border-box; }
   .top-deals-categories-track::-webkit-scrollbar { display: none; }
   .top-deals-category-tile { display: flex; flex: 0 0 220px; flex-direction: column; overflow: hidden; border: 1px solid #e1e6d0; border-radius: 10px; background: #fff; color: #263238; text-decoration: none; box-shadow: 0 2px 7px rgba(0,0,0,.08); }
   .featured-products-card.top-deals-card { background: #eff7c9; }
@@ -515,10 +515,11 @@ endforeach; ?>
   .top-deals-category-image { display: flex; height: 170px; align-items: center; justify-content: center; padding: 12px; }
   .top-deals-category-image img { width: 100%; height: 100%; object-fit: contain; }
   .top-deals-category-placeholder { color: #a6adb4; font-size: 64px; font-weight: 300; }
-  .top-deals-scroll { position: absolute; z-index: 2; top: 50%; display: flex; width: 36px; height: 36px; align-items: center; justify-content: center; transform: translateY(-50%); border: 1px solid #d8dfca; border-radius: 50%; background: #fff; color: #799a0b; font-size: 28px; line-height: 1; box-shadow: 0 2px 6px rgba(0,0,0,.12); }
-  .top-deals-scroll.prev { left: 0; }
-  .top-deals-scroll.next { right: 0; }
-  @media (max-width: 600px) { .top-deals-categories-slider { padding-right: 12px; padding-left: 12px; } .top-deals-category-tile { flex-basis: 68vw; max-width: 260px; } .top-deals-category-image { height: 150px; } }
+  .top-deals-scroll { top: 50% !important; transform: translateY(-50%) !important; }
+  .top-deals-categories-slider .top-deals-scroll.prev { left: 3px !important; }
+  .top-deals-categories-slider .top-deals-scroll.next { right: 3px !important; }
+  .top-deals-scroll img { width: 10px !important; height: 10px !important; object-fit: contain; }
+  @media (max-width: 600px) { .top-deals-category-tile { flex-basis: 68vw; max-width: 260px; } .top-deals-category-image { height: 150px; } }
 </style>
 <script>
 (() => {
@@ -2901,6 +2902,36 @@ endforeach; ?>
     margin: 0 !important;
     overflow: hidden !important;
   }
+
+  /* Keep Top Deals aligned with the discounted product carousel on mobile. */
+  .top-deals-categories-slider {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  .top-deals-categories-track {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    gap: 8px !important;
+    padding: 15px 10px !important;
+    box-sizing: border-box !important;
+  }
+
+  .top-deals-category-tile {
+    flex: 0 0 280px !important;
+    width: 280px !important;
+    min-width: 280px !important;
+    max-width: 280px !important;
+    margin-right: 8px !important;
+  }
+
+  .top-deals-categories-slider .top-deals-scroll.prev { left: 3px !important; }
+  .top-deals-categories-slider .top-deals-scroll.next { right: 3px !important; }
 }
 
 #heroCarousel {
