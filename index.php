@@ -278,9 +278,54 @@ if (empty($bannersList)) {
         padding-top: 17px !important;
         padding-bottom: 17px !important;
     }
-    .home-how-we-work .hero-button { display: table !important; margin: 0 auto !important; }
+    .home-how-we-work .hero-button { display: table !important; width: auto !important; min-width: 208px; margin: 0 auto !important; }
     .home-how-we-work + section { margin-top: 0 !important; padding-top: 0 !important; }
     .home-how-we-work + section .process-container { margin-top: 0 !important; }
+    .home-how-we-work-steps .step img {
+        width: 100%;
+        height: auto !important;
+        max-height: none !important;
+        padding: 0 !important;
+        border: 0;
+        border-radius: 12px;
+        background: transparent;
+        box-sizing: border-box;
+        transition: transform .3s ease, box-shadow .3s ease, border .3s ease;
+    }
+    .home-how-we-work-steps .step img:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 5px 5px var(--pay-light-green);
+        border: 2px solid var(--dark-green);
+    }
+    @media (min-width: 992px) {
+        .home-how-we-work-steps .process-container {
+            max-width: 1160px;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .home-how-we-work-steps .step {
+            flex: 0 1 19.5%;
+            max-width: 19.5%;
+        }
+        .home-how-we-work-steps .arrow {
+            display: flex;
+            flex: 0 0 25px;
+            align-items: center;
+            justify-content: center;
+            height: 34px;
+        }
+        .home-how-we-work-steps .arrow::before {
+            content: '';
+            width: 15px;
+            height: 15px;
+            border-top: 6px solid #20ad32;
+            border-right: 6px solid #20ad32;
+            border-radius: 2px;
+            transform: rotate(45deg);
+        }
+    }
     @media (min-width: 768px) {
         .home-how-we-work + section .process-container { padding-top: 0 !important; }
     }
@@ -292,35 +337,31 @@ if (empty($bannersList)) {
     }
 </style>
     <div class="container hero-container home-how-we-work">
-        <h5 class="hero-button">HOW WE WORK</h5>
+        <h5 class="hero-button">EverythingB2C Fulfillment</h5>
     </div>
 
-<section>
+<section class="home-how-we-work-steps">
     <div class="process-container" style="gap: 5px !important;">
         <div class="step">
-            <img src="./asset/images/work-1.webp" alt="Online Shopping" loading="lazy" decoding="async">
-            <p>ONLINE SHOPPING</p>
+            <img src="./asset/images/how-we-work-1-box.webp" alt="Browse on EverythingB2C and compare prices from multiple sellers" loading="lazy" decoding="async">
         </div>
         <div class="arrow">
             <!-- <img src="./asset/images/work-progress.webp" alt="Arrow"> -->
         </div>
         <div class="step">
-            <img src="./asset/images/work-2.webp" alt="Warehouse" loading="lazy" decoding="async">
-            <p>WAREHOUSE</p>
+            <img src="./asset/images/how-we-work-2-box.webp" alt="Choose a seller, add the product to your cart, and place your order" loading="lazy" decoding="async">
         </div>
         <div class="arrow">
             <!-- <img src="./asset/images/work-progress.webp" alt="Arrow"> -->
         </div>
         <div class="step">
-            <img src="./asset/images/work-3.webp" alt="Shipping" loading="lazy" decoding="async">
-            <p>SHIPPING</p>
+            <img src="./asset/images/how-we-work-3-box.webp" alt="EverythingB2C picks and safely packs your order" loading="lazy" decoding="async">
         </div>
         <div class="arrow">
             <!-- <img src="./asset/images/work-progress.webp" alt="Arrow"> -->
         </div>
         <div class="step">
-            <img src="./asset/images/work-4.webp" alt="Home Delivery" loading="lazy" decoding="async">
-            <p>HOME DELIVERY</p>
+            <img src="./asset/images/how-we-work-4-box.webp" alt="Fast and reliable home delivery to your doorstep" loading="lazy" decoding="async">
         </div>
     </div>
 </section>
@@ -476,7 +517,7 @@ endforeach; ?>
             <a href="products.php?featured=1" class="view-all-link">View All</a>
         </div>
         <div class="top-deals-categories-slider">
-            <button type="button" class="top-deals-scroll discounted-nav-btn prev-btn prev" aria-label="Previous subcategories"><img src="asset/icons/blue_arrow.png" alt="Previous"></button>
+            <button type="button" class="top-deals-scroll prev" aria-label="Previous subcategories"><img src="asset/icons/blue_arrow.png" alt="Previous"></button>
             <div class="top-deals-categories-track" id="top-deals-categories-track">
                 <?php foreach ($topDealCategories as $dealCategory): ?>
                     <?php
@@ -499,14 +540,14 @@ endforeach; ?>
                     </a>
                 <?php endforeach; ?>
             </div>
-            <button type="button" class="top-deals-scroll discounted-nav-btn next-btn next" aria-label="Next subcategories"><img src="asset/icons/blue_arrow.png" alt="Next" style="transform: rotate(180deg);"></button>
+            <button type="button" class="top-deals-scroll next" aria-label="Next subcategories"><img src="asset/icons/blue_arrow.png" alt="Next" style="transform: rotate(180deg);"></button>
         </div>
     </div>
 </section>
 <style>
   .top-deals-card { background: #eff7c9; }
-  .top-deals-categories-slider { display: flex; align-items: center; position: relative; overflow: visible; width: 100%; max-width: 1400px; margin: 0 auto; padding: 0; }
-  .top-deals-categories-track { display: flex; flex: 1 1 auto; gap: 12px; overflow-x: auto; scroll-behavior: smooth; scrollbar-width: none; padding: 15px 10px; box-sizing: border-box; }
+  .top-deals-categories-slider { position: relative; padding: 0 16px 14px; }
+  .top-deals-categories-track { display: flex; gap: 12px; overflow-x: auto; scroll-behavior: smooth; scrollbar-width: none; padding: 4px 0; }
   .top-deals-categories-track::-webkit-scrollbar { display: none; }
   .top-deals-category-tile { display: flex; flex: 0 0 220px; flex-direction: column; overflow: hidden; border: 1px solid #e1e6d0; border-radius: 10px; background: #fff; color: #263238; text-decoration: none; box-shadow: 0 2px 7px rgba(0,0,0,.08); }
   .featured-products-card.top-deals-card { background: #eff7c9; }
@@ -515,10 +556,10 @@ endforeach; ?>
   .top-deals-category-image { display: flex; height: 170px; align-items: center; justify-content: center; padding: 12px; }
   .top-deals-category-image img { width: 100%; height: 100%; object-fit: contain; }
   .top-deals-category-placeholder { color: #a6adb4; font-size: 64px; font-weight: 300; }
-  .top-deals-scroll { top: 50% !important; transform: translateY(-50%) !important; }
-  .top-deals-categories-slider .top-deals-scroll.prev { left: 3px !important; }
-  .top-deals-categories-slider .top-deals-scroll.next { right: 3px !important; }
-  .top-deals-scroll img { width: 10px !important; height: 10px !important; object-fit: contain; }
+  .top-deals-scroll { position: absolute; z-index: 2; top: 50%; display: flex; width: 36px; height: 36px; align-items: center; justify-content: center; transform: translateY(-50%); border: 1px solid #d8dfca; border-radius: 50%; background: #fff; color: #799a0b; font-size: 28px; line-height: 1; box-shadow: 0 2px 6px rgba(0,0,0,.12); }
+  .top-deals-scroll.prev { left: 0; }
+  .top-deals-scroll.next { right: 0; }
+  .top-deals-scroll img { width: 10px; height: 10px; object-fit: contain; }
   @media (max-width: 600px) { .top-deals-category-tile { flex-basis: 68vw; max-width: 260px; } .top-deals-category-image { height: 150px; } }
 </style>
 <script>
@@ -2932,6 +2973,8 @@ endforeach; ?>
 
   .top-deals-categories-slider .top-deals-scroll.prev { left: 3px !important; }
   .top-deals-categories-slider .top-deals-scroll.next { right: 3px !important; }
+  .top-deals-scroll { width: 25px !important; height: 25px !important; top: 50% !important; transform: translateY(-50%) !important; }
+  .top-deals-scroll img { width: 10px !important; height: 10px !important; }
 }
 
 #heroCarousel {
