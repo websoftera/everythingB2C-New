@@ -485,16 +485,16 @@ endforeach; ?>
                     $dealUrl = 'products.php?featured=1&category=' . (int)$dealCategory['id'];
                     ?>
                     <a class="top-deals-category-tile" href="<?php echo htmlspecialchars($dealUrl, ENT_QUOTES, 'UTF-8'); ?>">
+                        <span class="top-deals-category-bar">
+                            <span><?php echo htmlspecialchars($dealCategory['name'], ENT_QUOTES, 'UTF-8'); ?></span>
+                            <span>(<?php echo (int)$dealCategory['product_count']; ?>)</span>
+                        </span>
                         <span class="top-deals-category-image">
                             <?php if ($dealImage !== ''): ?>
                                 <img src="./<?php echo htmlspecialchars($dealImage, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($dealCategory['name'], ENT_QUOTES, 'UTF-8'); ?>" loading="lazy" decoding="async" onerror="this.parentElement.innerHTML='<span class=&quot;top-deals-category-placeholder&quot;>＋</span>'">
                             <?php else: ?>
                                 <span class="top-deals-category-placeholder" aria-hidden="true">＋</span>
                             <?php endif; ?>
-                        </span>
-                        <span class="top-deals-category-caption">
-                            <span><?php echo htmlspecialchars($dealCategory['name'], ENT_QUOTES, 'UTF-8'); ?></span>
-                            <span>(<?php echo (int)$dealCategory['product_count']; ?>)</span>
                         </span>
                     </a>
                 <?php endforeach; ?>
@@ -510,10 +510,10 @@ endforeach; ?>
   .top-deals-categories-track::-webkit-scrollbar { display: none; }
   .top-deals-category-tile { display: flex; flex: 0 0 220px; flex-direction: column; overflow: hidden; border: 1px solid #e1e6d0; border-radius: 10px; background: #fff; color: #263238; text-decoration: none; box-shadow: 0 2px 7px rgba(0,0,0,.08); }
   .featured-products-card.top-deals-card { background: #eff7c9; }
+  .top-deals-category-bar { display: flex; min-height: 42px; align-items: center; justify-content: center; gap: 6px; padding: 8px 12px; background: #9abd18; color: #fff !important; font-size: 13px !important; font-weight: bold !important; line-height: 1.25; text-align: center; }
+  .top-deals-category-bar > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .top-deals-category-image { display: flex; height: 170px; align-items: center; justify-content: center; padding: 12px; }
   .top-deals-category-image img { width: 100%; height: 100%; object-fit: contain; }
-  .top-deals-category-caption { display: flex; min-height: 48px; align-items: center; justify-content: center; gap: 6px; padding: 8px 12px; color: #222 !important; font-size: 13px !important; font-weight: bold !important; line-height: 1.3; text-align: center; }
-  .top-deals-category-caption > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .top-deals-category-placeholder { color: #a6adb4; font-size: 64px; font-weight: 300; }
   .top-deals-scroll { position: absolute; z-index: 2; top: 50%; display: flex; width: 36px; height: 36px; align-items: center; justify-content: center; transform: translateY(-50%); border: 1px solid #d8dfca; border-radius: 50%; background: #fff; color: #799a0b; font-size: 28px; line-height: 1; box-shadow: 0 2px 6px rgba(0,0,0,.12); }
   .top-deals-scroll.prev { left: 0; }
