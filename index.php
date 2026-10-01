@@ -373,6 +373,9 @@ if (empty($bannersList)) {
             .home-categories-section #slider {
                 grid-auto-flow: row !important;
                 grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                grid-template-rows: repeat(2, minmax(0, 1fr)) !important;
+                grid-auto-columns: auto !important;
+                overflow-x: hidden !important;
             }
             .home-categories-section #slider > .desktop-only-category { display: none !important; }
             .home-categories-section #slider > .mobile-featured-category { order: var(--mobile-category-order); }
@@ -567,8 +570,23 @@ endforeach; ?>
   const track = document.getElementById('top-deals-categories-track');
   if (!track) return;
   const slider = track.closest('.top-deals-categories-slider');
-  slider.querySelector('.top-deals-scroll.prev').addEventListener('click', () => track.scrollBy({left: -track.clientWidth * .8, behavior: 'smooth'}));
-  slider.querySelector('.top-deals-scroll.next').addEventListener('click', () => track.scrollBy({left: track.clientWidth * .8, behavior: 'smooth'}));
+  const scrollTopDeals = direction => {
+    if (window.innerWidth <= 767) {
+      const firstCard = track.querySelector('.top-deals-category-tile');
+      if (!firstCard) return;
+      const styles = window.getComputedStyle(firstCard);
+      const gap = parseFloat(window.getComputedStyle(track).columnGap) || 0;
+      const step = firstCard.offsetWidth + (parseFloat(styles.marginRight) || 0) + gap;
+      const cards = track.querySelectorAll('.top-deals-category-tile');
+      const currentIndex = Math.round(track.scrollLeft / step);
+      const nextIndex = Math.max(0, Math.min(cards.length - 1, currentIndex + direction));
+      track.scrollTo({left: step * nextIndex, behavior: 'smooth'});
+      return;
+    }
+    track.scrollBy({left: direction * track.clientWidth * .8, behavior: 'smooth'});
+  };
+  slider.querySelector('.top-deals-scroll.prev').addEventListener('click', () => scrollTopDeals(-1));
+  slider.querySelector('.top-deals-scroll.next').addEventListener('click', () => scrollTopDeals(1));
 })();
 </script>
 <?php endif; ?>
@@ -2958,23 +2976,103 @@ endforeach; ?>
     width: 100% !important;
     max-width: 100% !important;
     min-width: 0 !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
     gap: 8px !important;
     padding: 15px 10px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scroll-behavior: smooth !important;
+    scroll-snap-type: x mandatory !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
     box-sizing: border-box !important;
   }
+
+  .top-deals-categories-track::-webkit-scrollbar { display: none !important; }
 
   .top-deals-category-tile {
     flex: 0 0 280px !important;
     width: 280px !important;
     min-width: 280px !important;
     max-width: 280px !important;
+    flex-shrink: 0 !important;
     margin-right: 8px !important;
+    height: 136px !important;
+    box-sizing: border-box !important;
+    scroll-snap-align: start !important;
   }
 
+  .top-deals-category-bar {
+    min-height: 30px !important;
+    height: 30px !important;
+    padding: 5px 10px !important;
+  }
+
+  .top-deals-category-image {
+    height: 106px !important;
+    min-height: 0 !important;
+    padding: 8px !important;
+    box-sizing: border-box !important;
+  }
+
+  .top-deals-category-image img {
+    object-fit: contain !important;
+  }
+
+  .top-deals-categories-slider .top-deals-scroll {
+    width: 20px !important;
+    height: 20px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 3px !important;
+    background: #fff !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,.1) !important;
+  }
+  .top-deals-categories-slider .top-deals-scroll.prev { left: 5px !important; }
+  .top-deals-categories-slider .top-deals-scroll.next { right: 5px !important; }
+  .top-deals-scroll img { width: 10px !important; height: 10px !important; }
+}
+
+@media (max-width: 480px) {
+  .top-deals-categories-slider .top-deals-scroll { width: 18px !important; height: 18px !important; }
   .top-deals-categories-slider .top-deals-scroll.prev { left: 3px !important; }
   .top-deals-categories-slider .top-deals-scroll.next { right: 3px !important; }
-  .top-deals-scroll { width: 25px !important; height: 25px !important; top: 50% !important; transform: translateY(-50%) !important; }
-  .top-deals-scroll img { width: 10px !important; height: 10px !important; }
+}
+
+@media (max-width: 360px) {
+  .top-deals-categories-slider .top-deals-scroll { width: 16px !important; height: 16px !important; }
+  .top-deals-categories-slider .top-deals-scroll.prev { left: 2px !important; }
+  .top-deals-categories-slider .top-deals-scroll.next { right: 2px !important; }
+  .top-deals-categories-slider .top-deals-scroll img { width: 8px !important; height: 8px !important; }
+}
+
+@media (max-width: 767px) {
+  html body .discounted-products-container,
+  html body .featured-products-container,
+  html body .top-deals-categories-track {
+    scroll-snap-type: x mandatory !important;
+    /* scroll-padding-left: 10px !important; */
+    padding: 5px 10px 5px 10px !important;
+  }
+
+  html body .top-deals-categories-track {
+    padding-left: 18px !important;
+  }
+
+  html body .top-deals-category-tile {
+    scroll-snap-align: start !important;
+  }
+
+  html body .discounted-products-container .card.product-card {
+    flex: 0 0 280px !important;
+    width: 280px !important;
+    min-width: 280px !important;
+    max-width: 280px !important;
+    flex-shrink: 0 !important;
+    box-sizing: border-box !important;
+  }
 }
 
 #heroCarousel {
