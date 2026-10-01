@@ -846,7 +846,7 @@ function uploadImage($file, $folder) {
                                             <div class="col-md-4">
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="checkbox" id="is_featured" name="is_featured">
-                                                    <label class="form-check-label" for="is_featured">Featured</label>
+                                                    <label class="form-check-label" for="is_featured">Top Deals</label>
                                                 </div>
                                             </div>
                                             <div class="col-md-4">

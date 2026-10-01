@@ -1,6 +1,7 @@
 <?php
 require_once 'config/database.php';
 require_once 'includes/functions.php';
+require_once 'includes/top_deals.php';
 ensureProductPackageQuantitySchema($pdo);
 
 // Get filter parameters
@@ -43,8 +44,17 @@ if ($selectedCategory !== null && $selectedCategory !== '') {
   }
   $categoryIds = array_unique($allCategoryIds);
   $placeholders = str_repeat('?,', count($categoryIds) - 1) . '?';
-  $whereConditions[] = "p.category_id IN ($placeholders)";
-  $params = array_merge($params, $categoryIds);
+  if ($featured) {
+    ensureProductCategoryAssignmentsSchema($pdo);
+    $whereConditions[] = "(p.category_id IN ($placeholders) OR EXISTS (
+      SELECT 1 FROM product_category_assignments pca
+      WHERE pca.product_id = p.id AND pca.category_id IN ($placeholders)
+    ))";
+    $params = array_merge($params, $categoryIds, $categoryIds);
+  } else {
+    $whereConditions[] = "p.category_id IN ($placeholders)";
+    $params = array_merge($params, $categoryIds);
+  }
 }
 
 // Price filter
@@ -71,7 +81,22 @@ if ($discounted) {
 }
 elseif ($featured) {
   $whereConditions[] = 'p.is_featured = 1';
-  $pageTitle = "Featured Products";
+  $pageTitle = "Top Deals of the Week";
+  if ($selectedCategory === null || $selectedCategory === '') {
+    $visibleDealCategories = getTopDealCategories($pdo);
+    $visibleDealCategoryIds = array_values(array_unique(array_map(static fn($category) => (int)$category['id'], $visibleDealCategories)));
+    if (!$visibleDealCategoryIds) {
+      $whereConditions[] = '1 = 0';
+    } else {
+      ensureProductCategoryAssignmentsSchema($pdo);
+      $visibleCategoryPlaceholders = implode(',', array_fill(0, count($visibleDealCategoryIds), '?'));
+      $whereConditions[] = "(p.category_id IN ($visibleCategoryPlaceholders) OR EXISTS (
+        SELECT 1 FROM product_category_assignments pca
+        WHERE pca.product_id = p.id AND pca.category_id IN ($visibleCategoryPlaceholders)
+      ))";
+      $params = array_merge($params, $visibleDealCategoryIds, $visibleDealCategoryIds);
+    }
+  }
 }
 else {
   $pageTitle = "All Products";
