@@ -2,6 +2,8 @@
 (function () {
   function initSearchBlock(searchInput, searchBtn, resultsPopup) {
     if (!searchInput || !searchBtn || !resultsPopup) return;
+    if (searchInput.dataset.liveSearchInitialized === '1') return;
+    searchInput.dataset.liveSearchInitialized = '1';
     let debounceTimeout = null;
     if (resultsPopup.id === 'headerSearchResultsPopup') {
       const form = searchInput.closest('form');
@@ -99,17 +101,25 @@
     });
   }
 
-  // Initialize Desktop Search
-  initSearchBlock(
-    document.getElementById('headerSearchInput'),
-    document.getElementById('headerSearchBtn'),
-    document.getElementById('headerSearchResultsPopup')
-  );
+  function initializeHeaderSearch() {
+    // Desktop Search
+    initSearchBlock(
+      document.getElementById('headerSearchInput'),
+      document.getElementById('headerSearchBtn'),
+      document.getElementById('headerSearchResultsPopup')
+    );
 
-  // Initialize Mobile Search
-  initSearchBlock(
-    document.getElementById('headerSearchInputMobile'),
-    document.getElementById('headerSearchBtnMobile'),
-    document.getElementById('headerSearchResultsPopupMobile')
-  );
+    // Mobile Search
+    initSearchBlock(
+      document.getElementById('headerSearchInputMobile'),
+      document.getElementById('headerSearchBtnMobile'),
+      document.getElementById('headerSearchResultsPopupMobile')
+    );
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeHeaderSearch);
+  } else {
+    initializeHeaderSearch();
+  }
 })(); 

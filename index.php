@@ -252,7 +252,7 @@ if (empty($bannersList)) {
 <section class="home-benefits" aria-label="Shopping benefits">
     <ul class="home-benefits-list">
         <?php foreach ([
-            ['lowest-price.webp', 'Lowest Price'],
+            ['lowest-price.webp', 'Competitive Prices'],
             ['Cash-on-delivery.webp', 'Pay on Delivery'],
             ['same-day-delivery.webp', 'Same Day Delivery'],
             ['free-shipping.webp', 'Free Shipping*'],

@@ -2769,6 +2769,9 @@ input[type="checkbox"]:checked+.heart-icon,
   .desktop-account-links a { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; font-size: 13px; font-weight: 600; white-space: nowrap; }
   .desktop-account-links .desktop-customer-link { color: #008cba; }
   .desktop-account-links .desktop-customer-link i { color: #9fbe1b; }
+  .desktop-account-dropdown { position: relative; }
+  .desktop-account-dropdown .dropdown-toggle::after { margin-left: 2px; vertical-align: middle; }
+  .desktop-account-dropdown .desktop-account-menu { min-width: 130px; margin-top: 8px; z-index: 105000; }
   .desktop-account-links .desktop-seller-link { color: #9fbe1b; }
   .desktop-account-links .desktop-seller-link i { color: #008cba; }
   .desktop-account-links i { font-size: 22px; }

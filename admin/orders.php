@@ -129,6 +129,34 @@ $statuses = getAllOrderStatuses();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="assets/css/admin.css" rel="stylesheet">
+    <style>
+        .orders-page { max-width: 1500px; margin: 0 auto; }
+        .orders-page-heading { margin-bottom: 22px; }
+        .orders-page-heading h1 { color: #1f2937; font-size: 26px; font-weight: 700; letter-spacing: -.3px; }
+        .orders-page .card { border: 1px solid #e5eaf2; border-radius: 8px; box-shadow: 0 2px 7px rgba(15, 23, 42, .04); }
+        .orders-filter-card .card-body { padding: 16px 18px; }
+        .orders-filter-card .form-label { margin-bottom: 5px; color: #556274; font-size: 12px; font-weight: 600; }
+        .orders-filter-card .form-control, .orders-filter-card .form-select { height: 37px; font-size: 13px; border-color: #d9e1ec; }
+        .orders-filter-card .btn { height: 37px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+        .orders-table-card .card-header { padding: 13px 18px; background: #fff; border-bottom: 1px solid #e5eaf2; }
+        .orders-table-card .card-header h5 { color: #253247; font-size: 15px; font-weight: 700; }
+        .orders-table-card .card-body { padding: 0 18px; }
+        .orders-table { min-width: 850px; margin-bottom: 0; }
+        .orders-table thead th { padding: 13px 9px; border-bottom: 1px solid #dfe6ef; color: #57657a; font-size: 11px; font-weight: 700; letter-spacing: .02em; text-transform: uppercase; white-space: nowrap; }
+        .orders-table tbody td { padding: 15px 9px; border-color: #edf1f5; color: #273444; font-size: 13px; vertical-align: middle; }
+        .orders-table tbody tr:last-child td { border-bottom: 0; }
+        .orders-table a.text-primary { font-size: 12px; font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+        .orders-table small { font-size: 11px; line-height: 1.35; }
+        .orders-table .badge { padding: 4px 7px; border-radius: 4px; font-size: 10px; font-weight: 700; white-space: nowrap; }
+        .orders-table .btn-group { gap: 4px; }
+        .orders-table .btn-group .btn { width: 29px; height: 27px; padding: 0; border-radius: 3px !important; display: inline-flex; align-items: center; justify-content: center; }
+        @media (max-width: 767.98px) {
+            .orders-page-heading { align-items: flex-start !important; gap: 12px; }
+            .orders-page-heading h1 { font-size: 22px; }
+            .orders-filter-card .card-body { padding: 14px; }
+            .orders-table-card .card-body { padding: 0 10px; }
+        }
+    </style>
 </head>
 <body>
     <div class="everythingb2c-admin-container">
@@ -142,8 +170,8 @@ $statuses = getAllOrderStatuses();
 
             <!-- Orders Content -->
             <div class="everythingb2c-dashboard-content">
-                <div class="container-fluid">
-                    <div class="row mb-4">
+                <div class="container-fluid orders-page">
+                    <div class="row orders-page-heading">
                         <div class="col-12">
                             <div class="d-flex justify-content-between align-items-center">
                                 <h1 class="h3 mb-0">Order Management</h1>
@@ -165,9 +193,9 @@ $statuses = getAllOrderStatuses();
                     <?php endif; ?>
 
                     <!-- Filters -->
-                    <div class="card mb-4">
+                    <div class="card orders-filter-card mb-4">
                         <div class="card-body">
-                            <form method="GET" class="row g-3">
+                            <form method="GET" class="row g-3 align-items-end">
                                 <div class="col-md-2">
                                     <label class="form-label">Status</label>
                                     <select name="status" class="form-select">
@@ -213,7 +241,7 @@ $statuses = getAllOrderStatuses();
                     </div>
 
                     <!-- Orders Table -->
-                    <div class="card">
+                    <div class="card orders-table-card">
                         <div class="card-header">
                             <h5 class="mb-0">Orders (<?php echo $total_orders; ?> total)</h5>
                         </div>
@@ -226,7 +254,7 @@ $statuses = getAllOrderStatuses();
                                 </div>
                             <?php else: ?>
                                 <div class="table-responsive">
-                                    <table class="table table-hover">
+                                    <table class="table table-hover align-middle orders-table">
                                         <thead>
                                             <tr>
                                                 <th>Order ID</th>

@@ -297,6 +297,74 @@ include 'includes/header.php';
     border: 3px solid #fff;
     box-shadow: 0 0 0 2px #f0f4f8;
 }
+.support-phone-icon { transform: scaleX(-1); }
+
+/* Compact tracking dashboard layout */
+.track-order-wrapper { background: #f5f7fb; }
+.track-main-container { max-width: 1240px !important; padding: 28px 28px 42px; }
+.section-title, .sidebar-title {
+    color: #1f2937;
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0 0 8px;
+}
+.track-order-search-box { max-width: 320px !important; }
+.track-order-search-box .form-control,
+.track-order-search-box .btn { height: 36px; font-size: 12px; }
+.track-order-search-box .btn {
+    min-width: 135px;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #087df5;
+    border-color: #087df5;
+}
+.track-card, .product-item-card { border-color: #e5eaf1; border-radius: 9px; box-shadow: 0 2px 7px rgba(16, 24, 40, .05); }
+.track-card { margin-bottom: 16px; }
+.order-status-card { padding: 14px !important; }
+.order-status-card .badge { margin-bottom: 8px !important; padding: 5px 12px !important; font-size: 9px !important; }
+.order-status-card h1 { margin-bottom: 7px !important; font-size: 15px !important; }
+.order-status-card .d-flex.flex-wrap { gap: 14px !important; font-size: 10px !important; }
+.order-status-card .col-md-5 { display: flex; justify-content: flex-end; align-items: center; gap: 8px; }
+.order-status-card .col-md-5 > div:first-child {
+    min-width: 116px !important;
+    padding: 6px 10px !important;
+    border-radius: 5px !important;
+}
+.order-status-inline { display: flex; align-items: center; justify-content: center; gap: 4px; white-space: nowrap; font-size: 11px; font-weight: 700; }
+.order-status-inline span { color: #4b5563; }
+.order-status-card .col-md-5 .mt-3 { margin-top: 0 !important; }
+.order-status-card .col-md-5 .btn { width: 90px; min-width: 70px; height: 30px; padding: 0 !important; border-radius: 50px !important; font-size: 11px; display: inline-flex; align-items: center; justify-content: center; }
+.stepper-wrapper {
+    width: calc(100% - 220px);
+    min-width: 420px;
+    max-width: 100%;
+    margin: 18px 0 0;
+}
+.stepper-wrapper::before { top: 15px; left: 40px; right: 40px; height: 2px; }
+.step-counter { width: 32px; height: 32px; margin-bottom: 6px; border-width: 2px; font-size: 11px; }
+.step-name { font-size: 10px !important; }
+.product-item-card { margin-bottom: 8px; }
+.product-card-blue-bar { padding: 6px 12px; font-size: 10px; background: #087df5; }
+.product-row-inner { padding: 10px 12px; gap: 14px; }
+.product-img-wrapper { width: 64px; min-width: 64px; height: 64px; padding: 5px; border-radius: 7px; }
+.product-info h5 { font-size: 13px; margin: 0 0 8px; }
+.product-price-desktop { width: 72px; min-width: 72px; padding-left: 12px; font-size: 13px; color: #087df5; }
+.products-list { margin-bottom: 18px !important; }
+.detailed-timeline { padding-left: 25px; }
+.detailed-timeline-item { padding-bottom: 16px; }
+.track-card.p-4.p-md-5 { padding: 20px !important; }
+.time-marker { left: -20px; width: 10px; height: 10px; }
+
+@media (max-width: 767.98px) {
+    .track-main-container { padding: 18px 12px 32px; }
+    .section-title, .sidebar-title { font-size: 14px; }
+    .order-status-card .col-md-5 { justify-content: flex-start; margin-top: 14px; }
+    .order-status-card .col-md-5 > div:first-child { min-width: 105px !important; }
+    .track-order-search-box { max-width: 100% !important; }
+    .stepper-wrapper { width: 100%; min-width: 0; }
+}
 </style>
 
 <div class="track-order-wrapper">
@@ -331,8 +399,11 @@ include 'includes/header.php';
             if (in_array($currentStatus, ['cancelled', 'returned'])) $step = -1;
             ?>
 
+            <!-- Main order layout -->
+            <div class="row g-4 mb-5">
+                <div class="col-md-8">
             <!-- Top Summary -->
-            <div class="track-card p-4 p-md-5 mb-4">
+            <div class="track-card order-status-card p-3 mb-3">
                 <div class="row align-items-center">
                     <div class="col-md-7">
                         <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 mb-3 fw-bold rounded-pill" style="font-size: 0.75rem;">ORDER STATUS TRACKER</span>
@@ -344,8 +415,10 @@ include 'includes/header.php';
                     </div>
                     <div class="col-md-5 text-md-end mt-4 mt-md-0">
                         <div class="d-inline-block p-3 rounded-4 bg-light border text-center" style="min-width: 180px;">
-                            <div class="small fw-bold text-muted text-uppercase mb-1" style="font-size: 10px;">Status</div>
-                            <div class="fw-bold fs-5" style="color: <?php echo $order['status_color']; ?>;"><?php echo $order['status_name']; ?></div>
+                            <div class="order-status-inline">
+                                <span>Status:</span>
+                                <strong style="color: <?php echo $order['status_color']; ?>;"><?php echo $order['status_name']; ?></strong>
+                            </div>
                         </div>
                         <div class="mt-3">
                             <a href="download_invoice.php?order_id=<?php echo $order['id']; ?>" class="btn btn-dark rounded-pill px-4" target="_blank">
@@ -356,7 +429,7 @@ include 'includes/header.php';
                 </div>
 
                 <?php if ($step != -1): ?>
-                <div class="stepper-wrapper mt-5 pt-3">
+                <div class="stepper-wrapper mt-3 pt-2">
                     <div class="stepper-item <?php echo $step >= 1 ? 'completed' : ''; ?>">
                         <div class="step-counter"><?php echo $step >= 1 ? '<i class="fas fa-check"></i>' : '1'; ?></div>
                         <div class="step-name small">Placed</div>
@@ -381,9 +454,7 @@ include 'includes/header.php';
                 <?php endif; ?>
             </div>
 
-            <div class="row g-4 mb-5">
-                <!-- Products -->
-                <div class="col-lg-8">
+                    <!-- Products -->
                     <h4 class="sidebar-title ms-1">Product Details</h4>
                     <div class="products-list mb-5">
                         <?php foreach ($orderItems as $item):
@@ -436,7 +507,7 @@ include 'includes/header.php';
                 </div>
 
                 <!-- Sidebar Summary -->
-                <div class="col-lg-4">
+                <div class="col-md-4">
                     <h4 class="sidebar-title">Order Details</h4>
                     <div class="track-card border-0 shadow-sm mb-4">
                         <div class="bg-primary bg-opacity-10 p-2 border-bottom text-primary fw-bold text-center address-title">
@@ -504,7 +575,7 @@ include 'includes/header.php';
                         <h6 class="fw-bold mb-2 small">Need Assistance?</h6>
                         <p class="extra-small text-muted mb-3">Our support team is here.</p>
                         <a href="tel:+916355837347" class="btn btn-outline-primary w-100 rounded-pill mb-2 fw-bold extra-small py-2">
-                            <i class="fas fa-phone-alt me-2"></i>+91 63558 37347
+                            <i class="fas fa-phone-alt me-2 support-phone-icon"></i>+91 63558 37347
                         </a>
                         <a href="mailto:info@everythingb2c.in" class="btn btn-outline-primary w-100 rounded-pill fw-bold extra-small py-2">
                             <i class="fas fa-envelope me-2"></i>info@everythingb2c.in
