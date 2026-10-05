@@ -86,6 +86,7 @@ if ($popupEnabled !== '1') {
     max-width: 380px;
     width: 90%;
     max-height: 80vh;
+    overflow-x: hidden;
     overflow-y: auto;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
     position: relative;
@@ -112,18 +113,17 @@ if ($popupEnabled !== '1') {
 
 .delivery-popup-close {
     position: absolute;
-    top: 8px;
-    right: 8px;
-    background: none;
-    border: none;
-    font-size: 16px;
-    color: #999;
+    top: -23px;
+    right: -2px;
+    background: #9fbe1b;
+    border: 2px solid #fff;
+    font-size: 15px;
+    color: #fff;
     cursor: pointer;
-    padding: 4px;
     border-radius: 50%;
     transition: all 0.3s ease;
-    width: 24px;
-    height: 24px;
+    width: 34px;
+    height: 34px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -131,8 +131,9 @@ if ($popupEnabled !== '1') {
 }
 
 .delivery-popup-close:hover {
-    background-color: #f5f5f5;
-    color: #666;
+    background-color: #86a415;
+    color: #fff;
+    transform: scale(1.06);
 }
 
 .delivery-popup-content {

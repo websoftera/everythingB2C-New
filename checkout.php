@@ -234,12 +234,44 @@ if (!empty($orderPlaced) && !empty($placedOrderSummary)) {
     border-color: #dc3545;
     color: white;
 }
+.continue-shopping-wrapper {
+    margin-top: 24px;
+    display: flex;
+    justify-content: center;
+}
+.continue-shopping-btn,
+.place-order-btn {
+    min-height: 42px;
+    padding: 9px 16px !important;
+    border: 1px solid #9fbe1b !important;
+    border-radius: 4px !important;
+    background: #9fbe1b !important;
+    color: #fff !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+    text-transform: uppercase;
+}
+.continue-shopping-btn {
+    width: 395px;
+    max-width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.continue-shopping-btn:hover,
+.place-order-btn:hover:not(:disabled) {
+    background: #89a715;
+    border-color: #89a715;
+    color: #fff;
+}
 @media (max-width: 768px) {
     .place-order-btn {
-        padding-top: 9px !important;
-        padding-bottom: 9px !important;
-        font-size: 1.10rem !important;
-        font-weight: 600 !important;
+        font-size: 16px !important;
+        font-weight: 700 !important;
+    }
+    .continue-shopping-wrapper {
+        margin-top: 18px;
     }
 }
 </style>
@@ -320,17 +352,17 @@ endif; ?>
           </div>
           <div class="collapse<?php if (!$addresses)
   echo ' show'; ?> mt-2" id="addAddressForm">
-            <form method="post" id="addAddressFormReal">
+            <form method="post" id="addAddressFormReal" autocomplete="off">
               <input type="hidden" name="add_address" value="1">
               <div class="row g-2 mt-2">
                 <div class="col-md-6">
-                  <input type="text" name="name" class="form-control" placeholder="Full Name" required>
+                  <input type="text" name="name" id="delivery_full_name" class="form-control" placeholder="Full Name" required autocomplete="off" data-lpignore="true" data-1p-ignore="true">
                 </div>
                 <div class="col-md-6">
-                  <input type="text" name="phone" class="form-control" placeholder="Phone Number" required>
+                  <input type="text" name="phone" class="form-control" placeholder="Phone Number" required autocomplete="off">
                 </div>
                 <div class="col-md-4">
-                  <input type="text" name="pincode" class="form-control" placeholder="PIN Code" required>
+                  <input type="text" name="pincode" class="form-control" placeholder="PIN Code" required autocomplete="off">
                 </div>
                 <div class="col-md-8">
                   <input type="text" name="address_line1" class="form-control" placeholder="Address Line 1" required>
@@ -365,6 +397,11 @@ endif; ?>
                 <small class="text-muted">If you want a business invoice, enter your 15-digit GSTIN here.</small>
               </div>
             </div>
+          </div>
+          <div class="continue-shopping-wrapper">
+            <a href="shop.php" class="btn continue-shopping-btn">
+              <i class="fas fa-shopping-cart me-2"></i>Continue Shopping
+            </a>
           </div>
         </div>
       </div>

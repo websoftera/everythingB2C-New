@@ -373,10 +373,43 @@
     background: var(--dark-blue, #218838);
 }
 
-.out-of-stock-message button {
-    background-color: #6c757d !important;
+.out-of-stock-message {
+    width: 250px;
+    max-width: 100%;
+    margin: 12px 0;
+}
+
+.out-of-stock-detail-button {
+    width: calc(50% - 15px);
+    height: 36px;
+    padding: 0 8px;
+    border: none;
+    border-radius: 4px;
+    background: #f9c9c9;
+    color: #222;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
     cursor: not-allowed;
-    opacity: 0.8;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 900px) {
+    .out-of-stock-message {
+        width: auto;
+    }
+
+    .product-info-section .price-buttons1 .price-btn.mrp,
+    .out-of-stock-detail-button {
+        flex: 0 0 80px;
+        width: 80px;
+        min-width: 80px;
+        max-width: 80px;
+        box-sizing: border-box;
+    }
 }
 
 /* Product Description */

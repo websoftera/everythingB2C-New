@@ -527,7 +527,7 @@ endforeach; ?>
                     $dealImage = trim((string)($dealCategory['image'] ?? ''));
                     $dealImage = $dealImage !== '' ? ltrim($dealImage, './\\') : '';
                     $dealUrl = 'products.php?featured=1&category=' . (int)$dealCategory['id'];
-                    $dealOffer = trim((string)($dealCategory['offer_text'] ?? '')) ?: '30-20% OFF';
+                    $dealOffer = trim((string)($dealCategory['offer_override'] ?? '')) ?: trim((string)($dealCategory['discount_label'] ?? ''));
                     ?>
                     <a class="top-deals-category-tile" href="<?php echo htmlspecialchars($dealUrl, ENT_QUOTES, 'UTF-8'); ?>">
                         <span class="top-deals-category-bar">
@@ -560,7 +560,7 @@ endforeach; ?>
   .top-deals-category-bar > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .top-deals-category-image { display: flex; height: 170px; align-items: center; justify-content: center; padding: 12px; }
   .top-deals-category-image img { width: 100%; height: 100%; object-fit: contain; }
-  .top-deals-category-offer { display: block; padding: 0 12px 12px; color: #222 !important; font-size: 12px !important; font-weight: bold !important; line-height: 1.2; text-align: center; }
+  .top-deals-category-offer { display: flex; width: calc(100% - 24px); box-sizing: border-box; align-items: center; justify-content: center; margin: 0 auto 10px; padding: 6px 0; color: #222 !important; font-size: 12px !important; font-weight: 700 !important; line-height: 1.2; text-align: center; border: 1px solid #9fbe1b; border-radius: 4px; letter-spacing: .7px; }
   .top-deals-category-placeholder { color: #a6adb4; font-size: 64px; font-weight: 300; }
   .top-deals-scroll { position: absolute; z-index: 10; top: 50%; display: flex; width: 25px; height: 25px; align-items: center; justify-content: center; transform: translateY(-50%); border: 0; border-radius: 4px; background: #fff; cursor: pointer; line-height: 1; box-shadow: 0 2px 8px rgba(0,0,0,.1); }
   .top-deals-scroll.prev { left: 0; }
@@ -3033,8 +3033,8 @@ endforeach; ?>
   }
 
   .top-deals-category-offer {
-    padding: 0 8px 6px !important;
-    font-size: 13px !important;
+    padding: 6px 0 !important;
+    font-size: 12px !important;
   }
 
   .top-deals-categories-slider .top-deals-scroll {

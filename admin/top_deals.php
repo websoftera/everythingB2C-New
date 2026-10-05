@@ -31,8 +31,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $allowedIds = array_map(static fn($row) => (int)$row['id'], $categories);
         $rawOrder = $_POST['category_order'] ?? [];
         $rawVisibleIds = $_POST['visible_category_ids'] ?? [];
-        $rawOfferTexts = $_POST['offer_text'] ?? [];
-        if (!is_array($rawOrder) || !is_array($rawVisibleIds) || !is_array($rawOfferTexts)) {
+        $rawOfferOverrides = $_POST['offer_override'] ?? [];
+        if (!is_array($rawOrder) || !is_array($rawVisibleIds) || !is_array($rawOfferOverrides)) {
             throw new RuntimeException('The category selection is invalid. Refresh the page and try again.');
         }
         $submittedIds = array_map('intval', $rawOrder);
@@ -47,12 +47,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $pdo->beginTransaction();
-        $saveOrder = $pdo->prepare('INSERT INTO top_deal_category_order (category_id, sort_order, is_visible, offer_text) VALUES (?, ?, ?, ?)
-            ON DUPLICATE KEY UPDATE sort_order = VALUES(sort_order), is_visible = VALUES(is_visible), offer_text = VALUES(offer_text)');
+        $saveOrder = $pdo->prepare('INSERT INTO top_deal_category_order (category_id, sort_order, is_visible, offer_override) VALUES (?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE sort_order = VALUES(sort_order), is_visible = VALUES(is_visible), offer_override = VALUES(offer_override)');
         foreach ($submittedIds as $position => $categoryId) {
-            $offerText = trim((string)($rawOfferTexts[$categoryId] ?? ''));
-            $offerText = $offerText === '' ? '30-20% OFF' : mb_substr($offerText, 0, 100, 'UTF-8');
-            $saveOrder->execute([$categoryId, $position + 1, in_array($categoryId, $visibleIds, true) ? 1 : 0, $offerText]);
+            $offerOverride = mb_substr(trim((string)($rawOfferOverrides[$categoryId] ?? '')), 0, 100, 'UTF-8');
+            $saveOrder->execute([$categoryId, $position + 1, in_array($categoryId, $visibleIds, true) ? 1 : 0, $offerOverride]);
         }
         $pdo->commit();
         $success = 'Top Deals subcategory order saved.';
@@ -67,6 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+$topDealProducts = getTopDealProductsByCategory($pdo, array_column($categories, 'id'));
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -85,12 +85,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .top-deal-drag-handle { color: #788596; cursor: grab; text-align: center; }
         .top-deal-order-image { width: 72px; height: 60px; object-fit: contain; border: 1px solid #edf0f3; border-radius: 6px; background: #fff; }
         .top-deal-order-count { color: #586575; }
+        .top-deal-product-toggle { display: inline-flex; align-items: center; gap: 6px; width: 100%; padding: 6px 0; border: 0; background: transparent; color: #586575; text-align: left; white-space: nowrap; }
+        .top-deal-product-toggle:hover { color: #0d6efd; text-decoration: underline; }
+        .top-deal-product-toggle .fa-chevron-down { transition: transform .2s ease; font-size: .75rem; }
+        .top-deal-product-toggle[aria-expanded="true"] .fa-chevron-down { transform: rotate(180deg); }
+        .top-deal-product-list { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 8px; margin-top: -2px; padding: 10px; border: 1px solid #dfe4ea; border-radius: 7px; background: #f8fafc; }
+        .top-deal-product-list[hidden] { display: none; }
+        .top-deal-product-item { display: flex; align-items: center; gap: 9px; min-width: 0; padding: 7px 9px; border: 1px solid #e6ebf0; border-radius: 6px; background: #fff; color: #283747; text-decoration: none; }
+        .top-deal-product-item:hover { border-color: #86b7fe; color: #0d6efd; }
+        .top-deal-product-thumb { width: 34px; height: 34px; flex: 0 0 34px; object-fit: contain; border-radius: 4px; }
+        .top-deal-product-name { overflow: hidden; font-size: .85rem; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
         .top-deal-offer-field label { display: block; margin-bottom: 3px; color: #586575; font-size: .75rem; font-weight: 600; }
         .top-deal-category-picker { max-height: 360px; overflow: auto; border: 1px solid #dee2e6; border-radius: 8px; padding: 12px; }
         .top-deal-category-option { display: flex; align-items: center; gap: 10px; padding: 7px 4px; }
         .top-deal-group-title { font-size: 1rem; font-weight: 600; margin: 20px 0 10px; }
         .top-deal-empty-list { color: #6c757d; padding: 12px 0; }
-        @media (max-width: 575px) { .top-deal-order-row { grid-template-columns: 26px 58px minmax(0,1fr); gap: 9px; padding: 9px; } .top-deal-order-image { width: 56px; height: 52px; } .top-deal-order-count, .top-deal-offer-field { grid-column: 3; } }
+        @media (max-width: 575px) { .top-deal-order-row { grid-template-columns: 26px 58px minmax(0,1fr); gap: 9px; padding: 9px; } .top-deal-order-image { width: 56px; height: 52px; } .top-deal-order-count, .top-deal-offer-field { grid-column: 3; } .top-deal-product-list { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -142,8 +152,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <span class="top-deal-drag-handle" aria-label="Drag to reorder" title="Drag to reorder"><i class="fas fa-grip-vertical"></i></span>
                                     <?php if ($image !== ''): ?><img class="top-deal-order-image" src="<?php echo htmlspecialchars($image, ENT_QUOTES, 'UTF-8'); ?>" alt="" loading="lazy" onerror="this.onerror=null;this.src='../uploads/products/blank-img.webp'"><?php else: ?><span class="top-deal-order-image d-flex align-items-center justify-content-center text-muted"><i class="fas fa-image"></i></span><?php endif; ?>
                                     <span class="fw-semibold"><?php echo htmlspecialchars($category['name'], ENT_QUOTES, 'UTF-8'); ?></span>
-                                    <span class="top-deal-offer-field"><label for="offer-text-<?php echo (int)$category['id']; ?>">Offer text under image</label><input class="form-control form-control-sm" id="offer-text-<?php echo (int)$category['id']; ?>" name="offer_text[<?php echo (int)$category['id']; ?>]" value="<?php echo htmlspecialchars($category['offer_text'], ENT_QUOTES, 'UTF-8'); ?>" maxlength="100"></span>
-                                    <span class="top-deal-order-count"><?php echo (int)$category['product_count']; ?> selected product<?php echo (int)$category['product_count'] === 1 ? '' : 's'; ?></span>
+                                    <span class="top-deal-offer-field"><label for="offer-override-<?php echo (int)$category['id']; ?>">Discount text override</label><input class="form-control form-control-sm" id="offer-override-<?php echo (int)$category['id']; ?>" name="offer_override[<?php echo (int)$category['id']; ?>]" value="<?php echo htmlspecialchars($category['offer_override'], ENT_QUOTES, 'UTF-8'); ?>" placeholder="Auto: <?php echo htmlspecialchars($category['discount_label'], ENT_QUOTES, 'UTF-8'); ?>" maxlength="100"><small class="text-muted">Leave blank for automatic</small></span>
+                                    <span class="top-deal-order-count"><button class="top-deal-product-toggle" type="button" aria-expanded="false" aria-controls="top-deal-products-<?php echo (int)$category['id']; ?>"><i class="fas fa-chevron-down"></i><span><?php echo (int)$category['product_count']; ?> selected product<?php echo (int)$category['product_count'] === 1 ? '' : 's'; ?></span></button></span>
+                                    <div class="top-deal-product-list" id="top-deal-products-<?php echo (int)$category['id']; ?>" hidden>
+                                        <?php foreach (($topDealProducts[(int)$category['id']] ?? []) as $product): ?>
+                                            <?php $productImage = trim((string)($product['main_image'] ?? '')); ?>
+                                            <a class="top-deal-product-item" href="edit_product.php?id=<?php echo (int)$product['id']; ?>">
+                                                <?php if ($productImage !== ''): ?><img class="top-deal-product-thumb" src="../<?php echo htmlspecialchars(ltrim($productImage, './\\'), ENT_QUOTES, 'UTF-8'); ?>" alt="" loading="lazy"><?php else: ?><i class="fas fa-box text-muted"></i><?php endif; ?>
+                                                <span class="top-deal-product-name"><?php echo htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                            </a>
+                                        <?php endforeach; ?>
+                                    </div>
                                     <input type="hidden" name="category_order[]" value="<?php echo (int)$category['id']; ?>">
                                 </li>
                             <?php endforeach; ?>
@@ -156,8 +175,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <span class="top-deal-drag-handle" aria-label="Drag to reorder" title="Drag to reorder"><i class="fas fa-grip-vertical"></i></span>
                                     <?php if ($image !== ''): ?><img class="top-deal-order-image" src="<?php echo htmlspecialchars($image, ENT_QUOTES, 'UTF-8'); ?>" alt="" loading="lazy" onerror="this.onerror=null;this.src='../uploads/products/blank-img.webp'"><?php else: ?><span class="top-deal-order-image d-flex align-items-center justify-content-center text-muted"><i class="fas fa-image"></i></span><?php endif; ?>
                                     <span class="fw-semibold"><?php echo htmlspecialchars($category['name'], ENT_QUOTES, 'UTF-8'); ?></span>
-                                    <span class="top-deal-offer-field"><label for="offer-text-<?php echo (int)$category['id']; ?>">Offer text under image</label><input class="form-control form-control-sm" id="offer-text-<?php echo (int)$category['id']; ?>" name="offer_text[<?php echo (int)$category['id']; ?>]" value="<?php echo htmlspecialchars($category['offer_text'], ENT_QUOTES, 'UTF-8'); ?>" maxlength="100"></span>
-                                    <span class="top-deal-order-count"><?php echo (int)$category['product_count']; ?> selected product<?php echo (int)$category['product_count'] === 1 ? '' : 's'; ?></span>
+                                    <span class="top-deal-offer-field"><label for="offer-override-<?php echo (int)$category['id']; ?>">Discount text override</label><input class="form-control form-control-sm" id="offer-override-<?php echo (int)$category['id']; ?>" name="offer_override[<?php echo (int)$category['id']; ?>]" value="<?php echo htmlspecialchars($category['offer_override'], ENT_QUOTES, 'UTF-8'); ?>" placeholder="Auto: <?php echo htmlspecialchars($category['discount_label'], ENT_QUOTES, 'UTF-8'); ?>" maxlength="100"><small class="text-muted">Leave blank for automatic</small></span>
+                                    <span class="top-deal-order-count"><button class="top-deal-product-toggle" type="button" aria-expanded="false" aria-controls="top-deal-products-<?php echo (int)$category['id']; ?>"><i class="fas fa-chevron-down"></i><span><?php echo (int)$category['product_count']; ?> selected product<?php echo (int)$category['product_count'] === 1 ? '' : 's'; ?></span></button></span>
+                                    <div class="top-deal-product-list" id="top-deal-products-<?php echo (int)$category['id']; ?>" hidden>
+                                        <?php foreach (($topDealProducts[(int)$category['id']] ?? []) as $product): ?>
+                                            <?php $productImage = trim((string)($product['main_image'] ?? '')); ?>
+                                            <a class="top-deal-product-item" href="edit_product.php?id=<?php echo (int)$product['id']; ?>">
+                                                <?php if ($productImage !== ''): ?><img class="top-deal-product-thumb" src="../<?php echo htmlspecialchars(ltrim($productImage, './\\'), ENT_QUOTES, 'UTF-8'); ?>" alt="" loading="lazy"><?php else: ?><i class="fas fa-box text-muted"></i><?php endif; ?>
+                                                <span class="top-deal-product-name"><?php echo htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                            </a>
+                                        <?php endforeach; ?>
+                                    </div>
                                     <input type="hidden" name="category_order[]" value="<?php echo (int)$category['id']; ?>">
                                 </li>
                             <?php endforeach; ?>
@@ -199,6 +227,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         const query = event.currentTarget.value.trim().toLocaleLowerCase();
         picker.querySelectorAll('.top-deal-category-option').forEach(option => {
             option.hidden = !option.dataset.categorySearch.includes(query);
+        });
+    });
+    document.querySelectorAll('.top-deal-product-toggle').forEach(button => {
+        button.addEventListener('click', event => {
+            event.stopPropagation();
+            const productList = document.getElementById(button.getAttribute('aria-controls'));
+            if (!productList) return;
+            const isOpen = button.getAttribute('aria-expanded') === 'true';
+            button.setAttribute('aria-expanded', String(!isOpen));
+            productList.hidden = isOpen;
         });
     });
     const orderLists = [selectedList, unselectedList];
