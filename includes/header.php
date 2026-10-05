@@ -702,9 +702,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
             <!-- User Account / Login -->
             <div class="desktop-account-links d-none d-lg-flex align-items-center me-lg-3">
-                <a class="desktop-customer-link" href="<?php echo $base_url . (isLoggedIn() ? 'myaccount.php' : 'login.php'); ?>">
-                    <i class="fas fa-user" aria-hidden="true"></i><span>Customer</span>
-                </a>
+                <?php if (isLoggedIn()): ?>
+                    <div class="dropdown desktop-account-dropdown">
+                        <a class="desktop-customer-link dropdown-toggle" href="#" role="button" aria-expanded="false">
+                            <i class="fas fa-user" aria-hidden="true"></i>
+                            <span><?php echo htmlspecialchars(ucfirst(explode(' ', trim($currentUser['name'] ?? 'Customer'))[0])); ?></span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end desktop-account-menu">
+                            <li><a class="dropdown-item" href="<?php echo $base_url; ?>myaccount.php">My Account</a></li>
+                            <li><a class="dropdown-item" href="<?php echo $base_url; ?>logout.php">Logout</a></li>
+                        </ul>
+                    </div>
+                <?php else: ?>
+                    <a class="desktop-customer-link" href="<?php echo $base_url; ?>login.php">
+                        <i class="fas fa-user" aria-hidden="true"></i><span>Customer</span>
+                    </a>
+                <?php endif; ?>
                 <span class="desktop-account-divider" aria-hidden="true"></span>
                 <a class="desktop-seller-link" href="<?php echo $base_url; ?>seller/login.php">
                     <i class="fas fa-user" aria-hidden="true"></i><span>Seller</span>
@@ -1062,7 +1075,7 @@ document.addEventListener('DOMContentLoaded', function () {
 <script>
 // Force-open Sign In / Account dropdowns even if other scripts interfere
 document.addEventListener('DOMContentLoaded', function () {
-  const toggles = document.querySelectorAll('.user-auth-dropdown .dropdown-toggle, .user-signin-link.dropdown-toggle, .mobile-account-dropdown .dropdown-toggle');
+  const toggles = document.querySelectorAll('.user-auth-dropdown .dropdown-toggle, .user-signin-link.dropdown-toggle, .mobile-account-dropdown .dropdown-toggle, .desktop-account-dropdown .dropdown-toggle');
   const menus = [];
 
   function closeAll(except) {
