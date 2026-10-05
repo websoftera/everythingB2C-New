@@ -527,6 +527,7 @@ endforeach; ?>
                     $dealImage = trim((string)($dealCategory['image'] ?? ''));
                     $dealImage = $dealImage !== '' ? ltrim($dealImage, './\\') : '';
                     $dealUrl = 'products.php?featured=1&category=' . (int)$dealCategory['id'];
+                    $dealOffer = trim((string)($dealCategory['offer_text'] ?? '')) ?: '30-20% OFF';
                     ?>
                     <a class="top-deals-category-tile" href="<?php echo htmlspecialchars($dealUrl, ENT_QUOTES, 'UTF-8'); ?>">
                         <span class="top-deals-category-bar">
@@ -540,6 +541,7 @@ endforeach; ?>
                                 <span class="top-deals-category-placeholder" aria-hidden="true">＋</span>
                             <?php endif; ?>
                         </span>
+                        <span class="top-deals-category-offer"><?php echo htmlspecialchars($dealOffer, ENT_QUOTES, 'UTF-8'); ?></span>
                     </a>
                 <?php endforeach; ?>
             </div>
@@ -558,17 +560,20 @@ endforeach; ?>
   .top-deals-category-bar > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .top-deals-category-image { display: flex; height: 170px; align-items: center; justify-content: center; padding: 12px; }
   .top-deals-category-image img { width: 100%; height: 100%; object-fit: contain; }
+  .top-deals-category-offer { display: block; padding: 0 12px 12px; color: #222 !important; font-size: 12px !important; font-weight: bold !important; line-height: 1.2; text-align: center; }
   .top-deals-category-placeholder { color: #a6adb4; font-size: 64px; font-weight: 300; }
-  .top-deals-scroll { position: absolute; z-index: 2; top: 50%; display: flex; width: 36px; height: 36px; align-items: center; justify-content: center; transform: translateY(-50%); border: 1px solid #d8dfca; border-radius: 50%; background: #fff; color: #799a0b; font-size: 28px; line-height: 1; box-shadow: 0 2px 6px rgba(0,0,0,.12); }
+  .top-deals-scroll { position: absolute; z-index: 10; top: 50%; display: flex; width: 25px; height: 25px; align-items: center; justify-content: center; transform: translateY(-50%); border: 0; border-radius: 4px; background: #fff; cursor: pointer; line-height: 1; box-shadow: 0 2px 8px rgba(0,0,0,.1); }
   .top-deals-scroll.prev { left: 0; }
   .top-deals-scroll.next { right: 0; }
-  .top-deals-scroll img { width: 10px; height: 10px; object-fit: contain; }
+  .top-deals-scroll img { display: block; width: 10px; height: 10px; object-fit: contain; }
+  .top-deals-scroll:hover { transform: translateY(-50%) scale(1.05); box-shadow: 0 4px 12px rgba(0,0,0,.15); }
   @media (max-width: 600px) { .top-deals-category-tile { flex-basis: 68vw; max-width: 260px; } .top-deals-category-image { height: 150px; } }
 </style>
 <script>
 (() => {
   const track = document.getElementById('top-deals-categories-track');
   if (!track) return;
+  track.scrollLeft = 0;
   const slider = track.closest('.top-deals-categories-slider');
   const scrollTopDeals = direction => {
     if (window.innerWidth <= 767) {
@@ -2998,7 +3003,7 @@ endforeach; ?>
     max-width: 280px !important;
     flex-shrink: 0 !important;
     margin-right: 8px !important;
-    height: 136px !important;
+    height: 166px !important;
     box-sizing: border-box !important;
     scroll-snap-align: start !important;
   }
@@ -3010,7 +3015,7 @@ endforeach; ?>
   }
 
   .top-deals-category-image {
-    height: 106px !important;
+    height: 100px !important;
     min-height: 0 !important;
     padding: 8px !important;
     box-sizing: border-box !important;
@@ -3020,13 +3025,18 @@ endforeach; ?>
     object-fit: contain !important;
   }
 
+  .top-deals-category-offer {
+    padding: 0 8px 6px !important;
+    font-size: 13px !important;
+  }
+
   .top-deals-categories-slider .top-deals-scroll {
     width: 20px !important;
     height: 20px !important;
     top: 50% !important;
     transform: translateY(-50%) !important;
     border: 1px solid #e0e0e0 !important;
-    border-radius: 3px !important;
+    border-radius: 4px !important;
     background: #fff !important;
     box-shadow: 0 2px 6px rgba(0,0,0,.1) !important;
   }
@@ -3058,10 +3068,12 @@ endforeach; ?>
   }
 
   html body .top-deals-categories-track {
-    padding-left: 18px !important;
+    padding-left: 10px !important;
+    scroll-padding-left: 10px !important;
   }
 
   html body .top-deals-category-tile {
+    margin-right: 8px !important;
     scroll-snap-align: start !important;
   }
 

@@ -57,11 +57,12 @@ function ensureEverythingB2CQuantityLimitStyles() {
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 24px;
         }
         .everythingb2c-quantity-limit-logo {
-            max-width: 175px;
-            max-height: 54px;
+            width: min(100%, 280px);
+            height: auto;
+            max-height: none;
             object-fit: contain;
         }
         .everythingb2c-quantity-limit-title {
@@ -86,10 +87,10 @@ function ensureEverythingB2CQuantityLimitStyles() {
                 padding: 44px 20px 26px;
             }
             .everythingb2c-quantity-limit-logo-wrap {
-                margin-bottom: 26px;
+                margin-bottom: 22px;
             }
             .everythingb2c-quantity-limit-logo {
-                max-width: 160px;
+                width: min(100%, 235px);
             }
             .everythingb2c-quantity-limit-title {
                 font-size: 19px;

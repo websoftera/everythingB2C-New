@@ -315,12 +315,13 @@ function topFunction(e) {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 30px;
+    margin-bottom: 24px;
 }
 
 .everythingb2c-quantity-limit-logo {
-    max-width: 175px;
-    max-height: 54px;
+    width: min(100%, 280px);
+    height: auto;
+    max-height: none;
     object-fit: contain;
 }
 
@@ -357,11 +358,11 @@ function topFunction(e) {
     }
 
     .everythingb2c-quantity-limit-logo-wrap {
-        margin-bottom: 26px;
+        margin-bottom: 22px;
     }
 
     .everythingb2c-quantity-limit-logo {
-        max-width: 160px;
+        width: min(100%, 235px);
     }
 
     .everythingb2c-quantity-limit-title {

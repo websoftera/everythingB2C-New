@@ -37,7 +37,7 @@ $company = [
     'pdf_logo' => '../uploads/logo_pdf.png',
 ];
 
-$logoPath = realpath(__DIR__ . '/../uploads/logo_pdf.png') ?: realpath(__DIR__ . '/../logo.webp');
+$logoPath = realpath(__DIR__ . '/../logo.webp') ?: realpath(__DIR__ . '/../uploads/logo_pdf.png');
 $logoSrc = $logoPath ? $logoPath : '';
 $line = function ($label, $value) {
     return '<tr><td class="meta-label">' . htmlspecialchars($label) . '</td><td>' . htmlspecialchars($value ?: '-') . '</td></tr>';
