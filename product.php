@@ -374,6 +374,28 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                 white-space: nowrap !important;
             }
 
+            /* Match the mobile MRP button exactly when this product is unavailable. */
+            .product-page-container .out-of-stock-message {
+                width: 100% !important;
+                margin: 12px 0 !important;
+            }
+
+            .product-page-container .out-of-stock-detail-button {
+                flex: 0 0 calc(50% - 24px) !important;
+                width: calc(50% - 24px) !important;
+                min-width: calc(50% - 24px) !important;
+                max-width: calc(50% - 24px) !important;
+                height: 32px !important;
+                min-height: 32px !important;
+                max-height: 32px !important;
+                padding: 0 2px !important;
+                margin: 0 !important;
+                box-sizing: border-box !important;
+                font-size: 13px !important;
+                font-weight: 800 !important;
+                line-height: 1 !important;
+            }
+
             /* Wishlist specific exact layout */
             .product-page-container .price-buttons1 .wishlist {
                 flex: 0 0 26px !important;
@@ -846,7 +868,7 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
             </div>
             <?php else: ?>
             <div class="out-of-stock-message">
-                <button class="btn btn-secondary" disabled style="background-color: #6c757d; color: #fff; padding: 10px 20px; border: none; border-radius: 5px; cursor: not-allowed;">OUT OF STOCK</button>
+                <button class="out-of-stock-detail-button" disabled>OUT OF STOCK</button>
             </div>
             <?php endif; ?>
             <p><strong>CATEGORY:</strong> 
