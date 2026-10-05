@@ -80,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <style>
         .top-deal-order-list { display: grid; gap: 10px; padding: 0; margin: 0; list-style: none; min-height: 8px; }
         [hidden] { display: none !important; }
-        .top-deal-order-row { display: grid; grid-template-columns: 36px 76px minmax(0, 1fr) minmax(150px, 210px) auto; align-items: center; gap: 14px; padding: 10px 14px; border: 1px solid #dfe4ea; border-radius: 9px; background: #fff; }
+        .top-deal-order-row { display: grid; grid-template-columns: 36px 76px minmax(0, 1fr) 264px 200px; align-items: center; gap: 14px; padding: 10px 14px; border: 1px solid #dfe4ea; border-radius: 9px; background: #fff; }
         .top-deal-order-row.is-dragging { opacity: .45; }
         .top-deal-drag-handle { color: #788596; cursor: grab; text-align: center; }
         .top-deal-order-image { width: 72px; height: 60px; object-fit: contain; border: 1px solid #edf0f3; border-radius: 6px; background: #fff; }
