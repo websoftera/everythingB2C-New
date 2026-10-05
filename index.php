@@ -568,6 +568,13 @@ endforeach; ?>
   .top-deals-scroll img { display: block; width: 10px; height: 10px; object-fit: contain; }
   .top-deals-scroll:hover { transform: translateY(-50%) scale(1.05); box-shadow: 0 4px 12px rgba(0,0,0,.15); }
   @media (max-width: 600px) { .top-deals-category-tile { flex-basis: 68vw; max-width: 260px; } .top-deals-category-image { height: 150px; } }
+  @media (min-width: 768px) {
+    .top-deals-categories-slider { display: flex; align-items: center; position: relative; overflow: visible; width: 100%; max-width: 100%; margin: 0 auto; padding: 0; }
+    .top-deals-categories-track { display: flex; flex: 1; flex-wrap: nowrap; gap: 8px; width: 100%; max-width: 100%; overflow-x: auto; overflow-y: hidden; padding: 15px 10px; scroll-behavior: smooth; scrollbar-width: none; }
+    .top-deals-category-tile { flex: 0 0 240px; width: 240px; min-width: 240px; max-width: 240px; margin-right: 0; box-sizing: border-box; }
+    .top-deals-scroll.prev { left: 0; }
+    .top-deals-scroll.next { right: 0; }
+  }
 </style>
 <script>
 (() => {
