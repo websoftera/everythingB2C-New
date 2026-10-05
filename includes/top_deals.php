@@ -19,6 +19,7 @@ function ensureTopDealCategoryOrderSchema(PDO $pdo): bool
             category_id INT NOT NULL PRIMARY KEY,
             sort_order INT NOT NULL DEFAULT 0,
             is_visible TINYINT(1) NOT NULL DEFAULT 0,
+            offer_text VARCHAR(100) NOT NULL DEFAULT '30-20% OFF',
             updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             CONSTRAINT fk_top_deal_category_order_category
                 FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
@@ -29,6 +30,11 @@ function ensureTopDealCategoryOrderSchema(PDO $pdo): bool
         $visibilityColumnExisted = (int)$columnCheck->fetchColumn() > 0;
         if (!$visibilityColumnExisted) {
             $pdo->exec('ALTER TABLE top_deal_category_order ADD COLUMN is_visible TINYINT(1) NOT NULL DEFAULT 1 AFTER sort_order');
+        }
+        $offerColumnCheck = $pdo->query("SELECT COUNT(*) FROM information_schema.COLUMNS
+            WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'top_deal_category_order' AND COLUMN_NAME = 'offer_text'");
+        if (!(int)$offerColumnCheck->fetchColumn()) {
+            $pdo->exec("ALTER TABLE top_deal_category_order ADD COLUMN offer_text VARCHAR(100) NOT NULL DEFAULT '30-20% OFF' AFTER is_visible");
         }
         if (!$tableExisted || !$visibilityColumnExisted) {
             // Keep categories that were already part of the old Featured/Top Deals
@@ -69,7 +75,8 @@ function getTopDealCategories(PDO $pdo, bool $visibleOnly = true): array
     $sql = "SELECT c.id, c.name, c.slug, c.image,
                    COUNT(DISTINCT p.id) AS product_count,
                    COALESCE(tdo.sort_order, 2147483647) AS deal_sort_order,
-                   COALESCE(tdo.is_visible, 0) AS is_visible
+                   COALESCE(tdo.is_visible, 0) AS is_visible,
+                   COALESCE(NULLIF(tdo.offer_text, ''), '30-20% OFF') AS offer_text
             FROM categories c
             LEFT JOIN products p ON p.is_featured = 1 AND p.is_active = 1
                 AND (p.category_id = c.id OR EXISTS (
@@ -79,7 +86,7 @@ function getTopDealCategories(PDO $pdo, bool $visibleOnly = true): array
             LEFT JOIN category_parent_assignments cpa ON cpa.category_id = c.id
             LEFT JOIN top_deal_category_order tdo ON tdo.category_id = c.id
             WHERE (c.parent_id IS NOT NULL OR cpa.parent_id IS NOT NULL){$visibilityCondition}
-            GROUP BY c.id, c.name, c.slug, c.image, tdo.sort_order, tdo.is_visible
+            GROUP BY c.id, c.name, c.slug, c.image, tdo.sort_order, tdo.is_visible, tdo.offer_text
             {$productCountCondition}
             ORDER BY is_visible DESC, deal_sort_order ASC, c.name ASC";
     try {

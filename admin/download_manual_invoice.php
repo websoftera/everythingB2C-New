@@ -50,7 +50,7 @@ $company = [
     'pdf_logo' => '../uploads/logo_pdf.png',
 ];
 
-$logoPath = realpath(__DIR__ . '/../uploads/logo_pdf.png') ?: realpath(__DIR__ . '/../logo.webp');
+$logoPath = realpath(__DIR__ . '/../logo.webp') ?: realpath(__DIR__ . '/../uploads/logo_pdf.png');
 $logoSrc = $logoPath ? $logoPath : '';
 $signatureSrc = realpath(__DIR__ . '/assets/images/authorized-signature.png');
 $line = function ($label, $value) {
