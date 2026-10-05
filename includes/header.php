@@ -765,14 +765,17 @@ document.addEventListener('DOMContentLoaded', function () {
     
     <!-- NEW: Mobile Search Row (Hidden on Desktop) -->
     <style>
-        div.mobile-search-row { padding: 0 15px !important; margin-top: 3px !important; margin-bottom: 3px !important; position: relative; z-index: 500; }
+        div.mobile-search-row { padding: 0 15px !important; margin-top: 3px !important; margin-bottom: 3px !important; position: relative; z-index: 3000; overflow: visible !important; }
         .mobile-search-form { gap: 8px !important; justify-content: space-between !important; display: flex; width: 100%; margin: 0; align-items: center; }
         .mobile-search-input-group { height: 38px !important; flex: 1 1 auto !important; display: flex; flex-wrap: nowrap; width: 100%; }
         .mobile-search-input-field { height: 38px !important; border: 2px solid var(--primary-color) !important; border-right: none !important; border-radius: 4px 0 0 4px !important; padding-left: 12px !important; text-align: left !important; font-size: 14px !important; box-shadow: none !important; width: 100%; border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; }
         .mobile-search-btn-field { height: 38px !important; width: 44px !important; max-width: 44px !important; min-width: 44px !important; background-color: var(--primary-color) !important; border-radius: 0 4px 4px 0 !important; border: none !important; padding: 0 !important; display: flex !important; align-items: center !important; justify-content: center !important; color: white !important; }
         .mobile-search-toggle-btn { height: 38px !important; width: 42px !important; max-width: 42px !important; min-width: 42px !important; background-color: #9fbe1b !important; border-radius: 4px !important; border: none !important; padding: 0 !important; display: flex !important; align-items: center !important; justify-content: center !important; flex-shrink: 0 !important; color: white !important; margin: 0 !important; }
+        #headerSearchResultsPopupMobile { position: absolute !important; top: calc(100% + 3px) !important; left: 15px !important; width: calc(100% - 30px) !important; max-height: 350px; overflow-y: auto; background: #fff; border: 1px solid #e0e0e0; border-radius: 4px; box-shadow: 0 4px 16px rgba(0, 0, 0, .16); z-index: 200000 !important; }
+        #headerSearchResultsPopupMobile .search-result-item:last-child { border-bottom: 0 !important; }
+        #headerSearchResultsPopupMobile .search-result-item:hover { background: #f5faff !important; }
     </style>
-    <div class="container-fluid d-lg-none mobile-search-row">
+    <div class="container-fluid d-lg-none mobile-search-row" style="overflow: visible !important;">
         <form class="mobile-search-form" role="search" autocomplete="off" onsubmit="return false;">
             <div class="mobile-search-input-group">
                 <input class="form-control mobile-search-input-field" id="headerSearchInputMobile" type="search" name="query" placeholder="Search for Products" aria-label="Search" autocomplete="off">
@@ -784,8 +787,8 @@ document.addEventListener('DOMContentLoaded', function () {
             <button class="btn mobile-search-toggle-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileCategoryOffcanvas" aria-controls="mobileCategoryOffcanvas">
                 <i class="bi bi-list" style="font-size: 1.5rem; line-height: 1;"></i>
             </button>
-            <div id="headerSearchResultsPopupMobile" class="position-absolute w-100" style="z-index: 2100; display: none; top: 100%;"></div>
         </form>
+        <div id="headerSearchResultsPopupMobile" style="display: none;"></div>
     </div>
 </nav>
 
