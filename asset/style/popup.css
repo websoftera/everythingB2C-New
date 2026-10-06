@@ -408,12 +408,29 @@ body {
 
 .popup-close {
   position: absolute;
-  top: 10px;
+  top: 12px;
   right: 15px;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: #9fbe1b;
   cursor: pointer;
-  font-size: 20px;
+  font-size: 15px;
   font-weight: bold;
-  color: #999;
+  line-height: 1;
+  color: #fff;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.popup-close:hover {
+  background: #86a415;
+  color: #fff;
+  transform: scale(1.06);
 }
 
 /* Responsive Design Synchronization */
@@ -425,9 +442,9 @@ body {
   }
 
   .popup-close {
-    top: 6px;
-    right: 6px;
-    font-size: 14px;
+    top: 10px;
+    right: 12px;
+    font-size: 15px;
   }
 }
 
@@ -435,13 +452,13 @@ body {
   .popup {
     padding: 12px !important;
     padding-top: 30px !important;
-    max-width: 320px !important;
+    max-width: 350px !important;
   }
 
   .popup-close {
-    top: 5px;
-    right: 5px;
-    font-size: 12px;
+    top: 10px;
+    right: 12px;
+    font-size: 15px;
   }
 }
 

@@ -353,14 +353,31 @@ echo renderBreadcrumb($breadcrumbs);
         padding: 0 !important;
     }
 }
+
+.empty-cart-message {
+    margin-top: 15px !important;
+    margin-bottom: 16px !important;
+}
+
+@media (max-width: 767.98px) {
+    .empty-cart-container {
+        margin-top: 1rem !important;
+        padding-bottom: 2rem !important;
+    }
+
+    .empty-cart-panel {
+        padding-top: 2rem !important;
+        padding-bottom: 2rem !important;
+    }
+}
 </style>
-<div class="container mt-4">
+<div class="container mt-4<?php echo empty($cartItems) ? ' empty-cart-container' : ''; ?>">
     <!-- <h1>Shopping Cart</h1> -->
     
     <?php if (empty($cartItems)): ?>
-        <div class="text-center py-5">
+        <div class="text-center py-5 empty-cart-panel">
           <img src="./Kichen Page/page2/logo.webp" alt="Logo" class="img-fluid logo" />
-            <h3>Your cart is empty</h3>
+            <h3 class="empty-cart-message">Your cart is empty</h3>
             <a href="index.php" class="btn btn-primary">Continue Shopping</a>
         </div>
     <?php else: ?>

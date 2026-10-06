@@ -521,6 +521,16 @@ html body #floatingCartPanel .quantity-control button.btn-qty:disabled:active {
 
     /* Center user dropdown on mobile view */
     @media (max-width: 767px) {
+        /*
+         * The account menu belongs to the first navbar row, while the mobile
+         * search controls are in the next row.  A menu z-index cannot escape
+         * its parent's stacking context, so keep the first row above the
+         * search row whenever the account menu is opened.
+         */
+        body nav.navbar.sticky-top > .container-fluid:first-child {
+            z-index: 4000 !important;
+        }
+
         .user-auth-dropdown .dropdown-menu {
             left: 50% !important;
             right: auto !important;
@@ -1263,15 +1273,17 @@ function openPincodePopup(e) {
         
         .swal2-close {
             position: absolute !important;
-            top: 10px !important;
+            top: 12px !important;
             right: 15px !important;
-            background: transparent !important;
-            border: none !important;
-            font-size: 22px !important;
-            color: #999 !important;
+            background: #9fbe1b !important;
+            border: 2px solid #fff !important;
+            border-radius: 50% !important;
+            font-size: 15px !important;
+            line-height: 1 !important;
+            color: #fff !important;
             cursor: pointer !important;
-            width: 32px !important;
-            height: 32px !important;
+            width: 34px !important;
+            height: 34px !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
@@ -1281,8 +1293,9 @@ function openPincodePopup(e) {
         }
         
         .swal2-close:hover {
-            color: #333 !important;
-            background-color: transparent !important;
+            color: #fff !important;
+            background-color: #86a415 !important;
+            transform: scale(1.06) !important;
         }
         
         .swal2-popup {
@@ -1346,7 +1359,7 @@ function openPincodePopup(e) {
             .swal2-popup {
                 padding: 12px !important;
                 padding-top: 30px !important;
-                max-width: 320px !important;
+                max-width: 350px !important;
             }
             .swal2-logo-custom img {
                 height: 40px !important;
