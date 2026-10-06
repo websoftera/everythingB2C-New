@@ -40,6 +40,7 @@ $mobileCategoryOrder = array_flip([
     'school-stationery',
     'industrial-safety-products',
     'packing-materials',
+    'packaging-material',
 ]);
 
 // Fetch active banners for the slider
