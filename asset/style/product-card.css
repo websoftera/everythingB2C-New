@@ -103,6 +103,13 @@
     display: block;
 }
 
+/* Keep unavailable products browsable, but make their stock state obvious. */
+.product-image:has(.out-of-stock) img {
+    filter: grayscale(85%) blur(2px);
+    opacity: 0.52;
+    transform: scale(1.03);
+}
+
 /* --- Out of Stock Overlay --- */
 .out-of-stock {
     position: absolute !important;
@@ -126,6 +133,23 @@
     justify-content: center !important;
     min-width: 0 !important;
     width: auto !important;
+}
+
+@media (max-width: 767.98px) {
+    .product-image .out-of-stock {
+        width: calc(100% - 8px) !important;
+        max-width: calc(100% - 8px) !important;
+        min-width: 0 !important;
+        height: 20px !important;
+        padding: 0 4px !important;
+        font-size: 8px !important;
+        letter-spacing: 0 !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: clip !important;
+        box-sizing: border-box !important;
+    }
 }
 
 /* --- Product Details --- */
@@ -218,8 +242,102 @@
     min-width: 0;
 }
 
+/* Compact review score used on storefront cards and the product detail page. */
+.product-rating-badge {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    gap: 3px;
+    width: fit-content;
+    margin: 0;
+    padding: 3px 5px;
+    background: #eef1f4;
+    border-radius: 3px;
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+/* Every card reserves this row, even before it has reviews, so cards align. */
+.product-rating-slot {
+    display: flex;
+    align-items: center;
+    min-height: 20px;
+    margin: 0;
+}
+
+.product-rating-slot .product-rating-badge { margin: 0; }
+
+.product-card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-height: 20px;
+    width: 100%;
+    margin: 0;
+}
+
+.product-card-meta .product-rating-slot { flex: 0 0 auto; width: auto; }
+.product-card-meta .product-unit-line {
+    flex: 1 1 auto;
+    width: auto !important;
+    min-height: 14px !important;
+    margin: 0 !important;
+    text-align: right !important;
+}
+
+.product-rating-score {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    color: #16823a;
+}
+
+.product-rating-star {
+    color: currentColor;
+    font-size: 12px;
+    line-height: 1;
+}
+
+.product-rating-divider { color: #b8c1cc; }
+.product-rating-count { color: #7b8794; font-weight: 600; }
+.product-rating-good .product-rating-score { color: #c68300; }
+.product-rating-low .product-rating-score { color: #c63b35; }
+
+.product-detail-rating {
+    display: flex;
+    clear: both;
+    width: fit-content;
+    margin: 7px 0 10px;
+    font-size: 13px;
+}
+.product-detail-rating .product-rating-star { font-size: 14px; }
+.product-detail-rating-mobile { display: none; }
+
+@media (max-width: 900px) {
+    .product-detail-rating-desktop { display: none; }
+    .product-detail-rating-mobile {
+        display: flex;
+        width: fit-content;
+        margin: 9px 0 0 auto;
+    }
+}
+
 .product-details .product-unit-line + .product-title-link {
     margin-top: -8px !important;
+}
+
+.product-details .product-card-meta + .product-title-link {
+    margin-top: -8px !important;
+}
+
+@media (max-width: 767.98px) {
+    .product-details .product-card-meta + .product-title-link {
+        margin-top: 2px !important;
+    }
 }
 
 @media (min-width: 768px) {
@@ -1287,5 +1405,30 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
         font-size: 12px !important;
         line-height: 17px !important;
         margin: 5px 0 9px 0 !important;
+    }
+
+    /* Keep unavailable-product controls ordered and legible in horizontal cards. */
+    .product-details .read-more {
+        order: 5 !important;
+        width: 100% !important;
+        min-height: 30px !important;
+        margin: 2px 0 0 !important;
+        padding: 5px 8px !important;
+        box-sizing: border-box !important;
+    }
+
+    .product-image .out-of-stock {
+        top: 50% !important;
+        left: 50% !important;
+        width: calc(100% - 4px) !important;
+        max-width: calc(100% - 4px) !important;
+        height: 20px !important;
+        padding: 0 2px !important;
+        font-size: 8px !important;
+        letter-spacing: 0 !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: clip !important;
     }
 }

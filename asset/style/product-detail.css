@@ -373,6 +373,12 @@
     background: var(--dark-blue, #218838);
 }
 
+.product-image-section.is-out-of-stock #mainImage,
+.product-image-section.is-out-of-stock .thumbnail-row .thumbnail {
+    filter: grayscale(85%) blur(2px);
+    opacity: 0.52;
+}
+
 .out-of-stock-message {
     width: 250px;
     max-width: 100%;

@@ -15,7 +15,17 @@ $applicationError = '';
 $applicationSuccess = $_SESSION['seller_application_flash'] ?? '';
 unset($_SESSION['seller_application_flash']);
 $_SESSION['seller_application_csrf'] = $_SESSION['seller_application_csrf'] ?? bin2hex(random_bytes(32));
-$sellerCategories = getParentCategories();
+// Keep the seller category choices in sync with the visible top-level header menu.
+$sellerCategoryRecords = getAllCategories();
+$sellerCategoryCounts = getCategoryFilterProductCounts($sellerCategoryRecords);
+foreach ($sellerCategoryRecords as &$sellerCategory) {
+    $sellerCategory['product_count'] = $sellerCategoryCounts[$sellerCategory['id']] ?? 0;
+}
+unset($sellerCategory);
+$sellerCategories = orderMainCategoryTree(buildCategoryTreeWithMultipleParents($sellerCategoryRecords));
+$sellerCategories = array_values(array_filter($sellerCategories, function ($category) {
+    return (int)($category['product_count'] ?? 0) > 0;
+}));
 $sellerApplicationSchemaReady = ensureSellerApplicationsSchema($pdo);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
@@ -79,13 +89,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['seller_application'])
         $businessName = trim((string)($_POST['business_name'] ?? ''));
         $businessEmail = strtolower(trim((string)($_POST['business_email'] ?? '')));
         $businessAddress = trim((string)($_POST['business_address'] ?? ''));
-        $categoryId = (int)($_POST['business_category'] ?? 0);
+        $businessCategory = trim((string)($_POST['business_category'] ?? ''));
         $panNumber = strtoupper(preg_replace('/\s+/', '', (string)($_POST['pan_number'] ?? '')));
         $gstin = strtoupper(preg_replace('/\s+/', '', (string)($_POST['gstin'] ?? '')));
         $validFirmTypes = ['Proprietorship', 'Partnership', 'Limited Company'];
         $categoryById = [];
         foreach ($sellerCategories as $category) {
-            $categoryById[(int)$category['id']] = (string)$category['name'];
+            $categoryById[(string)(int)$category['id']] = (string)$category['name'];
         }
 
         if (!in_array($firmType, $validFirmTypes, true)) {
@@ -103,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['seller_application'])
         if (!filter_var($businessEmail, FILTER_VALIDATE_EMAIL) || strlen($businessEmail) > 190) {
             throw new RuntimeException('Please enter a valid email address.');
         }
-        if (!isset($categoryById[$categoryId])) {
+        if (!isset($categoryById[$businessCategory])) {
             throw new RuntimeException('Please select a business category.');
         }
         if (mb_strlen($businessAddress) > 2000) {
@@ -126,7 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['seller_application'])
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         $insert->execute([
             $firmType, $personName, $mobile, $businessName, $businessEmail,
-            $businessAddress !== '' ? $businessAddress : null, $categoryById[$categoryId],
+            $businessAddress !== '' ? $businessAddress : null, $categoryById[$businessCategory],
             $panNumber !== '' ? $panNumber : null, $gstin !== '' ? $gstin : null,
             $uploadedDocuments['gstin_document'], $uploadedDocuments['pan_document'], $uploadedDocuments['aadhaar_document'],
         ]);

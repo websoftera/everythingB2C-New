@@ -780,6 +780,9 @@ document.addEventListener('DOMContentLoaded', function () {
         .mobile-search-input-group { height: 38px !important; flex: 1 1 auto !important; display: flex; flex-wrap: nowrap; width: 100%; }
         .mobile-search-input-field { height: 38px !important; border: 2px solid var(--primary-color) !important; border-right: none !important; border-radius: 4px 0 0 4px !important; padding-left: 12px !important; text-align: left !important; font-size: 14px !important; box-shadow: none !important; width: 100%; border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; }
         .mobile-search-btn-field { height: 38px !important; width: 44px !important; max-width: 44px !important; min-width: 44px !important; background-color: var(--primary-color) !important; border-radius: 0 4px 4px 0 !important; border: none !important; padding: 0 !important; display: flex !important; align-items: center !important; justify-content: center !important; color: white !important; }
+        .category-search-hint::placeholder { color: #9aa6b2 !important; opacity: 1; transition: color .25s ease; }
+        .category-search-hint { transition: opacity .2s ease; }
+        .category-search-hint:not(.category-search-hint-visible) { opacity: .72; }
         .mobile-search-toggle-btn { height: 38px !important; width: 42px !important; max-width: 42px !important; min-width: 42px !important; background-color: #9fbe1b !important; border-radius: 4px !important; border: none !important; padding: 0 !important; display: flex !important; align-items: center !important; justify-content: center !important; flex-shrink: 0 !important; color: white !important; margin: 0 !important; }
         #headerSearchResultsPopupMobile { position: absolute !important; top: calc(100% + 3px) !important; left: 15px !important; width: calc(100% - 30px) !important; max-height: 350px; overflow-y: auto; background: #fff; border: 1px solid #e0e0e0; border-radius: 4px; box-shadow: 0 4px 16px rgba(0, 0, 0, .16); z-index: 200000 !important; }
         #headerSearchResultsPopupMobile .search-result-item:last-child { border-bottom: 0 !important; }
@@ -805,14 +808,18 @@ document.addEventListener('DOMContentLoaded', function () {
 <!-- Mobile Category Offcanvas Menu -->
 <?php
 if (!function_exists('renderMobileOffcanvasAccordion')) {
-    function renderMobileOffcanvasAccordion($tree, $parentId = 'mobileCategoryAccordion', $level = 0, $rootParentSlug = '') {
-        global $base_url;
+    function renderMobileOffcanvasAccordion($tree, $parentId = 'mobileCategoryAccordion', $level = 0, $rootParentSlug = '', $rootParentCategoryId = 0) {
+        global $base_url, $pdo;
         foreach ($tree as $index => $cat) {
             $collapseId = 'collapseCat_' . $level . '_' . $index . '_' . substr(md5($cat['slug']), 0, 5);
             $headingId = 'headingCat_' . $level . '_' . $index . '_' . substr(md5($cat['slug']), 0, 5);
             $hasChildren = !empty($cat['children']);
             $currentRootSlug = $level === 0 ? $cat['slug'] : $rootParentSlug;
+            $currentRootCategoryId = $level === 0 ? (int)$cat['id'] : $rootParentCategoryId;
             $parentQuery = $level > 0 && $currentRootSlug !== '' ? '&amp;parent=' . rawurlencode($currentRootSlug) : '';
+            $visibleProductCount = $level > 0
+                ? getCategoryVisibleProductCountForParent($pdo, (int)$cat['id'], $currentRootCategoryId)
+                : (int)$cat['product_count'];
             
             echo '<div class="accordion-item border-0 border-bottom">';
             if ($hasChildren) {
@@ -820,7 +827,7 @@ if (!function_exists('renderMobileOffcanvasAccordion')) {
                 echo '<button class="accordion-button collapsed py-3 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#' . $collapseId . '" aria-expanded="false" aria-controls="' . $collapseId . '" style="font-size: 0.95rem; font-weight: 600; box-shadow: none;">';
                 echo htmlspecialchars($cat['name']);
                 if ($level > 0) {
-                    echo ' <span class="category-menu-count">(' . number_format((int)$cat['product_count']) . ')</span>';
+                    echo ' <span class="category-menu-count">(' . number_format($visibleProductCount) . ')</span>';
                 }
                 echo '</button>';
                 echo '</h2>';
@@ -831,7 +838,7 @@ if (!function_exists('renderMobileOffcanvasAccordion')) {
                 
                 // Render children
                 echo '<div class="accordion accordion-flush" id="childAccordion_' . $collapseId . '">';
-                renderMobileOffcanvasAccordion($cat['children'], 'childAccordion_' . $collapseId, $level + 1, $currentRootSlug);
+                renderMobileOffcanvasAccordion($cat['children'], 'childAccordion_' . $collapseId, $level + 1, $currentRootSlug, $currentRootCategoryId);
                 echo '</div>';
                 
                 echo '</div>';
@@ -839,7 +846,7 @@ if (!function_exists('renderMobileOffcanvasAccordion')) {
             } else {
                 echo '<a href="' . $base_url . 'category.php?slug=' . $cat['slug'] . $parentQuery . '" class="d-block py-3 px-3 text-dark text-decoration-none" style="font-size: 0.95rem; font-weight: 600;">' . htmlspecialchars($cat['name']);
                 if ($level > 0) {
-                    echo ' <span class="category-menu-count">(' . number_format((int)$cat['product_count']) . ')</span>';
+                    echo ' <span class="category-menu-count">(' . number_format($visibleProductCount) . ')</span>';
                 }
                 echo '</a>';
             }
@@ -895,7 +902,7 @@ function renderCategoryMenu($tree, $level = 0) {
             echo '<a class="category-mega-view-all" href="' . $base_url . 'category.php?slug=' . rawurlencode($cat['slug']) . '">View all ' . htmlspecialchars($cat['name']) . ' <span aria-hidden="true">&rarr;</span></a>';
             echo '</li>';
             echo '<li><div class="category-mega-grid">';
-            renderMegaSubcategoryGroups($cat['children'], $cat['slug']);
+            renderMegaSubcategoryGroups($cat['children'], $cat['slug'], (int)$cat['id']);
             echo '</div></li>';
             echo '</ul>';
         } else {
@@ -906,8 +913,8 @@ function renderCategoryMenu($tree, $level = 0) {
     }
 }
 
-function renderMegaSubcategoryGroups($subcategories, $parentSlug = '') {
-    global $base_url;
+function renderMegaSubcategoryGroups($subcategories, $parentSlug = '', $parentCategoryId = 0) {
+    global $base_url, $pdo;
     foreach ($subcategories as $subcat) {
         $hasChildren = !empty($subcat['children']);
         $imagePath = trim((string)($subcat['image'] ?? ''));
@@ -917,17 +924,19 @@ function renderMegaSubcategoryGroups($subcategories, $parentSlug = '') {
         }
         echo '<section class="category-mega-group">';
         $parentQuery = $parentSlug !== '' ? '&amp;parent=' . rawurlencode($parentSlug) : '';
+        $visibleProductCount = getCategoryVisibleProductCountForParent($pdo, (int)$subcat['id'], $parentCategoryId);
         echo '<a class="category-mega-title" href="' . $base_url . 'category.php?slug=' . rawurlencode($subcat['slug']) . $parentQuery . '">';
         echo '<span class="category-mega-icon" aria-hidden="true"><span class="category-mega-fallback">&#8250;</span>';
         if ($imageUrl !== '') {
             echo '<img src="' . htmlspecialchars($imageUrl, ENT_QUOTES | ENT_HTML5, 'UTF-8') . '" alt="" loading="lazy" decoding="async" onerror="this.remove()">';
         }
-        echo '</span><span class="category-mega-title-text">' . htmlspecialchars($subcat['name']) . ' <span class="category-menu-count">(' . number_format((int)$subcat['product_count']) . ')</span></span>';
+        echo '</span><span class="category-mega-title-text">' . htmlspecialchars($subcat['name']) . ' <span class="category-menu-count">(' . number_format($visibleProductCount) . ')</span></span>';
         echo '</a>';
         if ($hasChildren) {
             echo '<div class="category-mega-children">';
             foreach ($subcat['children'] as $child) {
-                echo '<a href="' . $base_url . 'category.php?slug=' . rawurlencode($child['slug']) . $parentQuery . '">' . htmlspecialchars($child['name']) . ' <span class="category-menu-count">(' . number_format((int)$child['product_count']) . ')</span></a>';
+                $childVisibleProductCount = getCategoryVisibleProductCountForParent($pdo, (int)$child['id'], $parentCategoryId);
+                echo '<a href="' . $base_url . 'category.php?slug=' . rawurlencode($child['slug']) . $parentQuery . '">' . htmlspecialchars($child['name']) . ' <span class="category-menu-count">(' . number_format($childVisibleProductCount) . ')</span></a>';
             }
             echo '</div>';
         }
@@ -1030,6 +1039,9 @@ renderCategoryMenu($categoryTree);
 <script>
   // Global base URL for JavaScript
   window.BASE_URL = '<?php echo $base_url; ?>';
+  window.headerSearchCategoryNames = <?php echo json_encode(array_values(array_filter(array_map(function ($category) {
+    return trim((string)($category['name'] ?? ''));
+  }, $categoryTree))), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
   window.b2cAjaxUrl = window.b2cAjaxUrl || function(path) {
     return (window.BASE_URL || '') + String(path || '').replace(/^\/+/, '');
   };

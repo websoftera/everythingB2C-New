@@ -204,6 +204,50 @@ function getPublicProductReviewSummary(PDO $pdo, int $productId): array {
     return ['total_reviews' => (int)($row['total_reviews'] ?? 0), 'average_rating' => round((float)($row['average_rating'] ?? 0), 1)];
 }
 
+/** Fetch public rating summaries in one query for product-card lists. */
+function getPublicProductReviewSummaries(PDO $pdo, array $productIds): array {
+    $productIds = array_values(array_unique(array_filter(array_map('intval', $productIds))));
+    if (!$productIds || !productReviewsSchemaReady($pdo)) {
+        return [];
+    }
+
+    $placeholders = implode(',', array_fill(0, count($productIds), '?'));
+    $statement = $pdo->prepare("SELECT product_id, COUNT(*) AS total_reviews, COALESCE(AVG(rating), 0) AS average_rating
+        FROM product_reviews
+        WHERE product_id IN ($placeholders) AND status = 'approved' AND seller_code IS NOT NULL AND seller_code <> ''
+        GROUP BY product_id");
+    $statement->execute($productIds);
+
+    $summaries = [];
+    foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        $summaries[(int)$row['product_id']] = [
+            'total_reviews' => (int)$row['total_reviews'],
+            'average_rating' => round((float)$row['average_rating'], 1),
+        ];
+    }
+    return $summaries;
+}
+
+/** Render the compact score/star/count treatment used on cards and product details. */
+function renderProductRatingBadge(array $summary, string $className = ''): string {
+    $reviewCount = (int)($summary['total_reviews'] ?? 0);
+    $rating = (float)($summary['average_rating'] ?? 0);
+    if ($reviewCount < 1 || $rating <= 0) {
+        return '';
+    }
+
+    $ratingClass = $rating >= 3.5 ? 'rating-very-good' : ($rating >= 2.5 ? 'rating-good' : 'rating-low');
+    $classes = trim('product-rating-badge ' . $ratingClass . ' ' . $className);
+    $ratingText = number_format($rating, 1);
+    $reviewLabel = $reviewCount === 1 ? 'review' : 'reviews';
+
+    return '<div class="' . htmlspecialchars($classes, ENT_QUOTES, 'UTF-8') . '" aria-label="Rated ' . $ratingText . ' out of 5 from ' . $reviewCount . ' ' . $reviewLabel . '">'
+        . '<span class="product-rating-score">' . $ratingText . '<span class="product-rating-star" aria-hidden="true">★</span></span>'
+        . '<span class="product-rating-divider" aria-hidden="true">|</span>'
+        . '<span class="product-rating-count">' . number_format($reviewCount) . '</span>'
+        . '</div>';
+}
+
 function getPublicProductReviews(PDO $pdo, int $productId, int $limit = 20, int $offset = 0): array {
     $stmt = $pdo->prepare("SELECT rating, review_title, review_content, seller_code, is_verified, DATE_FORMAT(created_at, '%Y-%m-%d') AS created_at
         FROM product_reviews
