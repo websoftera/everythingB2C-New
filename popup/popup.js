@@ -30,7 +30,7 @@ function ensureEverythingB2CQuantityLimitStyles() {
         }
         .everythingb2c-quantity-limit-modal {
             position: relative;
-            width: min(390px, calc(100vw - 28px));
+            width: min(380px, 90vw);
             min-height: 245px;
             border-radius: 8px;
             background: #fff;
@@ -41,17 +41,24 @@ function ensureEverythingB2CQuantityLimitStyles() {
         }
         .everythingb2c-quantity-limit-close {
             position: absolute;
-            top: 10px;
-            right: 14px;
-            width: 24px;
-            height: 24px;
-            border: 0;
-            background: transparent;
-            color: #444;
-            font-size: 28px;
-            line-height: 22px;
-            font-weight: 300;
+            top: 12px;
+            right: 15px;
+            width: 34px;
+            height: 34px;
+            padding: 0;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            background: #9fbe1b;
+            color: #fff;
+            font-size: 15px;
+            line-height: 1;
+            font-weight: 700;
             cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+        .everythingb2c-quantity-limit-close:hover {
+            background: #86a415;
+            transform: scale(1.06);
         }
         .everythingb2c-quantity-limit-logo-wrap {
             display: flex;

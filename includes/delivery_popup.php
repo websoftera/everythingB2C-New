@@ -252,6 +252,29 @@ if ($popupEnabled !== '1') {
     .delivery-input-group { flex-direction: column; }
     .delivery-check-btn { width: 100%; }
 }
+
+/* Keep all small site dialogs the same width while preserving their natural height. */
+.delivery-popup,
+.popup,
+.swal2-popup,
+.everythingb2c-quantity-limit-modal,
+.wishlist-modal-content {
+    box-sizing: border-box !important;
+    width: min(380px, 90vw) !important;
+    max-width: none !important;
+    max-height: 80vh !important;
+    overflow-y: auto !important;
+}
+
+@media (max-width: 768px) {
+    .delivery-popup,
+    .popup,
+    .swal2-popup,
+    .everythingb2c-quantity-limit-modal,
+    .wishlist-modal-content {
+        width: min(350px, 90vw) !important;
+    }
+}
 </style>
 
 <script>
