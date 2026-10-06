@@ -1396,7 +1396,7 @@ function openPincodePopup(e) {
                 const logoDiv = document.createElement('div');
                 logoDiv.className = 'swal2-logo-custom';
                 const logoImg = document.createElement('img');
-                logoImg.src = './logo.webp';
+                logoImg.src = (window.BASE_URL || '') + 'asset/images/header-logo.webp';
                 logoImg.alt = 'everythingb2c';
                 logoDiv.appendChild(logoImg);
                 

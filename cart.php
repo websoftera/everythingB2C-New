@@ -361,12 +361,12 @@ echo renderBreadcrumb($breadcrumbs);
 
 @media (max-width: 767.98px) {
     .empty-cart-container {
-        margin-top: 1rem !important;
+        margin-top: .25rem !important;
         padding-bottom: 2rem !important;
     }
 
     .empty-cart-panel {
-        padding-top: 2rem !important;
+        padding-top: 1rem !important;
         padding-bottom: 2rem !important;
     }
 }

@@ -776,8 +776,8 @@ select.form-control {
     margin-left: 0 !important;
     border-radius: 20px;
     justify-content: center;
-    padding: 6px 16px !important; /* Proper padding for pill button */
-    height: 34px !important; /* Standard height */
+    padding: 3px 16px !important;
+    height: 28px !important;
     display: inline-flex;
     align-items: center;
     font-size: 14px;

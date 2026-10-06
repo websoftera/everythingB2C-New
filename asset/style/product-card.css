@@ -1168,11 +1168,11 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
     }
 
     .price-btn .label {
-        font-size: 9px !important;
+        font-size: 11px !important;
     }
 
     .price-btn .value {
-        font-size: 10px !important;
+        font-size: 12px !important;
     }
 
     .price-buttons .wishlist {

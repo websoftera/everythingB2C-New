@@ -1060,6 +1060,7 @@ function showOrderSuccessPopup() {
       </div>
     `,
     icon: null,
+    showCloseButton: true,
     showConfirmButton: true,
     showCancelButton: true,
     confirmButtonText: 'Go to My Account',
@@ -1100,6 +1101,7 @@ if (window.history.replaceState) {
   border-radius: 8px !important;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2) !important;
   padding: 20px !important;
+  font-family: 'Mulish', sans-serif !important;
 }
 
 /* Force side-by-side buttons in success popup */
@@ -1130,7 +1132,7 @@ if (window.history.replaceState) {
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   align-items: center;
 }
 
@@ -1139,6 +1141,22 @@ if (window.history.replaceState) {
   height: auto;
   display: block;
   margin: 0 auto 6px auto;
+}
+
+/* Uses the same latest header logo and close treatment as the pincode popup. */
+.order-success-popup .swal2-header-custom {
+  width: 100%;
+  margin: 0 0 8px !important;
+  text-align: center;
+}
+
+.order-success-popup .swal2-logo-custom img {
+  display: block;
+  width: auto !important;
+  height: 58px !important;
+  max-width: 250px !important;
+  margin: 0 auto !important;
+  object-fit: contain;
 }
 
 .order-success-title {
@@ -1193,6 +1211,26 @@ if (window.history.replaceState) {
 /* Success icon styling */
 .order-success-popup .fas.fa-check-circle {
   color: #9fbe1b !important;
+}
+
+@media (max-width: 480px) {
+  .swal2-popup.order-success-popup {
+    width: min(350px, 90vw) !important;
+    padding: 18px 16px 16px !important;
+    padding-top: 46px !important;
+  }
+
+  .order-success-popup .swal2-logo-custom img {
+    height: 48px !important;
+    max-width: 220px !important;
+  }
+
+  .order-success-title { font-size: 22px !important; margin: 4px 0 0 !important; }
+  .order-success-icon i { font-size: 46px !important; margin: 6px auto !important; }
+  .order-success-lead { font-size: 15px !important; margin: 5px 0 2px !important; }
+  .order-success-sub { font-size: 14px !important; line-height: 1.45 !important; }
+  .order-success-popup .swal2-actions { gap: 8px !important; margin-top: 15px !important; }
+  .order-success-popup .swal2-actions button { font-size: 12px !important; padding: 10px 6px !important; }
 }
 </style>
 <style>

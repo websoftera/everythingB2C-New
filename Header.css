@@ -3153,7 +3153,8 @@ input[type="checkbox"]:checked+.heart-icon,
 /* Responsive breadcrumb */
 @media (max-width: 768px) {
   .breadcrumb-nav {
-    padding: 6px 0;
+    padding: 6px 0 4px;
+    margin-bottom: 0 !important;
   }
 
   .breadcrumb {
@@ -4437,5 +4438,18 @@ nav {
     align-items: center !important;
     justify-content: center !important;
     border-radius: 50px !important;
+  }
+}
+
+/* Final mobile override: prevent the shared compact rule from enlarging the breadcrumb bar. */
+@media (max-width: 768px) {
+  .breadcrumb-nav {
+    padding: 4px 0 !important;
+    margin-bottom: 0 !important;
+  }
+
+  .breadcrumb-nav .breadcrumb {
+    padding: 0 8px !important;
+    margin: 0 !important;
   }
 }

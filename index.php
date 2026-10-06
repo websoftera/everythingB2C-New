@@ -3087,7 +3087,11 @@ endforeach; ?>
   }
 
   html body .top-deals-category-tile {
-    margin-right: 8px !important;
+    flex: 0 0 calc((100% - 28px) / 2) !important;
+    width: calc((100% - 28px) / 2) !important;
+    min-width: calc((100% - 28px) / 2) !important;
+    max-width: calc((100% - 28px) / 2) !important;
+    margin-right: 0 !important;
     scroll-snap-align: start !important;
   }
 
