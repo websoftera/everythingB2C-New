@@ -6,6 +6,7 @@ header("Pragma: no-cache");
 
 require_once 'config/database.php';
 require_once 'includes/functions.php';
+require_once 'includes/product_reviews.php';
 require_once 'includes/product_seller_fields.php';
 ensureProductSellerFieldsSchema($pdo);
 ensureProductPackageQuantitySchema($pdo);
@@ -199,6 +200,7 @@ $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $totalPages = ceil($totalProducts / $itemsPerPage);
 $offset = ($currentPage - 1) * $itemsPerPage;
 $products = array_slice($allProducts, $offset, $itemsPerPage);
+$productReviewSummaries = getPublicProductReviewSummaries($pdo, array_column($products, 'id'));
 
 // Use buildPaginationUrl function from functions.php
 ?>
@@ -284,9 +286,10 @@ endif; ?>
             </div>
           <?php
 else: ?>
-            <?php foreach ($products as $product):
+<?php foreach ($products as $product):
     $isOutOfStock = ($product['stock_quantity'] <= 0);
     $inWishlist = in_array($product['id'], $wishlist_ids);
+    $productRating = renderProductRatingBadge($productReviewSummaries[(int)$product['id']] ?? []);
 ?>
               <div class="card product-card" data-id="prod-<?php echo $product['id']; ?>">
                 <?php echo renderProductDiscountBanner($product); ?>
@@ -307,7 +310,10 @@ else: ?>
     endif; ?>
                   </div>
                   <div class="product-details">
-                      <div class="product-unit-line"><?php echo formatProductUnitLine($product, true); ?></div>
+                      <div class="product-card-meta">
+                          <div class="product-rating-slot"><?php echo $productRating; ?></div>
+                          <div class="product-unit-line"><?php echo formatProductUnitLine($product, true); ?></div>
+                      </div>
                       <a href="product.php?slug=<?php echo $product['slug']; ?>" class="product-title-link">
                           <h3><?php echo formatProductListName($product['name'], true); ?></h3>
                       </a>

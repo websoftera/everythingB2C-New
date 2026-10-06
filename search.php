@@ -1,6 +1,7 @@
 <?php
 require_once 'config/database.php';
 require_once 'includes/functions.php';
+require_once 'includes/product_reviews.php';
 require_once 'includes/product_seller_fields.php';
 ensureProductSellerFieldsSchema($pdo);
 require_once 'includes/header.php';
@@ -110,6 +111,7 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $products = applyDisplayVariationPrices($products);
+$productReviewSummaries = getPublicProductReviewSummaries($pdo, array_column($products, 'id'));
 
 // Set page title for breadcrumb
 $pageTitle = 'Search Results';
@@ -146,8 +148,9 @@ echo renderBreadcrumb($breadcrumbs);
               <a href="search.php" class="filter-clear-btn">Clear All</a>
             </div>
           <?php else: ?>
-            <?php foreach ($products as $product): 
+            <?php foreach ($products as $product):
               $isOutOfStock = ($product['stock_quantity'] <= 0);
+              $productRating = renderProductRatingBadge($productReviewSummaries[(int)$product['id']] ?? []);
               $inWishlist = false;
               if (isLoggedIn()) {
                   $inWishlist = isInWishlist($_SESSION['user_id'], $product['id']);
@@ -171,6 +174,7 @@ echo renderBreadcrumb($breadcrumbs);
                       <?php endif; ?>
                   </div>
                   <div class="product-details">
+                      <div class="product-rating-slot"><?php echo $productRating; ?></div>
                       <h3><?php echo strtoupper(cleanProductName($product['name'])); ?></h3>
                       <?php echo renderProductSellerLine($product); ?>
                       <div class="price-buttons">

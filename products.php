@@ -1,6 +1,7 @@
 <?php
 require_once 'config/database.php';
 require_once 'includes/functions.php';
+require_once 'includes/product_reviews.php';
 require_once 'includes/top_deals.php';
 ensureProductPackageQuantitySchema($pdo);
 
@@ -152,6 +153,7 @@ $stmt = $pdo->prepare($query);
 $stmt->execute($params);
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $products = applyDisplayVariationPrices($products);
+$productReviewSummaries = getPublicProductReviewSummaries($pdo, array_column($products, 'id'));
 
 // Get user's wishlist for quick lookup
 $wishlist_ids = [];
@@ -207,9 +209,10 @@ echo renderBreadcrumb($breadcrumbs);
             </div>
           <?php
 else: ?>
-            <?php foreach ($products as $product):
+<?php foreach ($products as $product):
     $inWishlist = in_array($product['id'], $wishlist_ids);
     $isOutOfStock = ($product['stock_quantity'] <= 0);
+    $productRating = renderProductRatingBadge($productReviewSummaries[(int)$product['id']] ?? []);
 ?>
               <div class="card product-card" data-id="prod-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>">
                 <?php if ($product['is_discounted']): ?>
@@ -238,10 +241,13 @@ else: ?>
     endif; ?>
                   </div>
                   <div class="product-details">
+                      <div class="product-card-meta">
+                          <div class="product-rating-slot"><?php echo $productRating; ?></div>
+                          <div class="product-unit-line"><?php echo formatProductUnitLine($product, true); ?></div>
+                      </div>
                       <a href="product.php?slug=<?php echo $product['slug']; ?>" class="product-title-link">
                           <h3><?php echo formatProductListName($product['name'], true); ?></h3>
                       </a>
-                      <div class="product-unit-line"><?php echo formatProductUnitLine($product, true); ?></div>
                       <div class="price-buttons">
                           <div class="price-btn mrp">
                               <span class="label">MRP</span>

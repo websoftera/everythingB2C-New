@@ -115,6 +115,52 @@
       document.getElementById('headerSearchBtnMobile'),
       document.getElementById('headerSearchResultsPopupMobile')
     );
+
+    initializeCategorySearchHints();
+  }
+
+  function initializeCategorySearchHints() {
+    const inputs = [
+      document.getElementById('headerSearchInput'),
+      document.getElementById('headerSearchInputMobile')
+    ].filter(Boolean);
+
+    if (!inputs.length || inputs.some(input => input.dataset.categoryHintInitialized === '1')) return;
+
+    const fallbackCategoryNames = [
+      'Office Stationery',
+      'School Stationery',
+      'Industrial Safety Products',
+      'Packaging Material',
+      'Personal Care',
+      'Home & Garden'
+    ];
+    const categoryNames = Array.isArray(window.headerSearchCategoryNames) && window.headerSearchCategoryNames.length
+      ? window.headerSearchCategoryNames
+      : fallbackCategoryNames;
+    let categoryIndex = 0;
+
+    inputs.forEach(input => {
+      input.dataset.categoryHintInitialized = '1';
+      input.classList.add('category-search-hint');
+    });
+
+    function showNextHint() {
+      const hint = `Search for ${categoryNames[categoryIndex]}`;
+      categoryIndex = (categoryIndex + 1) % categoryNames.length;
+
+      inputs.forEach(input => {
+        if (input.value || document.activeElement === input) return;
+        input.classList.remove('category-search-hint-visible');
+        window.requestAnimationFrame(() => {
+          input.placeholder = hint;
+          input.classList.add('category-search-hint-visible');
+        });
+      });
+    }
+
+    showNextHint();
+    window.setInterval(showNextHint, 3600);
   }
 
   if (document.readyState === 'loading') {

@@ -80,6 +80,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && ($_POST['action'] ?? '')
 $reviewSummary = $reviewsAvailable
     ? getPublicProductReviewSummary($pdo, (int)$product['id'])
     : ['total_reviews' => 0, 'average_rating' => 0.0];
+$productRatingBadge = renderProductRatingBadge($reviewSummary, 'product-detail-rating');
 $productReviews = $reviewsAvailable ? getPublicProductReviews($pdo, (int)$product['id'], 20) : [];
 $customerReview = null;
 $canSubmitProductReview = false;
@@ -717,31 +718,49 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
         }
 
         @media (min-width: 992px) {
+            .product-page-container .related-products-section {
+                width: 100vw !important;
+                margin-left: calc(50% - 50vw) !important;
+                padding: 20px 24px 42px !important;
+                background: transparent !important;
+                box-sizing: border-box !important;
+            }
+
+            .product-page-container .related-products-card {
+                width: 100% !important;
+                background: transparent !important;
+                border: 0 !important;
+                box-shadow: none !important;
+            }
+
             .product-page-container .related-products-slider-wrapper {
-                max-width: 1188px !important;
-                margin-left: auto !important;
-                margin-right: auto !important;
+                width: 100% !important;
+                max-width: none !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
                 padding-left: 34px !important;
                 padding-right: 34px !important;
-                justify-content: center !important;
+                justify-content: flex-start !important;
+                box-sizing: border-box !important;
             }
 
             .product-page-container .related-products-container {
-                width: 1120px !important;
-                max-width: 1120px !important;
+                width: 100% !important;
+                max-width: none !important;
                 gap: 10px !important;
                 justify-content: flex-start !important;
                 overflow-x: auto !important;
+                box-sizing: border-box !important;
             }
 
             .product-page-container .related-products-container .card.product-card {
                 display: flex !important;
                 flex-direction: column !important;
                 align-items: stretch !important;
-                flex: 0 0 240px !important;
-                width: 100% !important;
-                min-width: 20px !important;
-                max-width: 240px !important;
+                flex: 0 0 calc((100% - 30px) / 4) !important;
+                width: calc((100% - 30px) / 4) !important;
+                min-width: 0 !important;
+                max-width: none !important;
                 border: 1px solid #ddd !important;
                 text-align: center !important;
                 border-radius: 8px !important;
@@ -754,6 +773,13 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                 box-sizing: border-box !important;
                 box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
                 transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+            }
+        }
+
+        @media (min-width: 1400px) {
+            .product-page-container .related-products-container .card.product-card {
+                flex-basis: calc((100% - 50px) / 6) !important;
+                width: calc((100% - 50px) / 6) !important;
             }
         }
     </style>
@@ -777,7 +803,7 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
 
     <!-- Product Detail Section -->
     <div class="product-detail-card modern-card" data-id="prod-<?php echo $product['id']; ?>" data-product-id="<?php echo $product['id']; ?>" data-base-mrp="<?php echo htmlspecialchars((string)$product['mrp']); ?>" data-base-pay="<?php echo htmlspecialchars((string)$product['selling_price']); ?>">
-        <div class="product-image-section position-relative">
+        <div class="product-image-section position-relative<?php echo (int)$product['stock_quantity'] <= 0 ? ' is-out-of-stock' : ''; ?>">
             <?php echo renderProductDiscountBanner($product, 'discount-banner-detail', false); ?>
             <button class="zoom-icon-btn modern-zoom" id="zoomBtn" title="Zoom"><i class="fas fa-search-plus"></i></button>
             <div class="img-magnifier-container" id="mainImageContainer" style="position:relative;">
@@ -788,6 +814,9 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                 <?php endif; ?>
                 <div id="magnifier" class="img-magnifier-glass" style="display:none;"></div>
             </div>
+            <?php if ($productRatingBadge !== ''): ?>
+                <?php echo str_replace('product-detail-rating', 'product-detail-rating product-detail-rating-mobile', $productRatingBadge); ?>
+            <?php endif; ?>
             <div class="thumbnail-row">
                 <?php if (!empty($product['main_image'])): ?>
                     <img class="thumbnail" src="<?php echo $product['main_image']; ?>" alt="<?php echo cleanProductName($product['name']); ?>" loading="lazy" decoding="async">
@@ -811,6 +840,9 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
             </div>
             <?php if (!empty($product['hsn'])): ?>
                 <div class="product-hsn"><strong>HSN:</strong> <?php echo htmlspecialchars($product['hsn']); ?></div>
+            <?php endif; ?>
+            <?php if ($productRatingBadge !== ''): ?>
+                <?php echo str_replace('product-detail-rating', 'product-detail-rating product-detail-rating-desktop', $productRatingBadge); ?>
             <?php endif; ?>
             <?php if ($variationData['has_variations']): ?>
                 <div class="detail-variant-section" id="detailVariantSection">

@@ -597,7 +597,7 @@ function getDiscountedProducts($limit = 8) {
     ensureDiscountSelectionSchema();
     $sql = "SELECT p.*, c.name as category_name FROM products p
             LEFT JOIN categories c ON p.category_id = c.id
-            WHERE p.is_discounted = 1 AND p.is_active = 1
+            WHERE p.is_discounted = 1 AND p.is_active = 1 AND p.stock_quantity > 0
             ORDER BY (SELECT ds.selected_at FROM product_discount_selections ds WHERE ds.product_id = p.id) DESC,
                      p.created_at DESC, p.id DESC";
     if ($limit !== null) {
@@ -1044,6 +1044,57 @@ function getProductCategoryParentVisibility(PDO $pdo, $productId) {
     } catch (PDOException $e) {
         return [];
     }
+}
+
+/**
+ * Count products exactly as they appear after opening a shared category from a
+ * particular top-level menu. This mirrors category.php's parent-visibility
+ * clause so header counts never promise products that the listing will hide.
+ */
+function getCategoryVisibleProductCountForParent(PDO $pdo, $categoryId, $parentId) {
+    static $counts = [];
+
+    $categoryId = (int)$categoryId;
+    $parentId = (int)$parentId;
+    $cacheKey = $categoryId . ':' . $parentId;
+    if (isset($counts[$cacheKey])) {
+        return $counts[$cacheKey];
+    }
+
+    if ($categoryId <= 0 || $parentId <= 0 || !ensureProductCategoryAssignmentsSchema($pdo) || !ensureProductCategoryParentVisibilitySchema($pdo)) {
+        return $counts[$cacheKey] = 0;
+    }
+
+    $categoryIds = array_values(array_unique(array_map('intval', getAllDescendantCategoryIdsRecursive($pdo, $categoryId))));
+    if (!$categoryIds) {
+        return $counts[$cacheKey] = 0;
+    }
+
+    $placeholders = implode(',', array_fill(0, count($categoryIds), '?'));
+    $sql = "SELECT COUNT(DISTINCT p.id)
+            FROM products p
+            WHERE p.is_active = 1
+              AND (p.category_id IN ($placeholders)
+                   OR EXISTS (
+                       SELECT 1 FROM product_category_assignments pca
+                       WHERE pca.product_id = p.id AND pca.category_id IN ($placeholders)
+                   ))
+              AND (
+                   NOT EXISTS (
+                       SELECT 1 FROM product_category_parent_visibility pcpv_any
+                       WHERE pcpv_any.product_id = p.id AND pcpv_any.category_id IN ($placeholders)
+                   )
+                   OR EXISTS (
+                       SELECT 1 FROM product_category_parent_visibility pcpv
+                       WHERE pcpv.product_id = p.id
+                         AND pcpv.category_id IN ($placeholders)
+                         AND pcpv.parent_id = ?
+                   )
+              )";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(array_merge($categoryIds, $categoryIds, $categoryIds, $categoryIds, [$parentId]));
+
+    return $counts[$cacheKey] = (int)$stmt->fetchColumn();
 }
 
 function saveProductCategoryParentVisibility(PDO $pdo, $productId, array $selectedCategoryIds, array $visibilitySelections = []) {

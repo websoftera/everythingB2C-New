@@ -5,6 +5,7 @@ require_once 'includes/delivery_popup_functions.php';
 require_once 'includes/banner_button.php';
 require_once 'includes/product_seller_fields.php';
 require_once 'includes/top_deals.php';
+require_once 'includes/product_reviews.php';
 ensureProductSellerFieldsSchema($pdo);
 
 // Check if popup should be shown
@@ -14,6 +15,7 @@ $popupSettings = getPopupSettings();
 // Get data from database
 $topDealCategories = getTopDealCategories($pdo);
 $discountedProducts = getDiscountedProducts(10);
+$discountedProductReviewSummaries = getPublicProductReviewSummaries($pdo, array_column($discountedProducts, 'id'));
 
 // Get user's wishlist for quick lookup
 $wishlist_ids = [];
@@ -438,6 +440,7 @@ endforeach; ?>
 foreach ($discountedProducts as $product):
   $inWishlist = in_array($product['id'], $wishlist_ids);
   $isOutOfStock = ($product['stock_quantity'] <= 0);
+  $productRating = renderProductRatingBadge($discountedProductReviewSummaries[(int)$product['id']] ?? []);
   $packageQuantity = normalizePackageQuantity($product['package_quantity'] ?? 1);
   $maxQuantity = getProductOrderMaxQuantity($product);
 ?>
@@ -460,7 +463,10 @@ foreach ($discountedProducts as $product):
   endif; ?>
                 </div>
                 <div class="product-details">
-                    <div class="product-unit-line"><?php echo formatProductUnitLine($product, true); ?></div>
+                    <div class="product-card-meta">
+                        <div class="product-rating-slot"><?php echo $productRating; ?></div>
+                        <div class="product-unit-line"><?php echo formatProductUnitLine($product, true); ?></div>
+                    </div>
                     <a href="product.php?slug=<?php echo $product['slug']; ?>" class="product-title-link">
                         <h3><?php echo formatProductListName($product['name']); ?></h3>
                     </a>
@@ -3081,7 +3087,11 @@ endforeach; ?>
   }
 
   html body .top-deals-category-tile {
-    margin-right: 8px !important;
+    flex: 0 0 calc((100% - 28px) / 2) !important;
+    width: calc((100% - 28px) / 2) !important;
+    min-width: calc((100% - 28px) / 2) !important;
+    max-width: calc((100% - 28px) / 2) !important;
+    margin-right: 0 !important;
     scroll-snap-align: start !important;
   }
 

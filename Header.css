@@ -660,7 +660,7 @@ body {
   .category-navbar .nav-link:hover {
 
     text-decoration: underline;
-    color: red;
+    color: #9fbe1b;
   }
 
 }
@@ -2858,8 +2858,9 @@ input[type="checkbox"]:checked+.heart-icon,
     white-space: nowrap;
   }
 
-  .category-mega-view-all:hover {
-    color: #9fbe1b;
+  /* Overrides the site-wide .navbar-nav a:hover rule, which is red. */
+  .category-navbar .category-mega-menu .category-mega-view-all:hover {
+    color: #9fbe1b !important;
   }
 
   .category-mega-grid {
@@ -3152,7 +3153,8 @@ input[type="checkbox"]:checked+.heart-icon,
 /* Responsive breadcrumb */
 @media (max-width: 768px) {
   .breadcrumb-nav {
-    padding: 6px 0;
+    padding: 6px 0 4px;
+    margin-bottom: 0 !important;
   }
 
   .breadcrumb {
@@ -4436,5 +4438,18 @@ nav {
     align-items: center !important;
     justify-content: center !important;
     border-radius: 50px !important;
+  }
+}
+
+/* Final mobile override: prevent the shared compact rule from enlarging the breadcrumb bar. */
+@media (max-width: 768px) {
+  .breadcrumb-nav {
+    padding: 4px 0 !important;
+    margin-bottom: 0 !important;
+  }
+
+  .breadcrumb-nav .breadcrumb {
+    padding: 0 8px !important;
+    margin: 0 !important;
   }
 }
