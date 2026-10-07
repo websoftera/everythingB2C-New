@@ -116,11 +116,22 @@
     /* Keep low to avoid blocking header */
 }
 
+.thumbnail-gallery {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.thumbnail-gallery-control {
+    display: none;
+}
+
 .thumbnail-row {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    margin-top: 16px;
     max-width: 100%;
     overflow: hidden;
 }
@@ -733,14 +744,87 @@
     }
 }
 
+@media (max-width: 767px) {
+    .thumbnail-gallery {
+        width: 100%;
+        gap: 4px;
+        margin-top: 4px;
+        justify-content: space-between;
+    }
+
+    .thumbnail-row {
+        flex: 1 1 auto;
+        width: auto;
+        max-width: none;
+        flex-wrap: nowrap;
+        gap: 6px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-behavior: smooth;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        padding: 3px;
+    }
+
+    .thumbnail-row::-webkit-scrollbar {
+        display: none;
+    }
+
+    .thumbnail {
+        /* The viewport is exactly three thumbnails wide; remaining images scroll. */
+        flex: 0 0 calc((100% - 12px) / 3);
+        width: calc((100% - 12px) / 3);
+        height: 58px;
+        box-sizing: border-box;
+        padding: 3px;
+        border: 1px solid #cbd3dc;
+        border-radius: 6px;
+        background: #f7f8fa;
+        scroll-snap-align: start;
+    }
+
+    .thumbnail.active,
+    .thumbnail:hover {
+        border: 2px solid #0c79e7;
+        background: #fff;
+    }
+
+    .thumbnail-gallery-control {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 28px;
+        width: 28px;
+        height: 34px;
+        padding: 0;
+        border: 1px solid #d4dbe3;
+        border-radius: 5px;
+        background: #fff;
+        color: #94bd1b;
+        font-size: 14px;
+        box-shadow: 0 1px 3px rgba(20, 35, 55, 0.12);
+        cursor: pointer;
+    }
+
+    .thumbnail-gallery-control[hidden] {
+        display: none;
+    }
+}
+
 @media (max-width: 480px) {
     .img-magnifier-container {
         height: 250px;
     }
 
+    .thumbnail-row {
+        flex-basis: auto;
+        width: auto;
+    }
+
     .thumbnail {
-        width: 50px;
-        height: 50px;
+        flex-basis: calc((100% - 12px) / 3);
+        width: calc((100% - 12px) / 3);
+        height: 52px;
     }
 
     .price-buttons1 {
@@ -794,6 +878,11 @@
 }
 
 @media (max-width: 768px) {
+    /* Avoid stacking the Reviews margin with a second large Related Products gap. */
+    .related-products-section {
+        padding: 8px 0 10px !important;
+    }
+
     .related-products-slider-wrapper {
         overflow: visible;
     }
@@ -817,7 +906,7 @@
     /* Fix related spacing */
     .related-products-header {
         margin-bottom: 2px !important;
-        margin-top: 17px !important;
+        margin-top: 0 !important;
 
     }
 

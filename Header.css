@@ -4441,6 +4441,51 @@ nav {
   }
 }
 
+/* Rotating category label inside the header search field. */
+.category-search-hint-host {
+  position: relative;
+}
+
+.category-search-hint-overlay {
+  position: absolute;
+  z-index: 4;
+  display: none;
+  align-items: center;
+  overflow: hidden;
+  pointer-events: none;
+  color: #8b9aad;
+  font-size: inherit;
+  line-height: 1;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.category-search-hint-overlay strong {
+  color: #607386;
+  margin-left: 6px;
+  font-size: calc(1em - 1px);
+  font-weight: 600;
+}
+
+.category-search-hint-overlay.is-visible {
+  display: flex;
+}
+
+.category-search-hint-name.is-entering {
+  animation: categorySearchHintDown .55s ease-out both;
+}
+
+@keyframes categorySearchHintDown {
+  from {
+    opacity: 0;
+    transform: translateY(-90%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Final mobile override: prevent the shared compact rule from enlarging the breadcrumb bar. */
 @media (max-width: 768px) {
   .breadcrumb-nav {
