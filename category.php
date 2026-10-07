@@ -621,16 +621,23 @@ endif; ?>
     padding-right: 20px !important;
   }
 
-  /* Reduce MRP & PAY font by 2px so full text fits in narrow columns */
-  .price-btn.mrp,
-  .price-btn.pay,
-  .mrp,
-  .pay {
-    font-size: 9px !important;
+  /* Keep the complete MRP/PAY label and amount easy to read on mobile. */
+  .category-container .product-card .price-buttons .price-btn.mrp,
+  .category-container .product-card .price-buttons .price-btn.pay {
+    font-size: 12px !important;
     padding-left: 2px !important;
     padding-right: 2px !important;
     max-width: 100% !important;
     min-width: 42% !important;
+    min-height: 34px !important;
+  }
+  .category-container .product-card .price-buttons .price-btn .label {
+    font-size: 12px !important;
+    font-weight: 700 !important;
+  }
+  .category-container .product-card .price-buttons .price-btn .value {
+    font-size: 13px !important;
+    font-weight: 700 !important;
   }
 }
 /* Keep the subcategory background flush with the breadcrumb and page edges. */

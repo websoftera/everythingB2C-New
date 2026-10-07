@@ -143,19 +143,61 @@
     inputs.forEach(input => {
       input.dataset.categoryHintInitialized = '1';
       input.classList.add('category-search-hint');
+      input.placeholder = '';
+
+      const host = input.parentElement;
+      if (!host) return;
+      host.classList.add('category-search-hint-host');
+
+      const overlay = document.createElement('span');
+      overlay.className = 'category-search-hint-overlay';
+      overlay.setAttribute('aria-hidden', 'true');
+      host.appendChild(overlay);
+      input._categoryHintOverlay = overlay;
+
+      const positionOverlay = () => {
+        overlay.style.left = (input.offsetLeft + 14) + 'px';
+        overlay.style.top = input.offsetTop + 'px';
+        overlay.style.width = Math.max(0, input.offsetWidth - 28) + 'px';
+        overlay.style.height = input.offsetHeight + 'px';
+      };
+      positionOverlay();
+      window.addEventListener('resize', positionOverlay);
+
+      input.addEventListener('focus', () => overlay.classList.remove('is-visible'));
+      input.addEventListener('blur', () => {
+        if (!input.value) overlay.classList.add('is-visible');
+      });
+      input.addEventListener('input', () => {
+        overlay.classList.toggle('is-visible', !input.value && document.activeElement !== input);
+      });
     });
 
     function showNextHint() {
-      const hint = `Search for ${categoryNames[categoryIndex]}`;
+      const categoryName = categoryNames[categoryIndex];
       categoryIndex = (categoryIndex + 1) % categoryNames.length;
 
       inputs.forEach(input => {
-        if (input.value || document.activeElement === input) return;
-        input.classList.remove('category-search-hint-visible');
-        window.requestAnimationFrame(() => {
-          input.placeholder = hint;
-          input.classList.add('category-search-hint-visible');
-        });
+        const overlay = input._categoryHintOverlay;
+        if (!overlay) return;
+
+        overlay.replaceChildren();
+        overlay.append('Search for');
+        const category = document.createElement('strong');
+        category.className = 'category-search-hint-name';
+        category.textContent = categoryName;
+        overlay.appendChild(category);
+
+        if (input.value || document.activeElement === input) {
+          overlay.classList.remove('is-visible');
+          return;
+        }
+
+        overlay.classList.remove('is-visible');
+        category.classList.remove('is-entering');
+        void category.offsetWidth;
+        overlay.classList.add('is-visible');
+        category.classList.add('is-entering');
       });
     }
 

@@ -320,6 +320,20 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                 margin-top: 4px !important; /* Space between main img & gallery */
             }
 
+            /* Let the compact mobile thumbnail gallery use more of the card width. */
+            .product-page-container .thumbnail-gallery {
+                width: calc(100% + 32px) !important;
+                margin: 4px -16px 0 !important;
+                gap: 3px !important;
+            }
+
+            /* Keep the fourth thumbnail fully out of view until the next arrow is pressed. */
+            .product-page-container .thumbnail-row {
+                overflow: hidden !important;
+                clip-path: inset(0) !important;
+                contain: paint;
+            }
+
             .product-page-container .product-info-section {
                 padding: 12px !important; /* Standardized uniform padding for interior nodes border safety */
             }
@@ -817,17 +831,25 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
             <?php if ($productRatingBadge !== ''): ?>
                 <?php echo str_replace('product-detail-rating', 'product-detail-rating product-detail-rating-mobile', $productRatingBadge); ?>
             <?php endif; ?>
-            <div class="thumbnail-row">
-                <?php if (!empty($product['main_image'])): ?>
-                    <img class="thumbnail" src="<?php echo $product['main_image']; ?>" alt="<?php echo cleanProductName($product['name']); ?>" loading="lazy" decoding="async">
-                <?php else: ?>
-                    <img class="thumbnail" src="./uploads/products/blank-img.webp" alt="No image available" loading="lazy" decoding="async">
-                <?php endif; ?>
-                <?php foreach ($productImages as $image): ?>
-                    <?php if ($image['image_path'] !== $product['main_image']): ?>
-                        <img class="thumbnail" src="<?php echo $image['image_path']; ?>" alt="<?php echo cleanProductName($product['name']); ?>" loading="lazy" decoding="async">
+            <div class="thumbnail-gallery">
+                <button type="button" class="thumbnail-gallery-control thumbnail-gallery-prev" aria-label="Show previous product images" hidden>
+                    <i class="fas fa-chevron-left" aria-hidden="true"></i>
+                </button>
+                <div class="thumbnail-row" id="thumbnailRow">
+                    <?php if (!empty($product['main_image'])): ?>
+                        <img class="thumbnail" src="<?php echo $product['main_image']; ?>" alt="<?php echo cleanProductName($product['name']); ?>" loading="lazy" decoding="async">
+                    <?php else: ?>
+                        <img class="thumbnail" src="./uploads/products/blank-img.webp" alt="No image available" loading="lazy" decoding="async">
                     <?php endif; ?>
-                <?php endforeach; ?>
+                    <?php foreach ($productImages as $image): ?>
+                        <?php if ($image['image_path'] !== $product['main_image']): ?>
+                            <img class="thumbnail" src="<?php echo $image['image_path']; ?>" alt="<?php echo cleanProductName($product['name']); ?>" loading="lazy" decoding="async">
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                </div>
+                <button type="button" class="thumbnail-gallery-control thumbnail-gallery-next" aria-label="Show next product images" hidden>
+                    <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                </button>
             </div>
         </div>
         <div class="product-info-section modern-info">
@@ -991,7 +1013,7 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
       .product-review-carousel-controls{display:flex;justify-content:center;align-items:center;gap:14px;margin-top:16px;color:#667085;font-size:13px}.review-carousel-arrow{width:34px;height:34px;border:1px solid #d5dce5;border-radius:50%;background:#fff;color:#344054;cursor:pointer}.review-carousel-arrow:hover{border-color:#0c79e7;color:#0c79e7}.review-carousel-arrow:focus-visible{outline:2px solid #0c79e7;outline-offset:2px}
       .product-review-carousel.single-review-page .product-review-carousel-controls{display:none}
       .write-product-review{margin-top:22px;padding-top:20px;border-top:1px solid #edf0f4}.write-product-review h3{margin:0 0 12px;font-size:19px;color:#263244}.product-review-form{display:grid;gap:12px;max-width:760px}.product-review-form label{display:grid;gap:6px;font-weight:600;color:#344054}.product-review-form input,.product-review-form textarea,.product-review-form select{width:100%;padding:10px 12px;border:1px solid #d0d5dd;border-radius:7px;font:inherit;font-weight:400}.product-review-form button{justify-self:start;border:0;border-radius:7px;background:#0c79e7;color:white;padding:10px 18px;font-weight:700;cursor:pointer}.product-review-form button:hover{background:#0868c8}.review-submit-notice{max-width:760px;padding:10px 13px;border-radius:7px;background:#eaf5ff;color:#155b91;margin-bottom:12px}.product-review-login-note{color:#687385;margin:0 0 12px}
-      @media(max-width:700px){.product-reviews{box-sizing:border-box;width:auto;/* margin:20px 12px; */padding:12px 10px !important}.product-reviews-heading{align-items:flex-start;padding:0 12px 18px}.product-reviews-heading>div{padding:0}.product-review-carousel{padding:18px 0 0}.product-reviews-heading h2{font-size:20px}.product-review-card{flex-basis:100%;padding:12px}.product-reviews-empty{padding-left:12px;padding-right:12px}.write-product-review{padding:12px}.product-review-meta{gap:8px 12px}}
+      @media(max-width:700px){.product-reviews{box-sizing:border-box;width:auto;margin:12px auto 8px!important;padding:12px 10px !important}.product-reviews-heading{align-items:flex-start;padding:0 12px 18px}.product-reviews-heading>div{padding:0}.product-review-carousel{padding:18px 0 0}.product-reviews-heading h2{font-size:20px}.product-review-card{flex-basis:100%;padding:12px}.product-reviews-empty{padding-left:12px;padding-right:12px}.write-product-review{padding:12px}.product-review-meta{gap:8px 12px}}
       @media(prefers-reduced-motion:reduce){.product-review-track{transition:none}}
     </style>
 
@@ -1443,6 +1465,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     const thumbnails = document.querySelectorAll('.thumbnail');
+    const thumbnailRow = document.getElementById('thumbnailRow');
+    const thumbnailPrevious = document.querySelector('.thumbnail-gallery-prev');
+    const thumbnailNext = document.querySelector('.thumbnail-gallery-next');
     const mainImage = document.getElementById('mainImage');
     const mainImageContainer = document.getElementById('mainImageContainer');
     const magnifier = document.getElementById('magnifier');
@@ -1459,8 +1484,27 @@ document.addEventListener('DOMContentLoaded', function() {
             mainImage.src = this.src;
             mainImage.setAttribute('data-index', idx);
             this.classList.add('active');
+            if (window.matchMedia('(max-width: 767px)').matches) {
+                this.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
         });
     });
+
+    if (thumbnailRow && thumbnailPrevious && thumbnailNext) {
+        const updateThumbnailControls = () => {
+            const hasOverflow = thumbnailRow.scrollWidth > thumbnailRow.clientWidth + 2;
+            thumbnailPrevious.hidden = !hasOverflow;
+            thumbnailNext.hidden = !hasOverflow;
+        };
+        const scrollThumbnails = (direction) => {
+            // One press moves one full visible group (three thumbnails on mobile).
+            thumbnailRow.scrollBy({ left: direction * thumbnailRow.clientWidth, behavior: 'smooth' });
+        };
+        thumbnailPrevious.addEventListener('click', () => scrollThumbnails(-1));
+        thumbnailNext.addEventListener('click', () => scrollThumbnails(1));
+        window.addEventListener('resize', updateThumbnailControls);
+        updateThumbnailControls();
+    }
     
     // --- Magnifier effect ---
     function magnify(img, zoom) {
