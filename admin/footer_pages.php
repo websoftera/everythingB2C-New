@@ -505,6 +505,11 @@ function rgbToHex(color) {
 function updateEditorToolbar() {
     if (!activeEditorBlock) return;
     const styles = window.getComputedStyle(activeEditorBlock);
+    const styleSelect = document.getElementById('editorTextStyle');
+    if (styleSelect) {
+        const currentTag = activeEditorBlock.tagName.toLowerCase();
+        styleSelect.value = ['p', 'h2', 'h3'].includes(currentTag) ? currentTag : 'p';
+    }
     const size = Math.round(parseFloat(styles.fontSize));
     const sizeSelect = document.getElementById('editorFontSize');
     if (sizeSelect && Number.isFinite(size)) {
@@ -537,6 +542,14 @@ function updateRemoveLinkButton() {
 visualEditor?.addEventListener('mouseup', rememberAndUpdateEditorBlock);
 visualEditor?.addEventListener('keyup', rememberAndUpdateEditorBlock);
 visualEditor?.addEventListener('focusin', rememberAndUpdateEditorBlock);
+document.addEventListener('selectionchange', function () {
+    const selection = window.getSelection();
+    if (!visualEditor || !selection?.rangeCount) return;
+    const range = selection.getRangeAt(0);
+    if (visualEditor.contains(range.commonAncestorContainer)) {
+        rememberAndUpdateEditorBlock();
+    }
+});
 function applyCurrentBlockStyle(property, value) {
     if (!activeEditorBlock) {
         window.alert('Click inside the paragraph or heading first, then choose its color or size.');
@@ -557,6 +570,11 @@ function changeCurrentBlockTag(tagName) {
         replacement.setAttribute(attribute.name, attribute.value);
     });
     replacement.innerHTML = activeEditorBlock.innerHTML;
+    if (tag === 'h2') {
+        // A Section title always uses the website's fixed blue heading style.
+        replacement.style.removeProperty('color');
+        replacement.style.removeProperty('font-size');
+    }
     activeEditorBlock.replaceWith(replacement);
     activeEditorBlock = replacement;
     visualEditor?.focus();
