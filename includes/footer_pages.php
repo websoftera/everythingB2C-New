@@ -242,7 +242,14 @@ function renderFooterManagedPage(array $page): void
         .footer-page-custom-styles li { color:var(--footer-description); font-size:var(--footer-description-size); }
         .footer-page-custom-styles li::marker,
         .footer-page-custom-styles li::before { color:var(--footer-bullet) !important; }
-        .footer-custom-content .footer-managed-page-content > h2,
+        .footer-custom-content .footer-managed-page-content > h2 {
+            border-left:4px solid var(--site-blue);
+            color:var(--footer-subtitle);
+            font-size:var(--footer-subtitle-size);
+            font-weight:600;
+            margin:0 0 20px;
+            padding-left:15px;
+        }
         .footer-custom-content .footer-managed-page-content > h3 {
             border-left:0;
             color:#161616;
