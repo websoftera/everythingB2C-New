@@ -1,6 +1,11 @@
 <?php
 require_once 'config/database.php';
 require_once 'includes/functions.php';
+require_once 'includes/footer_pages.php';
+
+if (renderManagedFooterPageForLegacyPath($pdo, 'faq.php')) {
+    exit;
+}
 
 // Include header
 include 'includes/header.php';

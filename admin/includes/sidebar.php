@@ -4,6 +4,10 @@ if (file_exists(__DIR__ . '/../../includes/seller_functions.php')) {
     require_once __DIR__ . '/../../includes/seller_functions.php';
 }
 require_once __DIR__ . '/../../includes/functions.php';
+require_once __DIR__ . '/../../includes/footer_pages.php';
+if (isset($pdo) && $pdo instanceof PDO) {
+    ensureFooterPagesSchema($pdo);
+}
 ?>
 <div class="everythingb2c-sidebar">
     <div class="everythingb2c-sidebar-header">
@@ -228,7 +232,15 @@ require_once __DIR__ . '/../../includes/functions.php';
                 </a>
             </li>
             <?php endif; ?>
-            
+
+            <?php if (hasPermission('manage_footer_pages')): ?>
+            <li class="everythingb2c-nav-item">
+                <a class="everythingb2c-nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'footer_pages.php' ? 'active' : ''; ?>" href="footer_pages.php">
+                    <i class="fas fa-file-alt everythingb2c-nav-icon"></i> Footer Pages
+                </a>
+            </li>
+            <?php endif; ?>
+
             <!-- Admin Management Section -->
             <?php if (canAccess('manage_admins') || canAccess('manage_roles')): ?>
             <li class="everythingb2c-nav-divider"></li>

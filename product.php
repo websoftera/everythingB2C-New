@@ -1085,6 +1085,7 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
         <button id="zoomNext" class="zoom-nav-btn zoom-next">&#8594;</button>
     </div>
 
+    <?php if (!empty($relatedProducts)): ?>
     <!-- Related Products Section -->
     <section class="related-products-section">
         <div class="related-products-card">
@@ -1171,6 +1172,7 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
             </div>
         </div>
     </section>
+    <?php endif; ?>
 </div>
 
 <script>

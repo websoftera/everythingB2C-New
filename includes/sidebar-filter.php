@@ -22,9 +22,16 @@ if (!isset($_GET['min_price']) && !isset($_GET['max_price'])) {
     $currentMaxPrice = $siteMaxPrice;
 }
 
+// Match category counts to the current listing mode. Without this, a
+// discounted page could show the total active count for a category.
+$categoryCountScope = [
+    'discounted' => !empty($_GET['discounted']),
+    'featured' => !empty($_GET['featured']),
+];
+
 // Get all categories for filter
 $categories = getAllCategories();
-$categoryFilterCounts = getCategoryFilterProductCounts($categories);
+$categoryFilterCounts = getCategoryFilterProductCounts($categories, $categoryCountScope);
 foreach ($categories as &$filterCategory) {
     $filterCategory['product_count'] = $categoryFilterCounts[$filterCategory['id']] ?? 0;
 }
@@ -35,7 +42,16 @@ $categories = array_values(array_filter($categories, function ($category) {
 }));
 // Both filter renderers walk this list by parent, preserving child grouping.
 $categories = orderMainCategoryTree($categories);
-$allCategoryProductCount = (int)$pdo->query('SELECT COUNT(*) FROM products WHERE is_active = 1')->fetchColumn();
+$allCategoryCountConditions = ['is_active = 1'];
+if ($categoryCountScope['discounted']) {
+    $allCategoryCountConditions[] = 'is_discounted = 1';
+}
+if ($categoryCountScope['featured']) {
+    $allCategoryCountConditions[] = 'is_featured = 1';
+}
+$allCategoryProductCount = (int)$pdo
+    ->query('SELECT COUNT(*) FROM products WHERE ' . implode(' AND ', $allCategoryCountConditions))
+    ->fetchColumn();
 $categoryTree = buildCategoryTree($categories);
 ?>
 

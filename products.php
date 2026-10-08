@@ -106,6 +106,15 @@ else {
 // Build the complete query
 $whereClause = implode(' AND ', $whereConditions);
 
+// Only the unfiltered Top Deals View All page uses category-block ordering.
+// A selected category, search, or another filter keeps the normal list order.
+$groupTopDealsByCategory = $featured
+  && ($selectedCategory === null || $selectedCategory === '')
+  && !$selectedSubcategory
+  && $searchTerm === ''
+  && !$minPrice
+  && $maxPrice >= 10000;
+
 // Count total products for pagination
 $countQuery = "SELECT COUNT(*) FROM products p WHERE $whereClause";
 $countStmt = $pdo->prepare($countQuery);
@@ -141,18 +150,97 @@ switch ($sortBy) {
     break;
 }
 
-// Get products with filters and pagination
-$query = "SELECT p.*, c.name as category_name 
-          FROM products p 
-          LEFT JOIN categories c ON p.category_id = c.id 
-          WHERE $whereClause 
-          ORDER BY $orderBy 
-          LIMIT $productsPerPage OFFSET $offset";
+// Get products with filters and pagination. For Top Deals View All, load the
+// matching set first so category ordering is applied before pagination.
+$queryLimit = $groupTopDealsByCategory ? max(1, (int)$totalProducts) : $productsPerPage;
+$queryOffset = $groupTopDealsByCategory ? 0 : $offset;
+$query = "SELECT p.*, c.name as category_name
+          FROM products p
+          LEFT JOIN categories c ON p.category_id = c.id
+          WHERE $whereClause
+          ORDER BY $orderBy
+          LIMIT $queryLimit OFFSET $queryOffset";
 
 $stmt = $pdo->prepare($query);
 $stmt->execute($params);
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $products = applyDisplayVariationPrices($products);
+
+// The Top Deals "View All" page should keep products under their assigned
+// deal subcategory (Arm Protection, Construction Industry, etc.), not mix
+// all categories together in a single grid.
+$topDealProductGroups = [];
+if ($groupTopDealsByCategory && !empty($visibleDealCategories) && !empty($products)) {
+  $dealCategoryIds = array_map(static fn($category) => (int)$category['id'], $visibleDealCategories);
+  $assignedProducts = getTopDealProductsByCategory($pdo, $dealCategoryIds);
+  $productCategoryLookup = [];
+
+  // A product assigned to more than one deal category is shown under the
+  // first visible category, respecting the order set in Top Deals admin.
+  foreach ($dealCategoryIds as $dealCategoryId) {
+    foreach ($assignedProducts[$dealCategoryId] ?? [] as $assignedProduct) {
+      $productId = (int)$assignedProduct['id'];
+      if (!isset($productCategoryLookup[$productId])) {
+        $productCategoryLookup[$productId] = $dealCategoryId;
+      }
+    }
+  }
+
+  $groupsById = [];
+  foreach ($visibleDealCategories as $dealCategory) {
+    $groupsById[(int)$dealCategory['id']] = [
+      'name' => (string)$dealCategory['name'],
+      'products' => [],
+    ];
+  }
+  $unassignedProducts = [];
+  foreach ($products as $product) {
+    $dealCategoryId = $productCategoryLookup[(int)$product['id']] ?? null;
+    // Some older products use their main category only and do not yet have a
+    // product_category_assignments row. Keep those products in the same block.
+    if ($dealCategoryId === null && isset($groupsById[(int)$product['category_id']])) {
+      $dealCategoryId = (int)$product['category_id'];
+    }
+    if ($dealCategoryId !== null && isset($groupsById[$dealCategoryId])) {
+      $groupsById[$dealCategoryId]['products'][] = $product;
+    } else {
+      $unassignedProducts[] = $product;
+    }
+  }
+  foreach ($groupsById as $group) {
+    if ($group['products']) {
+      $topDealProductGroups[] = $group;
+    }
+  }
+  if ($unassignedProducts) {
+    $topDealProductGroups[] = ['name' => '', 'products' => $unassignedProducts];
+  }
+}
+if (!$topDealProductGroups) {
+  $topDealProductGroups = [['name' => '', 'products' => $products]];
+}
+
+if ($groupTopDealsByCategory) {
+  $orderedProducts = [];
+  foreach ($topDealProductGroups as $group) {
+    foreach ($group['products'] as $product) {
+      $orderedProducts[] = $product;
+    }
+  }
+  $products = array_slice($orderedProducts, $offset, $productsPerPage);
+  $visibleProductIds = array_flip(array_map(static fn($product) => (int)$product['id'], $products));
+  foreach ($topDealProductGroups as &$group) {
+    $group['products'] = array_values(array_filter(
+      $group['products'],
+      static fn($product) => isset($visibleProductIds[(int)$product['id']])
+    ));
+  }
+  unset($group);
+  $topDealProductGroups = array_values(array_filter(
+    $topDealProductGroups,
+    static fn($group) => !empty($group['products'])
+  ));
+}
 $productReviewSummaries = getPublicProductReviewSummaries($pdo, array_column($products, 'id'));
 
 // Get user's wishlist for quick lookup
@@ -209,7 +297,8 @@ echo renderBreadcrumb($breadcrumbs);
             </div>
           <?php
 else: ?>
-<?php foreach ($products as $product):
+          <?php foreach ($topDealProductGroups as $topDealProductGroup): ?>
+            <?php foreach ($topDealProductGroup['products'] as $product):
     $inWishlist = in_array($product['id'], $wishlist_ids);
     $isOutOfStock = ($product['stock_quantity'] <= 0);
     $productRating = renderProductRatingBadge($productReviewSummaries[(int)$product['id']] ?? []);
@@ -291,6 +380,7 @@ else: ?>
               </div>
             <?php
   endforeach; ?>
+          <?php endforeach; ?>
           <?php
 endif; ?>
         </div>
@@ -422,6 +512,7 @@ endif; ?>
     grid-template-columns: 1fr !important; /* Mobile: 1 card per row */
     gap: 15px;
   }
+
 }
 
 @media (min-width: 768px) and (max-width: 1199px) {

@@ -1,3 +1,7 @@
+<?php
+require_once __DIR__ . '/footer_pages.php';
+$footerManagedPages = isset($pdo) && $pdo instanceof PDO ? getActiveFooterPages($pdo) : [];
+?>
 <!-- Footer -->
 <footer class="desktop-footer">
     <div class="footer-background">
@@ -26,15 +30,22 @@
             </ul>
         </div> -->
         <div class="footer-column">
-            <h3>Quick Links</h3>    
+            <h3>Quick Links</h3>
             <div class="footer-links-inline">
-                <a href="<?php echo $base_url; ?>about.php">About Us</a>
-                <span class="separator">|</span>
-                <a href="<?php echo $base_url; ?>returns.php">Returns & Refunds</a>
-                <span class="separator">|</span>
-                <a href="<?php echo $base_url; ?>privacy.php">Privacy Policy</a>
-                <span class="separator">|</span>
-                <a href="<?php echo $base_url; ?>faq.php">FAQ</a>
+                <?php if ($footerManagedPages): ?>
+                    <?php foreach ($footerManagedPages as $index => $footerPage): ?>
+                        <?php if ($index > 0): ?><span class="separator">|</span><?php endif; ?>
+                        <a href="<?php echo htmlspecialchars(footerPageUrl($footerPage, $base_url), ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($footerPage['title'], ENT_QUOTES, 'UTF-8'); ?></a>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <a href="<?php echo $base_url; ?>about.php">About Us</a>
+                    <span class="separator">|</span>
+                    <a href="<?php echo $base_url; ?>returns.php">Returns &amp; Refunds</a>
+                    <span class="separator">|</span>
+                    <a href="<?php echo $base_url; ?>privacy.php">Privacy Policy</a>
+                    <span class="separator">|</span>
+                    <a href="<?php echo $base_url; ?>faq.php">FAQ</a>
+                <?php endif; ?>
             </div>
         </div>
         <div class="footer-column social">
