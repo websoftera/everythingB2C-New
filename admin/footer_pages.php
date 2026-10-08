@@ -40,6 +40,7 @@ function footer_pages_form(array $page = []): array
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
+        $redirectUrl = 'footer_pages.php';
         if (!hash_equals($csrf, (string)($_POST['csrf'] ?? ''))) {
             throw new RuntimeException('Your session expired. Refresh the page and try again.');
         }
@@ -102,13 +103,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt = $pdo->prepare('INSERT INTO footer_pages (title, slug, content, style_settings, sort_order, is_active)
                     VALUES (?, ?, ?, ?, ?, ?)');
                 $stmt->execute([$title, $slug, $content === '' ? null : $content, $styleSettings, $sortOrder, $isActive]);
+                $id = (int)$pdo->lastInsertId();
                 $_SESSION['footer_pages_flash'] = 'Footer page created successfully.';
             }
+            $redirectUrl = 'footer_pages.php?edit=' . (int)$id;
         } else {
             throw new RuntimeException('Invalid action.');
         }
 
-        header('Location: footer_pages.php');
+        // Stay on the page that was just saved, so the administrator can continue editing.
+        header('Location: ' . $redirectUrl);
         exit;
     } catch (PDOException $e) {
         $error = $e->getCode() === '23000'
@@ -168,6 +172,7 @@ $isFaqEditor = $editing && (($editing['legacy_path'] ?? '') === 'faq.php');
         .footer-page-editor-toolbar { background:#f8fafc; border:1px solid #bdc9d6; border-bottom:0; border-radius:6px 6px 0 0; display:flex; flex-wrap:wrap; gap:6px; padding:8px; }
         .footer-page-visual-editor h2 { border-left:4px solid #1683e8; color:#2c539f; font-size:1.45rem; padding-left:12px; }
         .footer-page-visual-editor p, .footer-page-visual-editor li { line-height:1.65; }
+        .footer-page-visual-editor a { color:#0d6efd; text-decoration:underline; }
         .footer-page-visual-editor li::marker { color:#1683e8; }
         .footer-page-visual-editor .about-section,
         .footer-page-visual-editor .policy-section,
@@ -188,6 +193,15 @@ $isFaqEditor = $editing && (($editing['legacy_path'] ?? '') === 'faq.php');
         .footer-sections-swal .swal2-icon { box-sizing:border-box !important; height:46px !important; margin:2px auto 8px !important; transform:none !important; width:46px !important; }
         .footer-sections-swal .swal2-actions { gap:7px !important; margin:8px 0 0 !important; }
         .footer-sections-swal .swal2-styled { font-size:.82rem !important; padding:8px 12px !important; }
+        .footer-link-swal { border-radius:12px !important; padding:20px 22px !important; width:420px !important; }
+        .footer-link-swal .swal2-title { color:#25324a; font-size:1.25rem !important; line-height:1.2; margin:0 0 14px !important; }
+        .footer-link-swal .swal2-html-container { margin:0 !important; overflow:visible !important; }
+        .footer-link-form { display:grid; gap:11px; text-align:left; }
+        .footer-link-form label { color:#4b5563; display:block; font-size:.78rem; font-weight:600; margin:0 0 4px; }
+        .footer-link-form .footer-link-field { border:1px solid #cbd5e1; border-radius:6px; box-sizing:border-box; color:#1f2937; font-size:.9rem; height:38px; margin:0; padding:7px 10px; width:100%; }
+        .footer-link-form .footer-link-field:focus { border-color:#0d6efd; box-shadow:0 0 0 .16rem rgba(13,110,253,.14); outline:0; }
+        .footer-link-swal .swal2-actions { gap:8px; margin:16px 0 0 !important; }
+        .footer-link-swal .swal2-styled { font-size:.84rem !important; margin:0 !important; padding:8px 14px !important; }
     </style>
 </head>
 <body>
@@ -273,6 +287,7 @@ $isFaqEditor = $editing && (($editing['legacy_path'] ?? '') === 'faq.php');
                                     <button class="btn btn-sm btn-light" type="button" data-editor-command="italic"><em>I</em></button>
                                     <button class="btn btn-sm btn-light" type="button" data-editor-command="insertUnorderedList"><i class="fas fa-list-ul"></i> List</button>
                                     <button class="btn btn-sm btn-light" type="button" data-editor-command="createLink"><i class="fas fa-link"></i> Link</button>
+                                    <button class="btn btn-sm btn-outline-secondary d-none" type="button" id="removeEditorLink"><i class="fas fa-unlink"></i> Remove link</button>
                                     <button class="btn btn-sm btn-outline-primary" type="button" id="addEditorParagraph"><i class="fas fa-plus"></i> Add Paragraph</button>
                                     <button class="btn btn-sm btn-outline-primary" type="button" id="addEditorSection" data-section-class="<?php echo footer_pages_h($sectionClass); ?>"><i class="fas fa-plus"></i> Add Section</button>
                                 </div>
@@ -334,19 +349,140 @@ document.getElementById('footerPageSlug')?.addEventListener('input', function ()
 });
 const visualEditor = document.getElementById('footerPageVisualEditor');
 const contentInput = document.getElementById('footerPageContent');
+let savedEditorRange = null;
+function saveEditorRange() {
+    const selection = window.getSelection();
+    if (!visualEditor || !selection || !selection.rangeCount) return;
+    const range = selection.getRangeAt(0);
+    if (visualEditor.contains(range.commonAncestorContainer)) {
+        savedEditorRange = range.cloneRange();
+    }
+}
+function restoreEditorRange() {
+    if (!savedEditorRange) return false;
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(savedEditorRange);
+    return true;
+}
+function makeLinkUrl(kind, address) {
+    const value = String(address || '').trim();
+    if (!value) return '';
+    if (kind === 'email') return 'mailto:' + value.replace(/^mailto:/i, '');
+    if (kind === 'phone') return 'tel:' + value.replace(/^tel:/i, '').replace(/\s+/g, '');
+    if (/^(https?:\/\/|\/|#)/i.test(value)) return value;
+    return 'https://' + value;
+}
+function openLinkDialog() {
+    if (!visualEditor) return;
+    saveEditorRange();
+    const selectedText = savedEditorRange ? savedEditorRange.toString().trim() : '';
+    const safeSelectedText = selectedText.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    const addLink = function (kind, address, text) {
+        const href = makeLinkUrl(kind, address);
+        if (!href) return;
+        visualEditor.focus();
+        const hasSelection = restoreEditorRange() && !savedEditorRange.collapsed;
+        if (hasSelection) {
+            // Do not use execCommand here: it can lose the selection after a SweetAlert popup closes.
+            const link = document.createElement('a');
+            link.href = href;
+            link.appendChild(savedEditorRange.extractContents());
+            savedEditorRange.insertNode(link);
+            const afterLink = document.createRange();
+            afterLink.setStartAfter(link);
+            afterLink.collapse(true);
+            savedEditorRange = afterLink;
+        } else {
+            const label = String(text || '').trim() || address;
+            document.execCommand('insertHTML', false, '<a href="' + href.replace(/"/g, '&quot;') + '">' + label.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</a>');
+        }
+    };
+    if (typeof Swal === 'undefined') {
+        const address = window.prompt('Website address, email address, or phone number:');
+        if (address) addLink('web', address, selectedText);
+        return;
+    }
+    Swal.fire({
+        title: 'Add link',
+        html: '<div class="footer-link-form">' +
+            '<div><label for="linkType">Link type</label><select id="linkType" class="footer-link-field"><option value="web">Website or page</option><option value="email">Email address</option><option value="phone">Phone number</option></select></div>' +
+            '<div><label for="linkAddress">Destination</label><input id="linkAddress" class="footer-link-field" placeholder="example.com or /page"></div>' +
+            '<div><label for="linkText">Text visitors click</label><input id="linkText" class="footer-link-field" value="' + safeSelectedText + '" placeholder="Link text"></div>' +
+            '</div>',
+        showCancelButton: true,
+        confirmButtonText: 'Add link',
+        cancelButtonText: 'Cancel',
+        focusConfirm: false,
+        customClass: { popup: 'footer-link-swal' },
+        didOpen: function () {
+            const type = document.getElementById('linkType');
+            const address = document.getElementById('linkAddress');
+            const updateLinkHint = function () {
+                const hints = {
+                    web: 'example.com or /page',
+                    email: 'name@example.com',
+                    phone: '+91 98765 43210'
+                };
+                address.placeholder = hints[type.value];
+            };
+            type.addEventListener('change', updateLinkHint);
+            updateLinkHint();
+            address.focus();
+        },
+        preConfirm: function () {
+            const address = document.getElementById('linkAddress').value.trim();
+            const text = document.getElementById('linkText').value.trim();
+            if (!address) {
+                Swal.showValidationMessage('Enter the link destination.');
+                return false;
+            }
+            if (!selectedText && !text) {
+                Swal.showValidationMessage('Enter the text visitors will click.');
+                return false;
+            }
+            return { kind: document.getElementById('linkType').value, address: address, text: text };
+        }
+    }).then(function (result) {
+        if (result.isConfirmed) addLink(result.value.kind, result.value.address, result.value.text);
+    });
+}
+function removeCurrentLink() {
+    if (!visualEditor || !restoreEditorRange()) {
+        window.alert('Click inside the linked text first.');
+        return;
+    }
+    const start = savedEditorRange.startContainer;
+    const element = start.nodeType === Node.ELEMENT_NODE ? start : start.parentElement;
+    const link = element?.closest('a');
+    if (!link || !visualEditor.contains(link)) {
+        window.alert('Click inside the linked text first.');
+        return;
+    }
+    const parent = link.parentNode;
+    while (link.firstChild) parent.insertBefore(link.firstChild, link);
+    parent.removeChild(link);
+    visualEditor.focus();
+    updateRemoveLinkButton();
+}
 document.querySelectorAll('[data-editor-command]').forEach(function (button) {
+    button.addEventListener('mousedown', function () {
+        if (button.dataset.editorCommand === 'createLink') saveEditorRange();
+    });
     button.addEventListener('click', function () {
         if (!visualEditor) return;
-        visualEditor.focus();
         const command = button.dataset.editorCommand;
-        let value = button.dataset.editorValue || null;
         if (command === 'createLink') {
-            value = window.prompt('Enter the web address or email link:');
-            if (!value) return;
+            openLinkDialog();
+            return;
         }
+        visualEditor.focus();
+        const value = button.dataset.editorValue || null;
         document.execCommand(command, false, value);
     });
 });
+document.getElementById('removeEditorLink')?.addEventListener('mousedown', saveEditorRange);
+document.getElementById('removeEditorLink')?.addEventListener('click', removeCurrentLink);
 document.getElementById('editorTextStyle')?.addEventListener('change', function () {
     changeCurrentBlockTag(this.value);
 });
@@ -387,6 +523,16 @@ function updateEditorToolbar() {
 function rememberAndUpdateEditorBlock() {
     rememberEditorBlock();
     updateEditorToolbar();
+    updateRemoveLinkButton();
+}
+function updateRemoveLinkButton() {
+    const button = document.getElementById('removeEditorLink');
+    if (!button || !visualEditor) return;
+    const selection = window.getSelection();
+    const node = selection?.anchorNode;
+    const element = node?.nodeType === Node.ELEMENT_NODE ? node : node?.parentElement;
+    const link = element?.closest('a');
+    button.classList.toggle('d-none', !link || !visualEditor.contains(link));
 }
 visualEditor?.addEventListener('mouseup', rememberAndUpdateEditorBlock);
 visualEditor?.addEventListener('keyup', rememberAndUpdateEditorBlock);
