@@ -132,20 +132,33 @@ function sanitizeFooterPageContent(string $content): string
     $content = preg_replace_callback('/\s+style\s*=\s*("([^"]*)"|\'([^\']*)\'|([^\s>]+))/i', function (array $match): string {
         $style = html_entity_decode($match[2] ?? $match[3] ?? $match[4] ?? '', ENT_QUOTES, 'UTF-8');
         $allowed = [];
-        if (preg_match('/(?:^|;)\s*color\s*:\s*(#[0-9a-f]{6})\s*(?:;|$)/i', $style, $color)) {
-            $allowed[] = 'color:' . strtolower($color[1]);
+        if (preg_match('/(?:^|;)\s*color\s*:\s*(#[0-9a-f]{6}|rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\))\s*(?:;|$)/i', $style, $color)) {
+            if (!empty($color[2])) {
+                $red = max(0, min(255, (int)$color[2]));
+                $green = max(0, min(255, (int)$color[3]));
+                $blue = max(0, min(255, (int)$color[4]));
+                $allowed[] = sprintf('color:#%02x%02x%02x', $red, $green, $blue);
+            } else {
+                $allowed[] = 'color:' . strtolower($color[1]);
+            }
         }
         if (preg_match('/(?:^|;)\s*font-size\s*:\s*(1[0-9]|2[0-4]|[8-9])px\s*(?:;|$)/i', $style, $size)) {
             $allowed[] = 'font-size:' . $size[1] . 'px';
         }
         return $allowed ? ' style="' . implode(';', $allowed) . '"' : '';
     }, $content);
-    $content = preg_replace_callback('/\s+href\s*=\s*("([^"]*)"|\'([^\']*)\'|([^\s>]+))/i', function (array $match): string {
-        $href = html_entity_decode($match[2] ?? $match[3] ?? $match[4] ?? '', ENT_QUOTES, 'UTF-8');
-        if (!preg_match('#^(https?://|mailto:|tel:|/|#)#i', $href)) {
-            return '';
+    // Rebuild each link tag explicitly. This is more reliable than matching an href
+    // attribute anywhere in the HTML and keeps only safe website, email, phone, or internal links.
+    $content = preg_replace_callback('/<a\b([^>]*)>/i', function (array $match): string {
+        $attributes = $match[1] ?? '';
+        if (!preg_match('/\bhref\s*=\s*(?:"([^"]*)"|\'([^\']*)\'|([^\s>]+))/i', $attributes, $hrefMatch)) {
+            return '<a>';
         }
-        return ' href="' . htmlspecialchars($href, ENT_QUOTES, 'UTF-8') . '"';
+        $href = html_entity_decode($hrefMatch[1] ?? $hrefMatch[2] ?? $hrefMatch[3] ?? '', ENT_QUOTES, 'UTF-8');
+        if (!preg_match('~^(https?://|mailto:|tel:|/|\#)~i', $href)) {
+            return '<a>';
+        }
+        return '<a href="' . htmlspecialchars($href, ENT_QUOTES, 'UTF-8') . '">';
     }, $content);
     return $content;
 }
@@ -201,6 +214,7 @@ function renderFooterManagedPage(array $page): void
             </div>
         </div>
         <style><?php echo footerPageLegacyStyles($page); ?></style>
+        <style>.footer-page-custom-styles a { color:#0d6efd; text-decoration:underline; }</style>
         <?php
         return;
     }
@@ -260,12 +274,12 @@ function renderFooterManagedPage(array $page): void
             margin-bottom:35px;
             padding-bottom:20px;
         }
-        .footer-custom-content a {
+        .footer-page-custom-styles a {
             color:var(--site-blue);
             font-weight:500;
             text-decoration:none;
         }
-        .footer-custom-content a:hover { color:var(--dark-blue); text-decoration:underline; }
+        .footer-page-custom-styles a:hover { color:var(--dark-blue); text-decoration:underline; }
         @media (max-width:768px) {
             .footer-custom-content .footer-managed-page-content > p,
             .footer-custom-content .footer-managed-page-content > ul,
