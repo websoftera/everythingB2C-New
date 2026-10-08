@@ -166,7 +166,7 @@ $isFaqEditor = $editing && (($editing['legacy_path'] ?? '') === 'faq.php');
         .footer-page-visual-editor { background:#fff; border:1px solid #bdc9d6; border-radius:0 0 6px 6px; min-height:360px; outline:0; padding:28px; }
         .footer-page-visual-editor:focus { border-color:#0d6efd; box-shadow:0 0 0 .2rem rgba(13,110,253,.16); }
         .footer-page-editor-toolbar { background:#f8fafc; border:1px solid #bdc9d6; border-bottom:0; border-radius:6px 6px 0 0; display:flex; flex-wrap:wrap; gap:6px; padding:8px; }
-        .footer-page-visual-editor h2 { color:#2c539f; font-size:1.45rem; }
+        .footer-page-visual-editor h2 { border-left:4px solid #1683e8; color:#2c539f; font-size:1.45rem; padding-left:12px; }
         .footer-page-visual-editor p, .footer-page-visual-editor li { line-height:1.65; }
         .footer-page-visual-editor li::marker { color:#1683e8; }
         .footer-page-visual-editor .about-section,
@@ -348,9 +348,7 @@ document.querySelectorAll('[data-editor-command]').forEach(function (button) {
     });
 });
 document.getElementById('editorTextStyle')?.addEventListener('change', function () {
-    if (!visualEditor) return;
-    visualEditor.focus();
-    document.execCommand('formatBlock', false, this.value);
+    changeCurrentBlockTag(this.value);
 });
 let activeEditorBlock = null;
 function rememberEditorBlock() {
@@ -394,12 +392,28 @@ visualEditor?.addEventListener('mouseup', rememberAndUpdateEditorBlock);
 visualEditor?.addEventListener('keyup', rememberAndUpdateEditorBlock);
 visualEditor?.addEventListener('focusin', rememberAndUpdateEditorBlock);
 function applyCurrentBlockStyle(property, value) {
-    rememberEditorBlock();
     if (!activeEditorBlock) {
         window.alert('Click inside the paragraph or heading first, then choose its color or size.');
         return;
     }
     activeEditorBlock.style[property] = value;
+    updateEditorToolbar();
+}
+function changeCurrentBlockTag(tagName) {
+    if (!activeEditorBlock) {
+        window.alert('Click inside the paragraph or heading first, then choose its style.');
+        return;
+    }
+    const tag = String(tagName || 'p').toLowerCase();
+    if (activeEditorBlock.tagName.toLowerCase() === tag) return;
+    const replacement = document.createElement(tag);
+    Array.from(activeEditorBlock.attributes).forEach(function (attribute) {
+        replacement.setAttribute(attribute.name, attribute.value);
+    });
+    replacement.innerHTML = activeEditorBlock.innerHTML;
+    activeEditorBlock.replaceWith(replacement);
+    activeEditorBlock = replacement;
+    visualEditor?.focus();
     updateEditorToolbar();
 }
 document.getElementById('editorTextColor')?.addEventListener('input', function () {
