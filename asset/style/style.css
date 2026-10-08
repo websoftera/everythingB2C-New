@@ -856,6 +856,49 @@ h3 {
   .desktop-footer .footer-bottom {
     margin-top: 8px !important;
   }
+
+  /* Keep all managed footer links and contact details on one desktop line. */
+  .desktop-footer .footer-container {
+    gap: 20px !important;
+    justify-content: space-between !important;
+  }
+
+  .desktop-footer .footer-column {
+    flex: 0 0 auto !important;
+  }
+
+  .desktop-footer .footer-links-inline,
+  .desktop-footer .footer-connect-inline,
+  .desktop-footer .social-icons {
+    flex-wrap: nowrap !important;
+    white-space: nowrap !important;
+  }
+
+  .desktop-footer .footer-links-inline,
+  .desktop-footer .footer-connect-inline {
+    gap: 4px !important;
+  }
+
+  .desktop-footer .separator {
+    margin: 0 2px !important;
+  }
+}
+
+/* One-pixel compacting at browser zoom levels keeps the complete desktop
+   footer—including the social icons—inside the viewport. */
+@media (min-width: 1025px) and (max-width: 1800px) {
+  .desktop-footer .footer-links-inline a,
+  .desktop-footer .footer-links-inline .separator,
+  .desktop-footer .footer-connect-inline,
+  .desktop-footer .footer-connect-inline .contact-info-inline,
+  .desktop-footer .footer-connect-inline a,
+  .desktop-footer .footer-connect-inline .separator {
+    font-size: 13px !important;
+  }
+
+  .desktop-footer .social-icons a {
+    font-size: 15px !important;
+  }
 }
 
 /* Scroll to Top Button */

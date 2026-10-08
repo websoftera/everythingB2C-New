@@ -292,8 +292,10 @@ function getAllCategories() {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-// Function to get all categories with real-time product counts
-function getCategoryFilterProductCounts(array $categories) {
+// Function to get category counts for the current product-listing context.
+// For example, the Discount Products page must not show counts for products
+// that are active but not discounted.
+function getCategoryFilterProductCounts(array $categories, array $scope = []) {
     global $pdo;
     ensureProductCategoryAssignmentsSchema($pdo);
     $parents = getCategoryParentAssignmentMap($pdo);
@@ -303,12 +305,24 @@ function getCategoryFilterProductCounts(array $categories) {
         }
     }
 
+    $conditions = ['p.is_active = 1'];
+    $params = [];
+    if (!empty($scope['discounted'])) {
+        $conditions[] = 'p.is_discounted = 1';
+    }
+    if (!empty($scope['featured'])) {
+        $conditions[] = 'p.is_featured = 1';
+    }
+    $whereClause = implode(' AND ', $conditions);
+
     // Sets prevent double counting products assigned to several descendants.
     $productsByCategory = [];
-    $rows = $pdo->query("SELECT id AS product_id, category_id FROM products WHERE is_active = 1
+    $rowsStatement = $pdo->prepare("SELECT p.id AS product_id, p.category_id FROM products p WHERE {$whereClause}
         UNION SELECT p.id, pca.category_id FROM products p
         INNER JOIN product_category_assignments pca ON pca.product_id = p.id
-        WHERE p.is_active = 1");
+        WHERE {$whereClause}");
+    $rowsStatement->execute(array_merge($params, $params));
+    $rows = $rowsStatement->fetchAll(PDO::FETCH_ASSOC);
     foreach ($rows as $row) {
         $pending = [(int)$row['category_id']];
         $visited = [];
