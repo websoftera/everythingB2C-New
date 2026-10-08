@@ -23,6 +23,9 @@ function migrateFooterPagesSchema(PDO $pdo): void
         UNIQUE KEY uq_footer_pages_legacy_path (legacy_path),
         KEY idx_footer_pages_active_order (is_active, sort_order, id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    if (!$pdo->query("SHOW COLUMNS FROM footer_pages LIKE 'style_settings'")->fetch()) {
+        $pdo->exec('ALTER TABLE footer_pages ADD COLUMN style_settings TEXT NULL AFTER content');
+    }
 
     $pdo->beginTransaction();
     try {

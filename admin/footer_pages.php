@@ -25,6 +25,7 @@ function footer_pages_h($value): string
 
 function footer_pages_form(array $page = []): array
 {
+    $styles = footerPageStyleSettings($page);
     return [
         'id' => (int)($page['id'] ?? 0),
         'title' => (string)($page['title'] ?? ''),
@@ -33,6 +34,7 @@ function footer_pages_form(array $page = []): array
         'sort_order' => (int)($page['sort_order'] ?? 0),
         'is_active' => !array_key_exists('is_active', $page) || (int)$page['is_active'] === 1,
         'legacy_path' => (string)($page['legacy_path'] ?? ''),
+        'styles' => $styles,
     ];
 }
 
@@ -61,6 +63,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $content = sanitizeFooterPageContent((string)($_POST['content'] ?? ''));
             $sortOrder = max(0, (int)($_POST['sort_order'] ?? 0));
             $isActive = !empty($_POST['is_active']) ? 1 : 0;
+            $styleDefaults = footerPageStyleSettings([]);
+            $styles = [];
+            foreach (['title_color', 'subtitle_color', 'description_color', 'bullet_color'] as $key) {
+                $value = (string)($_POST[$key] ?? $styleDefaults[$key]);
+                if (!preg_match('/^#[0-9a-f]{6}$/i', $value)) {
+                    throw new RuntimeException('Choose a valid color for page appearance.');
+                }
+                $styles[$key] = $value;
+            }
+            foreach (['title_size' => [18, 48], 'subtitle_size' => [14, 36], 'description_size' => [12, 24]] as $key => $range) {
+                $styles[$key] = max($range[0], min($range[1], (int)($_POST[$key] ?? $styleDefaults[$key])));
+            }
+            $styleSettings = json_encode($styles, JSON_UNESCAPED_SLASHES);
 
             if ($title === '' || mb_strlen($title) > 150) {
                 throw new RuntimeException('Enter a page title of 1 to 150 characters.');
@@ -79,14 +94,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     throw new RuntimeException('Footer page not found.');
                 }
                 $stmt = $pdo->prepare('UPDATE footer_pages
-                    SET title = ?, slug = ?, content = ?, sort_order = ?, is_active = ?
+                    SET title = ?, slug = ?, content = ?, style_settings = ?, sort_order = ?, is_active = ?
                     WHERE id = ?');
-                $stmt->execute([$title, $slug, $content === '' ? null : $content, $sortOrder, $isActive, $id]);
+                $stmt->execute([$title, $slug, $content === '' ? null : $content, $styleSettings, $sortOrder, $isActive, $id]);
                 $_SESSION['footer_pages_flash'] = 'Footer page updated successfully.';
             } else {
-                $stmt = $pdo->prepare('INSERT INTO footer_pages (title, slug, content, sort_order, is_active)
-                    VALUES (?, ?, ?, ?, ?)');
-                $stmt->execute([$title, $slug, $content === '' ? null : $content, $sortOrder, $isActive]);
+                $stmt = $pdo->prepare('INSERT INTO footer_pages (title, slug, content, style_settings, sort_order, is_active)
+                    VALUES (?, ?, ?, ?, ?, ?)');
+                $stmt->execute([$title, $slug, $content === '' ? null : $content, $styleSettings, $sortOrder, $isActive]);
                 $_SESSION['footer_pages_flash'] = 'Footer page created successfully.';
             }
         } else {
@@ -153,6 +168,7 @@ $isFaqEditor = $editing && (($editing['legacy_path'] ?? '') === 'faq.php');
         .footer-page-editor-toolbar { background:#f8fafc; border:1px solid #bdc9d6; border-bottom:0; border-radius:6px 6px 0 0; display:flex; flex-wrap:wrap; gap:6px; padding:8px; }
         .footer-page-visual-editor h2 { color:#2c539f; font-size:1.45rem; }
         .footer-page-visual-editor p, .footer-page-visual-editor li { line-height:1.65; }
+        .footer-page-visual-editor li::marker { color:#1683e8; }
         .footer-page-visual-editor .about-section,
         .footer-page-visual-editor .policy-section,
         .footer-page-visual-editor .privacy-section,
@@ -193,7 +209,10 @@ $isFaqEditor = $editing && (($editing['legacy_path'] ?? '') === 'faq.php');
 
             <?php if (isset($_GET['edit'])): ?>
             <section class="card mb-4">
-                <div class="card-header fw-bold"><?php echo $editing ? 'Edit Footer Page' : 'Add Footer Page'; ?></div>
+                <div class="card-header d-flex justify-content-between align-items-center gap-2">
+                    <strong><?php echo $editing ? 'Edit Footer Page' : 'Add Footer Page'; ?></strong>
+                    <a class="btn btn-sm btn-outline-secondary" href="footer_pages.php"><i class="fas fa-arrow-left"></i> Back to Footer Pages</a>
+                </div>
                 <div class="card-body">
                     <?php if ($editing && $form['legacy_path'] !== '' && $form['content'] === ''): ?>
                         <div class="alert alert-info"><?php echo $isFaqEditor ? 'The existing FAQ sections load automatically below. Edit each question and answer in its own box.' : 'Click <strong>Load Current Sections</strong>. The existing page sections will become editable here. After saving once, future edits are made directly in this visual editor.'; ?></div>
@@ -216,6 +235,9 @@ $isFaqEditor = $editing && (($editing['legacy_path'] ?? '') === 'faq.php');
                                 <label class="form-label" for="footerPageOrder">Footer order</label>
                                 <input id="footerPageOrder" name="sort_order" class="form-control" type="number" min="0" value="<?php echo (int)$form['sort_order']; ?>">
                             </div>
+                            <?php foreach ($form['styles'] as $styleKey => $styleValue): ?>
+                                <input type="hidden" name="<?php echo footer_pages_h($styleKey); ?>" value="<?php echo footer_pages_h($styleValue); ?>">
+                            <?php endforeach; ?>
                             <div class="col-12">
                                 <?php if ($isFaqEditor): ?>
                                 <label class="form-label mb-2">FAQ content</label>
@@ -228,12 +250,24 @@ $isFaqEditor = $editing && (($editing['legacy_path'] ?? '') === 'faq.php');
                                     <label class="form-label mb-0" for="footerPageVisualEditor">Page content</label>
                                     <?php if ($editing && $form['legacy_path'] !== ''): ?><button class="btn btn-sm btn-outline-primary" type="button" id="loadCurrentSections" data-source-url="<?php echo footer_pages_h($previewUrl); ?>" data-source-selector="<?php echo footer_pages_h($previewSelector); ?>"><i class="fas fa-download"></i> Load Current Sections</button><?php endif; ?>
                                 </div>
-                                <div class="alert alert-light border small mb-2"><strong>How to edit:</strong> click any title or paragraph inside a dashed section and type. Select text, then use the options below to change its style.</div>
+                                <div class="alert alert-light border small mb-2"><strong>How to edit:</strong> click any title or paragraph inside a dashed section and type. Click inside one paragraph or heading, then use Color or Text size to change that item.</div>
                                 <div class="footer-page-editor-toolbar" aria-label="Text formatting toolbar">
                                     <select id="editorTextStyle" class="form-select form-select-sm" style="width:auto" aria-label="Text style">
                                         <option value="p">Paragraph</option>
                                         <option value="h2">Section title</option>
                                         <option value="h3">Small heading</option>
+                                    </select>
+                                    <label class="mb-0 small text-muted" for="editorTextColor">Color</label>
+                                    <input id="editorTextColor" class="form-control form-control-color form-control-sm" type="color" value="#1683e8" title="Selected text color">
+                                    <select id="editorFontSize" class="form-select form-select-sm" style="width:auto" aria-label="Selected text size">
+                                        <option value="">Text size</option>
+                                        <option value="12">12px</option>
+                                        <option value="14">14px</option>
+                                        <option value="15">15px</option>
+                                        <option value="16">16px</option>
+                                        <option value="18">18px</option>
+                                        <option value="20">20px</option>
+                                        <option value="24">24px</option>
                                     </select>
                                     <button class="btn btn-sm btn-light" type="button" data-editor-command="bold"><strong>B</strong></button>
                                     <button class="btn btn-sm btn-light" type="button" data-editor-command="italic"><em>I</em></button>
@@ -317,6 +351,62 @@ document.getElementById('editorTextStyle')?.addEventListener('change', function 
     if (!visualEditor) return;
     visualEditor.focus();
     document.execCommand('formatBlock', false, this.value);
+});
+let activeEditorBlock = null;
+function rememberEditorBlock() {
+    if (!visualEditor) return;
+    const selection = window.getSelection();
+    const node = selection?.anchorNode;
+    const element = node?.nodeType === Node.ELEMENT_NODE ? node : node?.parentElement;
+    const block = element?.closest('p, h1, h2, h3, h4, li');
+    if (block && visualEditor.contains(block)) activeEditorBlock = block;
+}
+function rgbToHex(color) {
+    const matches = String(color || '').match(/\d+/g);
+    if (!matches || matches.length < 3) return '';
+    return '#' + matches.slice(0, 3).map(function (part) {
+        return Number(part).toString(16).padStart(2, '0');
+    }).join('');
+}
+function updateEditorToolbar() {
+    if (!activeEditorBlock) return;
+    const styles = window.getComputedStyle(activeEditorBlock);
+    const size = Math.round(parseFloat(styles.fontSize));
+    const sizeSelect = document.getElementById('editorFontSize');
+    if (sizeSelect && Number.isFinite(size)) {
+        let option = Array.from(sizeSelect.options).find(item => item.value === String(size));
+        if (!option) {
+            option = new Option(size + 'px', String(size));
+            option.dataset.detected = 'true';
+            sizeSelect.add(option);
+        }
+        sizeSelect.value = String(size);
+    }
+    const colorInput = document.getElementById('editorTextColor');
+    const color = rgbToHex(styles.color);
+    if (colorInput && color) colorInput.value = color;
+}
+function rememberAndUpdateEditorBlock() {
+    rememberEditorBlock();
+    updateEditorToolbar();
+}
+visualEditor?.addEventListener('mouseup', rememberAndUpdateEditorBlock);
+visualEditor?.addEventListener('keyup', rememberAndUpdateEditorBlock);
+visualEditor?.addEventListener('focusin', rememberAndUpdateEditorBlock);
+function applyCurrentBlockStyle(property, value) {
+    rememberEditorBlock();
+    if (!activeEditorBlock) {
+        window.alert('Click inside the paragraph or heading first, then choose its color or size.');
+        return;
+    }
+    activeEditorBlock.style[property] = value;
+    updateEditorToolbar();
+}
+document.getElementById('editorTextColor')?.addEventListener('input', function () {
+    applyCurrentBlockStyle('color', this.value);
+});
+document.getElementById('editorFontSize')?.addEventListener('change', function () {
+    if (this.value) applyCurrentBlockStyle('fontSize', this.value + 'px');
 });
 document.getElementById('addEditorParagraph')?.addEventListener('click', function () {
     if (!visualEditor) return;
