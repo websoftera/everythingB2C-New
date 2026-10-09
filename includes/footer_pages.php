@@ -214,7 +214,42 @@ function renderFooterManagedPage(array $page): void
             </div>
         </div>
         <style><?php echo footerPageLegacyStyles($page); ?></style>
-        <style>.footer-page-custom-styles a { color:#0d6efd; text-decoration:underline; }</style>
+        <style>
+            .footer-page-custom-styles a { color:#0d6efd; text-decoration:underline; }
+            .footer-page-custom-styles li::marker,
+            .footer-page-custom-styles ul li::before,
+            .footer-page-custom-styles ol li::before { color:var(--footer-bullet, var(--site-blue)) !important; }
+            .footer-page-custom-styles h2,
+            .footer-page-custom-styles h3,
+            .footer-page-custom-styles h4 { margin:8px 0 3px !important; }
+            .footer-page-custom-styles.about-us-content h2 { margin-bottom:13px !important; }
+            .footer-page-custom-styles p { margin:0 0 15px !important; }
+            .footer-page-custom-styles ul,
+            .footer-page-custom-styles ol { margin:0 0 6px !important; }
+            .footer-page-custom-styles li { margin-bottom:2px !important; }
+            .footer-page-custom-styles .privacy-section,
+            .footer-page-custom-styles .policy-section,
+            .footer-page-custom-styles .about-section,
+            .footer-page-custom-styles .footer-editor-section { margin-bottom:10px !important; }
+            @media (max-width:768px) {
+                .footer-page-custom-styles p,
+                .footer-page-custom-styles li { font-size:12px !important; }
+                .footer-page-custom-styles h2,
+                .footer-page-custom-styles h3,
+                .footer-page-custom-styles h4 { font-size:15px !important; margin:8px 0 3px !important; }
+                .footer-page-custom-styles h2 + p,
+                .footer-page-custom-styles h3 + p,
+                .footer-page-custom-styles h4 + p { margin-top:0 !important; }
+                .footer-page-custom-styles p { margin:0 0 7px !important; }
+                .footer-page-custom-styles ul,
+                .footer-page-custom-styles ol { margin:0 0 8px !important; }
+                .footer-page-custom-styles li { margin-bottom:3px !important; }
+                .footer-page-custom-styles .privacy-section,
+                .footer-page-custom-styles .policy-section,
+                .footer-page-custom-styles .about-section { margin-bottom:16px !important; padding-bottom:0 !important; }
+                .footer-page-custom-styles .footer-editor-section { margin-bottom:16px !important; padding-bottom:8px !important; }
+            }
+        </style>
         <?php
         return;
     }
@@ -241,13 +276,14 @@ function renderFooterManagedPage(array $page): void
         .footer-page-custom-styles p,
         .footer-page-custom-styles li { color:var(--footer-description); font-size:var(--footer-description-size); }
         .footer-page-custom-styles li::marker,
-        .footer-page-custom-styles li::before { color:var(--footer-bullet) !important; }
+        .footer-page-custom-styles ul li::before,
+        .footer-page-custom-styles ol li::before { color:var(--footer-bullet) !important; }
         .footer-custom-content .footer-managed-page-content > h2 {
             border-left:4px solid var(--site-blue);
             color:var(--footer-subtitle);
             font-size:var(--footer-subtitle-size);
             font-weight:600;
-            margin:0 0 20px;
+            margin:10px 0 6px;
             padding-left:15px;
         }
         .footer-custom-content .footer-managed-page-content > h3 {
@@ -255,7 +291,7 @@ function renderFooterManagedPage(array $page): void
             color:#161616;
             font-size:18px;
             font-weight:600;
-            margin:0 0 20px;
+            margin:10px 0 4px;
             padding-left:0;
         }
         .footer-custom-content .footer-editor-section h2 {
@@ -263,7 +299,7 @@ function renderFooterManagedPage(array $page): void
             color:var(--footer-subtitle);
             font-size:var(--footer-subtitle-size);
             font-weight:600;
-            margin:0 0 20px;
+            margin:0 0 12px;
             padding-left:15px;
         }
         .footer-custom-content .footer-managed-page-content > p,
@@ -275,12 +311,33 @@ function renderFooterManagedPage(array $page): void
         .footer-custom-content .footer-managed-page-content div {
             color:#161616;
         }
+        .footer-custom-content .footer-managed-page-content > p,
+        .footer-custom-content .footer-managed-page-content p { margin:0 0 12px; }
+        .footer-custom-content .footer-managed-page-content > h2 + p,
+        .footer-custom-content .footer-managed-page-content > h3 + p { margin-top:0 !important; }
+        /* Saved editor content can contain section wrappers, so apply the compact spacing inside them too. */
+        .footer-custom-content .footer-managed-page-content h2 { margin:10px 0 6px !important; }
+        .footer-custom-content .footer-managed-page-content h3 { margin:10px 0 4px !important; }
+        .footer-custom-content .footer-managed-page-content h2 + p,
+        .footer-custom-content .footer-managed-page-content h3 + p { margin-top:0 !important; }
+        .footer-custom-content .footer-managed-page-content p { margin-bottom:10px !important; }
+        .footer-custom-content .footer-managed-page-content > ul,
+        .footer-custom-content .footer-managed-page-content > ol { margin:0 0 12px; }
+        .footer-custom-content .footer-managed-page-content li { margin-bottom:6px; }
         .footer-custom-content .footer-managed-page-content > div { margin-bottom:15px; }
         .footer-custom-content .footer-editor-section {
             border-bottom:1px solid #e9ecef;
             margin-bottom:35px;
             padding-bottom:20px;
         }
+        .footer-custom-content .footer-managed-page-content h2,
+        .footer-custom-content .footer-managed-page-content h3,
+        .footer-custom-content .footer-managed-page-content h4 { margin:8px 0 3px !important; }
+        .footer-custom-content .footer-managed-page-content p { margin:0 0 15px !important; }
+        .footer-custom-content .footer-managed-page-content ul,
+        .footer-custom-content .footer-managed-page-content ol { margin:0 0 6px !important; }
+        .footer-custom-content .footer-managed-page-content li { margin-bottom:2px !important; }
+        .footer-custom-content .footer-editor-section { margin-bottom:10px !important; padding-bottom:8px; }
         .footer-page-custom-styles a {
             color:var(--site-blue);
             font-weight:500;
@@ -288,13 +345,20 @@ function renderFooterManagedPage(array $page): void
         }
         .footer-page-custom-styles a:hover { color:var(--dark-blue); text-decoration:underline; }
         @media (max-width:768px) {
-            .footer-custom-content .footer-managed-page-content > p,
-            .footer-custom-content .footer-managed-page-content > ul,
-            .footer-custom-content .footer-managed-page-content > ol,
-            .footer-custom-content .footer-managed-page-content > div { font-size:12px; }
-            .footer-custom-content .footer-managed-page-content > h2,
-            .footer-custom-content .footer-managed-page-content > h3 { font-size:15px !important; }
-            .footer-custom-content .footer-editor-section h2 { font-size:var(--footer-subtitle-size) !important; }
+            .footer-custom-content .footer-managed-page-content p,
+            .footer-custom-content .footer-managed-page-content li { font-size:12px !important; }
+            .footer-custom-content .footer-managed-page-content h2,
+            .footer-custom-content .footer-managed-page-content h3,
+            .footer-custom-content .footer-managed-page-content h4 { font-size:15px !important; margin:8px 0 3px !important; }
+            .footer-custom-content .footer-managed-page-content h2 + p,
+            .footer-custom-content .footer-managed-page-content h3 + p,
+            .footer-custom-content .footer-managed-page-content h4 + p { margin-top:0 !important; }
+            .footer-custom-content .footer-managed-page-content p { margin:0 0 7px !important; }
+            .footer-custom-content .footer-managed-page-content ul,
+            .footer-custom-content .footer-managed-page-content ol { margin:0 0 8px !important; }
+            .footer-custom-content .footer-managed-page-content li { margin-bottom:3px !important; }
+            .footer-custom-content .footer-editor-section { margin-bottom:16px !important; padding-bottom:8px !important; }
+            .footer-custom-content .footer-editor-section h2 { font-size:15px !important; }
         }
     </style>
     <?php

@@ -99,14 +99,14 @@ echo renderBreadcrumb($breadcrumbs);
 }
 
 .privacy-section {
-    margin-bottom: 35px;
+    margin-bottom: 27px;
 }
 
 .privacy-section h2 {
     color: #2c539f;
     font-size: 24px;
     font-weight: 600;
-    margin-bottom: 15px;
+    margin: 25px 0 20px;
     border-left: 4px solid var(--site-blue);
     padding-left: 15px;
     text-align: left;
@@ -125,19 +125,20 @@ echo renderBreadcrumb($breadcrumbs);
     font-size: 15px;
     line-height: 1.7;
     color: #666;
-    margin-bottom: 15px;
+    margin: 0 0 22px;
 }
 
 .privacy-list {
     list-style: none;
     padding-left: 0;
+    margin: 0 0 23px;
 }
 
 .privacy-list li {
     font-size: 15px;
     line-height: 1.7;
     color: #666;
-    margin-bottom: 12px;
+    margin-bottom: 19px;
     padding-left: 25px;
     position: relative;
 }

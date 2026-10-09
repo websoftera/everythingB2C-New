@@ -563,7 +563,7 @@ endforeach; ?>
   .top-deals-categories-track::-webkit-scrollbar { display: none; }
   .top-deals-category-tile { display: flex; flex: 0 0 220px; flex-direction: column; overflow: hidden; border: 1px solid #e1e6d0; border-radius: 10px; background: #fff; color: #263238; text-decoration: none; box-shadow: 0 2px 7px rgba(0,0,0,.08); }
   .featured-products-card.top-deals-card { background: #eff7c9; }
-  .top-deals-category-bar { display: flex; min-height: 42px; align-items: center; justify-content: center; gap: 6px; padding: 8px 12px; background: #9abd18; color: #fff !important; font-size: 13px !important; font-weight: bold !important; line-height: 1.25; text-align: center; }
+  .top-deals-category-bar { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 12px; background: #9abd18; color: #fff !important; font-size: 13px !important; font-weight: bold !important; line-height: 1.25; text-align: center; }
   .top-deals-category-bar > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .top-deals-category-image { display: flex; height: 170px; align-items: center; justify-content: center; padding: 12px; }
   .top-deals-category-image img { width: 100%; height: 100%; object-fit: contain; }
@@ -1719,7 +1719,9 @@ endforeach; ?>
 .discounted-products-container .card.product-card .discount-banner {
   background: var(--site-blue) !important; /* Dark blue banner as per image */
   color: #fff !important;
-  border-radius: 4px !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  align-self: stretch !important;
 }
 
 .discounted-products-container .card.product-card .price-btn.mrp {
