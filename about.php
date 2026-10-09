@@ -163,7 +163,7 @@ echo renderBreadcrumb($breadcrumbs);
     color: #2c539f;
     font-size: 24px;
     font-weight: 600;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     border-left: 4px solid var(--site-blue);
     padding-left: 15px;
     text-align: left;
