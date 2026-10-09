@@ -232,8 +232,13 @@ function renderFooterManagedPage(array $page): void
             .footer-page-custom-styles .about-section,
             .footer-page-custom-styles .footer-editor-section { margin-bottom:10px !important; }
             @media (max-width:768px) {
+                /* Keep saved paragraph/list formatting from enlarging mobile reading text. */
                 .footer-page-custom-styles p,
-                .footer-page-custom-styles li { font-size:12px !important; }
+                .footer-page-custom-styles p *,
+                .footer-page-custom-styles li,
+                .footer-page-custom-styles li * { font-size:12px !important; }
+                .footer-page-custom-styles li,
+                .footer-page-custom-styles li * { font-weight:400 !important; }
                 .footer-page-custom-styles h2,
                 .footer-page-custom-styles h3,
                 .footer-page-custom-styles h4 { font-size:15px !important; margin:8px 0 3px !important; }
@@ -345,8 +350,13 @@ function renderFooterManagedPage(array $page): void
         }
         .footer-page-custom-styles a:hover { color:var(--dark-blue); text-decoration:underline; }
         @media (max-width:768px) {
+            /* Inline editor styling must not increase paragraph or list text on phones. */
             .footer-custom-content .footer-managed-page-content p,
-            .footer-custom-content .footer-managed-page-content li { font-size:12px !important; }
+            .footer-custom-content .footer-managed-page-content p *,
+            .footer-custom-content .footer-managed-page-content li,
+            .footer-custom-content .footer-managed-page-content li * { font-size:12px !important; }
+            .footer-custom-content .footer-managed-page-content li,
+            .footer-custom-content .footer-managed-page-content li * { font-weight:400 !important; }
             .footer-custom-content .footer-managed-page-content h2,
             .footer-custom-content .footer-managed-page-content h3,
             .footer-custom-content .footer-managed-page-content h4 { font-size:15px !important; margin:8px 0 3px !important; }
