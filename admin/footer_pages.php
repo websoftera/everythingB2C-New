@@ -66,14 +66,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $isActive = !empty($_POST['is_active']) ? 1 : 0;
             $styleDefaults = footerPageStyleSettings([]);
             $styles = [];
-            foreach (['title_color', 'subtitle_color', 'description_color', 'bullet_color'] as $key) {
+            foreach (['title_color', 'subtitle_color', 'description_color', 'mobile_description_color', 'bullet_color'] as $key) {
                 $value = (string)($_POST[$key] ?? $styleDefaults[$key]);
                 if (!preg_match('/^#[0-9a-f]{6}$/i', $value)) {
                     throw new RuntimeException('Choose a valid color for page appearance.');
                 }
                 $styles[$key] = $value;
             }
-            foreach (['title_size' => [18, 48], 'subtitle_size' => [14, 36], 'description_size' => [12, 24]] as $key => $range) {
+            foreach (['title_size' => [18, 48], 'subtitle_size' => [14, 36], 'description_size' => [12, 24], 'mobile_description_size' => [10, 18]] as $key => $range) {
                 $styles[$key] = max($range[0], min($range[1], (int)($_POST[$key] ?? $styleDefaults[$key])));
             }
             $styleSettings = json_encode($styles, JSON_UNESCAPED_SLASHES);
@@ -174,6 +174,16 @@ $isFaqEditor = $editing && (($editing['legacy_path'] ?? '') === 'faq.php');
         .footer-page-visual-editor p, .footer-page-visual-editor li { line-height:1.65; }
         .footer-page-visual-editor a { color:#0d6efd; text-decoration:underline; }
         .footer-page-visual-editor li::marker { color:#1683e8; }
+        .footer-page-visual-editor.is-mobile-preview,
+        #faqBuilder.is-mobile-preview { max-width:390px; margin-left:auto; margin-right:auto; }
+        .footer-page-visual-editor.is-mobile-preview { min-height:520px; }
+        .footer-page-visual-editor.is-mobile-preview p,
+        .footer-page-visual-editor.is-mobile-preview p *,
+        .footer-page-visual-editor.is-mobile-preview li,
+        .footer-page-visual-editor.is-mobile-preview li * { font-size:var(--editor-mobile-text-size, 12px) !important; }
+        .footer-page-visual-editor.is-mobile-preview { color:var(--editor-mobile-text-color, #666666); }
+        .footer-page-visual-editor.is-mobile-preview p,
+        .footer-page-visual-editor.is-mobile-preview li { color:var(--editor-mobile-text-color, #666666); }
         .footer-page-visual-editor .about-section,
         .footer-page-visual-editor .policy-section,
         .footer-page-visual-editor .privacy-section,
@@ -250,11 +260,19 @@ $isFaqEditor = $editing && (($editing['legacy_path'] ?? '') === 'faq.php');
                                 <input id="footerPageOrder" name="sort_order" class="form-control" type="number" min="0" value="<?php echo (int)$form['sort_order']; ?>">
                             </div>
                             <?php foreach ($form['styles'] as $styleKey => $styleValue): ?>
+                                <?php if (in_array($styleKey, ['mobile_description_size', 'mobile_description_color'], true)) continue; ?>
                                 <input type="hidden" name="<?php echo footer_pages_h($styleKey); ?>" value="<?php echo footer_pages_h($styleValue); ?>">
                             <?php endforeach; ?>
                             <div class="col-12">
                                 <?php if ($isFaqEditor): ?>
-                                <label class="form-label mb-2">FAQ content</label>
+                                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+                                    <label class="form-label mb-0">FAQ content</label>
+                                    <div class="d-flex flex-wrap align-items-center gap-2">
+                                        <label class="d-flex align-items-center gap-2 small mb-0" for="editorResponsivePreview">Preview <select id="editorResponsivePreview" class="form-select form-select-sm" style="width:auto"><option value="desktop">Desktop</option><option value="mobile">Mobile</option></select></label>
+                                        <label class="d-flex align-items-center gap-2 small mb-0" for="mobileDescriptionSize">Mobile text size <select id="mobileDescriptionSize" name="mobile_description_size" class="form-select form-select-sm" style="width:auto"><?php foreach ([10, 11, 12, 13, 14, 15, 16, 18] as $size): ?><option value="<?php echo $size; ?>" <?php echo (int)$form['styles']['mobile_description_size'] === $size ? 'selected' : ''; ?>><?php echo $size; ?>px</option><?php endforeach; ?></select></label>
+                                        <label class="d-flex align-items-center gap-2 small mb-0" for="mobileDescriptionColor">Mobile text colour <input id="mobileDescriptionColor" name="mobile_description_color" class="form-control form-control-color form-control-sm" type="color" value="<?php echo footer_pages_h($form['styles']['mobile_description_color']); ?>" title="Mobile paragraph and bullet text colour"></label>
+                                    </div>
+                                </div>
                                 <div class="alert alert-light border small">Each box is one FAQ section. Change a section title, question, or answer directly. Use the buttons to add or remove items.</div>
                                 <div id="faqBuilder" data-source-url="<?php echo footer_pages_h($previewUrl); ?>" data-source-selector="<?php echo footer_pages_h($previewSelector); ?>"></div>
                                 <button class="btn btn-outline-primary btn-sm" type="button" id="addFaqSection"><i class="fas fa-plus"></i> Add FAQ Section</button>
@@ -262,7 +280,12 @@ $isFaqEditor = $editing && (($editing['legacy_path'] ?? '') === 'faq.php');
                                 <?php else: ?>
                                 <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
                                     <label class="form-label mb-0" for="footerPageVisualEditor">Page content</label>
-                                    <?php if ($editing && $form['legacy_path'] !== ''): ?><button class="btn btn-sm btn-outline-primary" type="button" id="loadCurrentSections" data-source-url="<?php echo footer_pages_h($previewUrl); ?>" data-source-selector="<?php echo footer_pages_h($previewSelector); ?>"><i class="fas fa-download"></i> Load Current Sections</button><?php endif; ?>
+                                    <div class="d-flex flex-wrap align-items-center gap-2">
+                                        <label class="d-flex align-items-center gap-2 small mb-0" for="editorResponsivePreview">Preview <select id="editorResponsivePreview" class="form-select form-select-sm" style="width:auto"><option value="desktop">Desktop</option><option value="mobile">Mobile</option></select></label>
+                                        <label class="d-flex align-items-center gap-2 small mb-0" for="mobileDescriptionSize">Mobile text size <select id="mobileDescriptionSize" name="mobile_description_size" class="form-select form-select-sm" style="width:auto"><?php foreach ([10, 11, 12, 13, 14, 15, 16, 18] as $size): ?><option value="<?php echo $size; ?>" <?php echo (int)$form['styles']['mobile_description_size'] === $size ? 'selected' : ''; ?>><?php echo $size; ?>px</option><?php endforeach; ?></select></label>
+                                        <label class="d-flex align-items-center gap-2 small mb-0" for="mobileDescriptionColor">Mobile text colour <input id="mobileDescriptionColor" name="mobile_description_color" class="form-control form-control-color form-control-sm" type="color" value="<?php echo footer_pages_h($form['styles']['mobile_description_color']); ?>" title="Mobile paragraph and bullet text colour"></label>
+                                        <?php if ($editing && $form['legacy_path'] !== ''): ?><button class="btn btn-sm btn-outline-primary" type="button" id="loadCurrentSections" data-source-url="<?php echo footer_pages_h($previewUrl); ?>" data-source-selector="<?php echo footer_pages_h($previewSelector); ?>"><i class="fas fa-download"></i> Load Current Sections</button><?php endif; ?>
+                                    </div>
                                 </div>
                                 <div class="alert alert-light border small mb-2"><strong>How to edit:</strong> click any title or paragraph inside a dashed section and type. Click inside one paragraph or heading, then use Color or Text size to change that item.</div>
                                 <div class="footer-page-editor-toolbar" aria-label="Text formatting toolbar">
@@ -653,6 +676,22 @@ document.getElementById('loadCurrentSections')?.addEventListener('click', functi
     }
 });
 const faqBuilder = document.getElementById('faqBuilder');
+const responsivePreview = document.getElementById('editorResponsivePreview');
+const mobileTextSize = document.getElementById('mobileDescriptionSize');
+const mobileTextColor = document.getElementById('mobileDescriptionColor');
+function updateResponsivePreview() {
+    const mobileMode = responsivePreview?.value === 'mobile';
+    [visualEditor, faqBuilder].forEach(function (element) {
+        if (!element) return;
+        element.classList.toggle('is-mobile-preview', mobileMode);
+        element.style.setProperty('--editor-mobile-text-size', (mobileTextSize?.value || '12') + 'px');
+        element.style.setProperty('--editor-mobile-text-color', mobileTextColor?.value || '#666666');
+    });
+}
+responsivePreview?.addEventListener('change', updateResponsivePreview);
+mobileTextSize?.addEventListener('change', updateResponsivePreview);
+mobileTextColor?.addEventListener('input', updateResponsivePreview);
+updateResponsivePreview();
 function faqQuestion(question, answerHtml) {
     const item = document.createElement('div');
     item.className = 'faq-builder-question';

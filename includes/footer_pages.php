@@ -90,10 +90,12 @@ function footerPageStyleSettings(array $page): array
         'title_color' => '#333333',
         'subtitle_color' => '#2c539f',
         'description_color' => '#666666',
+        'mobile_description_color' => '#666666',
         'bullet_color' => '#1683e8',
         'title_size' => 32,
         'subtitle_size' => 24,
         'description_size' => 15,
+        'mobile_description_size' => 12,
     ];
     $saved = json_decode((string)($page['style_settings'] ?? ''), true);
     if (!is_array($saved)) {
@@ -110,8 +112,8 @@ function footerPageStyleSettings(array $page): array
 function footerPageStyleVariables(array $page): string
 {
     $settings = footerPageStyleSettings($page);
-    $colorKeys = ['title_color', 'subtitle_color', 'description_color', 'bullet_color'];
-    $sizeKeys = ['title_size', 'subtitle_size', 'description_size'];
+    $colorKeys = ['title_color', 'subtitle_color', 'description_color', 'mobile_description_color', 'bullet_color'];
+    $sizeKeys = ['title_size', 'subtitle_size', 'description_size', 'mobile_description_size'];
     $variables = [];
     foreach ($colorKeys as $key) {
         $value = preg_match('/^#[0-9a-f]{6}$/i', (string)$settings[$key]) ? $settings[$key] : footerPageStyleSettings([])[$key];
@@ -236,16 +238,15 @@ function renderFooterManagedPage(array $page): void
                 .footer-page-custom-styles p,
                 .footer-page-custom-styles p *,
                 .footer-page-custom-styles li,
-                .footer-page-custom-styles li * { font-size:12px !important; }
+                .footer-page-custom-styles li * { font-size:var(--footer-mobile-description-size, 12px) !important; }
+                /* Mobile defaults are editable: inline Bold and Color changes remain visible. */
+                .footer-page-custom-styles,
+                .footer-page-custom-styles .footer-editor-section { color:var(--footer-mobile-description, var(--footer-description, #666666)); }
+                .footer-page-custom-styles p,
                 .footer-page-custom-styles li,
-                .footer-page-custom-styles li * { font-weight:400 !important; }
-                .footer-page-custom-styles .footer-editor-section div,
-                .footer-page-custom-styles .footer-editor-section span,
                 .footer-page-custom-styles .footer-editor-section p,
                 .footer-page-custom-styles .footer-editor-section li {
-                    color:var(--footer-description, #666666) !important;
-                    font-size:12px !important;
-                    font-weight:400 !important;
+                    color:var(--footer-mobile-description, var(--footer-description, #666666));
                 }
                 .footer-page-custom-styles h2,
                 .footer-page-custom-styles h3,
@@ -362,16 +363,13 @@ function renderFooterManagedPage(array $page): void
             .footer-custom-content .footer-managed-page-content p,
             .footer-custom-content .footer-managed-page-content p *,
             .footer-custom-content .footer-managed-page-content li,
-            .footer-custom-content .footer-managed-page-content li * { font-size:12px !important; }
-            .footer-custom-content .footer-managed-page-content li,
-            .footer-custom-content .footer-managed-page-content li * { font-weight:400 !important; }
-            .footer-custom-content .footer-managed-page-content div,
-            .footer-custom-content .footer-managed-page-content span,
+            .footer-custom-content .footer-managed-page-content li * { font-size:var(--footer-mobile-description-size, 12px) !important; }
+            /* Keep the selected mobile defaults while allowing intentional Bold/Color formatting. */
+            .footer-custom-content .footer-managed-page-content,
+            .footer-custom-content .footer-editor-section { color:var(--footer-mobile-description, var(--footer-description, #666666)); }
             .footer-custom-content .footer-managed-page-content p,
             .footer-custom-content .footer-managed-page-content li {
-                color:var(--footer-description, #666666) !important;
-                font-size:12px !important;
-                font-weight:400 !important;
+                color:var(--footer-mobile-description, var(--footer-description, #666666));
             }
             .footer-custom-content .footer-managed-page-content h2,
             .footer-custom-content .footer-managed-page-content h3,
