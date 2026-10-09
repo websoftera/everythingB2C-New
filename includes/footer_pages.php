@@ -239,6 +239,14 @@ function renderFooterManagedPage(array $page): void
                 .footer-page-custom-styles li * { font-size:12px !important; }
                 .footer-page-custom-styles li,
                 .footer-page-custom-styles li * { font-weight:400 !important; }
+                .footer-page-custom-styles .footer-editor-section div,
+                .footer-page-custom-styles .footer-editor-section span,
+                .footer-page-custom-styles .footer-editor-section p,
+                .footer-page-custom-styles .footer-editor-section li {
+                    color:var(--footer-description, #666666) !important;
+                    font-size:12px !important;
+                    font-weight:400 !important;
+                }
                 .footer-page-custom-styles h2,
                 .footer-page-custom-styles h3,
                 .footer-page-custom-styles h4 { font-size:15px !important; margin:8px 0 3px !important; }
@@ -357,6 +365,14 @@ function renderFooterManagedPage(array $page): void
             .footer-custom-content .footer-managed-page-content li * { font-size:12px !important; }
             .footer-custom-content .footer-managed-page-content li,
             .footer-custom-content .footer-managed-page-content li * { font-weight:400 !important; }
+            .footer-custom-content .footer-managed-page-content div,
+            .footer-custom-content .footer-managed-page-content span,
+            .footer-custom-content .footer-managed-page-content p,
+            .footer-custom-content .footer-managed-page-content li {
+                color:var(--footer-description, #666666) !important;
+                font-size:12px !important;
+                font-weight:400 !important;
+            }
             .footer-custom-content .footer-managed-page-content h2,
             .footer-custom-content .footer-managed-page-content h3,
             .footer-custom-content .footer-managed-page-content h4 { font-size:15px !important; margin:8px 0 3px !important; }
