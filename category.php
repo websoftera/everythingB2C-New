@@ -533,20 +533,20 @@ endif; ?>
   }
 }
 
-/* Container width standardization - Harmonized with category.php */
-.container-fluid {
+/* Keep category layout rules from changing the shared site header. */
+.container-fluid.category-container {
   max-width: 100% !important;
   overflow-x: hidden !important;
   padding-left: 15px !important;
   padding-right: 15px !important;
 }
 
-.row {
+.category-container > .row {
   margin-left: 0 !important;
   margin-right: 0 !important;
 }
 
-.col-12 {
+.category-container .col-12 {
   padding-left: 15px !important;
   padding-right: 15px !important;
 }
@@ -612,11 +612,11 @@ endif; ?>
   .category-container .products-container { padding-top: 4px; }
   .category-container .sidebar-filter-container { margin-bottom: 0; }
   /* Reduce side padding so 2-col cards have maximum width */
-  .container-fluid {
+  .container-fluid.category-container {
     padding-left: 1px !important;
     padding-right: 1px !important;
   }
-  .col-12 {
+  .category-container .col-12 {
     padding-left: 20px !important;
     padding-right: 20px !important;
   }

@@ -36,11 +36,12 @@ foreach ($categories as &$filterCategory) {
     $filterCategory['product_count'] = $categoryFilterCounts[$filterCategory['id']] ?? 0;
 }
 unset($filterCategory);
-// Keep both desktop and mobile filters limited to categories with active products.
-$categories = array_values(array_filter($categories, function ($category) {
-    return (int)$category['product_count'] > 0;
-}));
-// Both filter renderers walk this list by parent, preserving child grouping.
+// Keep the complete configured category tree, including categories that
+// currently have no products. The header displays those entries, so omitting
+// them here makes the two navigation paths inconsistent.
+// Both filter renderers use the same multi-parent hierarchy as the header, so
+// categories assigned to more than one menu (for example, Eraser) appear in
+// every relevant filter branch.
 $categories = orderMainCategoryTree($categories);
 $allCategoryCountConditions = ['is_active = 1'];
 if ($categoryCountScope['discounted']) {
@@ -52,7 +53,8 @@ if ($categoryCountScope['featured']) {
 $allCategoryProductCount = (int)$pdo
     ->query('SELECT COUNT(*) FROM products WHERE ' . implode(' AND ', $allCategoryCountConditions))
     ->fetchColumn();
-$categoryTree = buildCategoryTree($categories);
+$categoryTree = buildCategoryTreeWithMultipleParents($categories);
+$categoryTree = orderMainCategoryTree($categoryTree);
 ?>
 
 <!-- Sidebar Filter Component -->
@@ -108,23 +110,23 @@ $categoryTree = buildCategoryTree($categories);
               <?php 
               // Re-use current function if existing
               if (!function_exists('renderCategoriesWithSubcategories')) {
-                  function renderCategoriesWithSubcategories($categories, $parentId = null, $level = 0) {
+                  function renderCategoriesWithSubcategories($tree, $level = 0) {
                       $output = '';
                       $indent = str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $level);
-                      foreach ($categories as $cat) {
-                          if ($cat['parent_id'] == $parentId) {
-                              $output .= '<option value="' . $cat['id'] . '" class="' . ($level === 0 ? 'filter-main-category' : 'filter-subcategory') . '"';
-                              if (isset($_GET['category']) && $_GET['category'] == $cat['id']) {
-                                  $output .= ' selected';
-                              }
-                              $output .= '>' . $indent . htmlspecialchars($cat['name']) . ' (' . (int)$cat['product_count'] . ')</option>';
-                              $output .= renderCategoriesWithSubcategories($categories, $cat['id'], $level + 1);
+                      foreach ($tree as $cat) {
+                          $output .= '<option value="' . $cat['id'] . '" class="' . ($level === 0 ? 'filter-main-category' : 'filter-subcategory') . '"';
+                          if (isset($_GET['category']) && $_GET['category'] == $cat['id']) {
+                              $output .= ' selected';
+                          }
+                          $output .= '>' . $indent . htmlspecialchars($cat['name']) . ' (' . (int)$cat['product_count'] . ')</option>';
+                          if (!empty($cat['children'])) {
+                              $output .= renderCategoriesWithSubcategories($cat['children'], $level + 1);
                           }
                       }
                       return $output;
                   }
               }
-              echo renderCategoriesWithSubcategories($categories);
+              echo renderCategoriesWithSubcategories($categoryTree);
               ?>
             </select>
             <button type="button" id="filterCategoryTrigger" class="form-control" popovertarget="filterCategoryMenu" aria-expanded="false">All Categories <span aria-hidden="true">▾</span></button>
@@ -232,33 +234,33 @@ $categoryTree = buildCategoryTree($categories);
                 <?php 
                 // Define helper for list on-the-fly or inside
                 if (!function_exists('renderMobileCategoriesList')) {
-                    function renderMobileCategoriesList($categories, $parentId = null, $level = 0) {
+                    function renderMobileCategoriesList($tree, $level = 0) {
                         $output = '';
-                        foreach ($categories as $cat) {
-                            if ($cat['parent_id'] == $parentId) {
-                                $checked = '';
-                                if (isset($_GET['category'])) {
-                                    if (is_array($_GET['category'])) {
-                                        $checked = in_array($cat['id'], $_GET['category']) ? 'checked' : '';
-                                    } else {
-                                        $checked = ($_GET['category'] == $cat['id']) ? 'checked' : '';
-                                    }
+                        foreach ($tree as $cat) {
+                            $checked = '';
+                            if (isset($_GET['category'])) {
+                                if (is_array($_GET['category'])) {
+                                    $checked = in_array($cat['id'], $_GET['category']) ? 'checked' : '';
+                                } else {
+                                    $checked = ($_GET['category'] == $cat['id']) ? 'checked' : '';
                                 }
-                                $indentStyle = 'padding-left: ' . ($level * 15 + 15) . 'px;';
-                                
-                                $output .= '<label class="mob-radio-item" style="' . $indentStyle . '">';
-                                $output .= '<input type="checkbox" name="category[]" value="' . $cat['id'] . '" ' . $checked . '>';
-                                $output .= '<span class="mob-radio-label ' . ($level === 0 ? 'filter-main-category' : 'filter-subcategory') . '">' . htmlspecialchars($cat['name']) . ' (' . (int)$cat['product_count'] . ')</span>';
-                                $output .= '<span class="mob-radio-circle"></span>';
-                                $output .= '</label>';
-                                
-                                $output .= renderMobileCategoriesList($categories, $cat['id'], $level + 1);
+                            }
+                            $indentStyle = 'padding-left: ' . ($level * 15 + 15) . 'px;';
+
+                            $output .= '<label class="mob-radio-item" style="' . $indentStyle . '">';
+                            $output .= '<input type="checkbox" name="category[]" value="' . $cat['id'] . '" ' . $checked . '>';
+                            $output .= '<span class="mob-radio-label ' . ($level === 0 ? 'filter-main-category' : 'filter-subcategory') . '">' . htmlspecialchars($cat['name']) . ' (' . (int)$cat['product_count'] . ')</span>';
+                            $output .= '<span class="mob-radio-circle"></span>';
+                            $output .= '</label>';
+
+                            if (!empty($cat['children'])) {
+                                $output .= renderMobileCategoriesList($cat['children'], $level + 1);
                             }
                         }
                         return $output;
                     }
                 }
-                echo renderMobileCategoriesList($categories);
+                echo renderMobileCategoriesList($categoryTree);
                 ?>
               </div>
             </div>
