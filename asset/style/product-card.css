@@ -1265,15 +1265,15 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
         padding: 0 !important;
     }
 
-    /* Exact Math: W_mrp + 5 + W_pay + 5 + 26 = 100% */
-    /* 2 * W + 36 = 100% => W = 50% - 18px */
+    /* Equal price cells: W + 4 + W + 4 + 22 = 100%. */
+    /* 2 * W + 30 = 100% => W = 50% - 15px. */
     html body .product-card .price-buttons .price-btn.mrp,
     html body .product-card .price-buttons .price-btn.pay,
     html body .product-card .cart-actions .quantity-control {
-        flex: 0 0 calc(50% - 18px) !important;
-        min-width: calc(50% - 18px) !important;
-        max-width: calc(50% - 18px) !important;
-        width: calc(50% - 18px) !important;
+        flex: 0 0 calc(50% - 15px) !important;
+        min-width: calc(50% - 15px) !important;
+        max-width: calc(50% - 15px) !important;
+        width: calc(50% - 15px) !important;
         height: 32px !important;
         min-height: 32px !important;
         max-height: 32px !important;
@@ -1282,11 +1282,11 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
         box-sizing: border-box !important;
     }
 
-    /* Set exact 5px gaps */
+    /* Give the MRP and PAY boxes a clear, consistent separation. */
     html body .product-card .price-buttons .price-btn.mrp,
     html body .product-card .price-buttons .price-btn.pay,
     html body .product-card .cart-actions .quantity-control {
-        margin-right: 5px !important;
+        margin-right: 4px !important;
     }
 
     /* Fix internal quantity bounds */
@@ -1313,15 +1313,36 @@ html body .product-card .wishlist .heart-checkbox:checked+.wishlist-label .heart
 
     /* Force Wishlist exact width to complete 100% equation */
     html body .product-card .price-buttons .wishlist {
-        flex: 0 0 26px !important;
-        width: 26px !important;
-        min-width: 26px !important;
-        max-width: 26px !important;
+        flex: 0 0 22px !important;
+        width: 22px !important;
+        min-width: 22px !important;
+        max-width: 22px !important;
         margin: 0 !important;
         padding: 0 !important;
         display: flex !important;
         justify-content: flex-end !important;
         align-items: center !important;
+    }
+
+    /* Reserve equal price cells for labels with four-digit amounts (₹1,000). */
+    html body .product-card .price-buttons .price-btn.mrp,
+    html body .product-card .price-buttons .price-btn.pay {
+        white-space: nowrap !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        letter-spacing: 0 !important;
+    }
+
+    html body .product-card .price-buttons .price-btn .label {
+        margin-right: 2px !important;
+        font-size: 11px !important;
+        letter-spacing: 0 !important;
+    }
+
+    html body .product-card .price-buttons .price-btn .value {
+        font-size: 12px !important;
+        letter-spacing: 0 !important;
+        font-variant-numeric: tabular-nums;
     }
 
     /* Allow ADD TO CART to identically fill the remaining 50% + 13px */
