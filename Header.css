@@ -2808,7 +2808,7 @@ input[type="checkbox"]:checked+.heart-icon,
     max-width: min(880px, calc(100vw - 40px));
     max-height: none;
     margin-top: 0 !important;
-    padding: 18px 20px 20px;
+    padding: 10px 14px 12px;
     overflow: visible;
     transform: none;
     border: 1px solid #e2e8f0;
@@ -2836,9 +2836,9 @@ input[type="checkbox"]:checked+.heart-icon,
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 18px;
-    margin-bottom: 14px;
-    padding-bottom: 10px;
+    gap: 12px;
+    margin-bottom: 7px;
+    padding-bottom: 6px;
     border-bottom: 1px solid #edf1f5;
   }
 
@@ -2866,12 +2866,12 @@ input[type="checkbox"]:checked+.heart-icon,
   .category-mega-grid {
     display: grid;
     grid-template-columns: repeat(var(--mega-columns, 3), minmax(0, 1fr));
-    gap: 8px 18px;
+    gap: 3px 12px;
   }
 
   .category-mega-group {
     min-width: 0;
-    padding: 8px;
+    padding: 3px;
     border: 1px solid transparent;
     border-radius: 8px;
     transition: background-color .16s ease, border-color .16s ease;
@@ -2885,11 +2885,11 @@ input[type="checkbox"]:checked+.heart-icon,
   .category-navbar .category-mega-title {
     display: flex;
     align-items: flex-start;
-    gap: 7px;
+    gap: 5px;
     color: #243247 !important;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
-    line-height: 1.35;
+    line-height: 1.2;
     text-decoration: none;
   }
 
@@ -2900,15 +2900,15 @@ input[type="checkbox"]:checked+.heart-icon,
   .category-mega-icon {
     position: relative;
     display: inline-flex;
-    flex: 0 0 34px;
-    width: 34px;
-    height: 34px;
+    flex: 0 0 28px;
+    width: 28px;
+    height: 28px;
     align-items: center;
     justify-content: center;
     overflow: hidden;
     margin-top: -1px;
     border: 1px solid #dce8f1;
-    border-radius: 7px;
+    border-radius: 6px;
     background: #e8f3fb;
     color: #1675c1;
     font-size: 18px;
@@ -2932,7 +2932,7 @@ input[type="checkbox"]:checked+.heart-icon,
 
   .category-mega-title-text {
     min-width: 0;
-    padding-top: 3px;
+    padding-top: 1px;
   }
 
   .category-mega-children {
