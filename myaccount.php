@@ -725,10 +725,11 @@ echo renderBreadcrumb($breadcrumbs);
                                 <h6>Order #<?php echo htmlspecialchars($order['tracking_id'] ?? $order['order_number']); ?></h6>
                                 <p>₹<?php echo number_format($order['total_amount'], 0); ?> • <?php echo date('M d, Y', strtotime($order['created_at'])); ?></p>
                             </div>
-                            <div>
+                            <div class="d-flex align-items-center gap-2">
                                 <span class="status <?php echo $order['status']; ?>">
                                     <?php echo ucfirst($order['status']); ?>
                                 </span>
+                                <a href="repeat_order.php?order_id=<?php echo (int)$order['id']; ?>" class="btn btn-primary btn-sm">Repeat Order</a>
                             </div>
                         </div>
                     <?php
@@ -763,6 +764,7 @@ endif; ?>
                                 <div class="order-actions-mobile">
                                     <a href="track_order.php?tracking_id=<?php echo urlencode($order['tracking_id']); ?>" class="btn small">Track Order</a>
                                     <a href="download_invoice.php?order_id=<?php echo $order['id']; ?>" class="btn small btn-success" target="_blank">Download Invoice</a>
+                                    <a href="repeat_order.php?order_id=<?php echo (int)$order['id']; ?>" class="btn small btn-primary">Repeat Order</a>
                                 </div>
                             </div>
                             <!-- Product Details for this order -->

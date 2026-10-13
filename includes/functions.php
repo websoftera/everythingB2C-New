@@ -1841,6 +1841,60 @@ function getCartItems($userId = null) {
     }
 }
 
+/* Repeat orders have their own session basket, so an existing cart is never changed. */
+function ensureRepeatOrderSchema($pdo = null) {
+    if ($pdo === null) { global $pdo; }
+    static $checked = false;
+    if ($checked || !$pdo) return (bool)$pdo;
+    try {
+        foreach (["ALTER TABLE orders ADD COLUMN reordered_from_order_id INT NULL", "ALTER TABLE order_items ADD COLUMN variation_id INT NULL", "ALTER TABLE order_items ADD COLUMN selected_attributes TEXT NULL"] as $sql) {
+            try { $pdo->exec($sql); } catch (PDOException $e) {
+                if (strpos($e->getMessage(), 'Duplicate column') === false && strpos($e->getMessage(), '1060') === false) throw $e;
+            }
+        }
+        $checked = true;
+        return true;
+    } catch (Exception $e) { error_log('Unable to ensure repeat-order schema: ' . $e->getMessage()); return false; }
+}
+
+function getRepeatOrderItemsForSelections(array $selections) {
+    global $pdo;
+    ensureProductPackageQuantitySchema($pdo);
+    $items = [];
+    foreach ($selections as $key => $quantity) {
+        $parts = explode(':', (string)$key, 2);
+        $productId = (int)$parts[0]; $variationId = isset($parts[1]) && (int)$parts[1] > 0 ? (int)$parts[1] : null; $quantity = (int)$quantity;
+        if ($productId <= 0 || $quantity <= 0) continue;
+        $stmt = $pdo->prepare("SELECT p.id AS product_id, p.name, p.slug, p.gst_type, p.gst_rate, p.shipping_charge, p.hsn, p.package_quantity, p.max_quantity_per_order, p.stock_quantity AS product_stock_quantity, NULL AS pay_per_unit, 'No.' AS unit_label, COALESCE(pv.selling_price, p.selling_price) AS selling_price, COALESCE(pv.mrp, p.mrp) AS mrp, COALESCE(pv.image_path, p.main_image) AS main_image, COALESCE(pv.stock_quantity, p.stock_quantity) AS stock_quantity, pv.id AS matched_variation_id, pv.variation_label FROM products p LEFT JOIN product_variations pv ON pv.id = ? AND pv.product_id = p.id WHERE p.id = ? LIMIT 1");
+        $stmt->execute([$variationId, $productId]); $item = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$item || ($variationId && empty($item['matched_variation_id']))) continue;
+        $item['quantity'] = $quantity; $item['variation_id'] = $variationId;
+        $item['selected_attributes'] = $variationId ? getVariationAttributesByVariationId($variationId) : [];
+        $item['name'] = cleanProductName($item['name']) . (!empty($item['variation_label']) ? ' - ' . $item['variation_label'] : '');
+        $items[] = $item;
+    }
+    return $items;
+}
+
+function startRepeatOrder($userId, $orderId) {
+    global $pdo; ensureRepeatOrderSchema($pdo);
+    $stmt = $pdo->prepare('SELECT id FROM orders WHERE id = ? AND user_id = ?'); $stmt->execute([(int)$orderId, (int)$userId]);
+    if (!$stmt->fetchColumn()) return ['success' => false, 'message' => 'That order was not found.'];
+    $stmt = $pdo->prepare('SELECT product_id, quantity, variation_id FROM order_items WHERE order_id = ?'); $stmt->execute([(int)$orderId]);
+    $selections = [];
+    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $item) { $selections[(int)$item['product_id'] . (!empty($item['variation_id']) ? ':' . (int)$item['variation_id'] : '')] = (int)$item['quantity']; }
+    $_SESSION['repeat_order'] = ['source_order_id' => (int)$orderId, 'items' => $selections];
+    return ['success' => true];
+}
+
+function getRepeatOrderSessionItems() { return getRepeatOrderItemsForSelections($_SESSION['repeat_order']['items'] ?? []); }
+function saveRepeatOrderSelections(array $selections) {
+    if (empty($_SESSION['repeat_order'])) return false;
+    $clean = [];
+    foreach ($selections as $key => $quantity) if (preg_match('/^\\d+(?::\\d+)?$/', (string)$key) && (int)$quantity > 0) $clean[$key] = (int)$quantity;
+    $_SESSION['repeat_order']['items'] = $clean; return true;
+}
+
 // Function to add to wishlist
 function addToWishlist($userId, $productId) {
     global $pdo;
@@ -2196,13 +2250,14 @@ function generateOrderNumber() {
     return $orderNumber;
 }
 
-function createOrder($userId, $addressId, $paymentMethod, $gstNumber = null, $companyName = null, $isBusinessPurchase = false, $upiTransactionId = null, $upiScreenshot = null) {
+function createOrder($userId, $addressId, $paymentMethod, $gstNumber = null, $companyName = null, $isBusinessPurchase = false, $upiTransactionId = null, $upiScreenshot = null, $items = null, $reorderedFromOrderId = null) {
     global $pdo;
 
     try {
         // Prepare cart, address, totals and unique IDs before the transaction.
         // getCartItems() may run schema maintenance, and MySQL DDL can implicitly end a transaction.
-        $cartItems = getCartItems($userId);
+        ensureRepeatOrderSchema($pdo);
+        $cartItems = $items === null ? getCartItems($userId) : $items;
         if (empty($cartItems)) {
             throw new Exception('Cart is empty');
         }
@@ -2238,8 +2293,8 @@ function createOrder($userId, $addressId, $paymentMethod, $gstNumber = null, $co
         $pdo->beginTransaction();
 
         // --- Direct Payment: add UPI fields if provided ---
-        $columns = "user_id, address_id, order_number, tracking_id, total_amount, subtotal, gst_amount, shipping_charge, payment_method, gst_number, company_name, is_business_purchase, order_status_id, payment_status, shipping_address, billing_city, billing_state, billing_pincode";
-        $placeholders = "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 'pending', ?, ?, ?, ?";
+        $columns = "user_id, address_id, order_number, tracking_id, total_amount, subtotal, gst_amount, shipping_charge, payment_method, gst_number, company_name, is_business_purchase, reordered_from_order_id, order_status_id, payment_status, shipping_address, billing_city, billing_state, billing_pincode";
+        $placeholders = "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 'pending', ?, ?, ?, ?";
         $values = [
             $userId,
             $addressId,
@@ -2253,6 +2308,7 @@ function createOrder($userId, $addressId, $paymentMethod, $gstNumber = null, $co
             $gstNumber,
             $companyName,
             $isBusinessPurchase ? 1 : 0,
+            $reorderedFromOrderId ? (int)$reorderedFromOrderId : null,
             $shippingAddressText,
             $address['city'],
             $address['state'],
@@ -2277,10 +2333,12 @@ function createOrder($userId, $addressId, $paymentMethod, $gstNumber = null, $co
                 ? calculateGST($item_price, $item['gst_rate'], $item['gst_type'], $address['state'], $seller_state)
                 : getGSTBreakdown($item_total, $item['gst_type'], $item['gst_rate']);
             $item_gst = $gst_calc['total_gst'] * $priceMultiplier;
-            $stmt = $pdo->prepare("INSERT INTO order_items (order_id, product_id, hsn, quantity, price, unit_price, gst_rate, gst_amount, mrp, selling_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt = $pdo->prepare("INSERT INTO order_items (order_id, product_id, variation_id, selected_attributes, hsn, quantity, price, unit_price, gst_rate, gst_amount, mrp, selling_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $stmt->execute([
                 $orderId,
                 $item['product_id'],
+                !empty($item['variation_id']) ? (int)$item['variation_id'] : null,
+                json_encode($item['selected_attributes'] ?? [], JSON_UNESCAPED_UNICODE),
                 $item['hsn'],
                 $item['quantity'],
                 $item_total,
@@ -2294,9 +2352,11 @@ function createOrder($userId, $addressId, $paymentMethod, $gstNumber = null, $co
         }
         // Add initial status history
         addOrderStatusHistory($orderId, 1, 'Order placed successfully', 'system');
-        // Clear cart
-        $stmt = $pdo->prepare("DELETE FROM cart WHERE user_id = ?");
-        $stmt->execute([$userId]);
+        // A repeat order must never clear items already in the normal cart.
+        if ($items === null) {
+            $stmt = $pdo->prepare("DELETE FROM cart WHERE user_id = ?");
+            $stmt->execute([$userId]);
+        }
         $pdo->commit();
 
         // Send email notifications (after successful order creation)
@@ -2422,6 +2482,7 @@ function getOrderById($orderId, $userId = null) {
 
 function getOrderItems($orderId) {
     global $pdo;
+    ensureRepeatOrderSchema($pdo);
     $stmt = $pdo->prepare("SELECT oi.*, p.name, p.main_image, p.slug, p.sku, p.package_quantity, oi.hsn
                           FROM order_items oi
                           JOIN products p ON oi.product_id = p.id
