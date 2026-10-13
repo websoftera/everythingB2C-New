@@ -720,7 +720,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end desktop-account-menu">
                             <li><a class="dropdown-item" href="<?php echo $base_url; ?>myaccount.php">My Account</a></li>
-                            <li><a class="dropdown-item" href="<?php echo $base_url; ?>logout.php">Logout</a></li>
+                            <li><a class="dropdown-item" href="<?php echo $base_url; ?>logout.php" onclick="return confirmHeaderLogout(event);">Logout</a></li>
                         </ul>
                     </div>
                 <?php else: ?>
@@ -745,7 +745,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end auth-dropdown-menu">
                   <li><a class="dropdown-item" href="<?php echo $base_url; ?>myaccount.php">Customer Account</a></li>
-                  <li><a class="dropdown-item" href="<?php echo $base_url; ?>logout.php">Logout</a></li>
+                  <li><a class="dropdown-item" href="<?php echo $base_url; ?>logout.php" onclick="return confirmHeaderLogout(event);">Logout</a></li>
                   <li><hr class="dropdown-divider"></li>
                   <li><a class="dropdown-item" href="<?php echo $base_url; ?>seller/login.php">Seller Login</a></li>
                 </ul>
@@ -1050,7 +1050,41 @@ renderCategoryMenu($categoryTree);
 <script src="<?php echo $base_url; ?>popup/searchbar.js?v=<?php echo b2c_asset_version('popup/searchbar.js'); ?>"></script>
 <script src="<?php echo $base_url; ?>js/real-time-max-quantity.js?v=<?php echo b2c_asset_version('js/real-time-max-quantity.js'); ?>"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+.swal2-popup.logout-popup {
+  max-width: 380px !important;
+  width: 90% !important;
+  max-height: 80vh !important;
+  padding: 20px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2) !important;
+}
+</style>
 <script>
+function confirmHeaderLogout(event) {
+  if (event) event.preventDefault();
+
+  Swal.fire({
+    title: 'Logout?',
+    text: 'Are you sure you want to logout?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonColor: '#9fbe1b',
+    cancelButtonColor: '#6c757d',
+    confirmButtonText: 'Yes',
+    cancelButtonText: 'No',
+    width: '380px',
+    padding: '20px',
+    customClass: { popup: 'logout-popup' }
+  }).then(function(result) {
+    if (result.isConfirmed) {
+      window.location.href = '<?php echo $base_url; ?>logout.php';
+    }
+  });
+
+  return false;
+}
+
 // Ensure all dropdown toggles (e.g., Sign In) initialize correctly
 document.addEventListener('DOMContentLoaded', function () {
   if (!window.bootstrap || !window.bootstrap.Dropdown) return;
