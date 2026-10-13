@@ -2871,7 +2871,7 @@ input[type="checkbox"]:checked+.heart-icon,
 
   .category-mega-group {
     min-width: 0;
-    padding: 3px;
+    padding: 5px 3px;
     border: 1px solid transparent;
     border-radius: 8px;
     transition: background-color .16s ease, border-color .16s ease;
@@ -2885,11 +2885,11 @@ input[type="checkbox"]:checked+.heart-icon,
   .category-navbar .category-mega-title {
     display: flex;
     align-items: flex-start;
-    gap: 5px;
+    gap: 8px;
     color: #243247 !important;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 700;
-    line-height: 1.2;
+    line-height: 1.02;
     text-decoration: none;
   }
 
@@ -2900,9 +2900,9 @@ input[type="checkbox"]:checked+.heart-icon,
   .category-mega-icon {
     position: relative;
     display: inline-flex;
-    flex: 0 0 28px;
-    width: 28px;
-    height: 28px;
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
     align-items: center;
     justify-content: center;
     overflow: hidden;
@@ -2938,7 +2938,7 @@ input[type="checkbox"]:checked+.heart-icon,
   .category-mega-children {
     display: grid;
     gap: 3px;
-    margin: 5px 0 0 41px;
+    margin: 5px 0 0 47px;
   }
 
   .category-navbar .category-mega-children a {
