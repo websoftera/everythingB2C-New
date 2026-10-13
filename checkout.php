@@ -24,6 +24,7 @@ if (!isLoggedIn()) {
 }
 
 $userId = $_SESSION['user_id'];
+$isRepeatCheckout = (isset($_GET['repeat_order']) && $_GET['repeat_order'] === '1') || (isset($_POST['checkout_mode']) && $_POST['checkout_mode'] === 'repeat');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (isset($_POST['set_default']) && isset($_POST['address_id'])) {
@@ -99,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $error_message = 'Please select a delivery address and payment method.';
     }
     else {
-      $cartItems = getCartItems($userId);
+      $cartItems = $isRepeatCheckout ? getRepeatOrderSessionItems() : getCartItems($userId);
       if (empty($cartItems)) {
         $recentCheckoutOrder = $_SESSION['checkout_success_order'] ?? null;
         if (is_array($recentCheckoutOrder) && time() - (int)($recentCheckoutOrder['time'] ?? 0) <= 120) {
@@ -111,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
       }
       else {
-        $result = createOrder($userId, $selected_address_id, $payment_method, $gst_number, null, false, $upi_transaction_id, $upi_screenshot_path);
+        $result = createOrder($userId, $selected_address_id, $payment_method, $gst_number, null, false, $upi_transaction_id, $upi_screenshot_path, $isRepeatCheckout ? $cartItems : null, $isRepeatCheckout ? (int)($_SESSION['repeat_order']['source_order_id'] ?? 0) : null);
         if ($result && !empty($result['success'])) {
           $orderPlaced = true;
           $placedOrderId = $result['order_id'];
@@ -121,6 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'summary' => $placedOrderSummary,
             'time' => time()
           ];
+          if ($isRepeatCheckout) unset($_SESSION['repeat_order']);
           if ($payment_method === 'razorpay') {
             header('Location: process_payment.php?order_id=' . $placedOrderId);
             exit;
@@ -144,7 +146,7 @@ echo renderBreadcrumb($breadcrumbs);
 
 $addresses = getUserAddresses($userId);
 $defaultAddress = getDefaultAddress($userId);
-$cartItems = getCartItems($userId);
+$cartItems = $isRepeatCheckout ? getRepeatOrderSessionItems() : getCartItems($userId);
 
 $selectedAddress = $defaultAddress;
 if (isset($_POST['selected_address'])) {
@@ -287,6 +289,7 @@ if (!empty($orderPlaced) && !empty($placedOrderSummary)) {
 <?php
 endif; ?>
 
+<?php if ($isRepeatCheckout): ?><div class="alert alert-info text-center mb-0">Repeat-order checkout — your normal cart will not be changed.</div><?php endif; ?>
 <?php if (empty($orderPlaced) && $orderTotals['total'] < 150): ?>
   <div class="alert alert-danger text-center" id="minOrderAlert">
     Minimum order amount is ₹150. Please add more items to your cart to proceed.
@@ -411,6 +414,7 @@ endif; ?>
       <form id="checkoutForm" method="post" enctype="multipart/form-data">
         <!-- Hidden fields for address and GST -->
         <input type="hidden" name="place_order" value="1">
+        <?php if ($isRepeatCheckout): ?><input type="hidden" name="checkout_mode" value="repeat"><?php endif; ?>
         <input type="hidden" name="selected_address" id="selected_address_hidden">
         <input type="hidden" name="gst_number" id="gst_number_hidden">
         <input type="hidden" name="upi_transaction_id" id="upi_transaction_id_hidden">
@@ -479,7 +483,7 @@ endif; ?>
               </div>
             </div>
             <div class="text-center mt-2 back-to-cart-wrapper">
-              <a href="cart.php" class="btn btn-outline-primary back-to-cart-btn">Back to Cart</a>
+              <a href="<?= $isRepeatCheckout ? 'repeat_order.php' : 'cart.php' ?>" class="btn btn-outline-primary back-to-cart-btn">Back to <?= $isRepeatCheckout ? 'Repeat Order' : 'Cart' ?></a>
             </div>
           </div>
         </div>

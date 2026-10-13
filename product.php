@@ -771,8 +771,9 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                 display: flex !important;
                 flex-direction: column !important;
                 align-items: stretch !important;
-                flex: 0 0 calc((100% - 30px) / 4) !important;
-                width: calc((100% - 30px) / 4) !important;
+                /* Keep six related-product cards visible throughout the desktop layout. */
+                flex: 0 0 calc((100% - 50px) / 6) !important;
+                width: calc((100% - 50px) / 6) !important;
                 min-width: 0 !important;
                 max-width: none !important;
                 border: 1px solid #ddd !important;
@@ -790,12 +791,6 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
             }
         }
 
-        @media (min-width: 1400px) {
-            .product-page-container .related-products-container .card.product-card {
-                flex-basis: calc((100% - 50px) / 6) !important;
-                width: calc((100% - 50px) / 6) !important;
-            }
-        }
     </style>
 
     <?php
