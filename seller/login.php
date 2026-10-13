@@ -113,7 +113,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['seller_application'])
         if (!filter_var($businessEmail, FILTER_VALIDATE_EMAIL) || strlen($businessEmail) > 190) {
             throw new RuntimeException('Please enter a valid email address.');
         }
-        if (!isset($categoryById[$businessCategory])) {
+        $selectedBusinessCategory = $businessCategory === 'other'
+            ? 'Other'
+            : ($categoryById[$businessCategory] ?? null);
+        if ($selectedBusinessCategory === null) {
             throw new RuntimeException('Please select a business category.');
         }
         if (mb_strlen($businessAddress) > 2000) {
@@ -136,7 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['seller_application'])
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         $insert->execute([
             $firmType, $personName, $mobile, $businessName, $businessEmail,
-            $businessAddress !== '' ? $businessAddress : null, $categoryById[$businessCategory],
+            $businessAddress !== '' ? $businessAddress : null, $selectedBusinessCategory,
             $panNumber !== '' ? $panNumber : null, $gstin !== '' ? $gstin : null,
             $uploadedDocuments['gstin_document'], $uploadedDocuments['pan_document'], $uploadedDocuments['aadhaar_document'],
         ]);
@@ -169,7 +172,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['seller_application'])
                 . '<strong>Business:</strong> ' . $escape($businessName) . '<br>'
                 . '<strong>Email:</strong> ' . $escape($businessEmail) . '<br>'
                 . '<strong>Address:</strong> ' . nl2br($escape($businessAddress)) . '<br>'
-                . '<strong>Category:</strong> ' . $escape($categoryById[$categoryId]) . '<br>'
+                . '<strong>Category:</strong> ' . $escape($selectedBusinessCategory) . '<br>'
                 . '<strong>PAN:</strong> ' . $escape($panNumber ?: 'Not provided') . '<br>'
                 . '<strong>GSTIN:</strong> ' . $escape($gstin ?: 'Not provided') . '</p>';
             foreach ($uploadedDocuments as $documentKey => $relativePath) {
@@ -325,7 +328,7 @@ echo renderBreadcrumb($breadcrumbs);
                                 <div class="col-md-6"><div class="form-group"><label for="seller-mobile">Mobile <span class="required">*</span></label><div class="input-group"><span class="input-group-text">+91</span><input class="form-control" id="seller-mobile" name="mobile" type="tel" inputmode="numeric" pattern="[6-9][0-9]{9}" maxlength="10" autocomplete="tel-national" required></div></div></div>
                                 <div class="col-md-6"><div class="form-group"><label for="business-name">Business Name <span class="required">*</span></label><input class="form-control" id="business-name" name="business_name" type="text" maxlength="180" autocomplete="organization" required></div></div>
                                 <div class="col-md-6"><div class="form-group"><label for="business-email">Email <span class="required">*</span></label><input class="form-control" id="business-email" name="business_email" type="email" maxlength="190" autocomplete="email" required></div></div>
-                                <div class="col-md-6"><div class="form-group"><label for="business-category">Business Category <span class="required">*</span></label><select class="form-select" id="business-category" name="business_category" required><option value="">Select a category</option><?php foreach ($sellerCategories as $category): ?><option value="<?php echo (int)$category['id']; ?>"><?php echo htmlspecialchars($category['name'], ENT_QUOTES, 'UTF-8'); ?></option><?php endforeach; ?></select></div></div>
+                                <div class="col-md-6"><div class="form-group"><label for="business-category">Business Category <span class="required">*</span></label><select class="form-select" id="business-category" name="business_category" required><option value="">Select a category</option><?php foreach ($sellerCategories as $category): ?><option value="<?php echo (int)$category['id']; ?>"><?php echo htmlspecialchars($category['name'], ENT_QUOTES, 'UTF-8'); ?></option><?php endforeach; ?><option value="other">Other</option></select></div></div>
                                 <div class="col-12"><div class="form-group"><label for="business-address">Business Address</label><textarea class="form-control" id="business-address" name="business_address" maxlength="2000" autocomplete="street-address"></textarea></div></div>
                                 <div class="col-md-6"><div class="form-group"><label for="pan-number">PAN No.</label><input class="form-control" id="pan-number" name="pan_number" type="text" maxlength="10" pattern="[A-Za-z]{5}[0-9]{4}[A-Za-z]" title="Enter a valid 10-character PAN" autocomplete="off"></div></div>
                                 <div class="col-md-6"><div class="form-group"><label for="gstin">GSTIN</label><input class="form-control" id="gstin" name="gstin" type="text" maxlength="15" pattern="[0-9]{2}[A-Za-z]{5}[0-9]{4}[A-Za-z][1-9A-Za-z]Z[0-9A-Za-z]" title="Enter a valid 15-character GSTIN" autocomplete="off"></div></div>
