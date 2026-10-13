@@ -445,19 +445,19 @@
 
 /* Related Products Section */
 .related-products-section {
-    padding: 20px 0;
+    padding: 20px;
+    background: none !important;
     margin: 0;
     overflow: visible;
 }
 
 .related-products-card {
-    background: transparent;
-    /* Changed from light-blue to match standard */
-    border: none;
-    /* Remove border/box if we want just cards */
-    padding: 0;
+    background: var(--light-blue);
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
     margin: 0;
-    box-shadow: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     overflow: visible;
 }
 
@@ -465,15 +465,15 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 0;
 }
 
 .related-products-title {
-    font-size: 24px;
-    /* Updated to match standard headers */
-    font-weight: 700;
-    color: #333;
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--dark-blue);
     margin: 0;
+    padding-left: 8px;
 }
 
 .related-products-slider-wrapper {
@@ -486,16 +486,23 @@
 }
 
 .related-products-container {
-    display: flex;
-    gap: 16px;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    padding: 10px 5px;
-    /* Add padding for shadow */
+    display: flex !important;
+    gap: 8px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scroll-behavior: smooth !important;
+    padding: 15px 10px !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    flex: 1 !important;
+    position: relative !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    flex-wrap: nowrap !important;
+    white-space: normal !important;
+    box-sizing: border-box !important;
+    min-width: 100% !important;
     margin: 0;
-    width: 100%;
 }
 
 .related-products-container .product-card {
@@ -513,9 +520,9 @@
     transform: translateY(-50%);
     background: #ffffff;
     border: 1px solid #e0e0e0;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
+    border-radius: 0;
+    width: 20px;
+    height: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -531,70 +538,51 @@
 }
 
 .related-nav-btn.prev-btn {
-    left: -20px;
+    left: -35px;
 }
 
 .related-nav-btn.next-btn {
-    right: -20px;
+    right: -35px;
 }
 
-@media (min-width: 992px) {
-    .related-products-section {
-        padding: 20px 0 42px;
-    }
-
-    .related-products-slider-wrapper {
-        max-width: calc((240px * 4.5) + (10px * 4) + 68px);
-        margin: 0 auto;
-        padding: 0 34px;
-        justify-content: center;
-    }
-
-    .related-products-container {
-        gap: 10px;
-        overflow-x: auto;
-        scroll-snap-type: x proximity;
-        padding: 10px 0 18px;
-        width: min(100%, calc((240px * 4.5) + (10px * 4)));
-        max-width: calc((240px * 4.5) + (10px * 4));
-        justify-content: flex-start !important;
-    }
-
+@media (min-width: 768px) {
     .related-products-container .product-card {
         display: flex;
         flex-direction: column;
         align-items: stretch;
         flex: 0 0 240px !important;
-        width: 100% !important;
-        min-width: 20px !important;
+        width: 240px !important;
+        min-width: 240px !important;
         max-width: 240px !important;
-        border: 1px solid #ddd;
+        border: 1px solid var(--light-blue) !important;
         text-align: center;
         border-radius: 8px !important;
-        background: #fff;
+        background: #fff !important;
+        background-image: none !important;
         cursor: pointer;
-        margin: 0 0 15px 0 !important;
+        margin: 0 !important;
         overflow: hidden !important;
         position: relative;
         padding: 0 !important;
         box-sizing: border-box !important;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        scroll-snap-align: start;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        flex-shrink: 0 !important;
+        flex-grow: 0 !important;
     }
 
     .related-nav-btn {
-        border-radius: 4px;
-        width: 30px;
-        height: 30px;
+        border-radius: 0;
+        width: 20px;
+        height: 20px;
     }
 
     .related-nav-btn.prev-btn {
-        left: 8px;
+        left: -35px;
     }
 
     .related-nav-btn.next-btn {
-        right: 8px;
+        right: -35px;
     }
 
     .related-nav-btn img {
