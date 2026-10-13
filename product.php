@@ -771,10 +771,10 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                 display: flex !important;
                 flex-direction: column !important;
                 align-items: stretch !important;
-                /* Keep six related-product cards visible throughout the desktop layout. */
+                /* Fill six desktop columns while preserving Home's usable card minimum. */
                 flex: 0 0 calc((100% - 50px) / 6) !important;
                 width: calc((100% - 50px) / 6) !important;
-                min-width: 0 !important;
+                min-width: 240px !important;
                 max-width: none !important;
                 border: 1px solid #ddd !important;
                 text-align: center !important;
@@ -788,6 +788,15 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                 box-sizing: border-box !important;
                 box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
                 transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+            }
+        }
+
+        /* On compact desktop widths, expose five complete cards and half of the next card. */
+        @media (min-width: 992px) and (max-width: 1399px) {
+            .product-page-container .related-products-container .card.product-card {
+                flex-basis: calc((100% - 50px) / 5.5) !important;
+                width: calc((100% - 50px) / 5.5) !important;
+                min-width: 0 !important;
             }
         }
 
