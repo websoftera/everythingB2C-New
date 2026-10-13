@@ -926,11 +926,11 @@ endif; ?>
                     </div>
                 <?php endif; ?>
                 <!-- Add New Address Form -->
-                <form method="post" action="myaccount.php#addresses" style="margin-bottom: 24px;">
+                <form method="post" action="myaccount.php#addresses" id="addAddressForm" autocomplete="off" style="margin-bottom: 24px;">
                     <input type="hidden" name="add_address" value="1">
                     <div class="row g-2">
                         <div class="col-md-6">
-                            <input type="text" name="name" class="form-control" placeholder="Full Name" minlength="2" maxlength="60" pattern="[A-Za-z ]+" title="Only letters and spaces are allowed" data-alpha-only value="<?php echo htmlspecialchars($address_form_values['name'] ?? ''); ?>" required>
+                            <input type="text" name="name" class="form-control" placeholder="Full Name" autocomplete="off" minlength="2" maxlength="60" pattern="[A-Za-z ]+" title="Only letters and spaces are allowed" data-alpha-only value="<?php echo htmlspecialchars($address_form_values['name'] ?? ''); ?>" required>
                         </div>
                         <div class="col-md-6">
                             <input type="text" name="phone" class="form-control" placeholder="Phone Number" inputmode="numeric" maxlength="11" pattern="(?:0)?[6-9][0-9]{9}" title="Only digits are allowed. Enter a valid mobile number." data-digits-only value="<?php echo htmlspecialchars($address_form_values['phone'] ?? ''); ?>" required>
@@ -1193,10 +1193,10 @@ document.addEventListener('DOMContentLoaded', function() {
   <div style="background:#fff;padding:24px;border-radius:8px;max-width:500px;width:100%;position:relative;">
     <button type="button" onclick="closeEditAddressModal()" style="position:absolute;top:8px;right:8px;font-size:1.2rem;background:none;border:none;">&times;</button>
     <h5>Edit Address</h5>
-    <form method="post" action="myaccount.php#addresses" id="editAddressForm">
+    <form method="post" action="myaccount.php#addresses" id="editAddressForm" autocomplete="off">
       <input type="hidden" name="edit_address" value="1">
       <input type="hidden" name="address_id" id="edit_address_id">
-      <div class="mb-2"><input type="text" name="name" id="edit_name" class="form-control" placeholder="Full Name" minlength="2" maxlength="60" pattern="[A-Za-z ]+" title="Only letters and spaces are allowed" data-alpha-only required></div>
+      <div class="mb-2"><input type="text" name="name" id="edit_name" class="form-control" placeholder="Full Name" autocomplete="off" minlength="2" maxlength="60" pattern="[A-Za-z ]+" title="Only letters and spaces are allowed" data-alpha-only required></div>
       <div class="mb-2"><input type="text" name="phone" id="edit_phone" class="form-control" placeholder="Phone Number" inputmode="numeric" maxlength="11" pattern="(?:0)?[6-9][0-9]{9}" title="Only digits are allowed. Enter a valid mobile number." data-digits-only required></div>
       <div class="mb-2"><input type="text" name="pincode" id="edit_pincode" class="form-control" placeholder="PIN Code" inputmode="numeric" maxlength="6" pattern="[1-9][0-9]{5}" title="Only 6 digits are allowed" data-digits-only required></div>
       <div class="mb-2"><input type="text" name="address_line1" id="edit_address_line1" class="form-control" placeholder="Address Line 1" minlength="5" maxlength="150" pattern="[A-Za-z0-9\s,.\-/#]+" title="Only letters, numbers, spaces, comma, dot, hyphen, slash, and # are allowed" data-address-only required></div>
@@ -1243,6 +1243,26 @@ document.addEventListener('DOMContentLoaded', () => {
         input.addEventListener('input', () => {
             input.value = input.value.replace(/[^A-Za-z0-9\s,.#\/-]+/g, '');
         });
+    });
+
+    // Product/category menus belong to the site header and must never remain open
+    // above the address fields while a customer is entering address details.
+    const closeAddressFieldMenus = () => {
+        document.querySelectorAll('.category-navbar .dropdown-menu.show').forEach(menu => {
+            const dropdown = menu.closest('.dropdown');
+            const toggle = dropdown ? dropdown.querySelector('[data-bs-toggle="dropdown"]') : null;
+
+            if (toggle && window.bootstrap && window.bootstrap.Dropdown) {
+                const instance = window.bootstrap.Dropdown.getInstance(toggle);
+                if (instance) instance.hide();
+            }
+            menu.classList.remove('show');
+        });
+    };
+
+    document.querySelectorAll('#addAddressForm input, #editAddressForm input').forEach(input => {
+        input.addEventListener('focus', closeAddressFieldMenus);
+        input.addEventListener('input', closeAddressFieldMenus);
     });
 });
 

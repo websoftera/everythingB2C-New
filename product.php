@@ -96,7 +96,7 @@ if ($reviewsAvailable && isLoggedIn()) {
 }
 
 $pageTitle = strip_tags($product['name']);
-$pageStyles = ['asset/style/product-detail.css'];
+$pageStyles = ['asset/style/product-detail.css', 'asset/style/home-discounted-slider.css'];
 require_once 'includes/header.php';
 
 // Get product images
@@ -106,6 +106,7 @@ $product = applyDisplayVariationPrice($product);
 
 // Get related products
 $relatedProducts = getRelatedProducts($product['id'], $product['category_id'], 20);
+$relatedProductReviewSummaries = getPublicProductReviewSummaries($pdo, array_column($relatedProducts, 'id'));
 
 // Get full category path
 $categoryPath = getCategoryPath($product['category_id']);
@@ -1091,28 +1092,29 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
 
     <?php if (!empty($relatedProducts)): ?>
     <!-- Related Products Section -->
-    <section class="related-products-section">
-        <div class="related-products-card">
-            <div class="related-products-header">
-                <h2 class="related-products-title">Related Products</h2>
+    <section class="discounted-products-section">
+        <div class="discounted-products-card">
+            <div class="discounted-products-header">
+                <h2 class="discounted-products-title">Related Products</h2>
             </div>
-            <div class="related-products-slider-wrapper">
-                <button class="related-nav-btn prev-btn" aria-label="Scroll Left">
+            <div class="discounted-products-slider-wrapper">
+                <button class="discounted-nav-btn prev-btn" aria-label="Scroll Left">
                     <img src="asset/icons/blue_arrow.png" alt="Previous" loading="lazy" decoding="async">
                 </button>
-                <div class="related-products-container" id="related-slider">
+                <div class="discounted-products-container" id="discounted-slider">
                     <?php foreach ($relatedProducts as $relatedProduct): 
                         $inWishlist = in_array($relatedProduct['id'], $wishlist_ids);
                         $isOutOfStock = ($relatedProduct['stock_quantity'] <= 0);
+                        $productRating = renderProductRatingBadge($relatedProductReviewSummaries[(int)$relatedProduct['id']] ?? []);
                     ?>
-                        <div class="card product-card" data-id="prod-<?php echo $relatedProduct['id']; ?>">
+                        <div class="card product-card" data-id="prod-<?php echo $relatedProduct['id']; ?>" data-product-id="<?php echo $relatedProduct['id']; ?>">
                             <?php echo renderProductDiscountBanner($relatedProduct); ?>
                             
                             <div class="product-info">
                                 <div class="product-image">
                                     <a href="product.php?slug=<?php echo $relatedProduct['slug']; ?>">
                                         <?php if (!empty($relatedProduct['main_image'])): ?>
-                                            <img src="<?php echo $relatedProduct['main_image']; ?>" alt="<?php echo cleanProductName($relatedProduct['name']); ?>" loading="lazy" decoding="async">
+                                            <img src="<?php echo htmlspecialchars($relatedProduct['main_image']); ?>" alt="<?php echo cleanProductName($relatedProduct['name']); ?>" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='./uploads/products/blank-img.webp';">
                                         <?php else: ?>
                                             <img src="./uploads/products/blank-img.webp" alt="No image available" loading="lazy" decoding="async">
                                         <?php endif; ?>
@@ -1123,9 +1125,12 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                                 </div>
                                 
                                 <div class="product-details">
-                                    <div class="product-unit-line"><?php echo formatProductUnitLine($relatedProduct, true); ?></div>
+                                    <div class="product-card-meta">
+                                        <div class="product-rating-slot"><?php echo $productRating; ?></div>
+                                        <div class="product-unit-line"><?php echo formatProductUnitLine($relatedProduct, true); ?></div>
+                                    </div>
                                     <a href="product.php?slug=<?php echo $relatedProduct['slug']; ?>" class="product-title-link">
-                                        <h3><?php echo cleanProductName($relatedProduct['name']); ?></h3>
+                                        <h3><?php echo formatProductListName($relatedProduct['name']); ?></h3>
                                     </a>
                                     <?php echo renderProductSellerLine($relatedProduct); ?>
 
@@ -1170,7 +1175,7 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                         </div>
                     <?php endforeach; ?>
                 </div>
-                <button class="related-nav-btn next-btn" aria-label="Scroll Right">
+                <button class="discounted-nav-btn next-btn" aria-label="Scroll Right">
                     <img src="asset/icons/blue_arrow.png" alt="Next" loading="lazy" decoding="async" style="transform: rotate(180deg);">
                 </button>
             </div>
@@ -1619,10 +1624,10 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target === this) zoomModal.style.display = 'none';
     };
     
-    // Related Products Slider
-    const relatedSlider = document.getElementById('related-slider');
-    const prevBtn = document.querySelector('.related-nav-btn.prev-btn');
-    const nextBtn = document.querySelector('.related-nav-btn.next-btn');
+    // Home slider UI, populated with related products.
+    const relatedSlider = document.getElementById('discounted-slider');
+    const prevBtn = document.querySelector('.discounted-nav-btn.prev-btn');
+    const nextBtn = document.querySelector('.discounted-nav-btn.next-btn');
     
     if (relatedSlider && prevBtn && nextBtn) {
         let scrollAmount = relatedSlider.scrollLeft;

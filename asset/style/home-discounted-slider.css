@@ -1,0 +1,176 @@
+/* Home page "Products Offering Discount" slider, shared by product details. */
+.discounted-products-section {
+  padding: 20px;
+  background: none !important;
+  margin: 0;
+  overflow: visible;
+}
+
+.discounted-products-card {
+  background: var(--light-blue);
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 0;
+  position: relative;
+  overflow: visible;
+}
+
+.discounted-products-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.discounted-products-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--dark-blue);
+  margin: 0;
+  padding-left: 8px;
+}
+
+/* Product details uses the same slider dimensions, without the blue panel. */
+html body .product-page-container .discounted-products-card {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.discounted-products-slider-wrapper {
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.discounted-products-container {
+  display: flex !important;
+  gap: 8px !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  scroll-behavior: smooth !important;
+  padding: 15px 10px !important;
+  -webkit-overflow-scrolling: touch !important;
+  scrollbar-width: none !important;
+  flex: 1 !important;
+  position: relative !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  flex-wrap: nowrap !important;
+  white-space: normal !important;
+  box-sizing: border-box !important;
+  min-width: 100% !important;
+}
+
+.discounted-products-container::-webkit-scrollbar { display: none; }
+
+.discounted-products-container .card.product-card {
+  flex-shrink: 0 !important;
+  flex-grow: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+  background: #fff !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+  border: 1px solid var(--light-blue) !important;
+  background-image: none !important;
+  border-color: var(--light-blue) !important;
+}
+
+@media (min-width: 768px) {
+  .discounted-products-container .card.product-card {
+    flex: 0 0 240px !important;
+    width: 240px !important;
+    min-width: 240px !important;
+    max-width: 240px !important;
+  }
+}
+
+.discounted-nav-btn {
+  background: #ffffff !important;
+  border: 1px solid #e0e0e0 !important;
+  color: var(--light-blue) !important;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  opacity: 1;
+  pointer-events: auto;
+  text-decoration: none;
+  line-height: 1;
+  user-select: none;
+}
+
+.discounted-nav-btn:hover {
+  background: #ffffff;
+  color: var(--dark-blue);
+  box-shadow: 0 4px 12px rgba(206, 229, 239, 0.3);
+  transform: translateY(-50%) scale(1.05);
+}
+
+@media (min-width: 769px) {
+  .discounted-nav-btn.prev-btn { left: -35px; }
+  .discounted-nav-btn.next-btn { right: -35px; }
+}
+
+/* On a product page, let the copied home section escape the narrow detail column. */
+@media (min-width: 992px) {
+  html body .product-page-container .discounted-products-section {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    margin-left: calc(50% - 50vw) !important;
+    margin-right: 0 !important;
+    padding: 20px 15px !important;
+    box-sizing: border-box !important;
+  }
+}
+
+/* Product-detail styles must not resize the copied home slider cards. */
+html body .product-page-container .discounted-products-container .discount-banner {
+  height: 32.1px !important;
+  min-height: 32.1px !important;
+  max-height: none !important;
+  padding: 10px 14px !important;
+  font-size: 11px !important;
+  line-height: 1.1 !important;
+  font-weight: bold !important;
+}
+
+html body .product-page-container .discounted-products-container .product-title-link h3 {
+  margin: 0 !important;
+  min-height: 32px !important;
+  max-height: 32px !important;
+  font-size: 12px !important;
+  line-height: 1.3 !important;
+}
+
+html body .product-page-container .discounted-products-container .cart-actions {
+  height: 30px !important;
+  min-height: 30px !important;
+  max-height: 30px !important;
+  margin: 0 !important;
+}
+
+html body .product-page-container .discounted-products-container .cart-actions .add-to-cart-btn {
+  height: 30px !important;
+  min-height: 30px !important;
+  max-height: 30px !important;
+  font-size: 10px !important;
+}
