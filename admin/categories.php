@@ -319,6 +319,37 @@ $categoryTree = orderMainCategoryTree($categoryTree);
             background: #fff;
             box-shadow: 0 -5px 16px rgba(15, 23, 42, .05);
         }
+        .category-form-modal .modal-footer .everythingb2c-btn-primary,
+        .category-form-modal .modal-footer .everythingb2c-btn-secondary {
+            min-width: 162px;
+            min-height: 40px;
+            padding: 0.375rem 0.75rem;
+            background-color: #4e73df;
+            border-color: #4e73df;
+            color: #fff;
+        }
+        .category-form-modal .modal-footer .everythingb2c-btn-primary:hover,
+        .category-form-modal .modal-footer .everythingb2c-btn-secondary:hover {
+            background-color: #2e59d9;
+            border-color: #2653d4;
+        }
+        .categories-admin-content .everythingb2c-categories-table,
+        .categories-admin-content .everythingb2c-btn-primary,
+        .categories-admin-content .everythingb2c-btn-secondary,
+        .categories-admin-content .everythingb2c-btn-warning,
+        .categories-admin-content .everythingb2c-btn-danger,
+        .categories-admin-content .badge,
+        .category-form-modal .modal-content,
+        .category-form-modal .form-control,
+        .category-form-modal .form-label,
+        .category-form-modal .form-text,
+        .category-form-modal .everythingb2c-btn-primary,
+        .category-form-modal .everythingb2c-btn-secondary {
+            font-family: 'Mulish', sans-serif !important;
+            font-size: 13px !important;
+            font-weight: 600;
+            line-height: 1.25;
+        }
         @media (max-width: 575.98px) {
             .category-form-modal {
                 margin: .5rem;
@@ -340,7 +371,7 @@ $categoryTree = orderMainCategoryTree($categoryTree);
             <?php include 'includes/header.php'; ?>
 
             <!-- Categories Content -->
-            <div class="everythingb2c-dashboard-content">
+            <div class="everythingb2c-dashboard-content categories-admin-content">
                 <div class="container-fluid">
                     <div class="row mb-4">
                         <div class="col-12">
@@ -382,7 +413,6 @@ $categoryTree = orderMainCategoryTree($categoryTree);
                                                 <th>Image</th>
                                                 <th>Name</th>
                                                 <th>Slug</th>
-                                                <th>Description</th>
                                                 <th>Products</th>
                                                 <th>Created</th>
                                                 <th>Actions</th>
@@ -421,7 +451,6 @@ $categoryTree = orderMainCategoryTree($categoryTree);
                                                     }
                                                     echo '</td>';
                                                     echo '<td><code>' . htmlspecialchars($category['slug']) . '</code></td>';
-                                                    echo '<td>' . htmlspecialchars($category['description'] ?? '') . '</td>';
                                                     echo '<td><span class="badge bg-primary">' . $category['product_count'] . '</span></td>';
                                                     echo '<td>' . date('M d, Y', strtotime($category['created_at'])) . '</td>';
                                                     echo '<td>';

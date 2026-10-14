@@ -296,6 +296,31 @@ $pageTitle = 'Manage Banners';
             color: #fff !important;
             text-decoration: none;
         }
+
+        .banners-admin-content .table,
+        .banners-admin-content .form-control,
+        .banners-admin-content .form-select,
+        .banners-admin-content .form-label,
+        .banners-admin-content .form-text,
+        .banners-admin-content .btn,
+        .banners-admin-content .badge,
+        #editBannerModal .modal-content,
+        #editBannerModal .form-control,
+        #editBannerModal .form-select,
+        #editBannerModal .form-label,
+        #editBannerModal .form-text,
+        #editBannerModal .btn,
+        #addBannerModal .modal-content,
+        #addBannerModal .form-control,
+        #addBannerModal .form-select,
+        #addBannerModal .form-label,
+        #addBannerModal .form-text,
+        #addBannerModal .btn {
+            font-family: 'Mulish', sans-serif !important;
+            font-size: 13px !important;
+            font-weight: 600;
+            line-height: 1.25;
+        }
     </style>
 </head>
 <body>
@@ -309,7 +334,7 @@ $pageTitle = 'Manage Banners';
             <?php include 'includes/header.php'; ?>
 
             <!-- Dashboard Content -->
-            <div class="everythingb2c-dashboard-content">
+            <div class="everythingb2c-dashboard-content banners-admin-content">
                 <div class="container-fluid">
                     <div class="row mb-4">
                         <div class="col-12 d-flex justify-content-between align-items-center">

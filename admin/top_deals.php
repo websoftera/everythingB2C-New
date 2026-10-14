@@ -100,6 +100,23 @@ $topDealProducts = getTopDealProductsByCategory($pdo, array_column($categories, 
         .top-deal-category-option { display: flex; align-items: center; gap: 10px; padding: 7px 4px; }
         .top-deal-group-title { font-size: 1rem; font-weight: 600; margin: 20px 0 10px; }
         .top-deal-empty-list { color: #6c757d; padding: 12px 0; }
+        .top-deals-admin-content,
+        .top-deals-admin-content .form-control,
+        .top-deals-admin-content .form-select,
+        .top-deals-admin-content .form-label,
+        .top-deals-admin-content .btn,
+        .top-deals-admin-content .top-deal-product-name,
+        .top-deals-admin-content .top-deal-offer-field label,
+        .top-deals-admin-content .top-deal-product-toggle,
+        .top-deals-admin-content .top-deal-category-option,
+        .top-deals-admin-content .top-deal-order-count,
+        .top-deals-admin-content .top-deal-group-title,
+        .top-deals-admin-content .top-deal-empty-list {
+            font-family: 'Mulish', sans-serif !important;
+            font-size: 13px !important;
+            font-weight: 600;
+            line-height: 1.25;
+        }
         @media (max-width: 575px) { .top-deal-order-row { grid-template-columns: 26px 58px minmax(0,1fr); gap: 9px; padding: 9px; } .top-deal-order-image { width: 56px; height: 52px; } .top-deal-order-count, .top-deal-offer-field { grid-column: 3; } .top-deal-product-list { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -108,7 +125,7 @@ $topDealProducts = getTopDealProductsByCategory($pdo, array_column($categories, 
     <?php include 'includes/sidebar.php'; ?>
     <div class="everythingb2c-main-content">
         <?php include 'includes/header.php'; ?>
-        <main class="container-fluid p-3 p-lg-4">
+        <main class="container-fluid p-3 p-lg-4 top-deals-admin-content">
             <?php if ($error): ?><div class="alert alert-danger" role="alert"><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></div><?php endif; ?>
             <?php if ($success): ?><div class="alert alert-success" role="status"><?php echo htmlspecialchars($success, ENT_QUOTES, 'UTF-8'); ?></div><?php endif; ?>
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">

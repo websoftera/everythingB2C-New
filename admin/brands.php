@@ -71,13 +71,26 @@ $brands = getBrands($pdo);
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 <link href="assets/css/admin.css" rel="stylesheet">
+<style>
+    .brands-admin-content,
+    .brands-admin-content .form-control,
+    .brands-admin-content .form-label,
+    .brands-admin-content .btn,
+    .brands-admin-content .table,
+    .brands-admin-content .text-muted {
+        font-family: 'Mulish', sans-serif !important;
+        font-size: 13px !important;
+        font-weight: 600;
+        line-height: 1.25;
+    }
+</style>
 </head>
 <body>
 <div class="everythingb2c-admin-container">
 <?php include 'includes/sidebar.php'; ?>
 <div class="everythingb2c-main-content">
 <?php include 'includes/header.php'; ?>
-<div class="container-fluid p-4">
+<div class="container-fluid p-4 brands-admin-content">
 <?php if ($error): ?><div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div><?php endif; ?>
 <?php if (isset($_SESSION['brand_success'])): ?><div class="alert alert-success"><?php echo htmlspecialchars($_SESSION['brand_success']); unset($_SESSION['brand_success']); ?></div><?php endif; ?>
 <?php if ($ready && canAccess('add_product')): ?>
