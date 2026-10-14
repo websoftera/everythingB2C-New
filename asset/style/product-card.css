@@ -312,6 +312,9 @@
     clear: both;
     width: fit-content;
     margin: 7px 0 10px;
+    padding: 4px 7px;
+    gap: 4px;
+    border-radius: 4px;
     font-size: 13px;
 }
 .product-detail-rating .product-rating-star { font-size: 14px; }
