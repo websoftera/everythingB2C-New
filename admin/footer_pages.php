@@ -176,11 +176,27 @@ $isFaqEditor = $editing && (($editing['legacy_path'] ?? '') === 'faq.php');
         .footer-page-visual-editor li::marker { color:#1683e8; }
         .footer-page-visual-editor.is-mobile-preview,
         #faqBuilder.is-mobile-preview { max-width:390px; margin-left:auto; margin-right:auto; }
-        .footer-page-visual-editor.is-mobile-preview { min-height:520px; }
+        .footer-page-visual-editor.is-mobile-preview {
+            min-height:520px;
+            font-size:var(--editor-mobile-text-size, 12px);
+            line-height:1.65;
+        }
+        /* Saved sections can contain direct text or divs rather than p/li tags. */
+        .footer-page-visual-editor.is-mobile-preview .footer-editor-section,
+        .footer-page-visual-editor.is-mobile-preview .about-section,
+        .footer-page-visual-editor.is-mobile-preview .policy-section,
+        .footer-page-visual-editor.is-mobile-preview .privacy-section,
+        .footer-page-visual-editor.is-mobile-preview .faq-section {
+            font-size:var(--editor-mobile-text-size, 12px);
+        }
         .footer-page-visual-editor.is-mobile-preview p,
         .footer-page-visual-editor.is-mobile-preview p *,
         .footer-page-visual-editor.is-mobile-preview li,
         .footer-page-visual-editor.is-mobile-preview li * { font-size:var(--editor-mobile-text-size, 12px) !important; }
+        /* Match the public mobile page, where headings remain distinct from body text. */
+        .footer-page-visual-editor.is-mobile-preview h2,
+        .footer-page-visual-editor.is-mobile-preview h3,
+        .footer-page-visual-editor.is-mobile-preview h4 { font-size:15px !important; }
         .footer-page-visual-editor.is-mobile-preview { color:var(--editor-mobile-text-color, #666666); }
         .footer-page-visual-editor.is-mobile-preview p,
         .footer-page-visual-editor.is-mobile-preview li { color:var(--editor-mobile-text-color, #666666); }
