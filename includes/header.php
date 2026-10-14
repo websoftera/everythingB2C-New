@@ -660,7 +660,7 @@ document.addEventListener('DOMContentLoaded', function () {
 <nav class="navbar navbar-expand-lg sticky-top bg-white" style="overflow: visible;">
     <div class="container-fluid d-flex align-items-center flex-nowrap" style="gap: 8px; z-index: 2000; position: relative; overflow: visible !important;">
         <!-- Logo -->
-        <a class="navbar-brand m-0" href="<?php echo $base_url; ?>index.php" style="flex-shrink: 0;">
+        <a class="navbar-brand m-0" href="<?php echo $base_url !== '' ? $base_url : './'; ?>" style="flex-shrink: 0;">
             <img src="<?php echo $base_url; ?>asset/images/header-logo.webp?v=<?php echo b2c_asset_version('asset/images/header-logo.webp'); ?>" alt="everythingb2c" class="img-fluid" style="max-height: 62px;">
         </a>
 
