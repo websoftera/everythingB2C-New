@@ -87,16 +87,80 @@ function reviews_filter_url(array $filters, int $page = 1): string {
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Reviews - Admin</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"><link href="assets/css/admin.css" rel="stylesheet">
 <style>.review-stats{display:grid;grid-template-columns:repeat(5,minmax(125px,1fr));gap:12px}.review-stat{border:1px solid #e5e9ef;border-radius:10px;padding:16px;background:#fff}.review-stat strong{display:block;font-size:1.5rem}.review-filters{display:grid;grid-template-columns:2fr repeat(5,minmax(130px,1fr)) auto;gap:10px;align-items:end}.review-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.review-form-grid .wide{grid-column:1/-1}.review-text{max-width:320px;white-space:normal;overflow-wrap:anywhere}.review-table td{vertical-align:middle}.review-actions{display:flex;gap:5px;flex-wrap:wrap}.review-status{display:inline-block;padding:4px 9px;border-radius:30px;font-size:.78rem;font-weight:600;text-transform:capitalize}.review-status-approved{background:#dff4e5;color:#176b32}.review-status-pending{background:#fff1cc;color:#795900}.review-status-rejected{background:#fce1e1;color:#922d2d}.review-status-spam{background:#e8e8eb;color:#4d4d55}@media(max-width:1100px){.review-filters{grid-template-columns:repeat(3,minmax(0,1fr))}.review-stats{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:650px){.review-filters,.review-stats,.review-form-grid{grid-template-columns:1fr 1fr}.review-form-grid .wide{grid-column:1/-1}.review-stats .review-stat:last-child{grid-column:auto}.review-heading{align-items:flex-start!important;flex-direction:column}.review-actions .btn{padding:.25rem .4rem}}</style>
-</head><body><div class="everythingb2c-admin-container"><?php include 'includes/sidebar.php'; ?><div class="everythingb2c-main-content"><?php include 'includes/header.php'; ?><main class="container-fluid p-3 p-lg-4">
+<style>
+    .review-admin-content .review-filters,
+    .review-admin-content .review-form-grid,
+    .review-admin-content .review-table,
+    .review-admin-content .review-status,
+    .review-admin-content .review-actions,
+    .review-admin-content .form-control,
+    .review-admin-content .form-select,
+    .review-admin-content .form-label,
+    .review-admin-content .btn {
+        font-family: 'Mulish', sans-serif !important;
+        font-size: 13px !important;
+        font-weight: 600;
+        line-height: 1.25;
+    }
+</style>
+<style>
+    .review-search-select { position: relative; width: 100%; }
+    .review-search-select-toggle {
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        text-align: left;
+        background: #fff;
+    }
+    .review-search-select-toggle span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .review-search-select-menu {
+        position: absolute;
+        right: 0;
+        top: calc(100% + 4px);
+        bottom: auto;
+        z-index: 1060;
+        width: 100%;
+        padding: 8px;
+        background: #fff;
+        border: 1px solid #cfd6df;
+        border-radius: 6px;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, .16);
+    }
+    .review-search-select-options {
+        max-height: 190px;
+        margin-top: 6px;
+        overflow-y: auto;
+    }
+    .review-search-select-options button {
+        display: block;
+        width: 100%;
+        padding: 7px 8px;
+        border: 0;
+        background: transparent;
+        color: #1f2937;
+        text-align: left;
+    }
+    .review-search-select-options button:hover,
+    .review-search-select-options button:focus { background: #eef5ff; color: #0d6efd; }
+    .review-search-select-empty { margin: 8px; color: #6c757d; }
+</style>
+</head><body><div class="everythingb2c-admin-container"><?php include 'includes/sidebar.php'; ?><div class="everythingb2c-main-content"><?php include 'includes/header.php'; ?><main class="container-fluid p-3 p-lg-4 review-admin-content">
 <?php if ($error): ?><div class="alert alert-danger"><?php echo reviews_h($error); ?></div><?php endif; ?><?php if ($success): ?><div class="alert alert-success"><?php echo reviews_h($success); ?></div><?php endif; ?>
 <div class="review-stats mb-4"><?php foreach (['total'=>'Total Reviews','pending'=>'Pending','approved'=>'Approved','rejected'=>'Rejected','spam'=>'Spam'] as $key=>$label): ?><div class="review-stat"><span class="text-muted"><?php echo reviews_h($label); ?></span><strong><?php echo (int)$stats[$key]; ?></strong></div><?php endforeach; ?></div>
 <div class="d-flex justify-content-between review-heading mb-3"><h5 class="mb-0">Reviews <small class="text-muted">(<?php echo (int)$result['total']; ?>)</small></h5><a class="btn btn-primary" href="reviews.php?create=1"><i class="fas fa-plus"></i> Add Review</a></div>
 <ul class="nav nav-tabs mb-3"><li class="nav-item"><a class="nav-link <?php echo $filters['status']===''?'active':''; ?>" href="reviews.php">All Reviews</a></li><?php foreach (PRODUCT_REVIEW_STATUSES as $status): ?><li class="nav-item"><a class="nav-link <?php echo $filters['status']===$status?'active':''; ?>" href="<?php echo reviews_h(reviews_filter_url(array_merge($filters,['status'=>$status]))); ?>"><?php echo reviews_h(ucfirst($status)); ?></a></li><?php endforeach; ?></ul>
 <form class="card card-body mb-3" method="get"><div class="review-filters"><div><label class="form-label">Search</label><input name="search" class="form-control" value="<?php echo reviews_h($filters['search']); ?>" placeholder="Product, customer, review, Seller Code"></div><div><label class="form-label">Rating</label><select name="rating" class="form-select"><option value="">Any rating</option><?php for($i=5;$i>=1;$i--): ?><option value="<?php echo $i; ?>" <?php echo $filters['rating']===(string)$i?'selected':''; ?>><?php echo $i; ?> stars</option><?php endfor; ?></select></div><div><label class="form-label">Verified</label><select name="verified" class="form-select"><option value="">Any</option><option value="1" <?php echo $filters['verified']==='1'?'selected':''; ?>>Verified</option><option value="0" <?php echo $filters['verified']==='0'?'selected':''; ?>>Not verified</option></select></div><div><label class="form-label">Product</label><select name="product_id" class="form-select"><option value="">All products</option><?php foreach($products as $p): ?><option value="<?php echo (int)$p['id']; ?>" <?php echo $filters['product_id']===(string)$p['id']?'selected':''; ?>><?php echo reviews_h($p['name']); ?></option><?php endforeach; ?></select></div><div><label class="form-label">From</label><input type="date" name="date_from" class="form-control" value="<?php echo reviews_h($filters['date_from']); ?>"></div><div><label class="form-label">To</label><input type="date" name="date_to" class="form-control" value="<?php echo reviews_h($filters['date_to']); ?>"></div><div class="d-flex gap-2"><button class="btn btn-primary">Filter</button><a class="btn btn-outline-secondary" href="reviews.php">Reset</a></div></div><?php if($filters['status']): ?><input type="hidden" name="status" value="<?php echo reviews_h($filters['status']); ?>"><?php endif; ?></form>
 <?php if (isset($_GET['create']) || $editing): ?><div class="card mb-3"><div class="card-header fw-bold"><?php echo $editing?'Edit Review':'Add Review'; ?></div><div class="card-body"><form method="post"><input type="hidden" name="csrf" value="<?php echo reviews_h($csrf); ?>"><input type="hidden" name="action" value="save"><input type="hidden" name="id" value="<?php echo reviews_h($form['id']); ?>"><div class="review-form-grid">
-<div><label class="form-label">Product *</label><select class="form-select" name="product_id" required><option value="">Select product</option><?php foreach($products as $p): ?><option value="<?php echo (int)$p['id']; ?>" <?php echo (string)$form['product_id']===(string)$p['id']?'selected':''; ?>><?php echo reviews_h($p['name']); ?></option><?php endforeach; ?></select></div>
-<div><label class="form-label">Customer *</label><select class="form-select" name="customer_id" required><option value="">Select customer</option><?php foreach($customers as $c): ?><option value="<?php echo (int)$c['id']; ?>" <?php echo (string)$form['customer_id']===(string)$c['id']?'selected':''; ?>><?php echo reviews_h($c['name']); ?></option><?php endforeach; ?></select></div>
-<div><label class="form-label">Rating *</label><select class="form-select" name="rating" required><?php for($i=1;$i<=5;$i++): ?><option value="<?php echo $i; ?>" <?php echo (int)$form['rating']===$i?'selected':''; ?>><?php echo $i; ?> star<?php echo $i>1?'s':''; ?></option><?php endfor; ?></select></div>
+<?php $selectedProductName = ''; foreach ($products as $p) { if ((string)$form['product_id'] === (string)$p['id']) { $selectedProductName = $p['name']; break; } } ?>
+<div><label class="form-label">Product *</label><div class="review-search-select"><input type="hidden" name="product_id" value="<?php echo (int)$form['product_id']; ?>"><button type="button" class="form-control review-search-select-toggle" aria-expanded="false"><span><?php echo $selectedProductName !== '' ? reviews_h($selectedProductName) : 'Select product'; ?></span><i class="fas fa-chevron-down" aria-hidden="true"></i></button><div class="review-search-select-menu" hidden><input type="search" class="form-control review-search-select-input" placeholder="Search products..." autocomplete="off"><div class="review-search-select-options"><?php foreach($products as $p): ?><button type="button" data-value="<?php echo (int)$p['id']; ?>" data-label="<?php echo reviews_h($p['name']); ?>"><?php echo reviews_h($p['name']); ?></button><?php endforeach; ?><p class="review-search-select-empty" hidden>No products found.</p></div></div></div></div>
+<?php $selectedCustomerName = ''; foreach ($customers as $c) { if ((string)$form['customer_id'] === (string)$c['id']) { $selectedCustomerName = $c['name']; break; } } ?>
+<div><label class="form-label">Customer *</label><div class="review-search-select"><input type="hidden" name="customer_id" value="<?php echo (int)$form['customer_id']; ?>"><button type="button" class="form-control review-search-select-toggle" aria-expanded="false"><span><?php echo $selectedCustomerName !== '' ? reviews_h($selectedCustomerName) : 'Select customer'; ?></span><i class="fas fa-chevron-down" aria-hidden="true"></i></button><div class="review-search-select-menu" hidden><input type="search" class="form-control review-search-select-input" placeholder="Search customers..." autocomplete="off"><div class="review-search-select-options"><?php foreach($customers as $c): ?><button type="button" data-value="<?php echo (int)$c['id']; ?>" data-label="<?php echo reviews_h($c['name']); ?>"><?php echo reviews_h($c['name']); ?></button><?php endforeach; ?><p class="review-search-select-empty" hidden>No customers found.</p></div></div></div></div>
+<div><label class="form-label">Rating *</label><div class="review-search-select"><input type="hidden" name="rating" value="<?php echo (int)$form['rating']; ?>"><button type="button" class="form-control review-search-select-toggle" aria-expanded="false"><span><?php echo (int)$form['rating'] > 0 ? (int)$form['rating'] . ((int)$form['rating'] === 1 ? ' star' : ' stars') : 'Select rating'; ?></span><i class="fas fa-chevron-down" aria-hidden="true"></i></button><div class="review-search-select-menu" hidden><input type="search" class="form-control review-search-select-input" placeholder="Search rating..." autocomplete="off"><div class="review-search-select-options"><?php for($i=1;$i<=5;$i++): ?><button type="button" data-value="<?php echo $i; ?>" data-label="<?php echo $i; ?> <?php echo $i === 1 ? 'star' : 'stars'; ?>"><?php echo $i; ?> <?php echo $i === 1 ? 'star' : 'stars'; ?></button><?php endfor; ?><p class="review-search-select-empty" hidden>No ratings found.</p></div></div></div></div>
 <div><label class="form-label">Status</label><select class="form-select" name="status"><?php foreach(PRODUCT_REVIEW_STATUSES as $s): ?><option value="<?php echo $s; ?>" <?php echo $form['status']===$s?'selected':''; ?>><?php echo ucfirst($s); ?></option><?php endforeach; ?></select></div>
 <div class="wide"><label class="form-label">Review Title *</label><input class="form-control" name="review_title" maxlength="200" required value="<?php echo reviews_h($form['review_title']); ?>"></div><div class="wide"><label class="form-label">Review Content *</label><textarea class="form-control" name="review_content" rows="4" maxlength="10000" required><?php echo reviews_h($form['review_content']); ?></textarea></div>
 <div><label class="form-label">Seller Code *</label><input class="form-control" name="seller_code" maxlength="40" pattern="[A-Za-z0-9][A-Za-z0-9_-]{0,39}" value="<?php echo reviews_h($form['seller_code']); ?>" placeholder="Enter manually (required to approve)"><small class="text-muted">Enter the code manually. Required before publishing.</small></div><div class="d-flex align-items-center pt-4"><label><input type="checkbox" name="is_verified" value="1" <?php echo !empty($form['is_verified'])?'checked':''; ?>> Verified Purchase</label></div>
@@ -108,5 +172,56 @@ function reviews_filter_url(array $filters, int $page = 1): string {
 <?php if(!$result['reviews']): ?><tr><td colspan="10" class="text-center text-muted py-4">No reviews match these filters.</td></tr><?php endif; ?></tbody></table></div></div></form>
 <?php if($pages>1): ?><nav class="mt-3"><ul class="pagination justify-content-center"><?php for($p=1;$p<=$pages;$p++): ?><li class="page-item <?php echo $p===$page?'active':''; ?>"><a class="page-link" href="<?php echo reviews_h(reviews_filter_url($filters,$p)); ?>"><?php echo $p; ?></a></li><?php endfor; ?></ul></nav><?php endif; ?>
 </main></div></div>
+<script>
+document.querySelectorAll('.review-search-select').forEach(function (select) {
+    const toggle = select.querySelector('.review-search-select-toggle');
+    const menu = select.querySelector('.review-search-select-menu');
+    const search = select.querySelector('.review-search-select-input');
+    const hidden = select.querySelector('input[type="hidden"]');
+    if (hidden && hidden.name === 'rating') select.classList.add('rating-search-select');
+    const label = toggle.querySelector('span');
+    const options = Array.from(select.querySelectorAll('.review-search-select-options button'));
+    const empty = select.querySelector('.review-search-select-empty');
+
+    function close() {
+        menu.hidden = true;
+        toggle.setAttribute('aria-expanded', 'false');
+    }
+    function filter() {
+        const query = search.value.trim().toLocaleLowerCase();
+        let visible = 0;
+        options.forEach(function (option) {
+            const matches = option.dataset.label.toLocaleLowerCase().includes(query);
+            option.hidden = !matches;
+            if (matches) visible++;
+        });
+        empty.hidden = visible !== 0;
+    }
+    toggle.addEventListener('click', function () {
+        const opening = menu.hidden;
+        document.querySelectorAll('.review-search-select-menu').forEach(function (other) {
+            if (other !== menu) other.hidden = true;
+        });
+        menu.hidden = !opening;
+        toggle.setAttribute('aria-expanded', opening ? 'true' : 'false');
+        if (opening) {
+            search.value = '';
+            filter();
+            search.focus();
+        }
+    });
+    search.addEventListener('input', filter);
+    options.forEach(function (option) {
+        option.addEventListener('click', function () {
+            hidden.value = option.dataset.value;
+            label.textContent = option.dataset.label;
+            close();
+        });
+    });
+    document.addEventListener('click', function (event) {
+        if (!select.contains(event.target)) close();
+    });
+});
+</script>
 <form id="rowAction" method="post" hidden><input type="hidden" name="csrf" value="<?php echo reviews_h($csrf); ?>"><input type="hidden" name="id"><input type="hidden" name="action"><input type="hidden" name="status"></form>
 <script>document.getElementById('selectAll').addEventListener('change',e=>document.querySelectorAll('.review-check').forEach(c=>c.checked=e.target.checked));function submitRowAction(btn,id,action){if(action==='delete'&&!confirm('Delete this review permanently?'))return false;const f=document.getElementById('rowAction');f.elements.id.value=id;f.elements.action.value=action;f.elements.status.value=btn.value||'';f.submit();return false;}</script><script src="assets/js/admin.js"></script></body></html>

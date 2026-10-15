@@ -343,6 +343,24 @@ foreach ($valuesStmt->fetchAll(PDO::FETCH_ASSOC) as $value) {
             text-align: center;
         }
 
+        .attributes-page .attributes-subtitle,
+        .attributes-page .attributes-add-btn,
+        .attributes-page .attribute-chip,
+        .attributes-page .attribute-add-value,
+        .attributes-page .attribute-empty,
+        .attributes-page .form-control,
+        .attributes-page .form-label,
+        .attributes-modal .modal-content,
+        .attributes-modal .modal-content .form-control,
+        .attributes-modal .modal-content .form-label,
+        .attributes-modal .modal-content .form-text,
+        .attributes-modal .modal-content .btn {
+            font-family: 'Mulish', sans-serif !important;
+            font-size: 13px !important;
+            font-weight: 600;
+            line-height: 1.25;
+        }
+
         .attribute-delete-popup {
             width: 390px !important;
             padding: 24px 26px 26px !important;
@@ -491,7 +509,7 @@ foreach ($valuesStmt->fetchAll(PDO::FETCH_ASSOC) as $value) {
         </div>
     </div>
 
-    <div class="modal fade" id="addAttributeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade attributes-modal" id="addAttributeModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <form method="POST">
@@ -520,7 +538,7 @@ foreach ($valuesStmt->fetchAll(PDO::FETCH_ASSOC) as $value) {
         </div>
     </div>
 
-    <div class="modal fade" id="editAttributeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade attributes-modal" id="editAttributeModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <form method="POST">
@@ -543,7 +561,7 @@ foreach ($valuesStmt->fetchAll(PDO::FETCH_ASSOC) as $value) {
         </div>
     </div>
 
-    <div class="modal fade" id="addValueModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade attributes-modal" id="addValueModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <form method="POST">

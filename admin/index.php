@@ -65,6 +65,20 @@ $pageTitle = 'Admin Dashboard';
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="assets/css/admin.css" rel="stylesheet">
+    <style>
+        .dashboard-admin-content .card-header,
+        .dashboard-admin-content .card-body,
+        .dashboard-admin-content .table,
+        .dashboard-admin-content .list-group-item,
+        .dashboard-admin-content .btn,
+        .dashboard-admin-content .badge,
+        .dashboard-admin-content .text-muted {
+            font-family: 'Mulish', sans-serif !important;
+            font-size: 13px !important;
+            font-weight: 600;
+            line-height: 1.25;
+        }
+    </style>
 </head>
 <body>
     <div class="everythingb2c-admin-container">
@@ -77,7 +91,7 @@ $pageTitle = 'Admin Dashboard';
             <?php include 'includes/header.php'; ?>
 
             <!-- Dashboard Content -->
-            <div class="everythingb2c-dashboard-content">
+            <div class="everythingb2c-dashboard-content dashboard-admin-content">
                 <div class="container-fluid">
                     <div class="row mb-4">
                         <div class="col-12">
@@ -198,7 +212,7 @@ $pageTitle = 'Admin Dashboard';
                                                                     default => 'bg-secondary'
                                                                 };
                                                                 ?>
-                                                                <span class="badge <?php echo $paymentBadgeClass; ?>">
+                                                                <span class="badge d-inline-flex align-items-center justify-content-center <?php echo $paymentBadgeClass; ?>" style="width: 78px; min-height: 28px;">
                                                                     <?php echo htmlspecialchars(ucfirst($paymentStatus)); ?>
                                                                 </span>
                                                             </td>

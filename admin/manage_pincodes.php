@@ -158,6 +158,21 @@ try {
             color: #333;
             font-weight: 600;
         }
+        .pincodes-admin-content .pincode-card,
+        .pincodes-admin-content .card,
+        .pincodes-admin-content .table,
+        .pincodes-admin-content .form-control,
+        .pincodes-admin-content .form-select,
+        .pincodes-admin-content .form-label,
+        .pincodes-admin-content .form-text,
+        .pincodes-admin-content .btn,
+        .pincodes-admin-content .badge,
+        .pincodes-admin-content .text-muted {
+            font-family: 'Mulish', sans-serif !important;
+            font-size: 13px !important;
+            font-weight: 600;
+            line-height: 1.25;
+        }
     </style>
 </head>
 <body>
@@ -171,7 +186,7 @@ try {
             <?php require_once 'includes/header.php'; ?>
 
             <!-- Page Content -->
-            <div class="everythingb2c-dashboard-content">
+            <div class="everythingb2c-dashboard-content pincodes-admin-content">
                 <div class="container-fluid">
         <div class="row">
             <div class="col-md-12">

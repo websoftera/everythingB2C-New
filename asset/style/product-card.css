@@ -338,6 +338,13 @@
 }
 
 @media (max-width: 767.98px) {
+    /* Keep list and related-product review badges as easy to read as the detail badge. */
+    html body .product-card .product-rating-badge {
+        padding: 4px 7px;
+        gap: 4px;
+        border-radius: 4px;
+    }
+
     .product-details .product-card-meta + .product-title-link {
         margin-top: 2px !important;
     }
