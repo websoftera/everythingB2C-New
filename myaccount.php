@@ -669,6 +669,7 @@ echo renderBreadcrumb($breadcrumbs);
     }
 }
 </style>
+<link rel="stylesheet" href="asset/style/myaccount-unified.css?v=1">
 
 
 <div class="custom-container account-wrapper">
@@ -1030,7 +1031,7 @@ endif; ?>
                                     </a>
                                     <div>
                                         <div class="account-wishlist-unit-line"><?php echo formatProductUnitLine($item, true); ?></div>
-                                        <h6><a href="product.php?slug=<?php echo $item['slug']; ?>" style="color:inherit; text-decoration:none;"><?php echo strtoupper(htmlspecialchars(cleanProductName($item['name']))); ?></a></h6>
+                                        <h6><a href="product.php?slug=<?php echo $item['slug']; ?>" style="color:inherit; text-decoration:none;"><?php echo htmlspecialchars(ucwords(strtolower(cleanProductName($item['name'])))); ?></a></h6>
                                         <p>₹<?php echo number_format($item['selling_price'], 0); ?></p>
                                         <div style="display: flex; gap: 8px; justify-content: center;">
                                             <a href="product.php?slug=<?php echo $item['slug']; ?>" class="btn small" style="flex: 1;">View</a>

@@ -1,0 +1,72 @@
+/* Shared account/order typography for the repeat-order screen. */
+.repeat-order-page,
+.repeat-order-page input,
+.repeat-order-page button {
+  color: #4b5563;
+  font-family: 'Mulish', sans-serif !important;
+}
+
+.repeat-order-page .ro-heading h1,
+.repeat-order-page .ro-panel-title,
+.repeat-order-page .ro-name,
+.repeat-order-page .ro-extra h2 {
+  color: #111827 !important;
+  font-family: 'Mulish', sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+}
+
+.repeat-order-page .ro-heading p,
+.repeat-order-page .ro-meta,
+.repeat-order-page .ro-price,
+.repeat-order-page .ro-qty-label,
+.repeat-order-page .ro-extra-caption,
+.repeat-order-page .ro-extra input,
+.repeat-order-page .ro-note,
+.repeat-order-page .ro-back,
+.repeat-order-page .ro-search-option {
+  color: #4b5563 !important;
+  font-family: 'Mulish', sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+}
+
+.repeat-order-page .ro-price,
+.repeat-order-page .ro-qty input { color: #111827 !important; }
+
+.repeat-order-page .ro-btn,
+.repeat-order-page .ro-qty button {
+  font-family: 'Mulish', sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+.repeat-order-page .ro-extra,
+.repeat-order-page .ro-extra h2,
+.repeat-order-page .ro-extra-title {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.repeat-order-page .ro-add,
+.repeat-order-page .ro-update,
+.repeat-order-page .ro-checkout {
+  color: #111827 !important;
+}
+
+@media (max-width: 700px) {
+  .repeat-order-page .ro-heading h1,
+  .repeat-order-page .ro-panel-title,
+  .repeat-order-page .ro-name,
+  .repeat-order-page .ro-extra h2 { font-size: 16px !important; }
+
+  .repeat-order-page .ro-heading p,
+  .repeat-order-page .ro-meta,
+  .repeat-order-page .ro-price,
+  .repeat-order-page .ro-qty-label,
+  .repeat-order-page .ro-extra-caption,
+  .repeat-order-page .ro-extra input,
+  .repeat-order-page .ro-note,
+  .repeat-order-page .ro-back { font-size: 14px !important; }
+}

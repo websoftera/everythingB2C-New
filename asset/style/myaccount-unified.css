@@ -1,0 +1,100 @@
+/* Consistent account-area typography and responsive actions. */
+.account-wrapper,
+.account-wrapper .account-card,
+.account-content .form-control,
+.account-content .form-check-label {
+  color: #1f2937;
+  font-family: 'Mulish', sans-serif !important;
+}
+
+.account-card h3,
+.account-content h5,
+.account-profile h5,
+.account-order-card h6,
+.account-address-card h6 {
+  color: #111827 !important;
+  font-family: 'Mulish', sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+}
+
+.account-order-card p,
+.account-address-card p,
+.account-profile p,
+.account-content .form-label,
+.account-content .form-control,
+.account-content .form-check-label {
+  color: #4b5563 !important;
+  font-family: 'Mulish', sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+.account-content strong { color: #374151; font-weight: 700; }
+
+.account-wishlist-item h6,
+.account-wishlist-item h6 a {
+  color: #111827 !important;
+  font-family: 'Mulish', sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  text-transform: capitalize;
+}
+
+.account-wishlist-unit-line,
+.account-wishlist-item p,
+.account-wishlist-item .btn.small {
+  color: #4b5563 !important;
+  font-family: 'Mulish', sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+.account-wishlist-item .btn.small { color: #fff !important; }
+
+.order-actions-mobile {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 6px !important;
+  width: 390px;
+}
+
+.order-actions-mobile .btn {
+  align-items: center;
+  display: flex !important;
+  justify-content: center;
+  min-width: 0;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.account-profile form > .btn { min-width: 180px; }
+
+.account-profile form > .btn,
+.account-profile form > .btn:hover,
+.account-profile form > .btn:focus {
+  background: #007bff !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #fff !important;
+}
+
+@media (max-width: 767.98px) {
+  .account-addresses,
+  .account-profile,
+  .account-wishlist {
+    gap: 12px !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .order-actions-mobile {
+    width: 100% !important;
+  }
+
+  .order-actions-mobile .btn {
+    font-size: 11px !important;
+    padding: 7px 4px !important;
+  }
+
+  .account-profile form > .btn { width: 100%; }
+}
