@@ -234,11 +234,11 @@ function renderFooterManagedPage(array $page): void
             .footer-page-custom-styles .about-section,
             .footer-page-custom-styles .footer-editor-section { margin-bottom:10px !important; }
             @media (max-width:768px) {
-                /* Keep saved paragraph/list formatting from enlarging mobile reading text. */
-                .footer-page-custom-styles p,
-                .footer-page-custom-styles p *,
-                .footer-page-custom-styles li,
-                .footer-page-custom-styles li * { font-size:var(--footer-mobile-description-size, 12px) !important; }
+                /* Normalize saved rich-text wrappers and inline spans on phones. */
+                .footer-page-custom-styles .footer-editor-section,
+                .footer-page-custom-styles .footer-editor-section *,
+                .footer-page-custom-styles > *:not(.page-title):not(h2):not(h3):not(h4),
+                .footer-page-custom-styles > *:not(.page-title):not(h2):not(h3):not(h4) * { font-size:var(--footer-mobile-description-size, 12px) !important; }
                 /* Mobile defaults are editable: inline Bold and Color changes remain visible. */
                 .footer-page-custom-styles,
                 .footer-page-custom-styles .footer-editor-section { color:var(--footer-mobile-description, var(--footer-description, #666666)); }
@@ -250,7 +250,10 @@ function renderFooterManagedPage(array $page): void
                 }
                 .footer-page-custom-styles h2,
                 .footer-page-custom-styles h3,
-                .footer-page-custom-styles h4 { font-size:15px !important; margin:8px 0 3px !important; }
+                .footer-page-custom-styles h4,
+                .footer-page-custom-styles h2 *,
+                .footer-page-custom-styles h3 *,
+                .footer-page-custom-styles h4 * { font-size:15px !important; margin:8px 0 3px !important; }
                 .footer-page-custom-styles h2 + p,
                 .footer-page-custom-styles h3 + p,
                 .footer-page-custom-styles h4 + p { margin-top:0 !important; }
@@ -359,11 +362,11 @@ function renderFooterManagedPage(array $page): void
         }
         .footer-page-custom-styles a:hover { color:var(--dark-blue); text-decoration:underline; }
         @media (max-width:768px) {
-            /* Inline editor styling must not increase paragraph or list text on phones. */
-            .footer-custom-content .footer-managed-page-content p,
-            .footer-custom-content .footer-managed-page-content p *,
-            .footer-custom-content .footer-managed-page-content li,
-            .footer-custom-content .footer-managed-page-content li * { font-size:var(--footer-mobile-description-size, 12px) !important; }
+            /* Normalize saved rich-text wrappers and inline spans on phones. */
+            .footer-custom-content .footer-managed-page-content,
+            .footer-custom-content .footer-managed-page-content *,
+            .footer-custom-content .footer-editor-section,
+            .footer-custom-content .footer-editor-section * { font-size:var(--footer-mobile-description-size, 12px) !important; }
             /* Keep the selected mobile defaults while allowing intentional Bold/Color formatting. */
             .footer-custom-content .footer-managed-page-content,
             .footer-custom-content .footer-editor-section { color:var(--footer-mobile-description, var(--footer-description, #666666)); }
@@ -373,7 +376,10 @@ function renderFooterManagedPage(array $page): void
             }
             .footer-custom-content .footer-managed-page-content h2,
             .footer-custom-content .footer-managed-page-content h3,
-            .footer-custom-content .footer-managed-page-content h4 { font-size:15px !important; margin:8px 0 3px !important; }
+            .footer-custom-content .footer-managed-page-content h4,
+            .footer-custom-content .footer-managed-page-content h2 *,
+            .footer-custom-content .footer-managed-page-content h3 *,
+            .footer-custom-content .footer-managed-page-content h4 * { font-size:15px !important; margin:8px 0 3px !important; }
             .footer-custom-content .footer-managed-page-content h2 + p,
             .footer-custom-content .footer-managed-page-content h3 + p,
             .footer-custom-content .footer-managed-page-content h4 + p { margin-top:0 !important; }
