@@ -1,0 +1,105 @@
+/* Shared order typography for the tracking screen. */
+.track-order-wrapper,
+.track-order-wrapper input,
+.track-order-wrapper button {
+  font-family: 'Mulish', sans-serif !important;
+}
+
+.track-order-wrapper .section-title,
+.track-order-wrapper .sidebar-title,
+.track-order-wrapper .order-status-card h1,
+.track-order-wrapper .address-title,
+.track-order-wrapper .track-card h6,
+.track-order-wrapper .product-info h5,
+.track-order-wrapper .detailed-timeline .fs-6 {
+  color: #111827 !important;
+  font-family: 'Mulish', sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  letter-spacing: normal !important;
+  text-transform: none !important;
+}
+
+.track-order-wrapper .order-status-card .d-flex.flex-wrap,
+.track-order-wrapper .order-status-inline,
+.track-order-wrapper .product-details-line-mobile,
+.track-order-wrapper .product-info .small,
+.track-order-wrapper .product-price-desktop,
+.track-order-wrapper .track-card .extra-small,
+.track-order-wrapper .track-card .small,
+.track-order-wrapper .track-card p,
+.track-order-wrapper .track-card .text-muted,
+.track-order-wrapper .step-name,
+.track-order-wrapper .qty-info {
+  color: #4b5563 !important;
+  font-family: 'Mulish', sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  letter-spacing: normal !important;
+  text-transform: none !important;
+}
+
+.track-order-wrapper .product-price-desktop,
+.track-order-wrapper .track-card .text-primary { color: #007bff !important; }
+.track-order-wrapper .track-card .text-success { color: #16803c !important; }
+
+.track-order-wrapper .product-card-blue-bar,
+.track-order-wrapper .order-status-card .badge {
+  font-family: 'Mulish', sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+.track-order-wrapper .track-card .btn,
+.track-order-wrapper .track-order-search-box .btn {
+  font-family: 'Mulish', sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+/* The right-column headings also carry Bootstrap's .small class. Keep them headings. */
+.track-order-wrapper .col-md-4 > .sidebar-title,
+.track-order-wrapper .col-md-4 .track-card h6.small,
+.track-order-wrapper .col-md-4 .track-card h6.extra-small,
+.track-order-wrapper .col-md-4 .address-title {
+  color: #111827 !important;
+  font-family: 'Mulish', sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  letter-spacing: normal !important;
+  text-transform: none !important;
+}
+
+@media (max-width: 767.98px) {
+  .track-order-wrapper .section-title,
+  .track-order-wrapper .sidebar-title,
+  .track-order-wrapper .order-status-card h1,
+  .track-order-wrapper .address-title,
+  .track-order-wrapper .track-card h6,
+  .track-order-wrapper .product-info h5,
+  .track-order-wrapper .detailed-timeline .fs-6 {
+    font-size: 16px !important;
+  }
+
+  .track-order-wrapper .order-status-card .d-flex.flex-wrap,
+  .track-order-wrapper .product-details-line-mobile,
+  .track-order-wrapper .product-info .small,
+  .track-order-wrapper .product-price-desktop,
+  .track-order-wrapper .track-card .extra-small,
+  .track-order-wrapper .track-card .small,
+  .track-order-wrapper .track-card p,
+  .track-order-wrapper .track-card .text-muted,
+  .track-order-wrapper .step-name,
+  .track-order-wrapper .qty-info {
+    font-size: 14px !important;
+  }
+
+  .track-order-wrapper .track-order-search-box form {
+    flex-wrap: wrap;
+  }
+
+  .track-order-wrapper .track-order-search-box .form-control,
+  .track-order-wrapper .track-order-search-box .btn {
+    flex: 1 1 100%;
+  }
+}
