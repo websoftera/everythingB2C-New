@@ -60,10 +60,8 @@ $footerManagedPages = isset($pdo) && $pdo instanceof PDO ? getActiveFooterPages(
                 </span>
                 <span class="separator">|</span>
                 <div class="social-icons">
-                    <a href="#"><i class="fab fa-facebook"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
                 </div>
             </div>
         </div>
@@ -72,6 +70,14 @@ $footerManagedPages = isset($pdo) && $pdo instanceof PDO ? getActiveFooterPages(
         <p>© 2026 everythingb2c - All Rights Reserved. <a href="https://everythingb2c.in" target="_blank">everythingb2c</a></p>
     </div>
 </footer>
+<style>
+    .desktop-footer .footer-container { flex-wrap: wrap !important; }
+    .desktop-footer .footer-column { flex: 1 1 auto !important; min-width: 0 !important; max-width: 100%; }
+    .desktop-footer .footer-links-inline,
+    .desktop-footer .footer-connect-inline { flex-wrap: wrap !important; white-space: normal !important; justify-content: center; }
+    .desktop-footer .social-icons { display: inline-flex !important; flex-wrap: nowrap; align-items: center; gap: 12px; }
+    .desktop-footer .social-icons a { display: inline-flex; align-items: center; justify-content: center; flex: none; line-height: 1; }
+</style>
 
 <!-- Back to Top Button -->
 <button onclick="topFunction()" id="backToTopBtn" title="Go to top" aria-label="Scroll to top" style="display: none !important; position: fixed !important; bottom: 30px !important; right: 30px !important; z-index: 99999 !important; background: linear-gradient(135deg, #9ACD32, #7cb342) !important; color: white !important; border: none !important; border-radius: 4px !important; width: 30px !important; height: 30px !important; cursor: pointer !important; box-shadow: 0 4px 12px rgba(154, 205, 50, 0.3) !important; align-items: center !important; justify-content: center !important; font-size: 18px !important; opacity: 0 !important; visibility: hidden !important;">
@@ -87,7 +93,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Function to show/hide button based on scroll
     function toggleScrollButton() {
-        if (document.body.classList.contains('variant-drawer-open')) {
+        const footer = document.querySelector('.desktop-footer');
+        if (document.body.classList.contains('variant-drawer-open') ||
+            (footer && footer.getBoundingClientRect().top < window.innerHeight)) {
             backToTopBtn.style.setProperty('display', 'none', 'important');
             backToTopBtn.style.setProperty('opacity', '0', 'important');
             backToTopBtn.style.setProperty('visibility', 'hidden', 'important');
