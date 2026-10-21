@@ -1018,15 +1018,6 @@ renderCategoryMenu($categoryTree);
       let desiredLeft = bounds.right > viewportWidth - 20
         ? itemBounds.right - bounds.width
         : itemBounds.left;
-      // Center large three-column menus like Packing Materials.
-      const columns = Number(menu.style.getPropertyValue('--mega-columns')) || 1;
-      const categoryCount = menu.querySelectorAll('.category-mega-grid > .category-mega-group').length;
-      if (categoryCount <= 3) {
-        // Center every compact menu beneath its own category label.
-        desiredLeft = itemBounds.left + (itemBounds.width - bounds.width) / 2;
-      } else if (columns >= 3) {
-        desiredLeft = (viewportWidth - bounds.width) / 2;
-      }
       const fittedLeft = Math.max(20, Math.min(desiredLeft, viewportWidth - 20 - bounds.width));
       menu.style.setProperty('--mega-left-offset', (fittedLeft - bounds.left) + 'px');
     };
