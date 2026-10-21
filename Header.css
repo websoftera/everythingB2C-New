@@ -2877,9 +2877,16 @@ input[type="checkbox"]:checked+.heart-icon,
     transition: background-color .16s ease, border-color .16s ease;
   }
 
-  .category-mega-group:hover {
+  .category-mega-group:hover,
+  .category-mega-group:focus-within {
     background: #f4f9fd;
     border-color: #dcebf6;
+  }
+
+  /* The general navbar hover scale shifts menu items outside their columns. */
+  .category-navbar .category-mega-menu a:hover,
+  .category-navbar .category-mega-menu a:focus {
+    transform: none;
   }
 
   .category-navbar .category-mega-title {
@@ -2890,6 +2897,7 @@ input[type="checkbox"]:checked+.heart-icon,
     font-size: 13px;
     font-weight: 700;
     line-height: 1.02;
+    text-align: left;
     text-decoration: none;
   }
 

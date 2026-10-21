@@ -353,6 +353,10 @@ $returnToProducts = 'products.php' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $
         }
 
         .products-management-page .filter-card .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
             min-height: 40px;
             padding: 8px 14px;
         }

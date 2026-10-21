@@ -339,6 +339,11 @@ $categoryTree = orderMainCategoryTree($categoryTree);
   #filterCategoryMenu button:hover, #filterCategoryMenu summary:hover,
   #filterCategoryMenu button:focus-visible, #filterCategoryMenu summary:focus-visible { background: #9abd18; color: #fff; font-weight: 700; }
   #filterCategoryMenu .filter-category-children { padding-left: 12px; }
+  .filter-simple-trigger { display: flex; justify-content: space-between; align-items: center; gap: 12px; text-align: left; background: #fff; }
+  .filter-simple-menu { position: fixed; margin: 0; padding: 6px 0; width: 240px; max-width: calc(100vw - 24px); max-height: 240px; overflow-y: auto; border: 1px solid #ddd; border-radius: 6px; background: #fff; box-shadow: 0 8px 24px #0002; z-index: 2000; }
+  .filter-simple-menu[hidden] { display: none; }
+  .filter-simple-menu button { display: block; width: 100%; padding: 6px 12px; border: 0; background: transparent; color: #111; text-align: left; font-family: inherit; font-size: 12px; font-weight: 700; line-height: 1.5; cursor: pointer; }
+  .filter-simple-menu button:hover, .filter-simple-menu button:focus-visible { background: #9abd18; color: #fff; }
   #sidebarCategorySelect option.filter-main-category,
   .sidebar-filter-container .mob-radio-label.filter-main-category {
     font-weight: 700 !important;
@@ -1380,6 +1385,67 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('resize', positionCategoryMenu);
     window.addEventListener('scroll', positionCategoryMenu, true);
   }
+
+  // Use the same option styling as the category menu while retaining native selects for form submission.
+  ['sidebarBrandSelect', 'sidebarSortSelect'].forEach(id => {
+    const select = document.getElementById(id);
+    if (!select) return;
+    const trigger = document.createElement('button');
+    trigger.type = 'button';
+    trigger.className = 'form-control filter-simple-trigger';
+    trigger.setAttribute('aria-expanded', 'false');
+    trigger.setAttribute('aria-label', select.closest('.filter-section').querySelector('h5').textContent.trim());
+    const label = document.createElement('span');
+    const arrow = document.createElement('span');
+    arrow.setAttribute('aria-hidden', 'true');
+    arrow.textContent = '▾';
+    trigger.append(label, arrow);
+    const menu = document.createElement('div');
+    menu.className = 'filter-simple-menu';
+    menu.hidden = true;
+    menu.id = id + 'Menu';
+    trigger.setAttribute('aria-controls', menu.id);
+    const syncLabel = () => { label.textContent = select.selectedOptions[0].textContent.trim(); };
+    const close = () => { menu.hidden = true; trigger.setAttribute('aria-expanded', 'false'); };
+    const position = () => {
+      if (menu.hidden) return;
+      const rect = trigger.getBoundingClientRect();
+      if (rect.bottom <= 0 || rect.top >= window.innerHeight) { close(); return; }
+      const width = Math.min(240, window.innerWidth - 24);
+      menu.style.left = Math.max(12, Math.min(rect.left, window.innerWidth - width - 12)) + 'px';
+      menu.style.top = (rect.bottom + 4) + 'px';
+      menu.style.maxHeight = Math.max(0, Math.min(240, window.innerHeight - rect.bottom - 16)) + 'px';
+    };
+    Array.from(select.options).forEach(option => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = option.textContent;
+      button.addEventListener('click', () => {
+        select.value = option.value;
+        select.dispatchEvent(new Event('change', { bubbles: true }));
+        syncLabel();
+        close();
+        trigger.focus();
+      });
+      menu.appendChild(button);
+    });
+    select.classList.add('d-none');
+    select.after(trigger, menu);
+    syncLabel();
+    trigger.addEventListener('click', () => {
+      const opening = menu.hidden;
+      document.querySelectorAll('.filter-simple-menu').forEach(other => { other.hidden = true; });
+      document.querySelectorAll('.filter-simple-trigger').forEach(other => other.setAttribute('aria-expanded', 'false'));
+      menu.hidden = !opening;
+      trigger.setAttribute('aria-expanded', String(opening));
+      position();
+    });
+    document.addEventListener('click', event => { if (!menu.contains(event.target) && !trigger.contains(event.target)) close(); });
+    document.addEventListener('keydown', event => { if (event.key === 'Escape' && !menu.hidden) { close(); trigger.focus(); } });
+    window.addEventListener('resize', position);
+    window.addEventListener('scroll', position, true);
+    select.addEventListener('change', syncLabel);
+  });
 
   // Handle form submission to maintain current page context
   const filterForm = document.getElementById('sidebarFilterForm');
