@@ -732,7 +732,15 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
             }
         }
 
+        .product-page-container .discounted-products-slider-wrapper .discounted-nav-btn[hidden] {
+            display: none !important;
+        }
+
         @media (min-width: 992px) {
+            #related-products-slider.related-products-centered {
+                justify-content: center !important;
+            }
+
             .product-page-container .related-products-section {
                 width: 100vw !important;
                 margin-left: calc(50% - 50vw) !important;
@@ -1098,10 +1106,10 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                 <h2 class="discounted-products-title">Related Products</h2>
             </div>
             <div class="discounted-products-slider-wrapper">
-                <button class="discounted-nav-btn prev-btn" aria-label="Scroll Left">
+                <button class="discounted-nav-btn prev-btn" aria-label="Scroll Left" hidden>
                     <img src="asset/icons/blue_arrow.png" alt="Previous" loading="lazy" decoding="async">
                 </button>
-                <div class="discounted-products-container" id="discounted-slider">
+                <div class="discounted-products-container" id="related-products-slider">
                     <?php foreach ($relatedProducts as $relatedProduct): 
                         $inWishlist = in_array($relatedProduct['id'], $wishlist_ids);
                         $isOutOfStock = ($relatedProduct['stock_quantity'] <= 0);
@@ -1175,7 +1183,7 @@ $inWishlist = in_array($product['id'], $wishlist_ids);
                         </div>
                     <?php endforeach; ?>
                 </div>
-                <button class="discounted-nav-btn next-btn" aria-label="Scroll Right">
+                <button class="discounted-nav-btn next-btn" aria-label="Scroll Right" hidden>
                     <img src="asset/icons/blue_arrow.png" alt="Next" loading="lazy" decoding="async" style="transform: rotate(180deg);">
                 </button>
             </div>
@@ -1624,10 +1632,14 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target === this) zoomModal.style.display = 'none';
     };
     
-    // Home slider UI, populated with related products.
-    const relatedSlider = document.getElementById('discounted-slider');
-    const prevBtn = document.querySelector('.discounted-nav-btn.prev-btn');
-    const nextBtn = document.querySelector('.discounted-nav-btn.next-btn');
+});
+
+// Keep related-product navigation independent from the home page slider.
+document.addEventListener('DOMContentLoaded', function() {
+    const relatedSlider = document.getElementById('related-products-slider');
+    const wrapper = relatedSlider && relatedSlider.closest('.discounted-products-slider-wrapper');
+    const prevBtn = wrapper && wrapper.querySelector('.discounted-nav-btn.prev-btn');
+    const nextBtn = wrapper && wrapper.querySelector('.discounted-nav-btn.next-btn');
     
     if (relatedSlider && prevBtn && nextBtn) {
         let scrollAmount = relatedSlider.scrollLeft;
@@ -1645,11 +1657,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         function updateScrollButtons() {
+            relatedSlider.classList.remove('related-products-centered');
             const maxScroll = relatedSlider.scrollWidth - relatedSlider.clientWidth;
             scrollAmount = relatedSlider.scrollLeft;
             const hasOverflow = maxScroll > 1;
-            prevBtn.style.display = hasOverflow ? 'flex' : 'none';
-            nextBtn.style.display = hasOverflow ? 'flex' : 'none';
+            if (window.innerWidth >= 992 && !hasOverflow && relatedSlider.querySelectorAll('.product-card').length <= 5) {
+                relatedSlider.classList.add('related-products-centered');
+            }
+            prevBtn.hidden = !hasOverflow;
+            nextBtn.hidden = !hasOverflow;
         }
         
         prevBtn.addEventListener('click', function() {

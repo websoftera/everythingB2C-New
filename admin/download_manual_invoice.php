@@ -50,7 +50,7 @@ $company = [
     'pdf_logo' => '../uploads/logo_pdf.png',
 ];
 
-$logoPath = realpath(__DIR__ . '/../logo.webp') ?: realpath(__DIR__ . '/../uploads/logo_pdf.png');
+$logoPath = realpath(__DIR__ . '/../asset/images/invoice-header-logo.png') ?: realpath(__DIR__ . '/../uploads/logo_pdf.png');
 $logoSrc = $logoPath ? $logoPath : '';
 $signatureSrc = realpath(__DIR__ . '/assets/images/authorized-signature.png');
 $line = function ($label, $value) {
@@ -64,6 +64,9 @@ $fmt = function ($value) {
     return abs($amount - round($amount)) < 0.005
         ? number_format($amount, 0)
         : number_format($amount, 2);
+};
+$titleCase = function ($value) {
+    return mb_convert_case((string)$value, MB_CASE_TITLE, 'UTF-8');
 };
 $bold = function ($text) {
     return '<b style="color:#000;font-weight:bold;">' . $text . '</b>';
@@ -105,18 +108,18 @@ body { font-family: mulish, sans-serif !important; font-size: 9pt; color: #111; 
     font-weight: 800;
 }
 .meta-table { width: 100%; margin-left: auto; margin-right: auto; border-collapse: separate; border-spacing: 2px 2px; }
-.meta-table td { border: 1px solid #4e73df; height: 34px; font-size: 9pt; padding: 3px 4px; vertical-align: middle; line-height: 1.08; text-align: left; }
+.meta-table td { border: 1px solid #343a40; height: 34px; font-size: 9pt; padding: 3px 4px; vertical-align: middle; line-height: 1.08; text-align: left; }
 .meta-table td { width: 27%; }
 .meta-table td.meta-label { width: 28%; background: #f1f5ff; white-space: nowrap; font-size: 9pt; padding-left: 4px; padding-right: 4px; }
 .meta-table td.meta-short { width: 18%; }
 .divider { border-top: 1px solid #777; margin: 12px 0 8px; }
-.box-cell { border: 1px solid #4e73df; vertical-align: top; padding: 0; width: 50%; }
+.box-cell { border: 1px solid #343a40; vertical-align: top; padding: 0; width: 50%; }
 .inner-box { width: 100%; border-collapse: collapse; }
-.inner-title { font-size: 11pt; background: #f1f5ff; border-bottom: 1px solid #4e73df; padding: 5px 8px; line-height: 1.05; }
+.inner-title { font-size: 11pt; background: #f1f5ff; border-bottom: 1px solid #343a40; padding: 5px 8px; line-height: 1.05; }
 .bank-title { font-size: 11pt; font-weight: 800; text-align: center; color: #111; }
 .inner-body { padding: 8px 10px; line-height: 1.28; height: 74px; vertical-align: top; }
 .section-title { font-size: 11pt; font-weight: bold; margin: 13px 0 7px; color: #000; }
-.items-table th, .items-table td { border: 1px solid #4e73df; padding: 6px 3px; vertical-align: middle; text-align: center; }
+.items-table th, .items-table td { border: 1px solid #343a40; padding: 6px 3px; vertical-align: middle; text-align: center; }
 .items-table th { font-size: 9pt; font-weight: 800; text-align: center; background: #f1f5ff; line-height: 1.05; color: #111; }
 .items-table td { font-size: 9pt; line-height: 1.18; }
 .text-center { text-align: center; }
@@ -127,7 +130,7 @@ body { font-family: mulish, sans-serif !important; font-size: 9pt; color: #111; 
 .photo { width: 39px; height: 34px; object-fit: contain; }
 .total-row td { font-weight: 800; background: #f8fbff; }
 .words-row td { background: #f1f5ff; }
-.bank-cell { border: 1px solid #4e73df; vertical-align: top; padding: 0; width: 50%; }
+.bank-cell { border: 1px solid #343a40; vertical-align: top; padding: 0; width: 50%; }
 .bank-body { font-size: 9pt; padding: 8px 10px; height: 85px; line-height: 1.28; vertical-align: top; color: #000; }
 .sign { font-size: 9pt; text-align:center; vertical-align: bottom; padding-bottom: 17px; }
 </style></head><body>';
@@ -151,7 +154,7 @@ $html .= '<table class="meta-table">';
 $html .= '<tr><td class="meta-label">' . $bold('Invoice No:') . '</td><td>' . htmlspecialchars($invoice['invoice_no']) . '</td><td class="meta-label meta-short">' . $bold('Date:') . '</td><td>' . htmlspecialchars($date($invoice['invoice_date'])) . '</td></tr>';
 $html .= '<tr><td class="meta-label">' . $bold('E-Way Bill No:') . '</td><td>' . htmlspecialchars($invoice['eway_bill_no'] ?: '-') . '</td><td class="meta-label meta-short">' . $bold('Date:') . '</td><td>' . htmlspecialchars($date($invoice['eway_bill_date'])) . '</td></tr>';
 $html .= '<tr><td class="meta-label">' . $bold('Buyer PO No:') . '</td><td>' . htmlspecialchars($invoice['buyer_po_no'] ?: '-') . '</td><td class="meta-label meta-short">' . $bold('Date:') . '</td><td>' . htmlspecialchars($date($invoice['buyer_po_date'])) . '</td></tr>';
-$html .= '<tr><td class="meta-label">' . $bold('Buyer Name:') . '</td><td>' . htmlspecialchars($invoice['customer_name']) . '</td><td class="meta-label meta-short">' . $bold('Mobile:') . '</td><td>' . htmlspecialchars($invoice['mobile_no'] ?: '-') . '</td></tr>';
+$html .= '<tr><td class="meta-label">' . $bold('Buyer Name:') . '</td><td>' . htmlspecialchars($titleCase($invoice['customer_name'])) . '</td><td class="meta-label meta-short">' . $bold('Mobile:') . '</td><td>' . htmlspecialchars($invoice['mobile_no'] ?: '-') . '</td></tr>';
 $html .= '<tr><td class="meta-label">' . $bold('Payment Terms:') . '</td><td>' . htmlspecialchars($invoice['payment_terms'] ?: '-') . '</td><td class="meta-label meta-short">' . $bold('Date:') . '</td><td>' . htmlspecialchars($date($invoice['payment_date'])) . '</td></tr>';
 $html .= '<tr><td class="meta-label">' . $bold('Transporter') . '</td><td>' . htmlspecialchars($invoice['transporter'] ?: '-') . '</td><td class="meta-label meta-short">' . $bold('LR No.:') . '</td><td>' . htmlspecialchars($invoice['lr_no'] ?: '-') . '</td></tr>';
 $html .= '</table></td></tr></table>';
@@ -159,14 +162,14 @@ $html .= '</table></td></tr></table>';
 $html .= '<div class="divider"></div>';
 $html .= '<table class="box-table"><tr>';
 $html .= '<td class="box-cell" ' . (!$hasShipTo ? 'style="width:100%;"' : '') . '><table class="inner-box"><tr><td class="inner-title">' . $bold('Invoice To:') . '</td></tr><tr><td class="inner-body">';
-$html .= '<b>' . htmlspecialchars($invoice['bill_to_name'] ?: $invoice['customer_name']) . '</b><br>';
-$html .= nl2br(htmlspecialchars($invoice['bill_to_address'] ?: '-')) . '<br><br>';
+$html .= '<b>' . htmlspecialchars($titleCase($invoice['bill_to_name'] ?: $invoice['customer_name'])) . '</b><br>';
+$html .= nl2br(htmlspecialchars($titleCase($invoice['bill_to_address'] ?: '-'))) . '<br><br>';
 $html .= $bold('GST:') . ' ' . htmlspecialchars($invoice['bill_to_gstin'] ?: '-') . '<br>';
 $html .= $bold('Mobile:') . ' ' . htmlspecialchars($invoice['bill_to_mobile'] ?: $invoice['mobile_no'] ?: '-') . '</td></tr></table></td>';
 if ($hasShipTo) {
     $html .= '<td class="box-cell"><table class="inner-box"><tr><td class="inner-title">' . $bold('Ship To:') . '</td></tr><tr><td class="inner-body">';
-    $html .= '<b>' . htmlspecialchars($invoice['ship_to_name'] ?: '-') . '</b><br>';
-    $html .= nl2br(htmlspecialchars($invoice['ship_to_address'] ?: '-')) . '<br><br>';
+    $html .= '<b>' . htmlspecialchars($titleCase($invoice['ship_to_name'] ?: '-')) . '</b><br>';
+    $html .= nl2br(htmlspecialchars($titleCase($invoice['ship_to_address'] ?: '-'))) . '<br><br>';
     $html .= $bold('GST:') . ' ' . htmlspecialchars($invoice['ship_to_gstin'] ?: '-') . '<br>';
     $html .= $bold('Mobile:') . ' ' . htmlspecialchars($invoice['ship_to_mobile'] ?: '-') . '</td></tr></table></td>';
 }
