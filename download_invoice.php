@@ -113,7 +113,7 @@ h2, h3 { color: #171c22; margin: 12px 0 7px; }
 h2 { font-size: 12pt; }
 h3 { font-size: 10pt; }
 .invoice-table { border-collapse: collapse; }
-.invoice-table th, .invoice-table td { border: 1px solid #343a40; padding: 4px 3px; text-align: center; vertical-align: middle; font-size: 8pt; }
+.invoice-table th, .invoice-table td { border: 1px solid #4e73df; padding: 4px 3px; text-align: center; vertical-align: middle; font-size: 8pt; }
 .invoice-table th { background: #edf1f5; font-weight: bold; }
 .header { border-bottom: 1px solid #000; margin-bottom: 10px; padding-bottom: 10px; }
 .header-table { width: 100%; }
