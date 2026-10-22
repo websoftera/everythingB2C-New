@@ -432,6 +432,12 @@ foreach ($editingItems as $item) {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="assets/css/admin.css" rel="stylesheet">
     <style>
+        .manual-invoice-page .card,
+        .manual-invoice-page .card *:not(i) {
+            font-family: 'Mulish', sans-serif !important;
+            font-size: 13px !important;
+            font-weight: 600 !important;
+        }
         .manual-invoice-page .card { border-radius: 4px; }
         .manual-invoice-page .form-label { font-weight: 600; color: #111827; }
         .manual-invoice-page .form-control,

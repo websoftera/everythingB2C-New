@@ -662,12 +662,43 @@ function getProductImages($productId) {
 function getRelatedProducts($productId, $categoryId, $limit = 4) {
     global $pdo;
     ensureProductPackageQuantitySchema($pdo);
+
+    // Only match specific (leaf) categories, including additional assignments.
+    // A broad parent category alone is not enough to establish a relationship.
+    if (!ensureProductCategoryAssignmentsSchema($pdo) || !ensureCategoryParentAssignmentsSchema($pdo)) {
+        return [];
+    }
+    $categoryIds = getProductAssignedCategoryIds($pdo, $productId);
+    if ((int)$categoryId > 0) {
+        $categoryIds[] = (int)$categoryId;
+    }
+    $categoryIds = array_values(array_unique(array_filter(array_map('intval', $categoryIds))));
+    if (!$categoryIds || (int)$limit <= 0) {
+        return [];
+    }
+
+    $placeholders = implode(',', array_fill(0, count($categoryIds), '?'));
+    $stmt = $pdo->prepare("SELECT c.id FROM categories c
+        WHERE c.id IN ($placeholders)
+          AND NOT EXISTS (SELECT 1 FROM categories child WHERE child.parent_id = c.id)
+          AND NOT EXISTS (SELECT 1 FROM category_parent_assignments cpa WHERE cpa.parent_id = c.id)");
+    $stmt->execute($categoryIds);
+    $specificCategoryIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    if (!$specificCategoryIds) {
+        return [];
+    }
+
+    $placeholders = implode(',', array_fill(0, count($specificCategoryIds), '?'));
     $sql = "SELECT p.*, c.name as category_name FROM products p
             LEFT JOIN categories c ON p.category_id = c.id
-            WHERE p.category_id = ? AND p.id != ? AND p.is_active = 1
+            WHERE p.id != ? AND p.is_active = 1
+              AND (p.category_id IN ($placeholders) OR EXISTS (
+                  SELECT 1 FROM product_category_assignments pca
+                  WHERE pca.product_id = p.id AND pca.category_id IN ($placeholders)
+              ))
             ORDER BY RAND() LIMIT " . (int)$limit;
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$categoryId, $productId]);
+    $stmt->execute(array_merge([(int)$productId], $specificCategoryIds, $specificCategoryIds));
     return applyDisplayVariationPrices($stmt->fetchAll(PDO::FETCH_ASSOC));
 }
 

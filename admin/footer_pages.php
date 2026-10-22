@@ -161,7 +161,7 @@ $isFaqEditor = $editing && (($editing['legacy_path'] ?? '') === 'faq.php');
     <title>Footer Pages - Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-    <link href="assets/css/admin.css" rel="stylesheet">
+    <link href="assets/css/admin.css?v=<?php echo filemtime(__DIR__ . '/assets/css/admin.css'); ?>" rel="stylesheet">
     <style>
         .footer-page-content { display:none; }
         .footer-page-status { font-size: .78rem; }
@@ -230,12 +230,12 @@ $isFaqEditor = $editing && (($editing['legacy_path'] ?? '') === 'faq.php');
         .footer-link-swal .swal2-styled { font-size:.84rem !important; margin:0 !important; padding:8px 14px !important; }
     </style>
 </head>
-<body>
+<body class="admin-management-typography">
 <div class="everythingb2c-admin-container">
     <?php include 'includes/sidebar.php'; ?>
     <div class="everythingb2c-main-content">
         <?php include 'includes/header.php'; ?>
-        <main class="container-fluid p-3 p-lg-4">
+        <main class="container-fluid p-3 p-lg-4 everythingb2c-dashboard-content">
             <?php if ($error): ?><div class="alert alert-danger"><?php echo footer_pages_h($error); ?></div><?php endif; ?>
             <?php if ($success): ?><div class="alert alert-success"><?php echo footer_pages_h($success); ?></div><?php endif; ?>
 

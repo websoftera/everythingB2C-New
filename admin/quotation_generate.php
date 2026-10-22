@@ -360,6 +360,12 @@ foreach ($editingItems as $item) {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="assets/css/admin.css" rel="stylesheet">
     <style>
+        .quotation-page .card,
+        .quotation-page .card *:not(i) {
+            font-family: 'Mulish', sans-serif !important;
+            font-size: 13px !important;
+            font-weight: 600 !important;
+        }
         .quotation-page .card { border-radius: 4px; }
         .quotation-page .form-label { font-weight: 600; color: #111827; }
         .quotation-page .form-control,
