@@ -108,18 +108,18 @@ body { font-family: mulish, sans-serif !important; font-size: 9pt; color: #111; 
     font-weight: 800;
 }
 .meta-table { width: 100%; margin-left: auto; margin-right: auto; border-collapse: separate; border-spacing: 2px 2px; }
-.meta-table td { border: 1px solid #343a40; height: 34px; font-size: 9pt; padding: 3px 4px; vertical-align: middle; line-height: 1.08; text-align: left; }
+.meta-table td { border: 1px solid #4e73df; height: 34px; font-size: 9pt; padding: 3px 4px; vertical-align: middle; line-height: 1.08; text-align: left; }
 .meta-table td { width: 27%; }
 .meta-table td.meta-label { width: 28%; background: #f1f5ff; white-space: nowrap; font-size: 9pt; padding-left: 4px; padding-right: 4px; }
 .meta-table td.meta-short { width: 18%; }
-.divider { border-top: 1px solid #777; margin: 12px 0 8px; }
-.box-cell { border: 1px solid #343a40; vertical-align: top; padding: 0; width: 50%; }
+.divider { border-top: 1px solid #4e73df; margin: 12px 0 8px; }
+.box-cell { border: 1px solid #4e73df; vertical-align: top; padding: 0; width: 50%; }
 .inner-box { width: 100%; border-collapse: collapse; }
-.inner-title { font-size: 11pt; background: #f1f5ff; border-bottom: 1px solid #343a40; padding: 5px 8px; line-height: 1.05; }
+.inner-title { font-size: 11pt; background: #f1f5ff; border-bottom: 1px solid #4e73df; padding: 5px 8px; line-height: 1.05; }
 .bank-title { font-size: 11pt; font-weight: 800; text-align: center; color: #111; }
 .inner-body { padding: 8px 10px; line-height: 1.28; height: 74px; vertical-align: top; }
 .section-title { font-size: 11pt; font-weight: bold; margin: 13px 0 7px; color: #000; }
-.items-table th, .items-table td { border: 1px solid #343a40; padding: 6px 3px; vertical-align: middle; text-align: center; }
+.items-table th, .items-table td { border: 1px solid #4e73df; padding: 6px 3px; vertical-align: middle; text-align: center; }
 .items-table th { font-size: 9pt; font-weight: 800; text-align: center; background: #f1f5ff; line-height: 1.05; color: #111; }
 .items-table td { font-size: 9pt; line-height: 1.18; }
 .text-center { text-align: center; }
@@ -130,7 +130,7 @@ body { font-family: mulish, sans-serif !important; font-size: 9pt; color: #111; 
 .photo { width: 39px; height: 34px; object-fit: contain; }
 .total-row td { font-weight: 800; background: #f8fbff; }
 .words-row td { background: #f1f5ff; }
-.bank-cell { border: 1px solid #343a40; vertical-align: top; padding: 0; width: 50%; }
+.bank-cell { border: 1px solid #4e73df; vertical-align: top; padding: 0; width: 50%; }
 .bank-body { font-size: 9pt; padding: 8px 10px; height: 85px; line-height: 1.28; vertical-align: top; color: #000; }
 .sign { font-size: 9pt; text-align:center; vertical-align: bottom; padding-bottom: 17px; }
 </style></head><body>';
