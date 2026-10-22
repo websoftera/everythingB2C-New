@@ -46,18 +46,18 @@ if (!empty($order['address_name'])) {
 }
 
 $company = [
-    'name' => 'everythingb2c',
+    'name' => 'Everythingb2c',
     'address' => 'Shop 12, D, Media Park, Bhagwan Tatyasaheb Kawade Rd, Dombi Wadi, R, Pune, Maharashtra 411001',
-    'gstin' => '27AAABC1711H1ZF',
+    'gstin' => '24AVEPS9404M1Z5',
     'phone' => '+91 878 040 6230',
     'email' => 'info@everythingb2c.in',
-    'logo' => __DIR__ . '/asset/images/logo.webp',
+    'logo' => __DIR__ . '/asset/images/invoice-header-logo.png',
 ];
 
 $logoBase64 = '';
 if (file_exists($company['logo'])) {
     $logoData = file_get_contents($company['logo']);
-    $logoBase64 = 'data:image/webp;base64,' . base64_encode($logoData);
+    $logoBase64 = 'data:image/png;base64,' . base64_encode($logoData);
 }
 
 $invoiceNo = $order['order_number'];
@@ -70,6 +70,10 @@ function formatInvoiceAmount($amount) {
     $amount = (float)$amount;
     $decimals = abs($amount - round($amount)) < 0.005 ? 0 : 2;
     return number_format($amount, $decimals);
+}
+
+function invoiceTitleCase($value) {
+    return mb_convert_case((string)$value, MB_CASE_TITLE, 'UTF-8');
 }
 
 // Prepare QR code data with required info
@@ -104,12 +108,18 @@ $qrPngData = ob_get_clean();
 $qrBase64 = 'data:image/png;base64,' . base64_encode($qrPngData);
 
 $html = '<html><head><style>
-body {  font-size: 12px; color: #222; }
+body { font-family: mulish, sans-serif; font-size: 9pt; color: #20252b; line-height: 1.35; }
+h2, h3 { color: #171c22; margin: 12px 0 7px; }
+h2 { font-size: 12pt; }
+h3 { font-size: 10pt; }
+.invoice-table { border-collapse: collapse; }
+.invoice-table th, .invoice-table td { border: 1px solid #343a40; padding: 4px 3px; text-align: center; vertical-align: middle; font-size: 8pt; }
+.invoice-table th { background: #edf1f5; font-weight: bold; }
 .header { border-bottom: 1px solid #000; margin-bottom: 10px; padding-bottom: 10px; }
 .header-table { width: 100%; }
 .header-left { text-align: left; vertical-align: top; }
 .header-right { text-align: right; vertical-align: top; }
-.logo { height: 50px; }
+.logo { width: 190px; height: auto; }
 .qr { height: 80px; }
 .footer { border-top: 1px solid #000; margin-top: 30px; padding-top: 10px; font-size: 11px; text-align: center; color: #555; }
 </style></head><body>';
@@ -121,7 +131,7 @@ $html .= '<div class="header">
 $html .= '<td class="header-left" style="width:40%; vertical-align:top;">';
 $html .= '<b>Seller:</b><br>';
 $html .= '<b>' . htmlspecialchars($company['name']) . '</b><br>';
-$html .= htmlspecialchars($company['address']) . '<br>';
+$html .= htmlspecialchars(invoiceTitleCase($company['address'])) . '<br>';
 $html .= 'GSTIN: ' . htmlspecialchars($company['gstin']) . '<br>';
 $html .= 'Invoice No: ' . htmlspecialchars($invoiceNo) . '<br>';
 $html .= 'Date: ' . htmlspecialchars($invoiceDate) . '<br>';
@@ -145,13 +155,13 @@ $html .= '</tr></table></div>';
 // === BILL TO SECTION ===
 $html .= '<div style="margin-bottom:18px; margin-top:10px;">
   <b>Bill To:</b><br>
-  ' . htmlspecialchars($address['name']) . '<br>
-  ' . htmlspecialchars($address['address_line1']);
+  ' . htmlspecialchars(invoiceTitleCase($address['name'])) . '<br>
+  ' . htmlspecialchars(invoiceTitleCase($address['address_line1']));
 if (!empty($address['address_line2'])) {
-    $html .= ', ' . htmlspecialchars($address['address_line2']);
+    $html .= ', ' . htmlspecialchars(invoiceTitleCase($address['address_line2']));
 }
 $html .= '<br>';
-$html .= htmlspecialchars($address['city']) . ', ' . htmlspecialchars($address['state']) . ' - ' . htmlspecialchars($address['pincode']) . '<br>';
+$html .= htmlspecialchars(invoiceTitleCase($address['city'])) . ', ' . htmlspecialchars(invoiceTitleCase($address['state'])) . ' - ' . htmlspecialchars($address['pincode']) . '<br>';
 $html .= 'Phone: ' . htmlspecialchars($address['phone']) . '<br>';
 if (!empty($order['gst_number'])) {
     $html .= 'GSTIN: ' . htmlspecialchars($order['gst_number']) . '<br>';
@@ -160,7 +170,7 @@ $html .= '</div>';
 
 // === PAYMENT INFO SECTION ===
 $html .= '<div style="margin-bottom:18px; margin-top:10px;">
-  <b>Payment Method:</b> ' . htmlspecialchars(ucfirst($order['payment_method'])) . '<br>
+  <b>Payment Method:</b> ' . htmlspecialchars(strtolower($order['payment_method']) === 'cod' ? 'COD' : ucfirst($order['payment_method'])) . '<br>
   <b>Payment Status:</b> ' . htmlspecialchars(ucfirst($order['payment_status'])) . '<br>';
 if (strtolower($order['payment_method']) === 'razorpay' && !empty($order['razorpay_payment_id'])) {
     $html .= '<b>Transaction ID:</b> ' . htmlspecialchars($order['razorpay_payment_id']) . '<br>';
@@ -179,7 +189,7 @@ $net_gst_col = $is_maharashtra ? 'Net GST' : 'Net IGST';
 
 // === MIDDLE SECTION (FORMATTED) ===
 $html .= '<h2>Invoice Details</h2>
-<table border="1" cellpadding="5" cellspacing="0" width="100%">
+<table class="invoice-table" width="100%">
 <tr><th>Sr.</th><th>Product</th><th>Product Name</th><th>HSN Code</th><th>Qty.</th><th>Unit</th><th>' . $gst_col . '</th><th>Item MRP</th><th>Item Price</th><th>' . $item_gst_col . '</th><th>Net Price</th><th>' . $net_gst_col . '</th><th>Total</th><th>Savings</th></tr>';
 
 $sr = 1;
@@ -236,7 +246,7 @@ foreach ($orderItems as $item) {
     $html .= '<td>' . htmlspecialchars($item['hsn']) . '</td>';
     $html .= '<td>' . $qty . '</td>';
     $html .= '<td>' . $unit . '</td>';
-    $html .= '<td>' . number_format($gst_rate, 2) . '%</td>';
+    $html .= '<td>' . formatInvoiceAmount($gst_rate) . '%</td>';
     $html .= '<td>' . formatInvoiceAmount($item_mrp) . '</td>';
     $html .= '<td>' . formatInvoiceAmount($item_sp) . '</td>';
     $html .= '<td>' . formatInvoiceAmount($item_gst) . '</td>';
@@ -256,12 +266,12 @@ $html .= '</table>';
 
 // GST Summary Table
 $html .= '<br><h3>GST Summary</h3>';
-$html .= '<table border="1" cellpadding="5" cellspacing="0" width="60%"><tr><th>HSN Code</th><th>GST</th><th>CGST</th><th>SGST</th><th>IGST</th><th>Net GST</th></tr>';
+$html .= '<table class="invoice-table" width="60%"><tr><th>HSN Code</th><th>GST</th><th>CGST</th><th>SGST</th><th>IGST</th><th>Net GST</th></tr>';
 $total_cgst = $total_sgst = $total_igst = $total_gst = 0;
 foreach ($gst_summary as $hsn => $row) {
     $html .= '<tr>';
     $html .= '<td>' . htmlspecialchars($hsn) . '</td>';
-    $html .= '<td>' . number_format($row['gst_rate'], 2) . '%</td>';
+    $html .= '<td>' . formatInvoiceAmount($row['gst_rate']) . '%</td>';
     $html .= '<td>' . formatInvoiceAmount($row['cgst']) . '</td>';
     $html .= '<td>' . formatInvoiceAmount($row['sgst']) . '</td>';
     $html .= '<td>' . ($row['igst'] > 0 ? formatInvoiceAmount($row['igst']) : '-') . '</td>';
@@ -351,9 +361,9 @@ function numberToWords($number)
 // === FOOTER (AJIO-STYLE) ===
 $html .= '<div class="footer" style="font-size:11px; margin-top:24px;">
   <table style="width:100%;"><tr>
-    <td style="vertical-align:top; width:33%;">' . htmlspecialchars($company['name']) . '<br>' . htmlspecialchars($company['address']) . '</td>
+    <td style="vertical-align:top; width:33%;">' . htmlspecialchars($company['name']) . '<br>' . htmlspecialchars(invoiceTitleCase($company['address'])) . '</td>
     <td style="vertical-align:top; width:33%;"><b>Contact Us</b><br>' . htmlspecialchars($company['phone']) . '<br>' . htmlspecialchars($company['email']) . '</td>
-    <td style="vertical-align:top; width:33%;">www.everythingb2c.in<br><b>CIN:</b> U12345MH2024PTC000000</td>
+    <td style="vertical-align:top; width:33%;">www.everythingb2c.in</td>
   </tr></table>
   <div style="margin-top:10px; text-align:center; color:#555;">This is a system generated invoice issued under provisions of the Information Technology Act, 2000.<br>Thank you for shopping with us!</div>
 </div>';
@@ -364,7 +374,14 @@ $html = str_replace('<b>Order Subtotal:</b> ₹' . number_format($order['subtota
 
 $html .= '</body></html>';
 
-$mpdf = new \Mpdf\Mpdf(['format' => 'A4', 'allow_url_fopen' => true]);
+$mpdf = new \Mpdf\Mpdf([
+    'format' => 'A4',
+    'allow_url_fopen' => true,
+    'default_font' => 'mulish',
+    'fontDir' => array_merge((new \Mpdf\Config\ConfigVariables())->getDefaults()['fontDir'], [__DIR__ . '/assets/fonts/mulish']),
+    'fontdata' => array_merge((new \Mpdf\Config\FontVariables())->getDefaults()['fontdata'], ['mulish' => ['R' => 'Mulish-Regular.ttf', 'B' => 'Mulish-Bold.ttf']]),
+    'shrink_tables_to_fit' => 1,
+]);
 $mpdf->showImageErrors = true;
 $mpdf->WriteHTML($html);
 $mpdf->Output('Invoice_' . $invoiceNo . '.pdf', 'D');
