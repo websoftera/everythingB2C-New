@@ -645,3 +645,12 @@
 .search-box .form-control {
     padding-left: 40px !important;
 }
+/* Match detail typography across the admin management pages. */
+.admin-management-typography .everythingb2c-dashboard-content,
+.admin-management-typography .everythingb2c-dashboard-content *:not(h1):not(i),
+.admin-management-typography .modal-content,
+.admin-management-typography .modal-content *:not(i) {
+    font-family: 'Mulish', sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+}

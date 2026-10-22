@@ -78,6 +78,15 @@ $pageTitle = 'Admin Dashboard';
             font-weight: 600;
             line-height: 1.25;
         }
+        .recent-orders .table tbody td,
+        .low-stock-products .list-group-item h6,
+        .low-stock-products .list-group-item small {
+            font-size: 13px !important;
+            font-family: 'Mulish', sans-serif !important;
+            font-weight: 600 !important;
+            line-height: 1.25;
+            color: #212529 !important;
+        }
     </style>
 </head>
 <body>
@@ -175,7 +184,7 @@ $pageTitle = 'Admin Dashboard';
                     <div class="row">
                         <!-- Recent Orders -->
                         <div class="col-lg-8">
-                            <div class="card shadow mb-4">
+                            <div class="card shadow mb-4 recent-orders">
                                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                                     <h6 class="m-0 font-weight-bold text-primary">Recent Orders</h6>
                                     <a href="orders.php" class="btn btn-sm btn-primary">View All</a>
@@ -229,7 +238,7 @@ $pageTitle = 'Admin Dashboard';
 
                         <!-- Low Stock Products -->
                         <div class="col-lg-4">
-                            <div class="card shadow mb-4">
+                            <div class="card shadow mb-4 low-stock-products">
                                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                                     <h6 class="m-0 font-weight-bold text-primary">Low Stock Products</h6>
                                     <a href="products.php" class="btn btn-sm btn-primary">View All</a>
