@@ -283,11 +283,11 @@ if (isset($_GET['success'])) {
                                                                 </td>
                                                                 <td>₹<?php echo $charge['min_order_amount']; ?></td>
                                                                 <td>
-                                                                    <button class="btn btn-sm btn-outline-primary me-1" onclick="editCharge(<?php echo $charge['id']; ?>, '<?php echo htmlspecialchars($charge['charge_type']); ?>', <?php echo $charge['charge_value']; ?>, <?php echo $charge['min_order_amount']; ?>, <?php echo $charge['max_order_amount']; ?>)"><i class="fas fa-edit"></i></button>
+                                                                    <button class="btn btn-sm btn-primary me-1" onclick="editCharge(<?php echo $charge['id']; ?>, '<?php echo htmlspecialchars($charge['charge_type']); ?>', <?php echo $charge['charge_value']; ?>, <?php echo $charge['min_order_amount']; ?>, <?php echo $charge['max_order_amount']; ?>)"><i class="fas fa-edit"></i></button>
                                                                     <form method="post" style="display:inline;" onsubmit="return confirm('Delete this charge?');">
                                                                         <input type="hidden" name="action" value="delete_charge">
                                                                         <input type="hidden" name="charge_id" value="<?php echo $charge['id']; ?>">
-                                                                        <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                                                                        <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
                                                                     </form>
                                                                 </td>
                                                             </tr>

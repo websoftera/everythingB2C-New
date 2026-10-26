@@ -597,15 +597,15 @@ foreach ($editingItems as $item) {
                                         <td>Rs. <?php echo number_format((float)$quotation['grand_total'], 2); ?></td>
                                         <td>
                                             <div class="quotation-actions">
-                                                <a class="btn btn-sm btn-outline-primary action-btn" href="quotation_generate.php?edit=<?php echo (int)$quotation['id']; ?>" title="Edit quotation">
+                                                <a class="btn btn-sm btn-primary action-btn" href="quotation_generate.php?edit=<?php echo (int)$quotation['id']; ?>" title="Edit quotation">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <a class="btn btn-sm btn-outline-warning action-btn" href="download_quotation.php?id=<?php echo (int)$quotation['id']; ?>" title="Download quotation">
+                                                <a class="btn btn-sm btn-warning action-btn" href="download_quotation.php?id=<?php echo (int)$quotation['id']; ?>" title="Download quotation">
                                                     <i class="fas fa-file-invoice"></i>
                                                 </a>
                                                 <form method="POST" onsubmit="return confirm('Delete this quotation?');">
                                                     <input type="hidden" name="quotation_id" value="<?php echo (int)$quotation['id']; ?>">
-                                                    <button type="submit" name="delete_quotation" class="btn btn-sm btn-outline-danger action-btn" title="Delete quotation">
+                                                    <button type="submit" name="delete_quotation" class="btn btn-sm btn-danger action-btn" title="Delete quotation">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>
