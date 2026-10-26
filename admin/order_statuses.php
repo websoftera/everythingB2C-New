@@ -163,14 +163,14 @@ $statuses = getAllOrderStatuses();
                                                 </td>
                                                 <td>
                                                     <?php if ((int)$status['is_system'] !== 1): ?>
-                                                        <button type="button" class="btn btn-sm btn-outline-primary"
+                                                        <button type="button" class="btn btn-sm btn-primary"
                                                                 onclick='editStatus(<?php echo json_encode($status, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>)'>
                                                             <i class="fas fa-edit"></i> Edit
                                                         </button>
                                                         <form method="POST" class="d-inline" onsubmit="return confirm('Delete this custom status?');">
                                                             <input type="hidden" name="action" value="delete">
                                                             <input type="hidden" name="status_id" value="<?php echo (int)$status['id']; ?>">
-                                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                            <button type="submit" class="btn btn-sm btn-danger">
                                                                 <i class="fas fa-trash"></i>
                                                             </button>
                                                         </form>

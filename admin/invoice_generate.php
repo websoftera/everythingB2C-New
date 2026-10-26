@@ -707,15 +707,15 @@ foreach ($editingItems as $item) {
                                         <td>Rs. <?php echo preg_replace('/\.00$/', '', number_format((float)$invoice['grand_total'], 2)); ?></td>
                                         <td>
                                             <div class="invoice-actions">
-                                                <a class="btn btn-sm btn-outline-primary action-btn" href="invoice_generate.php?edit=<?php echo (int)$invoice['id']; ?>" title="Edit Invoice">
+                                                <a class="btn btn-sm btn-primary action-btn" href="invoice_generate.php?edit=<?php echo (int)$invoice['id']; ?>" title="Edit Invoice">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <a class="btn btn-sm btn-outline-warning action-btn" href="download_manual_invoice.php?id=<?php echo (int)$invoice['id']; ?>" title="Download Invoice">
+                                                <a class="btn btn-sm btn-warning action-btn" href="download_manual_invoice.php?id=<?php echo (int)$invoice['id']; ?>" title="Download Invoice">
                                                     <i class="fas fa-file-invoice"></i>
                                                 </a>
                                                 <form method="POST" onsubmit="return confirm('Delete this invoice?');">
                                                     <input type="hidden" name="invoice_id" value="<?php echo (int)$invoice['id']; ?>">
-                                                    <button type="submit" name="delete_invoice" class="btn btn-sm btn-outline-danger action-btn" title="Delete Invoice">
+                                                    <button type="submit" name="delete_invoice" class="btn btn-sm btn-danger action-btn" title="Delete Invoice">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>

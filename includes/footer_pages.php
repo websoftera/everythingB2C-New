@@ -69,7 +69,7 @@ function footerPageUrl(array $page, string $baseUrl = ''): string
         return $baseUrl . $page['legacy_path'];
     }
 
-    return $baseUrl . 'footer-page.php?slug=' . rawurlencode((string)$page['slug']);
+    return $baseUrl . rawurlencode((string)$page['slug']) . '.php';
 }
 
 function footerPageContentClass(array $page): string

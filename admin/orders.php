@@ -326,16 +326,16 @@ $statuses = getAllOrderStatuses();
                                                     </td>
                                                     <td>
                                                         <div class="btn-group" role="group">
-                                                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="viewOrder(<?php echo $order['id']; ?>)">
+                                                            <button type="button" class="btn btn-sm btn-primary" onclick="viewOrder(<?php echo $order['id']; ?>)">
                                                                 <i class="fas fa-eye"></i>
                                                             </button>
-                                                            <button type="button" class="btn btn-sm btn-outline-success" onclick="updateStatus(<?php echo $order['id']; ?>)">
+                                                            <button type="button" class="btn btn-sm btn-success" onclick="updateStatus(<?php echo $order['id']; ?>)">
                                                                 <i class="fas fa-edit"></i>
                                                             </button>
-                                                            <a href="../track_order.php?tracking_id=<?php echo $order['tracking_id']; ?>" target="_blank" class="btn btn-sm btn-outline-info">
+                                                            <a href="../track_order.php?tracking_id=<?php echo $order['tracking_id']; ?>" target="_blank" class="btn btn-sm btn-info">
                                                                 <i class="fas fa-truck"></i>
                                                             </a>
-                                                            <a href="../download_invoice.php?order_id=<?php echo $order['id']; ?>" target="_blank" class="btn btn-sm btn-outline-warning" title="Download Invoice">
+                                                            <a href="../download_invoice.php?order_id=<?php echo $order['id']; ?>" target="_blank" class="btn btn-sm btn-warning" title="Download Invoice">
                                                                 <i class="fas fa-file-invoice"></i>
                                                             </a>
                                                             <!-- DTDC Integration Buttons (Hidden - Enable when DTDC is configured) -->

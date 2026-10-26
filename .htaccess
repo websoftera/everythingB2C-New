@@ -1,0 +1,7 @@
+RewriteEngine On
+
+# Serve database-managed footer pages at /your-page-slug.php while leaving
+# existing physical PHP files (for example, privacy.php) untouched.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^([a-z0-9]+(?:-[a-z0-9]+)*)\.php$ footer-page.php?slug=$1 [L,QSA,NC]

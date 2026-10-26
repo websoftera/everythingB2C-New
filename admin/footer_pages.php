@@ -84,6 +84,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($slug === '' || strlen($slug) > 160) {
                 throw new RuntimeException('Enter a valid URL slug using letters, numbers, or hyphens.');
             }
+            if (is_file(__DIR__ . '/../' . $slug . '.php')) {
+                throw new RuntimeException('That URL slug conflicts with an existing website page. Choose a different slug.');
+            }
             if (mb_strlen($content) > 50000) {
                 throw new RuntimeException('Page content must be 50,000 characters or less.');
             }
@@ -269,7 +272,7 @@ $isFaqEditor = $editing && (($editing['legacy_path'] ?? '') === 'faq.php');
                             <div class="col-md-4">
                                 <label class="form-label" for="footerPageSlug">URL slug *</label>
                                 <input id="footerPageSlug" name="slug" class="form-control" maxlength="160" required value="<?php echo footer_pages_h($form['slug']); ?>" placeholder="shipping-policy">
-                                <div class="form-text">New pages open as <code>footer-page.php?slug=your-slug</code>.</div>
+                                <div class="form-text">New pages open as <code>your-slug.php</code>.</div>
                             </div>
                             <div class="col-md-2">
                                 <label class="form-label" for="footerPageOrder">Footer order</label>
@@ -358,13 +361,13 @@ $isFaqEditor = $editing && (($editing['legacy_path'] ?? '') === 'faq.php');
                             <tr>
                                 <td><?php echo (int)$page['sort_order']; ?></td>
                                 <td class="footer-page-title"><strong><?php echo footer_pages_h($page['title']); ?></strong></td>
-                                <td class="footer-page-url"><a target="_blank" rel="noopener" href="../<?php echo footer_pages_h(footerPageUrl($page)); ?>"><?php echo footer_pages_h($page['legacy_path'] && empty($page['content']) ? $page['legacy_path'] : 'footer-page.php?slug=' . $page['slug']); ?></a></td>
+                                <td class="footer-page-url"><a target="_blank" rel="noopener" href="../<?php echo footer_pages_h(footerPageUrl($page)); ?>"><?php echo footer_pages_h(footerPageUrl($page)); ?></a></td>
                                 <td><span class="badge <?php echo $page['is_active'] ? 'bg-success' : 'bg-secondary'; ?> footer-page-status"><?php echo $page['is_active'] ? 'Visible' : 'Hidden'; ?></span></td>
                                 <td><?php echo trim((string)$page['content']) === '' ? '<span class="text-muted">Legacy page content</span>' : '<span class="text-success">Managed content</span>'; ?></td>
-                                <td class="text-end"><a class="btn btn-sm btn-outline-primary" href="footer_pages.php?edit=<?php echo (int)$page['id']; ?>"><i class="fas fa-edit"></i> Edit</a>
+                                <td class="text-end"><a class="btn btn-sm btn-primary" href="footer_pages.php?edit=<?php echo (int)$page['id']; ?>"><i class="fas fa-edit"></i> Edit</a>
                                     <form class="d-inline" method="post" onsubmit="return confirm('Delete this footer page? Its footer link will be removed.');">
                                         <input type="hidden" name="csrf" value="<?php echo footer_pages_h($csrf); ?>"><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?php echo (int)$page['id']; ?>">
-                                        <button class="btn btn-sm btn-outline-danger" type="submit"><i class="fas fa-trash"></i> Delete</button>
+                                        <button class="btn btn-sm btn-danger" type="submit"><i class="fas fa-trash"></i> Delete</button>
                                     </form>
                                 </td>
                             </tr>
