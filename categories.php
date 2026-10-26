@@ -79,7 +79,7 @@ echo renderBreadcrumb($breadcrumbs);
          <!-- Categories Header -->
                 <div class="categories-header">
 <!-- Top space preserved for card grid -->
-       
+
                 </div>
 
                 <!-- Categories Grid -->
@@ -98,8 +98,8 @@ else: ?>
                         <?php foreach ($displayCategories as $category): ?>
                             <div class="card category-card" data-id="cat-<?php echo $category['id']; ?>">
                                 <div class="category-info">
-                                    <div class="category-image">
-                                        <a href="category.php?slug=<?php echo $category['slug']; ?>">
+                                    <a class="category-image-link" href="category.php?slug=<?php echo urlencode($category['slug']); ?>">
+                                        <div class="category-image">
                                             <?php if (!empty($category['image']) && file_exists('./' . $category['image'])): ?>
                                                 <img src="./<?php echo $category['image']; ?>" alt="<?php echo $category['name']; ?>" />
                                             <?php
@@ -109,26 +109,12 @@ else: ?>
                                                 </div>
                                             <?php
         endif; ?>
-                                        </a>
-                                    </div>
-                                    <div class="category-details">
-                                        <h3 class="category-name">
-                                            <a href="category.php?slug=<?php echo $category['slug']; ?>">
-                                                <?php echo ucfirst($category['name']); ?>
-                                            </a>
-                                        </h3>
-                                        <?php if (isset($category['product_count']) && $category['product_count'] > 0): ?>
-                                            <div class="category-count">
-                                                <i class="bi bi-box"></i>
-                                                <?php echo $category['product_count']; ?> product<?php echo $category['product_count'] != 1 ? 's' : ''; ?>
-                                            </div>
-                                        <?php
-        endif; ?>
-                                        <div class="category-actions">
-                                            <a href="category.php?slug=<?php echo $category['slug']; ?>" class="btn btn-primary view-category-btn">
-                                                <i class="bi bi-eye"></i> View Products
-                                            </a>
                                         </div>
+                                    </a>
+                                    <div class="category-details">
+                                        <h3 class="category-name"><a href="category.php?slug=<?php echo urlencode($category['slug']); ?>"><?php echo ucfirst($category['name']); ?></a></h3>
+                                        <div class="category-count"><i class="bi bi-box"></i><?php echo (int)($category['product_count'] ?? 0); ?> product<?php echo (int)($category['product_count'] ?? 0) !== 1 ? 's' : ''; ?></div>
+                                        <div class="category-actions"><a href="category.php?slug=<?php echo urlencode($category['slug']); ?>" class="btn view-category-btn"><i class="bi bi-eye"></i> View Products</a></div>
                                     </div>
                                 </div>
                             </div>
@@ -148,14 +134,14 @@ endif; ?>
                                 </li>
                             <?php
     endif; ?>
-                            
+
                             <?php for ($i = max(1, $currentPage - 2); $i <= min($totalPages, $currentPage + 2); $i++): ?>
                                 <li class="page-item <?php echo $i == $currentPage ? 'active' : ''; ?>">
                                     <a class="page-link" href="<?php echo buildCategoriesPaginationUrl($i, $_GET); ?>"><?php echo $i; ?></a>
                                 </li>
                             <?php
     endfor; ?>
-                            
+
                             <?php if ($currentPage < $totalPages): ?>
                                 <li class="page-item">
                                     <a class="page-link" href="<?php echo buildCategoriesPaginationUrl($currentPage + 1, $_GET); ?>">Next</a>
@@ -254,7 +240,7 @@ endif; ?>
 
 /* Categories Page Styles */
 .categories-container {
-    padding: 20px 0 10px 0;
+    padding: 24px 0 12px;
 }
 
 .categories-header {
@@ -278,29 +264,34 @@ endif; ?>
 .categories-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
+    column-gap: 10px;
+    row-gap: 20px;
     margin-bottom: 20px;
     width: 100%;
 }
 
 .category-card {
     background: #ffffff;
-    border-radius: 12px;
-    padding: 0;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    border-radius: 9px;
+    box-sizing: border-box;
+    padding: 16px 32px 20px;
+    padding-bottom: 20px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     transition: all 0.3s ease;
-    border: 1px solid #9fbe1b;
+    border: 1px solid #e0e0e0;
     height: 100%;
     overflow: hidden;
     min-width: 0;
-    display: flex;
-    flex-direction: column;
+    max-width: none !important;
+    width: 100% !important;
+    display: block;
+    margin: 0 !important;
 }
 
 .category-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
-    border-color: #9fbe1b;
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    border-color: var(--primary-color);
 }
 
 .category-info {
@@ -310,27 +301,35 @@ endif; ?>
     min-width: 0;
 }
 
+.category-image-link {
+    display: block;
+    text-decoration: none;
+}
+
 .category-image {
     width: 100%;
-    height: 180px;
+    aspect-ratio: 4 / 3;
+    box-sizing: border-box;
     overflow: hidden;
-    border-radius: 12px 12px 0 0;
+    border-radius: 10px;
     background-color: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px; /* Uniform boundary gap */
+    padding: 20px;
 }
 
 .category-image img {
-    /*max-width: 100%;
-    max-height: 100%;*/
-    width: 200px;
-    height: 160px;
-    object-fit: contain;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     transition: transform 0.5s ease;
     display: block;
-    background-color: transparent; /* Remove conflicting inner background */
+    border-radius: 10px;
+}
+
+.category-card:hover .category-image img {
+    transform: scale(1.04);
 }
 
 .category-placeholder {
@@ -342,42 +341,40 @@ endif; ?>
     justify-content: center;
     color: var(--dark-grey);
     font-size: 2rem;
-    border-radius: 6px 6px 0 0;
+    border-radius: 10px;
 }
 
 .category-details {
     flex: 1;
     display: flex;
     flex-direction: column;
-    padding: 10px;
+    padding: 8px 0 0;
     background-color: #fff;
 }
 
 .category-name {
-    font-size: 0.9rem;
+    font-size: 14px;
     font-weight: 600;
-    color: var(--dark-green);
-    margin-bottom: 6px;
+    color: #495057;
+    margin: 0;
     text-align: center;
 }
 
 .category-name a {
+    color: inherit;
     text-decoration: none;
-    color: var(--dark-green);
-    transition: color 0.3s ease;
 }
 
 .category-name a:hover {
-    color: var(--light-green);
-    opacity: 0.8;
+    color: var(--primary-color);
 }
 
 .category-count {
     color: var(--dark-grey);
+    font-size: 0.85rem;
     font-weight: 500;
+    margin: 5px 0 10px;
     text-align: center;
-    margin-bottom: 10px;
-    font-size: 0.8rem;
 }
 
 .category-count i {
@@ -387,25 +384,22 @@ endif; ?>
 .category-actions {
     margin-top: auto;
     text-align: center;
-    padding-bottom: 0;
 }
 
 .view-category-btn {
     background: var(--dark-green);
-    color: #fff;
-    border: 2px solid var(--light-green);
-    padding: 5px 10px;
+    border: 1px solid var(--dark-green);
     border-radius: 6px;
-    font-weight: 600;
-    transition: all 0.3s ease;
+    color: #fff;
     font-size: 0.8rem;
+    font-weight: 600;
+    padding: 5px 10px;
 }
 
 .view-category-btn:hover {
-    background: transparent;
-    color: var(--dark-green);
+    background: var(--light-green);
     border-color: var(--light-green);
-    transform: translateY(-2px);
+    color: #fff;
 }
 
 .no-categories {
@@ -432,12 +426,12 @@ endif; ?>
 
 /* Removed Sidebar Filter Styles - Now handled by includes/sidebar-filter.php */
 
-/* Desktop: 4 cards per row */
+/* Desktop: five full-width cards per row with no unused column space. */
 @media (min-width: 1200px) {
     .categories-grid {
-        grid-template-columns: repeat(5, 1fr);
+        grid-template-columns: repeat(5, minmax(0, 1fr));
     }
-    
+
     /* Hide mobile filter button on desktop */
     .mobile-filter-button-container {
         display: none !important;
@@ -447,45 +441,44 @@ endif; ?>
 /* Mobile: 1 card per row */
 @media (max-width: 767px) {
     .categories-grid {
-        grid-template-columns: 1fr !important;
-        gap: 20px !important;
-        padding: 0 15px;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 12px !important;
+        padding: 0;
         padding-top:20px;
     }
-    
+
     .category-card {
         max-width: 100% !important;
-        border-radius: 12px;
+        border-radius: 9px;
+        padding: 10px 10px 20px;
     }
-    
+
     .category-image {
-        height: 200px; /* Taller image block for single column */
-        padding: 20px; /* Consistent inner padding */
-        background: transparent;
+        aspect-ratio: 1 / 1;
+        padding: 20px;
     }
-    
+
     .category-image img {
         object-fit: cover;
     }
-    
+
     .category-details {
-        padding: 15px;
+        padding: 8px 0 0;
     }
-    
+
     .category-name {
-        font-size: 1.1rem;
-        line-height: 1.4;
-    }
-    
-    .category-count {
         font-size: 0.9rem;
-        margin-bottom: 15px;
+        line-height: 1.25;
     }
-    
+
+    .category-count {
+        font-size: 0.75rem;
+        margin: 4px 0 8px;
+    }
+
     .view-category-btn {
-        padding: 10px 16px;
-        font-size: 1rem;
-        width: 100%; /* Make button full width on mobile */
+        font-size: 0.75rem;
+        padding: 5px 8px;
     }
 
     /* Ensure proper container spacing */
