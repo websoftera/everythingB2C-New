@@ -8,11 +8,19 @@ $base_url = $base_url ?? '';
 
 if (!function_exists('b2c_asset_version')) {
     function b2c_asset_version($path) {
+        static $versions = [];
+
         $assetPath = realpath(__DIR__ . '/../' . ltrim($path, '/\\'));
         $rootPath = realpath(__DIR__ . '/..');
 
         if ($assetPath && $rootPath && strpos($assetPath, $rootPath) === 0 && is_file($assetPath)) {
-            return filemtime($assetPath);
+            if (!array_key_exists($assetPath, $versions)) {
+                // File timestamps can be preserved by the deployment host. Hash the
+                // contents instead, so a changed asset always receives a fresh URL.
+                $versions[$assetPath] = substr(hash_file('sha256', $assetPath), 0, 16);
+            }
+
+            return $versions[$assetPath];
         }
 
         return '1';
