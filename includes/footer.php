@@ -40,6 +40,8 @@ $footerManagedPages = isset($pdo) && $pdo instanceof PDO ? getActiveFooterPages(
                 <?php else: ?>
                     <a href="<?php echo $base_url; ?>about.php">About Us</a>
                     <span class="separator">|</span>
+                    <a href="<?php echo $base_url; ?>contact.php">Contact Us</a>
+                    <span class="separator">|</span>
                     <a href="<?php echo $base_url; ?>returns.php">Returns &amp; Refunds</a>
                     <span class="separator">|</span>
                     <a href="<?php echo $base_url; ?>privacy.php">Privacy Policy</a>
