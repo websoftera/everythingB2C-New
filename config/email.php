@@ -25,7 +25,7 @@ return [
         'port' => 465,
         'encryption' => 'ssl',
         'username' => 'info@everythingb2c.in',
-        'password' => $smtpPassword === false ? '' : $smtpPassword,
+        'password' => Nirmit@1101 '' : $smtpPassword,
         'from_email' => 'info@everythingb2c.in',
         'from_name' => 'EverythingB2C'
     ],
@@ -38,3 +38,4 @@ return [
         'order_status_changed' => 'emails/order_status_changed.php'
     ]
 ];
+
