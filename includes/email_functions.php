@@ -50,6 +50,11 @@ function getEmailOrderItemDisplayQuantity(array $item) {
  */
 function sendEmail($to, $subject, $body, $isHTML = true) {
     $emailConfig = include __DIR__ . '/../config/email.php';
+
+    if (empty($emailConfig['smtp']['password'])) {
+        error_log('Email sending failed: SMTP_PASSWORD is not configured.');
+        return false;
+    }
     
     $mail = new PHPMailer(true);
     
@@ -76,6 +81,53 @@ function sendEmail($to, $subject, $body, $isHTML = true) {
         return true;
     } catch (Exception $e) {
         error_log("Email sending failed: " . $mail->ErrorInfo);
+        return false;
+    }
+}
+
+/**
+ * Send a contact-form enquiry to the site inbox.
+ * The visitor is deliberately a Reply-To address, never the SMTP sender.
+ */
+function sendContactEnquiry(string $name, string $visitorEmail, string $message): bool {
+    $emailConfig = include __DIR__ . '/../config/email.php';
+
+    if (empty($emailConfig['smtp']['password'])) {
+        error_log('Contact form email failed: SMTP_PASSWORD is not configured.');
+        return false;
+    }
+
+    $mail = new PHPMailer(true);
+
+    try {
+        $mail->isSMTP();
+        $mail->Host = $emailConfig['smtp']['host'];
+        $mail->SMTPAuth = true;
+        $mail->Username = $emailConfig['smtp']['username'];
+        $mail->Password = $emailConfig['smtp']['password'];
+        $mail->SMTPSecure = $emailConfig['smtp']['encryption'];
+        $mail->Port = (int)$emailConfig['smtp']['port'];
+        $mail->CharSet = 'UTF-8';
+        $mail->Timeout = 15;
+
+        $mail->setFrom($emailConfig['smtp']['from_email'], $emailConfig['smtp']['from_name']);
+        $mail->addAddress($emailConfig['admin_email'], $emailConfig['smtp']['from_name']);
+        $mail->addReplyTo($visitorEmail, $name);
+        $mail->isHTML(true);
+        $mail->Subject = 'New website enquiry from ' . $name;
+
+        $escape = static fn(string $value): string => htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $safeMessage = nl2br($escape($message));
+        $mail->Body = '<h2>New website enquiry</h2>'
+            . '<p><strong>Name:</strong> ' . $escape($name) . '<br>'
+            . '<strong>Email:</strong> ' . $escape($visitorEmail) . '</p>'
+            . '<p><strong>Message:</strong><br>' . $safeMessage . '</p>';
+        $mail->AltBody = "New website enquiry\n\nName: {$name}\nEmail: {$visitorEmail}\n\nMessage:\n{$message}";
+        $mail->send();
+
+        return true;
+    } catch (Exception $e) {
+        error_log('Contact form email failed: ' . $mail->ErrorInfo);
         return false;
     }
 }

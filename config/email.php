@@ -1,20 +1,35 @@
 <?php
 /**
  * Email Configuration
- * SMTP settings for sending email notifications
+ *
+ * SMTP_PASSWORD must be defined by the web server environment.  Do not put
+ * SMTP credentials in this file, .env files committed to the repository, or
+ * browser-facing code.
  */
+
+$smtpPassword = getenv('SMTP_PASSWORD');
+
+// Apache's SetEnv directive is exposed through apache_getenv() on mod_php.
+// PHP-FPM and CLI deployments use getenv() instead. Both remain server-only.
+if (($smtpPassword === false || $smtpPassword === '') && function_exists('apache_getenv')) {
+    $smtpPassword = apache_getenv('SMTP_PASSWORD');
+}
+
+if ($smtpPassword === false || $smtpPassword === '') {
+    $smtpPassword = $_SERVER['SMTP_PASSWORD'] ?? '';
+}
 
 return [
     'smtp' => [
-        'host' => 'smtp.gmail.com',
-        'port' => 587,
-        'encryption' => 'tls',
-        'username' => 'help.websoftera@gmail.com',
-        'password' => 'sxxe qwel jemx alze',
-        'from_email' => 'help.websoftera@gmail.com',
-        'from_name' => 'everythingb2c'
+        'host' => 'smtpout.secureserver.net',
+        'port' => 465,
+        'encryption' => 'ssl',
+        'username' => 'info@everythingb2c.in',
+        'password' => $smtpPassword === false ? '' : $smtpPassword,
+        'from_email' => 'info@everythingb2c.in',
+        'from_name' => 'EverythingB2C'
     ],
-    
+
     'admin_email' => 'info@everythingb2c.in',
     
     'templates' => [

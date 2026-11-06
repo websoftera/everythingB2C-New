@@ -12,20 +12,23 @@ The email configuration is stored in `config/email.php`:
 
 ```php
 'smtp' => [
-    'host' => 'smtp.gmail.com',
-    'port' => 587,
-    'encryption' => 'tls',
-    'username' => 'help.websoftera@gmail.com',
-    'password' => 'sxxe qwel jemx alze',
-    'from_email' => 'help.websoftera@gmail.com',
-    'from_name' => 'everythingb2c'
+    'host' => 'smtpout.secureserver.net',
+    'port' => 465,
+    'encryption' => 'ssl',
+    'username' => 'info@everythingb2c.in',
+    'password' => getenv('SMTP_PASSWORD'),
+    'from_email' => 'info@everythingb2c.in',
+    'from_name' => 'EverythingB2C'
 ],
 'admin_email' => 'info@everythingb2c.in'
 ```
 
+Set `SMTP_PASSWORD` in the web server or PHP-FPM environment. Never place its
+value in this file, a committed `.env` file, frontend code, or a browser response.
+
 ### Dependencies
 - **PHPMailer**: Installed via Composer for robust email sending
-- **SMTP**: Uses Gmail SMTP for reliable delivery
+- **SMTP**: Uses authenticated GoDaddy Titan SMTP over SSL
 
 ## Email Templates
 
@@ -103,7 +106,7 @@ if ($oldStatusId != $statusId) {
 
 ### ✅ Security
 - SMTP authentication
-- App password for Gmail (more secure than regular password)
+- SMTP password is supplied only through the server environment
 - Input validation and sanitization
 
 ## Testing
@@ -167,7 +170,7 @@ Payment Method: Razorpay
 ## Troubleshooting
 
 ### Common Issues
-1. **Emails not sending**: Check SMTP credentials and Gmail app password
+1. **Emails not sending**: Check the `SMTP_PASSWORD` server environment variable and Titan mailbox access
 2. **Emails going to spam**: Configure SPF/DKIM records for domain
 3. **PHP errors**: Ensure PHPMailer is properly installed via Composer
 
