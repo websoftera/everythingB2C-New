@@ -25,7 +25,7 @@ return [
         'port' => 465,
         'encryption' => 'ssl',
         'username' => 'info@everythingb2c.in',
-        'password' => Nirmit@1101 '' : $smtpPassword,
+        'password' => Nirmit@1101,
         'from_email' => 'info@everythingb2c.in',
         'from_name' => 'EverythingB2C'
     ],
