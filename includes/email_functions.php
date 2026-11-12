@@ -74,6 +74,10 @@ function sendEmail($to, $subject, $body, $isHTML = true) {
         
         // Content
         $mail->isHTML($isHTML);
+        // Explicitly declare UTF-8 so currency and other non-ASCII characters
+        // are not decoded as ISO-8859-1 by email clients.
+        $mail->CharSet = 'UTF-8';
+        $mail->Encoding = 'base64';
         $mail->Subject = $subject;
         $mail->Body = $body;
         
@@ -338,6 +342,9 @@ function generateOrderPlacedUserEmail($user, $order, $orderItems) {
  * Generate HTML email body for order placed admin notification
  */
 function generateOrderPlacedAdminEmail($order, $orderItems) {
+    // Use an HTML entity rather than a literal symbol. This remains reliable in
+    // clients that alter or ignore a message's character encoding declaration.
+    $currency = '&#8377;';
     $total = formatEmailAmount($order['total_amount']);
     $productTotal = formatEmailAmount($order['subtotal'] ?? 0);
     $shippingCharge = formatEmailAmount($order['shipping_charge'] ?? 0);
@@ -351,10 +358,10 @@ function generateOrderPlacedAdminEmail($order, $orderItems) {
         $amounts = getEmailOrderItemAmounts($item);
         $itemsHTML .= "
         <tr>
-            <td style='padding: 10px; border-bottom: 1px solid #eee;'>{$productName}</td>
-            <td style='padding: 10px; border-bottom: 1px solid #eee; text-align: center;'>{$quantity}</td>
-            <td style='padding: 10px; border-bottom: 1px solid #eee; text-align: center;'>₹" . formatEmailAmount($amounts['unit_price']) . "</td>
-            <td style='padding: 10px; border-bottom: 1px solid #eee; text-align: center;'>₹" . formatEmailAmount($amounts['line_total']) . "</td>
+            <td style='padding: 11px 8px; border-bottom: 1px solid #e9ecef; color: #343a40; word-break: break-word;'>{$productName}</td>
+            <td style='padding: 11px 6px; border-bottom: 1px solid #e9ecef; text-align: center; color: #343a40;'>{$quantity}</td>
+            <td style='padding: 11px 6px; border-bottom: 1px solid #e9ecef; text-align: right; color: #343a40; white-space: nowrap;'>{$currency}" . formatEmailAmount($amounts['unit_price']) . "</td>
+            <td style='padding: 11px 8px; border-bottom: 1px solid #e9ecef; text-align: right; color: #343a40; font-weight: 600; white-space: nowrap;'>{$currency}" . formatEmailAmount($amounts['line_total']) . "</td>
         </tr>";
     }
     
@@ -364,16 +371,22 @@ function generateOrderPlacedAdminEmail($order, $orderItems) {
     <head>
         <meta charset='UTF-8'>
         <style>
-            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-            .header { background: #dc3545; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
-            .content { background: #f9f9f9; padding: 20px; border-radius: 0 0 8px 8px; }
-            .order-details { background: white; padding: 15px; margin: 15px 0; border-radius: 5px; border-left: 4px solid #dc3545; }
-            .customer-details { background: white; padding: 15px; margin: 15px 0; border-radius: 5px; border-left: 4px solid #17a2b8; }
-            table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-            th { background: #dc3545; color: white; padding: 10px; text-align: left; }
-            .total { font-size: 18px; font-weight: bold; color: #dc3545; }
-            .footer { text-align: center; margin-top: 20px; color: #666; font-size: 14px; }
+            body { margin: 0; padding: 0; background: #f4f6f8; font-family: Arial, sans-serif; line-height: 1.5; color: #343a40; }
+            .container { max-width: 640px; margin: 0 auto; padding: 24px 12px; }
+            .header { background: #dc3545; color: #ffffff; padding: 28px 24px; text-align: center; border-radius: 10px 10px 0 0; }
+            .header h1 { margin: 0 0 6px; font-size: 24px; line-height: 1.25; }
+            .header p { margin: 0; font-size: 15px; opacity: 0.95; }
+            .content { background: #ffffff; padding: 24px; border-radius: 0 0 10px 10px; }
+            .order-details, .customer-details { background: #f8f9fa; padding: 16px; margin: 16px 0; border-radius: 7px; }
+            .order-details { border-left: 4px solid #dc3545; }
+            .customer-details { border-left: 4px solid #17a2b8; }
+            .order-details h3, .customer-details h3, .section-title { margin: 0 0 10px; color: #212529; font-size: 17px; }
+            .order-details p, .customer-details p { margin: 6px 0; font-size: 14px; }
+            table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 14px; }
+            th { background: #dc3545; color: #ffffff; padding: 11px 8px; text-align: left; font-size: 12px; }
+            .total { font-size: 18px; font-weight: bold; color: #c82333; }
+            .footer { text-align: center; margin-top: 18px; color: #6c757d; font-size: 13px; }
+            @media only screen and (max-width: 480px) { .container { padding: 0; } .header, .content { border-radius: 0; } .content { padding: 16px; } table { font-size: 12px; } th { font-size: 11px; padding: 9px 5px; } }
         </style>
     </head>
     <body>
@@ -389,7 +402,7 @@ function generateOrderPlacedAdminEmail($order, $orderItems) {
                     <p><strong>Order Date:</strong> {$orderDate}</p>
                     <p><strong>Payment Method:</strong> " . ucfirst($order['payment_method']) . "</p>
                     <p><strong>Status:</strong> " . ucfirst($order['status']) . "</p>
-                    <p><strong>Total Amount:</strong> ₹{$total}</p>
+                    <p><strong>Total Amount:</strong> {$currency}{$total}</p>
                 </div>
                 
                 <div class='customer-details'>
@@ -399,14 +412,14 @@ function generateOrderPlacedAdminEmail($order, $orderItems) {
                     <p><strong>Phone:</strong> " . ($order['phone'] ?? 'N/A') . "</p>
                 </div>
                 
-                <h3>Order Items</h3>
+                <h3 class='section-title'>Order Items</h3>
                 <table>
                     <thead>
                         <tr>
-                            <th>Product</th>
-                            <th style='text-align: center;'>Quantity</th>
-                            <th style='text-align: center;'>Price</th>
-                            <th style='text-align: center;'>Total</th>
+                            <th style='width: 46%;'>Product</th>
+                            <th style='width: 14%; text-align: center;'>Qty.</th>
+                            <th style='width: 20%; text-align: right;'>Price</th>
+                            <th style='width: 20%; text-align: right;'>Total</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -414,23 +427,23 @@ function generateOrderPlacedAdminEmail($order, $orderItems) {
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan='3' style='text-align: right; padding: 10px; font-weight: bold; border-top: 1px solid #eee;'>Product Total:</td>
-                            <td style='text-align: center; padding: 10px; font-weight: bold; border-top: 1px solid #eee;'>₹{$productTotal}</td>
+                            <td colspan='3' style='text-align: right; padding: 11px 8px; font-weight: 600; border-top: 1px solid #dee2e6;'>Product Total:</td>
+                            <td style='text-align: right; padding: 11px 8px; font-weight: 600; border-top: 1px solid #dee2e6; white-space: nowrap;'>{$currency}{$productTotal}</td>
                         </tr>" .
                         ($hasShippingCharge ? "
                         <tr>
-                            <td colspan='3' style='text-align: right; padding: 10px; font-weight: bold;'>Shipping Charges:</td>
-                            <td style='text-align: center; padding: 10px; font-weight: bold;'>₹{$shippingCharge}</td>
+                            <td colspan='3' style='text-align: right; padding: 11px 8px; font-weight: 600;'>Shipping Charges:</td>
+                            <td style='text-align: right; padding: 11px 8px; font-weight: 600; white-space: nowrap;'>{$currency}{$shippingCharge}</td>
                         </tr>" : "") . "
                         <tr>
-                            <td colspan='3' style='text-align: right; padding: 10px; font-weight: bold; border-top: 1px solid #eee;'>Total Amount:</td>
-                            <td style='text-align: center; padding: 10px; font-weight: bold;' class='total'>₹{$total}</td>
+                            <td colspan='3' style='text-align: right; padding: 14px 8px; font-weight: bold; border-top: 2px solid #dc3545;'>Total Amount:</td>
+                            <td style='text-align: right; padding: 14px 8px; font-weight: bold; border-top: 2px solid #dc3545; white-space: nowrap;' class='total'>{$currency}{$total}</td>
                         </tr>
                     </tfoot>
                 </table>
                 
-                <div style='text-align: center; margin: 20px 0;'>
-                    <a href='" . getBaseUrl() . "admin/orders.php' style='background: #dc3545; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;'>View in Admin Panel</a>
+                <div style='text-align: center; margin: 24px 0 4px;'>
+                    <a href='" . getBaseUrl() . "admin/orders.php' style='background: #dc3545; color: #ffffff; padding: 13px 24px; text-decoration: none; border-radius: 5px; display: inline-block; font-size: 14px; font-weight: bold;'>View in Admin Panel</a>
                 </div>
             </div>
             <div class='footer'>
