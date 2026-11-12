@@ -241,6 +241,8 @@ function sendOrderStatusChangedNotification($userId, $orderId, $newStatus, $oldS
  * Generate HTML email body for order placed user notification
  */
 function generateOrderPlacedUserEmail($user, $order, $orderItems) {
+    // HTML entity keeps the rupee sign reliable in all email clients.
+    $currency = '&#8377;';
     $total = formatEmailAmount($order['total_amount']);
     $productTotal = formatEmailAmount($order['subtotal'] ?? 0);
     $shippingCharge = formatEmailAmount($order['shipping_charge'] ?? 0);
@@ -254,10 +256,10 @@ function generateOrderPlacedUserEmail($user, $order, $orderItems) {
         $amounts = getEmailOrderItemAmounts($item);
         $itemsHTML .= "
         <tr>
-            <td style='padding: 10px; border-bottom: 1px solid #eee;'>{$productName}</td>
-            <td style='padding: 10px; border-bottom: 1px solid #eee; text-align: center;'>{$quantity}</td>
-            <td style='padding: 10px; border-bottom: 1px solid #eee; text-align: center;'>₹" . formatEmailAmount($amounts['unit_price']) . "</td>
-            <td style='padding: 10px; border-bottom: 1px solid #eee; text-align: center;'>₹" . formatEmailAmount($amounts['line_total']) . "</td>
+            <td style='padding: 11px 8px; border-bottom: 1px solid #e9ecef; color: #343a40; word-break: break-word;'>{$productName}</td>
+            <td style='padding: 11px 6px; border-bottom: 1px solid #e9ecef; text-align: center; color: #343a40;'>{$quantity}</td>
+            <td style='padding: 11px 6px; border-bottom: 1px solid #e9ecef; text-align: right; color: #343a40; white-space: nowrap;'>{$currency}" . formatEmailAmount($amounts['unit_price']) . "</td>
+            <td style='padding: 11px 8px; border-bottom: 1px solid #e9ecef; text-align: right; color: #343a40; font-weight: 600; white-space: nowrap;'>{$currency}" . formatEmailAmount($amounts['line_total']) . "</td>
         </tr>";
     }
     
@@ -267,15 +269,20 @@ function generateOrderPlacedUserEmail($user, $order, $orderItems) {
     <head>
         <meta charset='UTF-8'>
         <style>
-            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-            .header { background: #9fbe1b; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
-            .content { background: #f9f9f9; padding: 20px; border-radius: 0 0 8px 8px; }
-            .order-details { background: white; padding: 15px; margin: 15px 0; border-radius: 5px; border-left: 4px solid #9fbe1b; }
-            table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-            th { background: #9fbe1b; color: white; padding: 10px; text-align: left; }
-            .total { font-size: 18px; font-weight: bold; color: #9fbe1b; }
-            .footer { text-align: center; margin-top: 20px; color: #666; font-size: 14px; }
+            body { margin: 0; padding: 0; background: #f4f6f8; font-family: Arial, sans-serif; line-height: 1.5; color: #343a40; }
+            .container { max-width: 640px; margin: 0 auto; padding: 24px 12px; }
+            .header { background: #9fbe1b; color: #ffffff; padding: 28px 24px; text-align: center; border-radius: 10px 10px 0 0; }
+            .header h1 { margin: 0 0 6px; font-size: 24px; line-height: 1.25; }
+            .header p { margin: 0; font-size: 15px; opacity: 0.95; }
+            .content { background: #ffffff; padding: 24px; border-radius: 0 0 10px 10px; }
+            .order-details { background: #f8f9fa; padding: 16px; margin: 16px 0; border-radius: 7px; border-left: 4px solid #9fbe1b; }
+            .order-details h3, .section-title { margin: 0 0 10px; color: #212529; font-size: 17px; }
+            .order-details p { margin: 6px 0; font-size: 14px; }
+            table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 14px; }
+            th { background: #9fbe1b; color: #ffffff; padding: 11px 8px; text-align: left; font-size: 12px; }
+            .total { font-size: 18px; font-weight: bold; color: #7a9500; }
+            .footer { text-align: center; margin-top: 18px; color: #6c757d; font-size: 13px; }
+            @media only screen and (max-width: 480px) { .container { padding: 0; } .header, .content { border-radius: 0; } .content { padding: 16px; } table { font-size: 12px; } th { font-size: 11px; padding: 9px 5px; } }
         </style>
     </head>
     <body>
@@ -293,14 +300,14 @@ function generateOrderPlacedUserEmail($user, $order, $orderItems) {
                     <p><strong>Status:</strong> " . ucfirst($order['status']) . "</p>
                 </div>
                 
-                <h3>Order Items</h3>
+                <h3 class='section-title'>Order Items</h3>
                 <table>
                     <thead>
                         <tr>
-                            <th>Product</th>
-                            <th style='text-align: center;'>Quantity</th>
-                            <th style='text-align: center;'>Price</th>
-                            <th style='text-align: center;'>Total</th>
+                            <th style='width: 46%;'>Product</th>
+                            <th style='width: 14%; text-align: center;'>Qty.</th>
+                            <th style='width: 20%; text-align: right;'>Price</th>
+                            <th style='width: 20%; text-align: right;'>Total</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -308,25 +315,25 @@ function generateOrderPlacedUserEmail($user, $order, $orderItems) {
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan='3' style='text-align: right; padding: 10px; font-weight: bold; border-top: 1px solid #eee;'>Product Total:</td>
-                            <td style='text-align: center; padding: 10px; font-weight: bold; border-top: 1px solid #eee;'>₹{$productTotal}</td>
+                            <td colspan='3' style='text-align: right; padding: 11px 8px; font-weight: 600; border-top: 1px solid #dee2e6;'>Product Total:</td>
+                            <td style='text-align: right; padding: 11px 8px; font-weight: 600; border-top: 1px solid #dee2e6; white-space: nowrap;'>{$currency}{$productTotal}</td>
                         </tr>" .
                         ($hasShippingCharge ? "
                         <tr>
-                            <td colspan='3' style='text-align: right; padding: 10px; font-weight: bold;'>Shipping Charges:</td>
-                            <td style='text-align: center; padding: 10px; font-weight: bold;'>₹{$shippingCharge}</td>
+                            <td colspan='3' style='text-align: right; padding: 11px 8px; font-weight: 600;'>Shipping Charges:</td>
+                            <td style='text-align: right; padding: 11px 8px; font-weight: 600; white-space: nowrap;'>{$currency}{$shippingCharge}</td>
                         </tr>" : "") . "
                         <tr>
-                            <td colspan='3' style='text-align: right; padding: 10px; font-weight: bold; border-top: 1px solid #eee;'>Total Amount:</td>
-                            <td style='text-align: center; padding: 10px; font-weight: bold;' class='total'>₹{$total}</td>
+                            <td colspan='3' style='text-align: right; padding: 14px 8px; font-weight: bold; border-top: 2px solid #9fbe1b;'>Total Amount:</td>
+                            <td style='text-align: right; padding: 14px 8px; font-weight: bold; border-top: 2px solid #9fbe1b; white-space: nowrap;' class='total'>{$currency}{$total}</td>
                         </tr>
                     </tfoot>
                 </table>
                 
                 <p>We'll send you updates about your order via email and SMS. You can also track your order by visiting your account.</p>
                 
-                <div style='text-align: center; margin: 20px 0;'>
-                    <a href='" . getBaseUrl() . "myaccount.php' style='background: #9fbe1b; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;'>View My Account</a>
+                <div style='text-align: center; margin: 24px 0 4px;'>
+                    <a href='" . getBaseUrl() . "myaccount.php' style='background: #9fbe1b; color: #ffffff; padding: 13px 24px; text-decoration: none; border-radius: 5px; display: inline-block; font-size: 14px; font-weight: bold;'>View My Account</a>
                 </div>
             </div>
             <div class='footer'>
