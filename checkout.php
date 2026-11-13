@@ -446,7 +446,7 @@ endif; ?>
                   <input class="form-check-input" type="radio" name="payment_method" id="cod" value="cod" checked>
                   <label class="form-check-label" for="cod">
                     <i class="fas fa-money-bill-wave me-2"></i>
-                    <strong>Cash on Delivery</strong>
+                    <strong>Pay on Delivery</strong>
                     <br><small class="text-muted">Pay after you get your order </small>
                   </label>
                 </div>
@@ -1060,7 +1060,7 @@ function showOrderSuccessPopup() {
           <i class="fas fa-check-circle"></i>
         </div>
         <p class="order-success-lead">Your order has been placed successfully.</p>
-        <p class="order-success-sub">We'll send you updates about your order via email and SMS.</p>
+        <p class="order-success-sub">We'll send you updates about your order via email.</p>
       </div>
     `,
     icon: null,

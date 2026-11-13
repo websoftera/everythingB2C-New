@@ -17,6 +17,19 @@ function formatEmailAmount($amount) {
     return number_format($amount, $decimals);
 }
 
+/**
+ * Convert stored payment-method codes into customer-facing labels.
+ */
+function getEmailPaymentMethodLabel($paymentMethod) {
+    $paymentMethod = strtolower(trim((string)$paymentMethod));
+
+    if ($paymentMethod === 'cod') {
+        return 'Pay on Delivery';
+    }
+
+    return ucwords(str_replace('_', ' ', $paymentMethod));
+}
+
 function getEmailOrderItemAmounts(array $item) {
     if (function_exists('getOrderItemDisplayAmounts')) {
         return getOrderItemDisplayAmounts($item);
@@ -296,7 +309,7 @@ function generateOrderPlacedUserEmail($user, $order, $orderItems) {
                     <h3>Order Details</h3>
                     <p><strong>Order Number:</strong> #{$order['id']}</p>
                     <p><strong>Order Date:</strong> {$orderDate}</p>
-                    <p><strong>Payment Method:</strong> " . ucfirst($order['payment_method']) . "</p>
+                    <p><strong>Payment Method:</strong> " . getEmailPaymentMethodLabel($order['payment_method'] ?? '') . "</p>
                     <p><strong>Status:</strong> " . ucfirst($order['status']) . "</p>
                 </div>
                 
@@ -330,7 +343,7 @@ function generateOrderPlacedUserEmail($user, $order, $orderItems) {
                     </tfoot>
                 </table>
                 
-                <p>We'll send you updates about your order via email and SMS. You can also track your order by visiting your account.</p>
+                <p>We'll send you updates about your order via email. You can also track your order by visiting your account.</p>
                 
                 <div style='text-align: center; margin: 24px 0 4px;'>
                     <a href='" . getBaseUrl() . "myaccount.php' style='background: #9fbe1b; color: #ffffff; padding: 13px 24px; text-decoration: none; border-radius: 5px; display: inline-block; font-size: 14px; font-weight: bold;'>View My Account</a>
@@ -407,7 +420,7 @@ function generateOrderPlacedAdminEmail($order, $orderItems) {
                     <h3>Order Information</h3>
                     <p><strong>Order Number:</strong> #{$order['id']}</p>
                     <p><strong>Order Date:</strong> {$orderDate}</p>
-                    <p><strong>Payment Method:</strong> " . ucfirst($order['payment_method']) . "</p>
+                    <p><strong>Payment Method:</strong> " . getEmailPaymentMethodLabel($order['payment_method'] ?? '') . "</p>
                     <p><strong>Status:</strong> " . ucfirst($order['status']) . "</p>
                     <p><strong>Total Amount:</strong> {$currency}{$total}</p>
                 </div>
@@ -516,8 +529,17 @@ function generateOrderStatusChangedEmail($user, $order, $newStatus, $oldStatus =
  * Get base URL for email links
  */
 function getBaseUrl() {
+    $emailConfig = include __DIR__ . '/../config/email.php';
+    $configuredUrl = trim((string)($emailConfig['public_base_url'] ?? ''));
+
+    if ($configuredUrl !== '') {
+        return rtrim($configuredUrl, '/') . '/';
+    }
+
+    // Retain a safe fallback for installations that have not configured a
+    // public URL yet. HTTP_HOST may be absent when an email is sent by CLI.
     $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-    $host = $_SERVER['HTTP_HOST'];
-    $path = dirname($_SERVER['SCRIPT_NAME']);
-    return $protocol . '://' . $host . $path . '/';
+    $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+    $path = dirname($_SERVER['SCRIPT_NAME'] ?? '/');
+    return $protocol . '://' . $host . rtrim($path, '/') . '/';
 }

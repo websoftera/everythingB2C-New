@@ -42,7 +42,7 @@ include 'includes/header.php';
                     <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
                     <h3 class="text-success mt-3">Thank You!</h3>
                     <p class="lead">Your order has been placed successfully.</p>
-                    <p class="text-muted">We'll send you updates about your order via email and SMS.</p>
+                    <p class="text-muted">We'll send you updates about your order via email.</p>
                 </div>
             </div>
 
@@ -62,7 +62,7 @@ include 'includes/header.php';
                             </p>
                             <p><strong>Order Date:</strong> <?php echo date('F j, Y', strtotime($order['created_at'])); ?></p>
                             <p><strong>Payment Method:</strong> 
-                                <?php echo strtoupper($order['payment_method']); ?>
+                                <?php echo $order['payment_method'] === 'cod' ? 'Pay on Delivery' : ucwords(str_replace('_', ' ', $order['payment_method'])); ?>
                                 <?php if ($order['payment_method'] === 'cod'): ?>
                                     <span class="badge bg-warning">Pay on Delivery</span>
                                 <?php else: ?>

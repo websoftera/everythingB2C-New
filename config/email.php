@@ -20,6 +20,12 @@ if ($smtpPassword === false || $smtpPassword === '') {
 }
 
 return [
+    // Email links must point to the publicly reachable storefront.  Do not
+    // derive this from the request host: orders placed from a local XAMPP
+    // instance would otherwise send recipients to their own localhost.
+    // EMAIL_BASE_URL can be set by a deployment to use another public domain.
+    'public_base_url' => rtrim((string)(getenv('EMAIL_BASE_URL') ?: 'https://everythingb2c.in'), '/') . '/',
+
     'smtp' => [
         'host' => 'smtpout.secureserver.net',
         'port' => 465,
